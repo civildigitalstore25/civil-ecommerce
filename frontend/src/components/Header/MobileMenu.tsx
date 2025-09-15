@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, Filter } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
 import FormSelect from '../Select/FormSelect';
 
@@ -17,6 +17,8 @@ interface MobileMenuProps {
   selectedCompany: string;
   onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onCompanyChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  user: any;
+  onLogout: () => void;
 }
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
@@ -31,7 +33,9 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   selectedCategory,
   selectedCompany,
   onCategoryChange,
-  onCompanyChange
+  onCompanyChange,
+  user,
+  onLogout
 }) => {
   if (!isOpen) return null;
 
@@ -99,25 +103,58 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           ))}
         </div>
 
-        {/* Mobile Auth Options */}
-        <div className="pt-2 border-t border-gray-200">
-          <div className="space-y-2">
-            <button
-              onClick={() => onNavigate(headerConfig.auth.customer.href)}
-              className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
-            >
-              <UserCheck className="w-5 h-5" />
-              <span>{headerConfig.auth.customer.label}</span>
-            </button>
-            <button
-              onClick={() => onNavigate(headerConfig.auth.admin.href)}
-              className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
-            >
-              <Shield className="w-5 h-5" />
-              <span>{headerConfig.auth.admin.label}</span>
-            </button>
+        {/* User section or Auth Options */}
+        {user ? (
+          <div className="pt-2 border-t border-gray-200">
+            <div className="space-y-2">
+              <div className="px-3 py-2 text-sm text-gray-600">
+                Signed in as <span className="font-medium">{user.email}</span>
+              </div>
+              {user.role === 'admin' && (
+                <button
+                  onClick={() => onNavigate('/admin-dashboard')}
+                  className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+                >
+                  <Settings className="w-5 h-5" />
+                  <span>Admin Dashboard</span>
+                </button>
+              )}
+              <button
+                onClick={() => onNavigate('/profile')}
+                className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              >
+                <User className="w-5 h-5" />
+                <span>Profile</span>
+              </button>
+              <button
+                onClick={onLogout}
+                className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              >
+                <LogOut className="w-5 h-5" />
+                <span>Logout</span>
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="pt-2 border-t border-gray-200">
+            <div className="space-y-2">
+              <button
+                onClick={() => onNavigate(headerConfig.auth.customer.href)}
+                className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              >
+                <UserCheck className="w-5 h-5" />
+                <span>{headerConfig.auth.customer.label}</span>
+              </button>
+              <button
+                onClick={() => onNavigate(headerConfig.auth.admin.href)}
+                className="flex items-center space-x-3 w-full px-3 py-2 text-gray-700 hover:text-blue-600 hover:bg-gray-50 rounded-md transition-colors duration-200"
+              >
+                <Shield className="w-5 h-5" />
+                <span>{headerConfig.auth.admin.label}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Mobile contact */}
         {headerConfig.contact && (

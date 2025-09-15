@@ -3,6 +3,8 @@ import React from 'react';
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   required?: boolean;
+  showPassword?: boolean;
+  toggleShow?: () => void;
 }
 
 const FormInput: React.FC<FormInputProps> = ({ label, required, ...props }) => (

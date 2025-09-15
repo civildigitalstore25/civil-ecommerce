@@ -23,7 +23,7 @@ export const headerConfig = {
     placeholder: "Search for software, brands, or categories..."
   },
   auth: {
-    customer: { label: "Customer Login", href: "/customer-login" },
-    admin: { label: "Admin Login", href: "/admin-login" }
+    customer: { label: "Login", href: "/signin" },
+    admin: { label: "Register", href: "/signup" }
   }
 };
