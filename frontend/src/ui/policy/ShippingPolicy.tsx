@@ -1,108 +1,270 @@
 import React from "react";
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { motion } from "framer-motion";
+import {
+  Truck,
+  Globe,
+  RotateCcw,
+  Phone,
+  Mail,
+  MessageSquare,
+} from "lucide-react";
+import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
+
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0 },
+};
 
 const ShippingPolicy: React.FC = () => {
-    const { colors } = useAdminTheme();
+  const { colors } = useAdminThemeStyles();
 
-    return (
-        <div
-            className="min-h-screen py-12 px-4 transition-colors duration-200"
-            style={{ backgroundColor: colors.background.secondary }}
+  return (
+    <div
+      className="py-14 px-4 sm:py-20 sm:px-6"
+      style={{ backgroundColor: colors.background.secondary }}
+    >
+      {/* Header */}
+      <div className="max-w-5xl mx-auto text-center mb-14">
+        <h1
+          className="text-5xl font-serif font-bold"
+          style={{ color: colors.text.primary }}
         >
+          Shipping & Delivery Policy
+        </h1>
+        <p className="mt-3 text-sm" style={{ color: colors.text.muted }}>
+          Last updated: July 10, 2023
+        </p>
+        <p
+          className="mt-6 text-lg max-w-3xl mx-auto leading-relaxed"
+          style={{ color: colors.text.secondary }}
+        >
+          This Shipping & Delivery Policy is part of our{" "}
+          <a
+            href="https://www.civildigitalstore.com/terms-and-conditions/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: colors.interactive.primary }}
+            className="font-semibold hover:underline"
+          >
+            Terms and Conditions
+          </a>
+          . Please review it carefully before placing an order.
+        </p>
+      </div>
+
+      {/* Cards */}
+      <div className="max-w-5xl mx-auto grid gap-8">
+        {/* Shipping Options */}
+        <motion.div
+          className="rounded-2xl shadow-md p-8 border"
+          style={{
+            backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
+          }}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.1 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
             <div
-                className="max-w-4xl mx-auto rounded-2xl shadow-lg p-8 md:p-12 transition-colors duration-200"
-                style={{ backgroundColor: colors.background.primary }}
+              className="p-2 rounded-full"
+              style={{ backgroundColor: colors.background.secondary }}
             >
-                {/* Title */}
-                <h1
-                    className="text-4xl font-extrabold mb-8 text-center transition-colors duration-200"
-                    style={{ color: colors.text.primary }}
-                >
-                    Shipping & Delivery Policy
-                </h1>
-
-                {/* Last Updated */}
-                <p
-                    className="text-sm mb-6 text-center transition-colors duration-200"
-                    style={{ color: colors.text.accent }}
-                >
-                    Last updated: July 10, 2023
-                </p>
-
-                {/* Intro */}
-                <p className="text-lg text-gray-700 mb-6 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    This Shipping & Delivery Policy is part of our Terms and Conditions (“Terms”) and should be read alongside our main Terms:{" "}
-                    <a
-                        href="https://www.civildigitalstore.com/terms-and-conditions/"
-                        className="text-violet-700 font-semibold hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.civildigitalstore.com/terms-and-conditions/
-                    </a>.
-                </p>
-
-                <p className="text-gray-700 mb-6 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    Please carefully review our Shipping & Delivery Policy when purchasing our products. This policy will apply to any order you place with us.
-                </p>
-
-                {/* Shipping Options */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4 transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    What Are My Shipping & Delivery Options?
-                </h2>
-                <p className="text-gray-700 mb-4 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    <strong>Free Shipping:</strong> We offer free Instant Download shipping on all orders.
-                </p>
-
-                {/* International Delivery */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4 transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    Do You Deliver Internationally?
-                </h2>
-                <p className="text-gray-700 mb-4 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    We do not offer international shipping.
-                </p>
-
-                {/* Returns */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4 transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    Questions About Returns?
-                </h2>
-                <p className="text-gray-700 mb-4 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    If you have questions about returns, please review our Return Policy:{" "}
-                    <a
-                        href="https://www.civildigitalstore.com/return-and-refund-policy"
-                        className="text-violet-700 font-semibold hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        https://www.civildigitalstore.com/return-and-refund-policy
-                    </a>.
-                </p>
-
-                {/* Contact Info */}
-                <h2 className="text-2xl font-semibold text-gray-900 mt-10 mb-4 transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    How Can You Contact Us About This Policy?
-                </h2>
-                <p className="text-gray-700 mb-4 leading-relaxed transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    If you have any further questions or comments, you may contact us by:
-                </p>
-                <ul className="list-disc pl-6 space-y-2 text-gray-700 transition-colors duration-200" style={{ color: colors.text.secondary }}>
-                    <li>📞 Phone: +91 8807423228, 9042993986</li>
-                    <li>📧 Email: civildigitalstore@gmail.com</li>
-                    <li>
-                        🌐 Online contact form:{" "}
-                        <a
-                            href="https://civildigitalstore.com/contact-us/"
-                            className="text-violet-700 font-semibold hover:underline"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            https://civildigitalstore.com/contact-us/
-                        </a>
-                    </li>
-                </ul>
+              <Truck
+                className="w-7 h-7"
+                style={{ color: colors.interactive.primary }}
+              />
             </div>
-        </div>
-    );
+            <h2
+              className="text-2xl font-semibold"
+              style={{ color: colors.text.primary }}
+            >
+              Shipping Options
+            </h2>
+          </div>
+          <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+            <strong>Free Shipping:</strong> We offer free Instant Download
+            shipping on all orders placed through{" "}
+            <strong style={{ color: colors.interactive.primary }}>
+              Civil DigitalStore
+            </strong>
+            .
+          </p>
+        </motion.div>
+
+        {/* International Delivery */}
+        <motion.div
+          className="rounded-2xl shadow-md p-8 border"
+          style={{
+            backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
+          }}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="p-2 rounded-full"
+              style={{ backgroundColor: colors.background.secondary }}
+            >
+              <Globe
+                className="w-7 h-7"
+                style={{ color: colors.interactive.primary }}
+              />
+            </div>
+            <h2
+              className="text-2xl font-semibold"
+              style={{ color: colors.text.primary }}
+            >
+              International Delivery
+            </h2>
+          </div>
+          <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+            Currently, we do not offer international shipping. Our services are
+            available only within India.
+          </p>
+        </motion.div>
+
+        {/* Returns & Refunds */}
+        <motion.div
+          className="rounded-2xl shadow-md p-8 border"
+          style={{
+            backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
+          }}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.3 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="p-2 rounded-full"
+              style={{ backgroundColor: colors.background.secondary }}
+            >
+              <RotateCcw
+                className="w-7 h-7"
+                style={{ color: colors.interactive.primary }}
+              />
+            </div>
+            <h2
+              className="text-2xl font-semibold"
+              style={{ color: colors.text.primary }}
+            >
+              Returns & Refunds
+            </h2>
+          </div>
+          <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+            If you have questions about returns, please review our{" "}
+            <a
+              href="https://www.civildigitalstore.com/return-and-refund-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: colors.interactive.primary }}
+              className="font-semibold hover:underline"
+            >
+              Return and Refund Policy
+            </a>
+            .
+          </p>
+        </motion.div>
+
+        {/* Contact Info */}
+        <motion.div
+          className="rounded-2xl shadow-md p-8 border"
+          style={{
+            backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
+          }}
+          variants={cardVariants}
+          initial="hidden"
+          whileInView="visible"
+          transition={{ duration: 0.6, delay: 0.4 }}
+          viewport={{ once: true }}
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div
+              className="p-2 rounded-full"
+              style={{ backgroundColor: colors.background.secondary }}
+            >
+              <MessageSquare
+                className="w-7 h-7"
+                style={{ color: colors.interactive.primary }}
+              />
+            </div>
+            <h2
+              className="text-2xl font-semibold"
+              style={{ color: colors.text.primary }}
+            >
+              Contact Us
+            </h2>
+          </div>
+          <p
+            className="leading-relaxed mb-4"
+            style={{ color: colors.text.secondary }}
+          >
+            If you have any further questions or comments about this Shipping
+            Policy, you may contact us by:
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li
+              className="flex items-center gap-2"
+              style={{ color: colors.text.secondary }}
+            >
+              <Phone
+                className="w-4 h-4"
+                style={{ color: colors.interactive.primary }}
+              />{" "}
+              +91 8807423228, 9042993986
+            </li>
+            <li
+              className="flex items-center gap-2"
+              style={{ color: colors.text.secondary }}
+            >
+              <Mail
+                className="w-4 h-4"
+                style={{ color: colors.interactive.primary }}
+              />{" "}
+              civildigitalstore@gmail.com
+            </li>
+            <li
+              className="flex items-center gap-2"
+              style={{ color: colors.text.secondary }}
+            >
+              <MessageSquare
+                className="w-4 h-4"
+                style={{ color: colors.interactive.primary }}
+              />
+              <a
+                href="https://civildigitalstore.com/contact-us/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: colors.interactive.primary }}
+                className="font-semibold hover:underline"
+              >
+                Contact Form
+              </a>
+            </li>
+          </ul>
+        </motion.div>
+      </div>
+
+      {/* Footer Notice */}
+      <div
+        className="mt-12 text-center text-sm"
+        style={{ color: colors.text.muted }}
+      >
+        This Shipping Policy is subject to change without prior notice.
+      </div>
+    </div>
+  );
 };
 
 export default ShippingPolicy;
