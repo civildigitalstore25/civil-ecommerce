@@ -33,6 +33,17 @@ export const userApi = {
     return response.data;
   },
 
+  createUser: async (userData: {
+    email: string;
+    fullName: string;
+    phoneNumber?: string;
+    role: 'user' | 'admin';
+    password: string;
+  }): Promise<User> => {
+    const response = await api.post('/', userData);
+    return response.data;
+  },
+
   updateUser: async (id: string, data: { role?: string; isActive?: boolean }): Promise<User> => {
     const response = await api.put(`/${id}`, data);
     return response.data;
@@ -69,6 +80,23 @@ export const useUpdateUser = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: { role?: string; isActive?: boolean } }) =>
       userApi.updateUser(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+};
+
+export const useCreateUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (userData: {
+      email: string;
+      fullName: string;
+      phoneNumber?: string;
+      role: 'user' | 'admin';
+      password: string;
+    }) => userApi.createUser(userData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },

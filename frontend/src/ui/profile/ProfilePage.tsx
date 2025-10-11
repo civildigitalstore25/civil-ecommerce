@@ -3,16 +3,18 @@ import { useEffect, useState } from 'react';
 import { useCurrentUser, useUpdateProfile } from '../../api/auth';
 import FormInput from '../../components/Input/FormInput';
 import FormButton from '../../components/Button/FormButton';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import Swal from 'sweetalert2';
 
 export default function ProfilePage() {
- const { data: user, isLoading, error, refetch } = useCurrentUser();
+  const { data: user, isLoading, error, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
     phoneNumber: '',
   });
+  const { colors } = useAdminTheme();
 
   // Update form data when user data changes or when editing mode changes
   useEffect(() => {
@@ -41,12 +43,12 @@ export default function ProfilePage() {
       });
       return;
     }
-    
+
     try {
       await updateProfileMutation.mutateAsync(formData);
       await refetch(); // Refresh user data
       setIsEditing(false);
-      
+
       Swal.fire({
         title: 'Success!',
         text: 'Your profile has been updated successfully.',
@@ -73,33 +75,76 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div
+        className="min-h-screen flex items-center justify-center transition-colors duration-200"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
+        <div
+          className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2"
+          style={{ borderColor: colors.interactive.primary }}
+        ></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error loading profile</h2>
-          <p className="text-gray-600">Please try again later.</p>
+      <div
+        className="min-h-screen flex items-center justify-center transition-colors duration-200"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
+        <div
+          className="text-center max-w-md p-6 rounded-lg shadow-md transition-colors duration-200"
+          style={{ backgroundColor: colors.background.primary }}
+        >
+          <h2
+            className="text-xl font-semibold mb-2 transition-colors duration-200"
+            style={{ color: colors.text.primary }}
+          >
+            Error loading profile
+          </h2>
+          <p
+            className="transition-colors duration-200"
+            style={{ color: colors.text.secondary }}
+          >
+            Please try again later.
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div
+      className="min-h-screen py-8 px-4 transition-colors duration-200"
+      style={{ backgroundColor: colors.background.secondary }}
+    >
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
+        <div
+          className="rounded-xl shadow-md overflow-hidden transition-colors duration-200"
+          style={{ backgroundColor: colors.background.primary }}
+        >
           {/* Header Section */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6 text-white">
+          <div
+            className="p-6 transition-colors duration-200"
+            style={{
+              background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`
+            }}
+          >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <div>
-                <h1 className="text-2xl font-bold">Profile Information</h1>
-                <p className="opacity-90">Manage your personal information</p>
+                <h1
+                  className="text-2xl font-bold transition-colors duration-200"
+                  style={{ color: colors.background.primary }}
+                >
+                  Profile Information
+                </h1>
+                <p
+                  className="opacity-90 transition-colors duration-200"
+                  style={{ color: colors.background.primary }}
+                >
+                  Manage your personal information
+                </p>
               </div>
               {!isEditing && (
                 <FormButton
@@ -117,14 +162,25 @@ export default function ProfilePage() {
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Personal Information Card */}
-              <div className="bg-gray-50 p-5 rounded-lg">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+              <div
+                className="p-5 rounded-lg transition-colors duration-200"
+                style={{ backgroundColor: colors.background.secondary }}
+              >
+                <h2
+                  className="text-lg font-semibold mb-4 flex items-center transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
+                  <svg
+                    className="w-5 h-5 mr-2 transition-colors duration-200"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    style={{ color: colors.interactive.primary }}
+                  >
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                   </svg>
                   Personal Information
                 </h2>
-                
+
                 {isEditing ? (
                   <div className="space-y-4">
                     <FormInput
@@ -145,39 +201,117 @@ export default function ProfilePage() {
                 ) : (
                   <div className="space-y-3">
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Full Name</label>
-                      <p className="text-gray-900">{user?.fullName || 'Not provided'}</p>
+                      <label
+                        className="text-sm font-medium transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Full Name
+                      </label>
+                      <p
+                        className="transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {user?.fullName || 'Not provided'}
+                      </p>
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-gray-600">Phone Number</label>
-                      <p className="text-gray-900">{user?.phoneNumber || 'Not provided'}</p>
+                      <label
+                        className="text-sm font-medium transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Phone Number
+                      </label>
+                      <p
+                        className="transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {user?.phoneNumber || 'Not provided'}
+                      </p>
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Account Information Card */}
-              <div className="bg-gray-50 p-5 rounded-lg">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+              <div
+                className="p-5 rounded-lg transition-colors duration-200"
+                style={{ backgroundColor: colors.background.secondary }}
+              >
+                <h2
+                  className="text-lg font-semibold mb-4 flex items-center transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
+                  <svg
+                    className="w-5 h-5 mr-2 transition-colors duration-200"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    style={{ color: colors.interactive.primary }}
+                  >
                     <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
                   </svg>
                   Account Information
                 </h2>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Email Address</label>
-                    <p className="text-gray-900">{user?.email}</p>
-                    <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                    <label
+                      className="text-sm font-medium transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Email Address
+                    </label>
+                    <p
+                      className="transition-colors duration-200"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {user?.email}
+                    </p>
+                    <p
+                      className="text-xs mt-1 transition-colors duration-200"
+                      style={{ color: colors.text.accent }}
+                    >
+                      Email cannot be changed
+                    </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Account Role</label>
-                    <p className="text-gray-900 capitalize">{user?.role}</p>
+                    <label
+                      className="text-sm font-medium transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Account Role
+                    </label>
+                    <p
+                      className="capitalize transition-colors duration-200"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {user?.role}
+                    </p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-600">Member Since</label>
-                    <p className="text-gray-900">
+                    <label
+                      className="text-sm font-medium transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Created
+                    </label>
+                    <p
+                      className="transition-colors duration-200"
+                      style={{ color: colors.text.primary }}
+                    >
                       {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      className="text-sm font-medium transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Modified
+                    </label>
+                    <p
+                      className="transition-colors duration-200"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {user?.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'N/A'}
                     </p>
                   </div>
                 </div>
@@ -186,7 +320,10 @@ export default function ProfilePage() {
 
             {/* Action Buttons */}
             {isEditing && (
-              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 mt-6 pt-6 border-t border-gray-200">
+              <div
+                className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3 mt-6 pt-6 border-t transition-colors duration-200"
+                style={{ borderColor: colors.border.primary }}
+              >
                 <FormButton
                   onClick={handleCancel}
                   variant="secondary"
@@ -218,14 +355,35 @@ export default function ProfilePage() {
         </div>
 
         {/* Security Note */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
+        <div
+          className="mt-6 p-4 rounded-lg border transition-colors duration-200"
+          style={{
+            backgroundColor: colors.background.secondary,
+            borderColor: colors.border.primary
+          }}
+        >
           <div className="flex">
-            <svg className="w-5 h-5 text-blue-500 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+            <svg
+              className="w-5 h-5 mt-0.5 mr-3 flex-shrink-0 transition-colors duration-200"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              style={{ color: colors.interactive.primary }}
+            >
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
             <div>
-              <h3 className="font-medium text-blue-800">Security Note</h3>
-              <p className="text-sm text-blue-600">Your personal information is secure and will not be shared with third parties.</p>
+              <h3
+                className="font-medium transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
+                Security Note
+              </h3>
+              <p
+                className="text-sm mt-1 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                Your personal information is secure and will not be shared with third parties.
+              </p>
             </div>
           </div>
         </div>

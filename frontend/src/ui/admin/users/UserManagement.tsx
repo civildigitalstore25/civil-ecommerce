@@ -2,15 +2,21 @@ import React, { useState } from "react";
 import { useUsers, useUpdateUser, useDeleteUser } from "../../../api/userApi";
 import type { User } from "../../../api/types/userTypes";
 import Swal from "sweetalert2";
+import { Plus } from "lucide-react";
 import UserFilters from "./UserFilter";
 import UserTable from "./UserTable";
 import Pagination from "./Pagination";
+import AddUserModal from "./AddUserModal";
+import FormButton from "../../../components/Button/FormButton";
+import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const UserManagement: React.FC = () => {
+  const { colors } = useAdminTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const limit = 10;
 
   const { data: usersData, isLoading, error } = useUsers({
@@ -71,6 +77,36 @@ const UserManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Header with Add User Button */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h2
+            className="text-2xl font-bold"
+            style={{ color: colors.text.primary }}
+          >
+            User Management
+          </h2>
+          <p
+            className="text-sm mt-1"
+            style={{ color: colors.text.secondary }}
+          >
+            Manage user accounts and permissions
+          </p>
+        </div>
+       <button
+              className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2"
+              style={{
+                backgroundColor: colors.interactive.primary,
+                color: colors.text.inverse
+              }}
+          onClick={() => setIsAddUserModalOpen(true)}
+          
+        >
+          <Plus className="h-4 w-4" />
+          Add User
+        </button>
+      </div>
+
       <UserFilters
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
@@ -82,8 +118,22 @@ const UserManagement: React.FC = () => {
         totalUsers={usersData?.total || 0}
       />
 
-      {isLoading && <div className="text-center py-8">Loading users...</div>}
-      {error && <div className="text-center py-8 text-red-500">Error loading users</div>}
+      {isLoading && (
+        <div
+          className="text-center py-8"
+          style={{ color: colors.text.primary }}
+        >
+          Loading users...
+        </div>
+      )}
+      {error && (
+        <div
+          className="text-center py-8"
+          style={{ color: colors.status.error }}
+        >
+          Error loading users
+        </div>
+      )}
 
       {!isLoading && !error && (
         <>
@@ -100,6 +150,12 @@ const UserManagement: React.FC = () => {
           />
         </>
       )}
+
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={isAddUserModalOpen}
+        onClose={() => setIsAddUserModalOpen(false)}
+      />
     </div>
   );
 };

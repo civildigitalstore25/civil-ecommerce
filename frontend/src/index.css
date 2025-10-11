@@ -1,1 +1,37 @@
 @import "tailwindcss";
+
+/* Default browser scrollbar color */
+:root {
+    scrollbar-width: thin;
+    scrollbar-color: #fbbf23 transparent;
+}
+
+body::-webkit-scrollbar {
+    width: 12px;
+}
+
+body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body::-webkit-scrollbar-thumb {
+    background-color: #fbbf23;
+    border-radius: 6px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+    background-color: #f59e0b;
+}
+
+/* Hide scrollbar for webkit browsers */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari, Opera */
+}

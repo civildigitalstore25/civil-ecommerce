@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { User } from "../../../api/types/userTypes";
 import FormButton from "../../../components/Button/FormButton";
+import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 
 interface Props {
   users: User[];
@@ -15,6 +16,7 @@ const UserTable: React.FC<Props> = ({
   handleRoleChange,
   handleDeleteUser,
 }) => {
+  const { colors } = useAdminTheme();
   const [editedRoles, setEditedRoles] = useState<Record<string, string>>({});
 
   const handleRoleSelect = (userId: string, newRole: string) => {
@@ -22,45 +24,114 @@ const UserTable: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+    <div
+      className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
+      style={{
+        backgroundColor: colors.background.secondary,
+        borderColor: colors.border.primary
+      }}
+    >
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead
+            className="border-b transition-colors duration-200"
+            style={{
+              backgroundColor: colors.background.tertiary,
+              borderBottomColor: colors.border.primary
+            }}
+          >
             <tr>
-              <th className="text-left pl-14 py-3 px-4">User</th>
-              <th className="text-left py-3 pl-18 px-4">Email</th>
-              <th className="text-left py-3 pl-8 px-4">Role</th>
-              <th className="text-left py-3 px-4">Joined</th>
-              <th className="text-left py-3 px-4">Actions</th>
+              <th
+                className="text-left pl-14 py-3 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                User
+              </th>
+              <th
+                className="text-left py-3 pl-18 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                Email
+              </th>
+              <th
+                className="text-left py-3 pl-8 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                Role
+              </th>
+              <th
+                className="text-left py-3 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                Joined
+              </th>
+              <th
+                className="text-left py-3 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
+          <tbody
+            className="divide-y transition-colors duration-200"
+            style={{ borderColor: colors.border.secondary }}
+          >
             {users.map((user) => (
-              <tr key={user._id} className="hover:bg-gray-50">
+              <tr
+                key={user._id}
+                className="transition-colors duration-200"
+                style={{ backgroundColor: 'transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.accent;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                }}
+              >
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                    <div
+                      className="w-10 h-10 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: colors.background.tertiary }}
+                    >
                       <span className="text-lg">👤</span>
                     </div>
                     <div>
-                      <div className="font-medium text-gray-900">
+                      <div
+                        className="font-medium"
+                        style={{ color: colors.text.primary }}
+                      >
                         {user.fullName || "No name"}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div
+                        className="text-sm"
+                        style={{ color: colors.text.secondary }}
+                      >
                         {user.phoneNumber || "No phone"}
                       </div>
                     </div>
                   </div>
                 </td>
 
-                <td className="py-4 px-4 text-gray-900">{user.email}</td>
+                <td
+                  className="py-4 px-4"
+                  style={{ color: colors.text.primary }}
+                >
+                  {user.email}
+                </td>
 
                 {/* Role Select + Update Button */}
                 <td className="py-4 px-4 flex items-center gap-2">
                   <select
                     value={editedRoles[user._id] || user.role}
                     onChange={(e) => handleRoleSelect(user._id, e.target.value)}
-                    className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    className="border rounded px-2 py-1 text-sm transition-colors duration-200"
+                    style={{
+                      backgroundColor: colors.background.tertiary,
+                      borderColor: colors.border.primary,
+                      color: colors.text.primary
+                    }}
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
@@ -70,17 +141,25 @@ const UserTable: React.FC<Props> = ({
                       onClick={() =>
                         handleRoleChange(user._id, editedRoles[user._id] as "user" | "admin")
                       }
-                      className="text-blue-500 hover:text-blue-700 text-sm"
+                      className="text-sm transition-colors duration-200"
+                      style={{
+                        color: colors.interactive.primary,
+                        backgroundColor: 'transparent',
+                        border: 'none'
+                      }}
                     >
                       Update
                     </FormButton>
                   )}
                 </td>
 
-                
+
 
                 {/* Joined */}
-                <td className="py-4 px-4 text-sm text-gray-500">
+                <td
+                  className="py-4 px-4 text-sm"
+                  style={{ color: colors.text.secondary }}
+                >
                   {new Date(user.createdAt).toLocaleDateString()}
                 </td>
 
@@ -88,7 +167,14 @@ const UserTable: React.FC<Props> = ({
                 <td className="py-4 px-4">
                   <button
                     onClick={() => handleDeleteUser(user._id, user.email)}
-                    className="text-red-500 hover:text-red-700 p-1"
+                    className="p-1 transition-colors duration-200"
+                    style={{ color: colors.status.error }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.opacity = '0.8';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.opacity = '1';
+                    }}
                     title="Delete user"
                   >
                     <Trash2 className="w-4 h-4" />

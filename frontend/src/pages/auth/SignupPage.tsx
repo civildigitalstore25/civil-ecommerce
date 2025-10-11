@@ -3,9 +3,12 @@ import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useSignUp, useUserInvalidate } from "../../api/userQueries";
 import { saveAuth } from "../../utils/auth";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
+import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
+import logo from "../../assets/logo.png"
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: "",
@@ -18,6 +21,7 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
   const signUpMutation = useSignUp();
+  const { colors } = useAdminTheme();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -62,21 +66,58 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+      style={{ backgroundColor: colors.background.primary }}
+    >
+      {/* Theme Toggle - positioned in top right */}
+      <div className="absolute top-4 right-4">
+        <AdminThemeToggle />
+      </div>
+
+      <div
+        className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
         {/* Header */}
-        <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
-          <div className="bg-white p-3 rounded-2xl shadow-md">
-            <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+        <div
+          className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
+          style={{
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+          }}
+        >
+          <div
+            className="p-3 rounded-2xl shadow-md"
+            style={{ backgroundColor: colors.background.primary }}
+          >
+            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">Create Account</h1>
-          <p className="text-gray-800 mt-2 text-sm text-center">Join us to access software licenses and downloads</p>
+          <h1
+            className="text-2xl font-bold mt-4"
+            style={{ color: colors.text.primary }}
+          >
+            Create Account
+          </h1>
+          <p
+            className="mt-2 text-sm text-center"
+            style={{ color: colors.text.secondary }}
+          >
+            Join us to access software licenses and downloads
+          </p>
         </div>
 
         {/* Body */}
         <div className="p-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-4">
+            <div
+              className="px-4 py-3 rounded-lg text-sm mb-4"
+              style={{
+                backgroundColor: `${colors.status.error}20`,
+                borderColor: colors.status.error,
+                color: colors.status.error,
+                border: `1px solid ${colors.status.error}`
+              }}
+            >
               {error}
             </div>
           )}
@@ -110,9 +151,22 @@ export default function SignupPage() {
             </FormButton>
           </form>
 
-          <p className="text-center text-sm text-gray-600 mt-6">
+          <p
+            className="text-center text-sm mt-6"
+            style={{ color: colors.text.secondary }}
+          >
             Already have an account?{" "}
-            <Link to="/signin" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link
+              to="/signin"
+              className="font-medium transition-colors duration-200"
+              style={{ color: colors.interactive.primary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.interactive.primaryHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+            >
               Sign in
             </Link>
           </p>

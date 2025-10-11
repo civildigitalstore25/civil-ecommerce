@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 // Types
 interface Category {
@@ -20,11 +21,26 @@ const sampleCategories: Category[] = [
 ];
 
 const Categories: React.FC = () => {
+  const { colors } = useAdminTheme();
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Categories</h2>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-blue-600">
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.text.primary }}
+        >
+          Categories
+        </h2>
+        <button
+          className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
+          style={{
+            backgroundColor: colors.interactive.primary,
+            color: colors.text.inverse
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primaryHover}
+          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primary}
+        >
           <Plus className="w-4 h-4" />
           <span>Add Category</span>
         </button>
@@ -32,22 +48,49 @@ const Categories: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sampleCategories.map((category) => (
-          <div key={category.id} className="bg-white rounded-xl p-6 shadow-sm border">
+          <div
+            key={category.id}
+            className="rounded-xl p-6 shadow-xl border transition-colors duration-200"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary
+            }}
+          >
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+              <div
+                className="w-12 h-12 rounded-lg flex items-center justify-center"
+                style={{ backgroundColor: colors.background.accent }}
+              >
                 <span className="text-2xl">{category.icon}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <button className="p-1 text-gray-500 hover:text-green-600">
+                <button
+                  className="p-1 transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = colors.status.success}
+                  onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                >
                   <Edit className="w-4 h-4" />
                 </button>
-                <button className="p-1 text-gray-500 hover:text-red-600">
+                <button
+                  className="p-1 transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = colors.status.error}
+                  onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-2">{category.name}</h3>
-            <p className="text-gray-500">{category.products} products</p>
+            <h3
+              className="font-semibold mb-2"
+              style={{ color: colors.text.primary }}
+            >
+              {category.name}
+            </h3>
+            <p style={{ color: colors.text.secondary }}>
+              {category.products} products
+            </p>
           </div>
         ))}
       </div>

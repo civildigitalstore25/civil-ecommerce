@@ -1,55 +1,62 @@
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
-  _id: Types.ObjectId;
   email: string;
   password?: string;
-  googleId?: string;
-  fullName?: string;
+  fullName: string;
   phoneNumber?: string;
-  role: 'user' | 'admin';
+  role: 'admin' | 'user';
+  googleId?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
 
-const userSchema: Schema = new Schema(
-  {
-    email: { 
-      type: String, 
-      required: true, 
-      unique: true,
-      lowercase: true,
-      trim: true
-    },
-    password: { 
-      type: String,
-      minlength: 6
-    },
-    googleId: { 
-      type: String 
-    },
-    fullName: { 
-      type: String,
-      trim: true
-    },
-    phoneNumber: { 
-      type: String,
-      trim: true
-    },
-    role: { 
-      type: String, 
-      enum: ['user', 'admin'], 
-      default: 'user' 
-    }
+const UserSchema = new Schema<IUser>({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    lowercase: true,
+    trim: true,
   },
-  { timestamps: true }
-);
+  password: {
+    type: String,
+    minlength: 6,
+  },
+  fullName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  phoneNumber: {
+    type: String,
+    trim: true,
+  },
+  role: {
+    type: String,
+    enum: ['admin', 'user'],
+    default: 'user',
+  },
+  googleId: {
+    type: String,
+    sparse: true,
+  },
+  resetPasswordToken: {
+    type: String,
+  },
+  resetPasswordExpires: {
+    type: Date,
+  },
+}, {
+  timestamps: true,
+});
 
-// Remove password from JSON output
-userSchema.methods.toJSON = function() {
-  const user = this.toObject();
-  delete user.password;
-  return user;
-};
+// Index for faster queries
+UserSchema.index({ email: 1 });
+UserSchema.index({ resetPasswordToken: 1 });
 
-export default mongoose.model<IUser>('User', userSchema);
+const User = mongoose.model<IUser>('User', UserSchema);
+
+export default User;

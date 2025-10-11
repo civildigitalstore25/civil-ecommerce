@@ -6,17 +6,40 @@ import {
     updateProduct,
     deleteProduct,
     getCategories,
-    getCompanies
+    getCompanies,
+    getBrands,
+    getProductsByName,
+    getProductsByCategory,
+    getProductsByCompany,
+    getProductsWithFilters,
+    getCategoriesWithCount,
+    getCompaniesWithCount
 } from '../controllers/productController';
+import { authenticate, requireAdmin } from '../middlewares/auth';
 
 const router = express.Router();
 
-router.post('/', createProduct);
+// Filter lists (MUST come before parameterized routes like /:id)
+router.get('/filters/categories', getCategories);
+router.get('/filters/companies', getCompanies);
+router.get('/filters/brands', getBrands);
+router.get('/filters/categories-count', getCategoriesWithCount);
+router.get('/filters/companies-count', getCompaniesWithCount);
+
+// Filtered product queries (MUST come before /:id route)
+router.get('/filter/name', getProductsByName);
+router.get('/filter/category/:category', getProductsByCategory);
+router.get('/filter/company/:company', getProductsByCompany);
+router.get('/filter/advanced', getProductsWithFilters);
+
+// CRUD operations (parameterized routes like /:id MUST come last)
+// Admin only routes - require authentication and admin role
+router.post('/', authenticate, requireAdmin, createProduct);
+router.put('/:id', authenticate, requireAdmin, updateProduct);
+router.delete('/:id', authenticate, requireAdmin, deleteProduct);
+
+// Public routes - no authentication required
 router.get('/', getProducts);
-router.get('/categories', getCategories);
-router.get('/companies', getCompanies);
 router.get('/:id', getProductById);
-router.put('/:id', updateProduct);
-router.delete('/:id', deleteProduct);
 
 export default router;

@@ -3,10 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useSignIn, useUserInvalidate } from "../../api/userQueries";
 import { saveAuth } from "../../utils/auth";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
+import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
+import logo from "../../assets/logo.png"
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -15,6 +18,7 @@ export default function SigninPage() {
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
   const signInMutation = useSignIn();
+  const { colors } = useAdminTheme();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,15 +66,42 @@ export default function SigninPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
+      style={{ backgroundColor: colors.background.primary }}
+    >
+      {/* Theme Toggle - positioned in top right */}
+      <div className="absolute top-4 right-4">
+        <AdminThemeToggle />
+      </div>
+
+      <div
+        className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
         {/* Header */}
-        <div className="py-6 px-6 bg-gradient-to-r from-[#EFF6FF] to-[#F9F5FF] rounded-t-2xl flex flex-col items-center">
-          <div className="bg-white p-3 rounded-2xl shadow-md">
-            <img src="/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+        <div
+          className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
+          style={{
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+          }}
+        >
+          <div
+            className="p-3 rounded-2xl shadow-md"
+            style={{ backgroundColor: colors.background.primary }}
+          >
+            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-4">Welcome Back</h1>
-          <p className="text-gray-800 mt-2 text-sm text-center">
+          <h1
+            className="text-2xl font-bold mt-4"
+            style={{ color: colors.text.primary }}
+          >
+            Welcome Back
+          </h1>
+          <p
+            className="mt-2 text-sm text-center"
+            style={{ color: colors.text.secondary }}
+          >
             Sign in to access your software licenses and downloads
           </p>
         </div>
@@ -78,7 +109,15 @@ export default function SigninPage() {
         {/* Body */}
         <div className="p-8">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm mb-4">
+            <div
+              className="px-4 py-3 rounded-lg text-sm mb-4"
+              style={{
+                backgroundColor: `${colors.status.error}20`,
+                borderColor: colors.status.error,
+                color: colors.status.error,
+                border: `1px solid ${colors.status.error}`
+              }}
+            >
               {error}
             </div>
           )}
@@ -94,9 +133,20 @@ export default function SigninPage() {
 
           {/* Divider */}
           <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="mx-4 text-gray-400 text-sm">Or continue with email</span>
-            <div className="flex-grow border-t border-gray-300"></div>
+            <div
+              className="flex-grow border-t"
+              style={{ borderColor: colors.border.primary }}
+            ></div>
+            <span
+              className="mx-4 text-sm"
+              style={{ color: colors.text.secondary }}
+            >
+              Or continue with email
+            </span>
+            <div
+              className="flex-grow border-t"
+              style={{ borderColor: colors.border.primary }}
+            ></div>
           </div>
 
           {/* Form */}
@@ -110,24 +160,57 @@ export default function SigninPage() {
               required
             />
 
-            {/* Password using reusable component */}
-            <PasswordInput
-              label="Password "
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-            />
+            <div className="space-y-2">
+              <PasswordInput
+                label="Password "
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                required
+              />
+
+              {/* Forgot Password Link */}
+              <div className="text-right">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm font-medium transition-colors duration-200"
+                  style={{
+                    color: colors.interactive.primary,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = colors.interactive.primaryHover;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = colors.interactive.primary;
+                  }}
+                >
+                  Forgot your password?
+                </Link>
+              </div>
+            </div>
 
             <FormButton type="submit" disabled={signInMutation.isPending} className="w-full">
               {signInMutation.isPending ? "Signing in..." : "Sign In"}
             </FormButton>
           </form>
 
-          <p className="mt-8 text-center text-sm text-gray-600">
-            Don’t have an account?{" "}
-            <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <p
+            className="mt-8 text-center text-sm"
+            style={{ color: colors.text.secondary }}
+          >
+            Don't have an account?{" "}
+            <Link
+              to="/signup"
+              className="font-medium transition-colors duration-200"
+              style={{ color: colors.interactive.primary }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = colors.interactive.primaryHover;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+            >
               Sign up
             </Link>
           </p>
