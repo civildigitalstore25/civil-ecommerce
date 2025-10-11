@@ -198,7 +198,7 @@ const CheckoutPage: React.FC = () => {
     }
 
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      // const token = localStorage.getItem('token') || localStorage.getItem('authToken');
       
       // If you have a coupon validation API, call it here
       // For now, using simple validation
