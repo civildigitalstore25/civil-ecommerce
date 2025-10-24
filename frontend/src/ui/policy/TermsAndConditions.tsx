@@ -309,7 +309,7 @@ const TermsAndConditions: React.FC = () => {
       {/* Footer Notice */}
       <div
         className="mt-12 text-center text-sm"
-        style={{ color: colors.text.muted }}
+        style={{ color: colors.text.secondary }}
       >
         Last updated: <strong>September 2025</strong> • Subject to change anytime
       </div>

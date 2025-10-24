@@ -238,7 +238,7 @@ export default function ReturnPolicy() {
             </span>
             . Your rights as a customer matter to us.
           </p>
-          <p className="text-sm mt-3" style={{ color: colors.text.muted }}>
+          <p className="text-sm mt-3" style={{ color: colors.text.secondary }}>
             Last updated: July 12, 2023
           </p>
         </motion.div>

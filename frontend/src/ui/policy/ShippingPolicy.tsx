@@ -32,7 +32,7 @@ const ShippingPolicy: React.FC = () => {
         >
           Shipping & Delivery Policy
         </h1>
-        <p className="mt-3 text-sm" style={{ color: colors.text.muted }}>
+        <p className="mt-3 text-sm" style={{ color: colors.text.secondary }}>
           Last updated: July 10, 2023
         </p>
         <p
@@ -259,7 +259,7 @@ const ShippingPolicy: React.FC = () => {
       {/* Footer Notice */}
       <div
         className="mt-12 text-center text-sm"
-        style={{ color: colors.text.muted }}
+        style={{ color: colors.text.secondary }}
       >
         This Shipping Policy is subject to change without prior notice.
       </div>
