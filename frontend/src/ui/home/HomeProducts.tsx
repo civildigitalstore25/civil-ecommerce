@@ -1,5 +1,5 @@
 import React from "react";
-import CategoryListing from "../../pages/CategoryListing";
+import FeaturedProducts from "../../components/FeaturedProducts";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const HomeProducts: React.FC = () => {
@@ -29,7 +29,7 @@ const HomeProducts: React.FC = () => {
       </div>
 
       {/* Product Grid */}
-      <CategoryListing limit={6} showCount={false} />
+      <FeaturedProducts limit={6} showCount={false} />
     </section>
   );
 };

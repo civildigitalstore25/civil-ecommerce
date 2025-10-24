@@ -7,7 +7,6 @@ import UserFilters from "./UserFilter";
 import UserTable from "./UserTable";
 import Pagination from "./Pagination";
 import AddUserModal from "./AddUserModal";
-// import FormButton from "../../../components/Button/FormButton";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const UserManagement: React.FC = () => {

@@ -5,6 +5,7 @@ import {
   checkStatus,
   getUserOrders,
   getOrderDetails,
+  deleteOrder,
   initiateRefund
 } from '../controllers/paymentController';
 import { authenticate} from '../middlewares/auth';
@@ -16,6 +17,7 @@ router.post('/create-order', authenticate, createOrder);
 router.get('/status/:merchantTransactionId', authenticate, checkStatus);
 router.get('/orders', authenticate, getUserOrders);
 router.get('/orders/:orderId', authenticate, getOrderDetails);
+router.delete('/orders/:orderId', authenticate, deleteOrder);
 router.post('/refund/:orderId', authenticate, initiateRefund);
 
 // Public route (for PhonePe callback)

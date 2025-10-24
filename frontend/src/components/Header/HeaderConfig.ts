@@ -8,6 +8,7 @@ export const headerConfig = {
     { label: "AutoDesk", href: "/autodesk" },
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },
+    { label: "Antivirus", href: "/antivirus" },
     { label: "Contact", href: "/contact" }
   ],
   contact: {

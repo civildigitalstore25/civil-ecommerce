@@ -1,316 +1,173 @@
-import React, { useState, useEffect } from 'react';
-import { Eye, X } from 'lucide-react';
-
-interface Banner {
-  id: string;
-  title: string;
-  description: string;
-  ctaButtonText: string;
-  startDate: string;
-  endDate: string;
-  position: string;
-  bannerType: string;
-  priority: number;
-  status: string;
-}
+import React, { useState, useEffect } from "react";
+import { X } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import FormInput from "../../components/Input/FormInput";
+import FormDateInput from "../../components/Input/FormDateInput";
+import type { Banner } from "../../types/Banner";
 
 interface BannerFormProps {
-  editingBanner?: Banner | null;
-  onSubmit: (bannerData: Partial<Banner>) => void;
-  onCancel: () => void;
+  banner?: Banner | null;
+  onClose: () => void;
+  onSubmit: (data: Banner) => void | Promise<void>;
 }
 
-const BannerForm: React.FC<BannerFormProps> = ({ editingBanner, onSubmit, onCancel }) => {
-  const [formData, setFormData] = useState<Partial<Banner>>({
-    title: '',
-    description: '',
-    ctaButtonText: 'Shop Now',
-    startDate: '',
-    endDate: '',
-    position: 'Home Page Only',
-    bannerType: 'Normal',
+const BannerForm: React.FC<BannerFormProps> = ({ banner, onClose, onSubmit }) => {
+  const { colors, theme } = useAdminTheme();
+  const isDark = theme === "dark";
+
+  const [formData, setFormData] = useState<Banner>({
+    title: "",
+    description: "",
+    ctaButtonText: "Shop Now",
+    ctaButtonLink: "",
+    startDate: "",
+    endDate: "",
+    position: "Home Page Only",
+    bannerType: "Normal",
     priority: 1,
-    status: 'Active'
+    status: "Active",
+    backgroundColor: "",
+    textColor: "",
   });
 
   useEffect(() => {
-    if (editingBanner) {
-      setFormData(editingBanner);
-    } else {
-      resetForm();
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = "auto"; };
+  }, []);
+
+  useEffect(() => {
+    if (banner) {
+      setFormData({
+        ...banner,
+        startDate: banner.startDate ? new Date(banner.startDate).toISOString().split("T")[0] : "",
+        endDate: banner.endDate ? new Date(banner.endDate).toISOString().split("T")[0] : "",
+      });
     }
-  }, [editingBanner]);
+  }, [banner]);
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      ctaButtonText: 'Shop Now',
-      startDate: '',
-      endDate: '',
-      position: 'Home Page Only',
-      bannerType: 'Normal',
-      priority: 1,
-      status: 'Active'
-    });
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!formData.title || !formData.startDate || !formData.endDate) {
-      alert('Please fill in all required fields (Title, Start Date, and End Date)');
+      alert("Please fill required fields!");
       return;
     }
-    
     onSubmit(formData);
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg">
-          <div className="flex items-center justify-between p-6 border-b border-gray-200">
-            <h1 className="text-3xl font-bold text-gray-900">
-              {editingBanner ? 'Edit Banner' : 'Create New Banner'}
-            </h1>
-            <button
-              onClick={onCancel}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
-            >
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Form Section */}
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">
-                    Banner Title <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title || ''}
-                    onChange={handleInputChange}
-                    placeholder="Enter banner title"
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description || ''}
-                    onChange={handleInputChange}
-                    placeholder="Enter banner description (optional)"
-                    rows={3}
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none resize-none transition-colors"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-gray-700">CTA Button Text</label>
-                  <input
-                    type="text"
-                    name="ctaButtonText"
-                    value={formData.ctaButtonText || ''}
-                    onChange={handleInputChange}
-                    placeholder="Shop Now"
-                    className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none transition-colors"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">
-                      Start Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="startDate"
-                      value={formData.startDate || ''}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">
-                      End Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      name="endDate"
-                      value={formData.endDate || ''}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Position</label>
-                    <select
-                      name="position"
-                      value={formData.position || ''}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    >
-                      <option value="Home Page Only">Home Page Only</option>
-                      <option value="Product Page">Product Page</option>
-                      <option value="Both">Both</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Banner Type</label>
-                    <select
-                      name="bannerType"
-                      value={formData.bannerType || ''}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    >
-                      <option value="Normal">Normal</option>
-                      <option value="Festival">Festival</option>
-                      <option value="Flash Sale">Flash Sale</option>
-                      <option value="Seasonal">Seasonal</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Priority (1-10)</label>
-                    <input
-                      type="number"
-                      name="priority"
-                      value={formData.priority || 1}
-                      onChange={handleInputChange}
-                      min="1"
-                      max="10"
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Status</label>
-                    <select
-                      name="status"
-                      value={formData.status || ''}
-                      onChange={handleInputChange}
-                      className="w-full bg-white border-2 border-gray-300 rounded-lg px-4 py-3 text-gray-900 focus:border-blue-500 focus:outline-none transition-colors"
-                    >
-                      <option value="Active">Active</option>
-                      <option value="Inactive">Inactive</option>
-                      <option value="Scheduled">Scheduled</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              {/* Preview Section */}
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                    <Eye size={20} />
-                    Banner Preview
-                  </h3>
-                  
-                  {/* Banner Preview Card */}
-                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white mb-6">
-                    <div className="space-y-4">
-                      <h4 className="text-xl font-bold">
-                        {formData.title || 'Banner Title'}
-                      </h4>
-                      {formData.description && (
-                        <p className="text-blue-100">
-                          {formData.description}
-                        </p>
-                      )}
-                      <div className="flex justify-start">
-                        <button className="bg-white text-blue-600 px-6 py-2 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                          {formData.ctaButtonText || 'Shop Now'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Details Preview */}
-                  <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                    <h4 className="font-semibold text-gray-700 mb-3">Banner Details:</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex">
-                        <span className="font-medium w-20">Title:</span>
-                        <span className="text-gray-600">{formData.title || 'Not specified'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Description:</span>
-                        <span className="text-gray-600 flex-1">{formData.description || 'Not specified'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">CTA:</span>
-                        <span className="text-gray-600">{formData.ctaButtonText || 'Shop Now'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Position:</span>
-                        <span className="text-gray-600">{formData.position || 'Home Page Only'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Type:</span>
-                        <span className="text-gray-600">{formData.bannerType || 'Normal'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Priority:</span>
-                        <span className="text-gray-600">{formData.priority || 1}/10</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Status:</span>
-                        <span className="text-gray-600">{formData.status || 'Active'}</span>
-                      </div>
-                      <div className="flex">
-                        <span className="font-medium w-20">Duration:</span>
-                        <span className="text-gray-600">
-                          {formData.startDate && formData.endDate 
-                            ? `${formData.startDate} to ${formData.endDate}` 
-                            : 'Not specified'
-                          }
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-4 pt-6 mt-8 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={onCancel}
-                className="px-6 py-3 bg-white text-gray-700 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmit}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-              >
-                {editingBanner ? 'Update Banner' : 'Create Banner'}
-              </button>
-            </div>
-          </div>
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4" style={{ color: colors.text.primary }}>
+      <div
+        className="w-full md:w-11/12 lg:w-5/6 max-h-[90vh] rounded-xl shadow-2xl overflow-auto my-auto"
+        style={{
+          backgroundColor: colors.background.primary,
+          color: colors.text.primary,
+          border: `2px solid ${isDark ? "#555" : "#FFD700"}`,
+          padding: "2rem",
+        }}
+      >
+        {/* Header */}
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold relative pb-2">
+            {banner ? "Edit Banner" : "Create Banner"}
+            <span className="absolute left-0 bottom-0 w-12 h-1 rounded" style={{ backgroundColor: "#FACC15" }}></span>
+          </h2>
+          <button type="button" onClick={onClose} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+            <X size={26} style={{ color: colors.text.primary }} />
+          </button>
         </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Title & CTA */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <FormInput
+              label="Title"
+              required
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter banner title"
+              className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-yellow-400 transition"
+              style={{ backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary }}
+            />
+            <FormInput
+              label="CTA Button Text"
+              name="ctaButtonText"
+              value={formData.ctaButtonText}
+              onChange={handleChange}
+              placeholder="Shop Now"
+              className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-yellow-400 transition"
+              style={{ backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary }}
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className="block font-medium mb-1" style={{ color: colors.text.primary }}>Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              rows={5}
+              className="w-full p-2 rounded transition-all duration-200 focus:outline-none"
+              style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary, borderWidth: '1px', borderStyle: 'solid' }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = colors.interactive.primary; e.currentTarget.style.boxShadow = `0 0 0 2px ${colors.interactive.primary}40`; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = colors.border.primary; e.currentTarget.style.boxShadow = 'none'; }}
+            />
+          </div>
+
+          {/* Dates */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <FormDateInput label="Start Date" name="startDate" value={formData.startDate} onChange={handleChange} required />
+            <FormDateInput label="End Date" name="endDate" value={formData.endDate} onChange={handleChange} required />
+          </div>
+
+          {/* Position & Banner Type */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block font-medium mb-1">Position</label>
+              <select name="position" value={formData.position} onChange={handleChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-yellow-400 transition" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}>
+                <option>Home Page Only</option>
+                <option>Product Page</option>
+                <option>Both</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-medium mb-1">Banner Type</label>
+              <select name="bannerType" value={formData.bannerType} onChange={handleChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-yellow-400 transition" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}>
+                <option>Normal</option>
+                <option>Festival</option>
+                <option>Flash Sale</option>
+                <option>Seasonal</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Priority & Status */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <FormInput label="Priority" type="number" name="priority" value={formData.priority} onChange={handleChange} min={1} max={10} className="border rounded-md px-3 py-2 focus:ring-2 focus:ring-yellow-400 transition" style={{ backgroundColor: colors.background.primary, color: colors.text.primary, borderColor: colors.border.primary }} />
+            <div>
+              <label className="block font-medium mb-1">Status</label>
+              <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md focus:ring-2 focus:ring-yellow-400 transition" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}>
+                <option>Active</option>
+                <option>Inactive</option>
+                <option>Scheduled</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-4 pt-6">
+            <button type="button" onClick={onClose} className="px-6 py-2 rounded-lg border hover:bg-gray-300 dark:hover:bg-gray-700 transition" style={{ backgroundColor: isDark ? "#374151" : "#E5E7EB", color: isDark ? "#F9FAFB" : "#111827" }}>Cancel</button>
+            <button type="submit" className="px-6 py-2 rounded-lg font-semibold transition" style={{ backgroundColor: "#FACC15", color: "#111827" }}>{banner ? "Update" : "Create"}</button>
+          </div>
+        </form>
       </div>
     </div>
   );

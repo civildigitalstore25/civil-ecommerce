@@ -30,6 +30,11 @@ export interface AddToCartRequest {
   productId: string;
   licenseType: '1year' | '3year' | 'lifetime';
   quantity?: number;
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
 }
 
 export const cartApi = {

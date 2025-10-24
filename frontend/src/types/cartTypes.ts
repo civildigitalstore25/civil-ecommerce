@@ -5,6 +5,12 @@ export interface CartItem {
   quantity: number;
   price: number;
   totalPrice: number;
+  // Optional subscription plan details
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
 }
 
 export interface Product {
@@ -44,7 +50,7 @@ export interface CartState {
   error: string | null;
 }
 
-export type CartAction = 
+export type CartAction =
   | { type: 'ADD_ITEM'; payload: CartItem }
   | { type: 'REMOVE_ITEM'; payload: string }
   | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }

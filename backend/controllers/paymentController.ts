@@ -393,6 +393,64 @@ export const getOrderDetails = async (req: Request, res: Response): Promise<void
 };
 
 /**
+ * Delete order
+ */
+export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+    const user = (req as any).user as IUser;
+    const userId = user?._id?.toString();
+
+    if (!userId) {
+      res.status(401).json({ success: false, message: 'User not authenticated' });
+      return;
+    }
+
+    // Validate orderId format
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      res.status(400).json({ success: false, message: 'Invalid order ID format' });
+      return;
+    }
+
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) {
+      res.status(404).json({ success: false, message: 'Order not found' });
+      return;
+    }
+
+    // Only allow deletion of orders that are not yet paid or are cancelled
+    if (order.paymentStatus === 'PAID' && order.orderStatus !== 'CANCELLED') {
+      res.status(400).json({ 
+        success: false, 
+        message: 'Cannot delete paid orders. Please contact support for assistance.' 
+      });
+      return;
+    }
+
+    // Delete the order
+    await Order.findByIdAndDelete(orderId);
+    
+    console.log('✅ Order deleted:', order.orderNumber);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully',
+      data: {
+        orderId: order._id,
+        orderNumber: order.orderNumber
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Delete order error:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to delete order',
+      error: error.message 
+    });
+  }
+};
+
+/**
  * Initiate refund
  */
 export const initiateRefund = async (req: Request, res: Response): Promise<void> => {

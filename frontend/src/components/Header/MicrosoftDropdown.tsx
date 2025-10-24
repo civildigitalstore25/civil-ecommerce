@@ -25,105 +25,25 @@ interface MicrosoftDropdownProps {
   buttonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
+// Real Microsoft categories from brand-category structure
 const microsoftCategories: MicrosoftCategory[] = [
   {
-    name: "Office & Productivity",
+    name: "Productivity & Collaboration",
     products: [
-      {
-        name: "Microsoft 365",
-        href: "/microsoft/microsoft-365",
-        topProducts: [
-          { name: "Microsoft 365 Business", href: "/microsoft/m365-business" },
-          { name: "Microsoft 365 Personal", href: "/microsoft/m365-personal" },
-          { name: "Microsoft 365 Family", href: "/microsoft/m365-family" },
-          { name: "Microsoft 365 Apps", href: "/microsoft/m365-apps" },
-        ],
-      },
-      {
-        name: "Office Professional",
-        href: "/microsoft/office-professional",
-        topProducts: [
-          { name: "Office 2021 Professional Plus", href: "/microsoft/office-2021-pro" },
-          { name: "Office 2019 Professional Plus", href: "/microsoft/office-2019-pro" },
-        ],
-      },
-      { name: "Outlook", href: "/microsoft/outlook" },
-      { name: "OneNote", href: "/microsoft/onenote" },
-      { name: "Publisher", href: "/microsoft/publisher" },
+      { name: "Microsoft 365", href: "/category?brand=microsoft&category=microsoft-365" },
+      { name: "Microsoft Professional", href: "/category?brand=microsoft&category=microsoft-professional" },
     ],
   },
   {
-    name: "Operating Systems",
+    name: "Project Management",
     products: [
-      {
-        name: "Windows 11",
-        href: "/microsoft/windows-11",
-        topProducts: [
-          { name: "Windows 11 Home", href: "/microsoft/windows-11-home" },
-          { name: "Windows 11 Pro", href: "/microsoft/windows-11-pro" },
-          { name: "Windows 11 Enterprise", href: "/microsoft/windows-11-enterprise" },
-        ],
-      },
-      {
-        name: "Windows 10",
-        href: "/microsoft/windows-10",
-        topProducts: [
-          { name: "Windows 10 Home", href: "/microsoft/windows-10-home" },
-          { name: "Windows 10 Pro", href: "/microsoft/windows-10-pro" },
-          { name: "Windows 10 Enterprise", href: "/microsoft/windows-10-enterprise" },
-        ],
-      },
-      { name: "Windows Server 2022", href: "/microsoft/windows-server-2022" },
+      { name: "Microsoft Projects", href: "/category?brand=microsoft&category=microsoft-projects" },
     ],
   },
   {
-    name: "Development & IT",
+    name: "Server & Enterprise",
     products: [
-      {
-        name: "Visual Studio",
-        href: "/microsoft/visual-studio",
-        topProducts: [
-          { name: "Visual Studio Professional", href: "/microsoft/visual-studio-professional" },
-          { name: "Visual Studio Enterprise", href: "/microsoft/visual-studio-enterprise" },
-          { name: "Visual Studio Code", href: "/microsoft/visual-studio-code" },
-        ],
-      },
-      {
-        name: "SQL Server",
-        href: "/microsoft/sql-server",
-        topProducts: [
-          { name: "SQL Server 2022", href: "/microsoft/sql-server-2022" },
-          { name: "SQL Server 2019", href: "/microsoft/sql-server-2019" },
-          { name: "SQL Server Management Studio", href: "/microsoft/sql-server-ssms" },
-        ],
-      },
-      { name: "Power BI", href: "/microsoft/power-bi" },
-      { name: "Azure DevOps", href: "/microsoft/azure-devops" },
-    ],
-  },
-  {
-    name: "Business & Enterprise",
-    products: [
-      {
-        name: "Microsoft Teams",
-        href: "/microsoft/teams",
-        topProducts: [
-          { name: "Teams Essentials", href: "/microsoft/teams-essentials" },
-          { name: "Teams Premium", href: "/microsoft/teams-premium" },
-        ],
-      },
-      {
-        name: "Dynamics 365",
-        href: "/microsoft/dynamics-365",
-        topProducts: [
-          { name: "Dynamics 365 Sales", href: "/microsoft/dynamics-sales" },
-          { name: "Dynamics 365 Business Central", href: "/microsoft/dynamics-business-central" },
-          { name: "Dynamics 365 Customer Service", href: "/microsoft/dynamics-customer-service" },
-        ],
-      },
-      { name: "Azure", href: "/microsoft/azure" },
-      { name: "SharePoint", href: "/microsoft/sharepoint" },
-      { name: "Visio Professional", href: "/microsoft/visio-professional" },
+      { name: "Server", href: "/category?brand=microsoft&category=server" },
     ],
   },
 ];

@@ -6,24 +6,75 @@ import Swal from "sweetalert2";
 import { Plus, X, Save, HelpCircle } from "lucide-react";
 import { useAdminTheme } from '../../../contexts/AdminThemeContext';
 
-const categories = [
-    { value: "design-tools", label: "Design Tools" },
-    { value: "cad-software", label: "CAD Software" },
-    { value: "office-suite", label: "Office Suite" },
-    { value: "security-tools", label: "Security Tools" },
-    { value: "creative-software", label: "Creative Software" },
-    { value: "productivity-tools", label: "Productivity Tools" },
-    { value: "development-tools", label: "Development Tools" },
-];
-
 const brands = [
     { value: "autodesk", label: "Autodesk" },
-    { value: "adobe", label: "Adobe" },
     { value: "microsoft", label: "Microsoft" },
-    { value: "jetbrains", label: "JetBrains" },
-    { value: "corel", label: "Corel" },
-    { value: "vmware", label: "VMware" },
+    { value: "adobe", label: "Adobe" },
+    { value: "coreldraw", label: "Coreldraw" },
+    { value: "antivirus", label: "Antivirus" },
+    { value: "structural-softwares", label: "Structural Softwares" },
+    { value: "architectural-softwares", label: "Architectural Softwares" },
+    { value: "ebook", label: "Ebook" },
 ];
+
+const brandCategories: Record<string, { value: string; label: string }[]> = {
+    "autodesk": [
+        { value: "autocad", label: "AutoCAD" },
+        { value: "3ds-max", label: "3ds MAX" },
+        { value: "revit", label: "Revit" },
+        { value: "maya", label: "Maya" },
+        { value: "fusion", label: "Fusion" },
+        { value: "navisworks-manage", label: "Navisworks Manage" },
+        { value: "inventor-professional", label: "Inventor Professional" },
+        { value: "autocad-lt", label: "AutoCAD LT" },
+        { value: "aec-collection", label: "AEC Collection" },
+        { value: "civil-3d", label: "Civil 3D" },
+        { value: "map-3d", label: "Map 3D" },
+        { value: "autocad-mechanical", label: "AutoCAD Mechanical" },
+        { value: "autocad-electrical", label: "AutoCAD Electrical" },
+        { value: "autocad-mep", label: "AutoCAD MEP" },
+    ],
+    "microsoft": [
+        { value: "microsoft-365", label: "Microsoft 365" },
+        { value: "microsoft-professional", label: "Microsoft Professional" },
+        { value: "microsoft-projects", label: "Microsoft Projects" },
+        { value: "server", label: "Server" },
+    ],
+    "adobe": [
+        { value: "adobe-acrobat", label: "Adobe Acrobat" },
+        { value: "photoshop", label: "Photoshop" },
+        { value: "lightroom", label: "Lightroom" },
+        { value: "after-effect", label: "After Effect" },
+        { value: "premier-pro", label: "Premier Pro" },
+        { value: "illustrator", label: "Illustrator" },
+        { value: "adobe-creative-cloud", label: "Adobe Creative Cloud" },
+    ],
+    "coreldraw": [
+        { value: "coreldraw-graphics-suite", label: "Coreldraw Graphics Suite" },
+        { value: "coreldraw-technical-suite", label: "Coreldraw Technical Suite" },
+    ],
+    "antivirus": [
+        { value: "k7-security", label: "K7 Security" },
+        { value: "quick-heal", label: "Quick Heal" },
+        { value: "hyper-say", label: "Hyper Say" },
+        { value: "norton", label: "Norton" },
+        { value: "mcafee", label: "McAfee" },
+        { value: "eset", label: "ESET" },
+    ],
+    "structural-softwares": [
+        { value: "e-tab", label: "E-Tab" },
+        { value: "safe", label: "Safe" },
+        { value: "sap-2000", label: "Sap 2000" },
+        { value: "tekla", label: "Tekla" },
+    ],
+    "architectural-softwares": [
+        { value: "lumion", label: "Lumion" },
+        { value: "twin-motion", label: "Twin Motion" },
+        { value: "d5-render", label: "D5 Render" },
+        { value: "archi-cad", label: "Archi CAD" },
+    ],
+    "ebook": [],
+};
 
 interface SubscriptionDuration {
     duration: string;
@@ -52,7 +103,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         name: "",
         version: "",
         shortDescription: "",
-        category: categories[0].value,
+        category: "",
         brand: brands[0].value,
         subscriptionDurations: [{ duration: "1 Year", price: "" }] as SubscriptionDuration[],
         subscriptions: [{ duration: "Monthly", price: "" }] as SubscriptionDuration[],
@@ -80,12 +131,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             if (product) {
                 // Editing existing product - map all fields properly
                 console.log('Loading product data:', product);
+                const productBrand = product.brand || product.company || brands[0].value;
+                const availableCategories = brandCategories[productBrand] || [];
                 setNewProduct({
                     name: product.name || "",
                     version: product.version || "",
                     shortDescription: product.shortDescription || "",
-                    category: product.category || categories[0].value,
-                    brand: product.brand || product.company || brands[0].value,
+                    category: product.category || (availableCategories.length > 0 ? availableCategories[0].value : ""),
+                    brand: productBrand,
                     subscriptionDurations: product.subscriptionDurations && product.subscriptionDurations.length > 0
                         ? product.subscriptionDurations.map(sub => ({
                             duration: sub.duration,
@@ -125,12 +178,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 });
             } else {
                 // Reset for new product
+                const defaultBrand = brands[0].value;
+                const availableCategories = brandCategories[defaultBrand] || [];
                 setNewProduct({
                     name: "",
                     version: "",
                     shortDescription: "",
-                    category: categories[0].value,
-                    brand: brands[0].value,
+                    category: availableCategories.length > 0 ? availableCategories[0].value : "",
+                    brand: defaultBrand,
                     subscriptionDurations: [{ duration: "1 Year", price: "", priceINR: "", priceUSD: "" }],
                     subscriptions: [{ duration: "Monthly", price: "", priceINR: "", priceUSD: "" }],
                     hasLifetime: false,
@@ -160,6 +215,16 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     // Helper functions
     const handleInputChange = (field: string, value: string) => {
         setNewProduct(prev => ({ ...prev, [field]: value }));
+    };
+
+    // Handle brand change and reset category
+    const handleBrandChange = (brandValue: string) => {
+        const availableCategories = brandCategories[brandValue] || [];
+        setNewProduct(prev => ({
+            ...prev,
+            brand: brandValue,
+            category: availableCategories.length > 0 ? availableCategories[0].value : ""
+        }));
     };
 
     const updateSubscriptionDuration = (index: number, field: 'duration' | 'price' | 'priceINR' | 'priceUSD', value: string) => {
@@ -421,6 +486,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 Swal.fire({
                     title: 'Validation Error',
                     text: 'Product Description is required',
+                    icon: 'error'
+                });
+                return;
+            }
+
+            if (!productData.brand || productData.brand.trim() === '') {
+                Swal.fire({
+                    title: 'Validation Error',
+                    text: 'Product Brand is required',
                     icon: 'error'
                 });
                 return;
@@ -806,7 +880,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         </div>
                     </div>
 
-                    {/* Category & Brand */}
+                    {/* Brand & Category */}
                     <div className="space-y-6">
                         <h2
                             className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
@@ -815,7 +889,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                 borderBottomColor: colors.border.primary
                             }}
                         >
-                            Category & Brand
+                            Brand & Category
                         </h2>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -824,7 +898,38 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     className="block text-sm font-medium"
                                     style={{ color: colors.text.secondary }}
                                 >
-                                    Category
+                                    Brand <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={newProduct.brand}
+                                    onChange={(e) => handleBrandChange(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                                    style={{
+                                        backgroundColor: colors.background.primary,
+                                        borderColor: colors.border.primary,
+                                        color: colors.text.primary
+                                    }}
+                                    onFocus={(e) => {
+                                        e.target.style.borderColor = colors.interactive.primary;
+                                    }}
+                                    onBlur={(e) => {
+                                        e.target.style.borderColor = colors.border.primary;
+                                    }}
+                                    required
+                                >
+                                    {brands.map((brand) => (
+                                        <option key={brand.value} value={brand.value}>
+                                            {brand.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <label
+                                    className="block text-sm font-medium"
+                                    style={{ color: colors.text.secondary }}
+                                >
+                                    Category <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     value={newProduct.category}
@@ -841,42 +946,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                                     onBlur={(e) => {
                                         e.target.style.borderColor = colors.border.primary;
                                     }}
+                                    required
+                                    disabled={brandCategories[newProduct.brand]?.length === 0}
                                 >
-                                    {categories.map((category) => (
-                                        <option key={category.value} value={category.value}>
-                                            {category.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div className="space-y-2">
-                                <label
-                                    className="block text-sm font-medium"
-                                    style={{ color: colors.text.secondary }}
-                                >
-                                    Brand
-                                </label>
-                                <select
-                                    value={newProduct.brand}
-                                    onChange={(e) => handleInputChange('brand', e.target.value)}
-                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                                    style={{
-                                        backgroundColor: colors.background.primary,
-                                        borderColor: colors.border.primary,
-                                        color: colors.text.primary
-                                    }}
-                                    onFocus={(e) => {
-                                        e.target.style.borderColor = colors.interactive.primary;
-                                    }}
-                                    onBlur={(e) => {
-                                        e.target.style.borderColor = colors.border.primary;
-                                    }}
-                                >
-                                    {brands.map((brand) => (
-                                        <option key={brand.value} value={brand.value}>
-                                            {brand.label}
-                                        </option>
-                                    ))}
+                                    {brandCategories[newProduct.brand]?.length === 0 ? (
+                                        <option value="">No categories available</option>
+                                    ) : (
+                                        brandCategories[newProduct.brand]?.map((category) => (
+                                            <option key={category.value} value={category.value}>
+                                                {category.label}
+                                            </option>
+                                        ))
+                                    )}
                                 </select>
                             </div>
                         </div>

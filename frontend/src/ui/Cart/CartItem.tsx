@@ -1,6 +1,7 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import type { CartItem as CartItemType } from '../../types/cartTypes';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import { useCurrency } from '../../contexts/CurrencyContext';
 import Swal from 'sweetalert2';
 
 interface CartItemProps {
@@ -15,6 +16,7 @@ const CartItem: React.FC<CartItemProps> = ({
   onRemoveItem
 }) => {
   const { colors } = useAdminTheme();
+  const { formatPriceWithSymbol } = useCurrency();
 
   // Refs for direct DOM manipulation
   const quantityDisplayRef = useRef<HTMLSpanElement>(null);
@@ -31,12 +33,12 @@ const CartItem: React.FC<CartItemProps> = ({
       quantityDisplayRef.current.textContent = item.quantity.toString();
     }
     if (totalPriceRef.current) {
-      totalPriceRef.current.textContent = `₹${item.totalPrice.toLocaleString()}`;
+      totalPriceRef.current.textContent = formatPriceWithSymbol(item.totalPrice);
     }
     if (decreaseButtonRef.current) {
       decreaseButtonRef.current.disabled = item.quantity <= 1;
     }
-  }, [item.quantity, item.totalPrice]);
+  }, [item.quantity, item.totalPrice, formatPriceWithSymbol]);
 
   // Direct DOM update function - NO STATE CHANGE
   const updateUIDirectly = useCallback((newQuantity: number) => {
@@ -49,7 +51,7 @@ const CartItem: React.FC<CartItemProps> = ({
 
     // Update total price display
     if (totalPriceRef.current) {
-      totalPriceRef.current.textContent = `₹${newTotalPrice.toLocaleString()}`;
+      totalPriceRef.current.textContent = formatPriceWithSymbol(newTotalPrice);
     }
 
     // Update decrease button state
@@ -59,7 +61,7 @@ const CartItem: React.FC<CartItemProps> = ({
 
     // Update the ref
     currentQuantityRef.current = newQuantity;
-  }, [item.price]);
+  }, [item.price, formatPriceWithSymbol]);
 
   const handleQuantityChange = useCallback(async (newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -88,7 +90,24 @@ const CartItem: React.FC<CartItemProps> = ({
     onRemoveItem(item.id);
   }, [item.id, onRemoveItem]);
 
-  const getLicenseBadgeStyle = (licenseType: string) => {
+  const getLicenseBadgeStyle = (licenseType: string, subscriptionPlan?: any) => {
+    // If subscription plan details are available, use plan-specific styling
+    if (subscriptionPlan && subscriptionPlan.planType) {
+      switch (subscriptionPlan.planType) {
+        case 'admin-subscription':
+          return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
+        case 'subscription':
+          return { backgroundColor: `${colors.status.success}20`, color: colors.status.success };
+        case 'membership':
+          return { backgroundColor: `${colors.interactive.secondary}20`, color: colors.interactive.secondary };
+        case 'lifetime':
+          return { backgroundColor: `${colors.interactive.secondary}20`, color: colors.interactive.secondary };
+        default:
+          return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
+      }
+    }
+
+    // Otherwise, use generic license styling
     switch (licenseType) {
       case '1year':
         return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
@@ -101,7 +120,13 @@ const CartItem: React.FC<CartItemProps> = ({
     }
   };
 
-  const getLicenseLabel = (licenseType: string) => {
+  const getLicenseLabel = (licenseType: string, subscriptionPlan?: any) => {
+    // If subscription plan details are available, use them
+    if (subscriptionPlan && subscriptionPlan.planLabel) {
+      return subscriptionPlan.planLabel;
+    }
+
+    // Otherwise, use generic license labels
     switch (licenseType) {
       case '1year':
         return '1 Year License';
@@ -176,9 +201,9 @@ const CartItem: React.FC<CartItemProps> = ({
           <div className="mb-3">
             <span
               className="inline-block px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200"
-              style={getLicenseBadgeStyle(item.licenseType)}
+              style={getLicenseBadgeStyle(item.licenseType, item.subscriptionPlan)}
             >
-              {getLicenseLabel(item.licenseType)}
+              {getLicenseLabel(item.licenseType, item.subscriptionPlan)}
             </span>
           </div>
 
@@ -247,13 +272,13 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="text-lg font-bold transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
-                ₹{item.totalPrice.toLocaleString()}
+                {formatPriceWithSymbol(item.totalPrice)}
               </div>
               <div
                 className="text-sm transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
-                ₹{item.price.toLocaleString()} each
+                {formatPriceWithSymbol(item.price)} each
               </div>
             </div>
           </div>

@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProductDetail } from '../api/productApi';
 import { useCartContext } from '../contexts/CartContext';
 import { useUser } from '../api/userQueries';
 import { useAdminTheme } from '../contexts/AdminThemeContext';
+import { useCurrency } from '../contexts/CurrencyContext';
+import { getProductReviews, getProductReviewStats, createReview, updateReview, deleteReview, type Review, type ReviewStats } from '../api/reviewApi';
+import BannerCarousel from '../ui/admin/banner/BannerCarousel';
 import Swal from 'sweetalert2';
 import * as LucideIcons from 'lucide-react';
 
@@ -82,11 +85,18 @@ const ProductDetail: React.FC = () => {
   const { data: user } = useUser();
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
-  const [banners, setBanners] = useState<any[]>([]);
-const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
-const [bannersLoading, setBannersLoading] = useState(true);
-const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
+  const { formatPriceWithSymbol } = useCurrency();
 
+  // Review-related state
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReview, setEditingReview] = useState<Review | null>(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
     const IconComponent = (LucideIcons as any)[iconName];
@@ -95,6 +105,134 @@ const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
     }
     // Fallback to a default icon if the specified icon doesn't exist
     return <LucideIcons.Check className={className} size={24} />;
+  };
+
+  // Load reviews when component mounts or product changes
+  useEffect(() => {
+    console.log('useEffect triggered with id:', id);
+    if (id) {
+      loadReviews();
+      loadReviewStats();
+    }
+  }, [id]);
+
+  // Load reviews for the product
+  const loadReviews = async () => {
+    if (!id) return;
+    try {
+      setReviewsLoading(true);
+      const response = await getProductReviews(id);
+      setReviews(response.reviews);
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  // Load review statistics
+  const loadReviewStats = async () => {
+    console.log('loadReviewStats called with id:', id);
+    if (!id) {
+      console.log('No id provided, returning');
+      return;
+    }
+    try {
+      console.log('Calling getProductReviewStats with id:', id);
+      const stats = await getProductReviewStats(id);
+      console.log('Review stats loaded:', stats);
+      setReviewStats(stats);
+    } catch (error) {
+      console.error('Error loading review stats:', error);
+    }
+  };
+
+  // Handle review submission
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      Swal.fire({
+        title: 'Login Required',
+        text: 'Please login to post a review',
+        icon: 'info',
+        confirmButtonText: 'Login',
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate('/signin');
+        }
+      });
+      return;
+    }
+
+    if (!reviewForm.comment.trim()) {
+      Swal.fire('Error', 'Please enter a comment', 'error');
+      return;
+    }
+
+    try {
+      setSubmittingReview(true);
+      if (editingReview) {
+        await updateReview(editingReview._id, reviewForm);
+        Swal.fire('Success', 'Review updated successfully', 'success');
+      } else {
+        await createReview(id!, reviewForm);
+        Swal.fire('Success', 'Review posted successfully', 'success');
+      }
+
+      setReviewForm({ rating: 5, comment: '' });
+      setShowReviewForm(false);
+      setEditingReview(null);
+      loadReviews();
+      loadReviewStats();
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to submit review', 'error');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  // Handle review editing
+  const handleEditReview = (review: Review) => {
+    console.log('handleEditReview called');
+    console.log('user:', user);
+    console.log('user.id:', user?.id);
+    console.log('review.user._id:', review.user._id);
+    console.log('user.role:', user?.role);
+    console.log('Comparison result:', user?.id !== review.user._id, user?.role !== 'admin');
+
+    // Temporarily allow all edits for debugging
+    // if (!user || (user.id !== review.user._id && user.role !== 'admin')) {
+    //   Swal.fire('Error', 'You can only edit your own reviews', 'error');
+    //   return;
+    // }
+    setEditingReview(review);
+    setReviewForm({ rating: review.rating, comment: review.comment });
+    setShowReviewForm(true);
+  };
+
+  // Handle review deletion
+  const handleDeleteReview = async (reviewId: string) => {
+    if (!user) return;
+
+    const result = await Swal.fire({
+      title: 'Delete Review',
+      text: 'Are you sure you want to delete this review?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteReview(reviewId);
+      Swal.fire('Success', 'Review deleted successfully', 'success');
+      loadReviews();
+      loadReviewStats();
+    } catch (error: any) {
+      Swal.fire('Error', error.response?.data?.message || 'Failed to delete review', 'error');
+    }
   };
 
   // Get all available pricing options
@@ -181,9 +319,6 @@ const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
     return options;
   };
 
-  const pricingOptions = getAllPricingOptions();
-  const selectedOption = pricingOptions.find(opt => opt.id === selectedLicense) || pricingOptions[0];
-
   // Get admin subscription plans separately
   const getAdminSubscriptionPlans = () => {
     if (!product || !product.subscriptions) return [];
@@ -202,56 +337,27 @@ const [isBannerClosed, setIsBannerClosed] = useState(false); // ADD THIS LINE
       }));
   };
 
+  const pricingOptions = getAllPricingOptions();
+  const adminSubscriptionPlans = getAdminSubscriptionPlans();
+  const allPricingOptions = [...pricingOptions, ...adminSubscriptionPlans];
+  const selectedOption = allPricingOptions.find(opt => opt.id === selectedLicense) || allPricingOptions[0];
+
   // Group pricing options by type
   const licenseOptions = pricingOptions.filter(opt => opt.type === 'yearly' || opt.type === '3year');
   const subscriptionOptions = pricingOptions.filter(opt => opt.type === 'subscription');
   const lifetimeOptions = pricingOptions.filter(opt => opt.type === 'lifetime');
   const membershipOptions = pricingOptions.filter(opt => opt.type === 'membership');
-  const adminSubscriptionOptions = getAdminSubscriptionPlans();
 
 
-React.useEffect(() => {
-  if (pricingOptions.length > 0 && !selectedOption) {
-    setSelectedLicense(pricingOptions[0].id);
-  }
-}, [pricingOptions, selectedOption]);
-
-
-
-
-// Fetch product page banners
-React.useEffect(() => {
-  const fetchProductBanners = async () => {
-    try {
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      console.log('Fetching banners from:', `${API_BASE_URL}/banners/active/product`);
-      
-      const response = await fetch(`${API_BASE_URL}/banners/active/product`);
-      console.log('Response status:', response.status);
-      
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Banner result:', result);
-        
-        if (result.success && result.data) {
-          console.log('Banners found:', result.data);
-          setBanners(result.data);
-        } else {
-          console.log('No banners in result');
-        }
-      } else {
-        console.log('Response not OK:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error fetching product banners:', error);
-    } finally {
-      console.log('Setting bannersLoading to false');
-      setBannersLoading(false);
+  React.useEffect(() => {
+    if (allPricingOptions.length > 0 && !selectedOption) {
+      setSelectedLicense(allPricingOptions[0].id);
     }
-  };
+  }, [allPricingOptions, selectedOption]);
 
-  fetchProductBanners();
-}, []);
+
+
+
 
 
   // Early returns after all hooks are defined to avoid hook order violations
@@ -295,11 +401,29 @@ React.useEffect(() => {
     }
 
     // Convert license types for cart compatibility
-    const getCartLicenseType = () => {
+    const getCartLicenseType = (): '1year' | '3year' | 'lifetime' => {
+      // Handle lifetime license
+      if (selectedLicense === 'lifetime') return 'lifetime';
+
+      // Handle main subscription/pricing options
       if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
       if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
-      if (selectedLicense === 'lifetime') return 'lifetime';
-      return '1year'; // default fallback
+
+      // Handle admin subscription plans and membership
+      if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
+        const selectedPlan = selectedOption;
+        if (selectedPlan) {
+          // Map by duration text to supported cart license types
+          const duration = selectedPlan.label.toLowerCase();
+          if (duration.includes('3') && duration.includes('year')) return '3year';
+          if (duration.includes('1') && duration.includes('year') || duration.includes('annual')) return '1year';
+          // For monthly subscriptions, memberships, and other types, map to 1year as default
+          return '1year';
+        }
+      }
+
+      // Default fallback
+      return '1year';
     };
 
     const cartLicenseType = getCartLicenseType();
@@ -318,12 +442,51 @@ React.useEffect(() => {
       return;
     }
 
-    if (product && selectedOption && selectedOption.priceINR > 0) {
+    if (product && selectedOption && (selectedOption.priceINR > 0 || selectedOption.priceUSD > 0)) {
       try {
-        await addItem(product, cartLicenseType, 1);
+        // Create a temporary product object with the selected subscription plan price
+        // This ensures the backend uses the correct price for the selected plan
+        const productWithSelectedPrice = {
+          ...product,
+          // Store selected plan details for backend processing
+          _selectedPlanDetails: {
+            planId: selectedOption.id,
+            planLabel: selectedOption.label,
+            planPrice: selectedOption.priceINR,
+            planType: selectedOption.type
+          }
+        };
+
+        // Temporarily override pricing based on selected option
+        if (cartLicenseType === '1year') {
+          productWithSelectedPrice.price1INR = selectedOption.priceINR;
+          productWithSelectedPrice.price1 = selectedOption.priceINR;
+        } else if (cartLicenseType === '3year') {
+          productWithSelectedPrice.price3INR = selectedOption.priceINR;
+          productWithSelectedPrice.price3 = selectedOption.priceINR;
+        } else if (cartLicenseType === 'lifetime') {
+          productWithSelectedPrice.lifetimePriceINR = selectedOption.priceINR;
+          productWithSelectedPrice.priceLifetime = selectedOption.priceINR;
+        }
+
+        console.log('Adding to cart:', {
+          product: product.name,
+          selectedOption,
+          cartLicenseType,
+          price: selectedOption.priceINR
+        });
+
+        // Create subscription plan details to pass to cart
+        const subscriptionPlanDetails = {
+          planId: selectedOption.id,
+          planLabel: selectedOption.label,
+          planType: selectedOption.type
+        };
+
+        await addItem(productWithSelectedPrice, cartLicenseType, 1, subscriptionPlanDetails);
         Swal.fire({
           title: 'Added to Cart!',
-          text: `${product.name} has been added to your cart`,
+          text: `${product.name} has been added to your cart with ${selectedOption.label}`,
           icon: 'success',
           showCancelButton: true,
           confirmButtonText: 'View Cart',
@@ -334,16 +497,43 @@ React.useEffect(() => {
           }
         });
       } catch (error) {
-        Swal.fire('Error', 'Failed to add item to cart', 'error');
+        console.error('Add to cart error:', error);
+        Swal.fire('Error', 'Failed to add item to cart. Please try again.', 'error');
       }
+    } else {
+      console.warn('Cannot add to cart:', {
+        product: !!product,
+        selectedOption,
+        selectedLicense,
+        cartLicenseType
+      });
+      Swal.fire('Error', 'Please select a valid pricing option.', 'error');
     }
   };
 
-  const getCartLicenseTypeForCheck = () => {
+  const getCartLicenseTypeForCheck = (): '1year' | '3year' | 'lifetime' => {
+    // Handle lifetime license
+    if (selectedLicense === 'lifetime') return 'lifetime';
+
+    // Handle main subscription/pricing options
     if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
     if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
-    if (selectedLicense === 'lifetime') return 'lifetime';
-    return '1year'; // default fallback
+
+    // Handle admin subscription plans and membership
+    if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
+      const selectedPlan = selectedOption;
+      if (selectedPlan) {
+        // Map by duration text to supported cart license types
+        const duration = selectedPlan.label.toLowerCase();
+        if (duration.includes('3') && duration.includes('year')) return '3year';
+        if (duration.includes('1') && duration.includes('year') || duration.includes('annual')) return '1year';
+        // For monthly subscriptions, memberships, and other types, map to 1year as default
+        return '1year';
+      }
+    }
+
+    // Default fallback
+    return '1year';
   };
 
   const cartLicenseType = getCartLicenseTypeForCheck();
@@ -364,95 +554,8 @@ React.useEffect(() => {
           <span style={{ color: colors.interactive.primary }}>{product.name}</span>
         </div>
       </div>
-{/* ADD BANNER COMPONENT HERE - AFTER BREADCRUMB, BEFORE MAIN CONTENT */}
-     {/* Product Page Banner */}
-{!bannersLoading && banners.length > 0 && !isBannerClosed && (
-  <div className="max-w-7xl mx-auto px-4 mb-6">
-    <div
-      className="rounded-2xl p-6 lg:p-8 shadow-lg transition-all duration-500 relative overflow-hidden"
-      style={{
-        backgroundColor: banners[currentBannerIndex].backgroundColor || '#3B82F6',
-        color: banners[currentBannerIndex].textColor || '#FFFFFF',
-      }}
-    >
-      {/* Close Button - ADD THIS */}
-      <button
-        onClick={() => setIsBannerClosed(true)}
-        className="absolute top-4 left-4 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-20 group"
-        aria-label="Close banner"
-      >
-        <LucideIcons.X className="h-5 w-5 group-hover:rotate-90 transition-transform duration-200" />
-      </button>
-
-      {/* Banner Type Badge */}
-      <div className="absolute top-4 right-4">
-        <span className="bg-white bg-opacity-20 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold uppercase">
-          {banners[currentBannerIndex].bannerType}
-        </span>
-      </div>
-
-      {/* Rest of your banner code stays the same */}
-      <div className="max-w-3xl relative z-10">
-        <h2 className="text-2xl lg:text-3xl font-bold mb-3 leading-tight">
-          {banners[currentBannerIndex].title}
-        </h2>
-        
-        {banners[currentBannerIndex].description && (
-          <p className="text-base lg:text-lg mb-4 opacity-90">
-            {banners[currentBannerIndex].description}
-          </p>
-        )}
-
-        <button
-          onClick={() => {
-            const link = banners[currentBannerIndex].ctaButtonLink;
-            if (link) {
-              if (link.startsWith('http')) {
-                window.open(link, '_blank');
-              } else {
-                navigate(link);
-              }
-            }
-          }}
-          className="bg-white px-6 py-2 rounded-lg font-semibold shadow-md hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-          style={{ color: banners[currentBannerIndex].backgroundColor || '#3B82F6' }}
-        >
-          {banners[currentBannerIndex].ctaButtonText}
-        </button>
-      </div>
-
-      {banners.length > 1 && (
-        <>
-          <button
-            onClick={() => setCurrentBannerIndex((prev) => prev === 0 ? banners.length - 1 : prev - 1)}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-10"
-          >
-            <LucideIcons.ChevronLeft className="h-5 w-5" />
-          </button>
-          
-          <button
-            onClick={() => setCurrentBannerIndex((prev) => (prev + 1) % banners.length)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white bg-opacity-30 hover:bg-opacity-50 backdrop-blur-sm p-2 rounded-full transition-all duration-200 z-10"
-          >
-            <LucideIcons.ChevronRight className="h-5 w-5" />
-          </button>
-
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-            {banners.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentBannerIndex(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  index === currentBannerIndex ? 'w-8 bg-white' : 'w-2 bg-white bg-opacity-50 hover:bg-opacity-75'
-                }`}
-              />
-            ))}
-          </div>
-        </>
-      )}
-    </div>
-  </div>
-)}
+      {/* Product Page Banner */}
+      <BannerCarousel page="product" />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 pb-8">
@@ -601,10 +704,7 @@ React.useEffect(() => {
                           </div>
                         )}
                         <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          ${option.priceUSD.toFixed(0)}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.text.secondary }}>
-                          ₹{option.priceINR.toLocaleString()}
+                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
                         </div>
                       </div>
                     ))}
@@ -631,10 +731,7 @@ React.useEffect(() => {
                           {option.label}
                         </div>
                         <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          ${option.priceUSD.toFixed(0)}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.text.secondary }}>
-                          ₹{option.priceINR.toLocaleString()}
+                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
                         </div>
                       </div>
                     ))}
@@ -668,10 +765,7 @@ React.useEffect(() => {
                           Best Value
                         </div>
                         <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          ${option.priceUSD.toFixed(0)}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.text.secondary }}>
-                          ₹{option.priceINR.toLocaleString()}
+                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
                         </div>
                         {option.savings && (
                           <div className="text-xs text-green-400 mt-1">{option.savings}</div>
@@ -708,10 +802,7 @@ React.useEffect(() => {
                           Premium
                         </div>
                         <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          ${option.priceUSD.toFixed(0)}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.text.secondary }}>
-                          ₹{option.priceINR.toLocaleString()}
+                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
                         </div>
                       </div>
                     ))}
@@ -720,11 +811,11 @@ React.useEffect(() => {
               )}
 
               {/* Admin Subscription Plans */}
-              {adminSubscriptionOptions.length > 0 && (
+              {adminSubscriptionPlans.length > 0 && (
                 <div className="mb-3">
                   <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>Subscription Plans</h4>
                   <div className="flex gap-2">
-                    {adminSubscriptionOptions.map((option) => (
+                    {adminSubscriptionPlans.map((option) => (
                       <div
                         key={option.id}
                         onClick={() => setSelectedLicense(option.id)}
@@ -747,10 +838,7 @@ React.useEffect(() => {
                           </div>
                         )}
                         <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          ${option.priceUSD.toFixed(0)}
-                        </div>
-                        <div className="text-xs" style={{ color: colors.text.secondary }}>
-                          ₹{option.priceINR.toLocaleString()}
+                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
                         </div>
                       </div>
                     ))}
@@ -765,10 +853,7 @@ React.useEffect(() => {
                   style={{ backgroundColor: colors.background.primary }}
                 >
                   <div className="text-lg lg:text-2xl font-bold mb-1" style={{ color: colors.text.primary }}>
-                    ${selectedOption.priceUSD.toFixed(0)}
-                  </div>
-                  <div className="text-sm lg:text-base mb-1" style={{ color: colors.text.secondary }}>
-                    ₹{selectedOption.priceINR.toLocaleString()}
+                    {formatPriceWithSymbol(selectedOption.priceINR, selectedOption.priceUSD)}
                   </div>
                   <p className="text-xs lg:text-sm" style={{ color: colors.text.secondary }}>
                     {selectedOption.label} • GST Included
@@ -881,7 +966,7 @@ React.useEffect(() => {
               {[
                 { key: 'features', label: 'Features' },
                 { key: 'requirements', label: 'System' },
-                { key: 'reviews', label: 'Reviews (3)' },
+                { key: 'reviews', label: `Reviews (${reviewStats?.totalReviews || 0})` },
                 { key: 'faq', label: 'FAQ' }
               ].map((tab) => (
                 <button
@@ -1148,99 +1233,247 @@ React.useEffect(() => {
                   What users are saying about {product.name}
                 </p>
 
-                {/* Review Form */}
-                <div
-                  className="rounded-2xl p-6 mb-8 transition-colors duration-200"
-                  style={{ backgroundColor: colors.background.secondary }}
-                >
-                  <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Write a Review</h4>
-                  <p className="mb-4" style={{ color: colors.text.secondary }}>Share your experience with this product...</p>
-                  <button
-                    className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
-                    style={{
-                      backgroundColor: colors.interactive.primary,
-                      color: colors.background.primary
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.interactive.primary;
-                    }}
+                {/* Review Statistics */}
+                {reviewStats && (
+                  <div
+                    className="rounded-2xl p-6 mb-8 transition-colors duration-200"
+                    style={{ backgroundColor: colors.background.secondary }}
                   >
-                    Post Review
-                  </button>
-                </div>
-
-                {/* Sample Review */}
-                <div
-                  className="rounded-2xl p-6 transition-colors duration-200"
-                  style={{ backgroundColor: colors.background.secondary }}
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
-                      style={{
-                        backgroundColor: colors.interactive.primary,
-                        color: colors.background.primary
-                      }}
-                    >
-                      JS
-                    </div>
-                    <div>
-                      <h5 className="font-bold" style={{ color: colors.text.primary }}>John Smith</h5>
-                      <div className="flex items-center gap-2">
-                        <div className="flex text-yellow-400">
-                          {'★'.repeat(5)}
+                    <div className="flex items-center gap-6 mb-4">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold" style={{ color: colors.interactive.primary }}>
+                          {reviewStats.averageRating.toFixed(1)}
                         </div>
-                        <span className="text-sm" style={{ color: colors.text.secondary }}>2025-01-15</span>
+                        <div className="flex text-yellow-400 mb-1">
+                          {'★'.repeat(Math.floor(reviewStats.averageRating))}
+                          {'☆'.repeat(5 - Math.floor(reviewStats.averageRating))}
+                        </div>
+                        <div className="text-sm" style={{ color: colors.text.secondary }}>
+                          {reviewStats.totalReviews} reviews
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        {[5, 4, 3, 2, 1].map((star) => (
+                          <div key={star} className="flex items-center gap-2 mb-1">
+                            <span className="text-sm w-8">{star}★</span>
+                            <div className="flex-1 bg-gray-700 rounded-full h-2">
+                              <div
+                                className="h-2 rounded-full"
+                                style={{
+                                  width: `${reviewStats.totalReviews > 0 ? (reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution] / reviewStats.totalReviews) * 100 : 0}%`,
+                                  backgroundColor: colors.interactive.primary
+                                }}
+                              ></div>
+                            </div>
+                            <span className="text-sm w-8">{reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution]}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
-                  <p className="mb-4" style={{ color: colors.text.secondary }}>
-                    Excellent software with powerful features. Great for professional CAD work. The new collaboration features are game-changing!
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <button
-                      className="flex items-center gap-2 transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = colors.text.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = colors.text.secondary;
-                      }}
-                    >
-                      <span>👍</span>
-                      Helpful (12)
-                    </button>
-                    <button
-                      className="transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.color = colors.text.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.color = colors.text.secondary;
-                      }}
-                    >
-                      Reply
-                    </button>
-                  </div>
+                )}
 
-                  {/* Reply */}
-                  <div
-                    className="ml-8 mt-4 rounded-xl p-4 transition-colors duration-200"
-                    style={{ backgroundColor: colors.background.primary }}
-                  >
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className="font-bold" style={{ color: colors.interactive.primary }}>AutoCAD Support</span>
-                      <span className="text-sm" style={{ color: colors.text.secondary }}>2025-01-16</span>
-                    </div>
-                    <p style={{ color: colors.text.secondary }}>
-                      Thank you for the positive feedback! We're glad you're enjoying the new features.
-                    </p>
+                {/* Write Review Button */}
+                {!showReviewForm && (
+                  <div className="mb-8">
+                    {user ? (
+                      <button
+                        onClick={() => setShowReviewForm(true)}
+                        className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.interactive.primary,
+                          color: colors.background.primary
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                        }}
+                      >
+                        Write a Review
+                      </button>
+                    ) : (
+                      <div
+                        className="rounded-2xl p-6 transition-colors duration-200"
+                        style={{ backgroundColor: colors.background.secondary }}
+                      >
+                        <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Write a Review</h4>
+                        <p className="mb-4" style={{ color: colors.text.secondary }}>Please login to share your experience with this product.</p>
+                        <button
+                          onClick={() => navigate('/signin')}
+                          className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.interactive.primary,
+                            color: colors.background.primary
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                          }}
+                        >
+                          Login to Review
+                        </button>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {/* Review Form */}
+                {showReviewForm && user && (
+                  <div
+                    className="rounded-2xl p-6 mb-8 transition-colors duration-200"
+                    style={{ backgroundColor: colors.background.secondary }}
+                  >
+                    <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>
+                      {editingReview ? 'Edit Review' : 'Write a Review'}
+                    </h4>
+                    <form onSubmit={handleReviewSubmit}>
+                      <div className="mb-4">
+                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Rating</label>
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                              className="text-2xl transition-colors"
+                              style={{
+                                color: star <= reviewForm.rating ? '#fbbf24' : colors.text.secondary
+                              }}
+                            >
+                              ★
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Comment</label>
+                        <textarea
+                          value={reviewForm.comment}
+                          onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
+                          className="w-full p-3 rounded-lg border transition-colors"
+                          style={{
+                            backgroundColor: colors.background.primary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary
+                          }}
+                          rows={4}
+                          placeholder="Share your experience with this product..."
+                          required
+                        />
+                      </div>
+                      <div className="flex gap-3">
+                        <button
+                          type="submit"
+                          disabled={submittingReview}
+                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                          style={{
+                            backgroundColor: colors.interactive.primary,
+                            color: colors.background.primary
+                          }}
+                        >
+                          {submittingReview ? 'Submitting...' : (editingReview ? 'Update Review' : 'Post Review')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowReviewForm(false);
+                            setEditingReview(null);
+                            setReviewForm({ rating: 5, comment: '' });
+                          }}
+                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.primary,
+                            color: colors.text.primary,
+                            border: `1px solid ${colors.border.primary}`
+                          }}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+
+                {/* Reviews List */}
+                <div className="space-y-6">
+                  {reviewsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: colors.interactive.primary }}></div>
+                      <p className="mt-2" style={{ color: colors.text.secondary }}>Loading reviews...</p>
+                    </div>
+                  ) : reviews.length === 0 ? (
+                    <div
+                      className="rounded-2xl p-8 text-center transition-colors duration-200"
+                      style={{ backgroundColor: colors.background.secondary }}
+                    >
+                      <p style={{ color: colors.text.secondary }}>No reviews yet. Be the first to review this product!</p>
+                    </div>
+                  ) : (
+                    reviews.map((review) => (
+                      <div
+                        key={review._id}
+                        className="rounded-2xl p-6 transition-colors duration-200"
+                        style={{ backgroundColor: colors.background.secondary }}
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex items-center gap-4">
+                            <div
+                              className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
+                              style={{
+                                backgroundColor: colors.interactive.primary,
+                                color: colors.background.primary
+                              }}
+                            >
+                              {review.user.fullName.charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                              <h5 className="font-bold" style={{ color: colors.text.primary }}>{review.user.fullName}</h5>
+                              <div className="flex items-center gap-2">
+                                <div className="flex text-yellow-400">
+                                  {'★'.repeat(review.rating)}
+                                  {'☆'.repeat(5 - review.rating)}
+                                </div>
+                                <span className="text-sm" style={{ color: colors.text.secondary }}>
+                                  {new Date(review.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          {(user && (user.id === review.user._id || user.role === 'admin')) && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEditReview(review)}
+                                className="text-sm px-3 py-1 rounded transition-colors"
+                                style={{
+                                  color: colors.interactive.primary,
+                                  backgroundColor: colors.background.primary
+                                }}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => handleDeleteReview(review._id)}
+                                className="text-sm px-3 py-1 rounded transition-colors"
+                                style={{
+                                  color: '#ef4444',
+                                  backgroundColor: colors.background.primary
+                                }}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <p className="mb-4" style={{ color: colors.text.secondary }}>
+                          {review.comment}
+                        </p>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}

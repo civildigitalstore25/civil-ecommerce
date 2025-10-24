@@ -1,0 +1,76 @@
+/* AllCategoriesDropdown Custom Styles */
+/* Background and border handled by inline styles with theme colors */
+
+.all-categories-dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.all-categories-dropdown::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.all-categories-dropdown::-webkit-scrollbar-thumb {
+    background: #fbbf24;
+    /* Yellow accent */
+    border-radius: 4px;
+}
+
+.all-categories-dropdown::-webkit-scrollbar-thumb:hover {
+    background: #f59e0b;
+    /* Darker yellow on hover */
+}
+
+/* Light theme scrollbar adjustments */
+@media (prefers-color-scheme: light) {
+    .all-categories-dropdown::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+.category-dropdown-section {
+    scrollbar-width: thin;
+    scrollbar-color: #fbbf24 rgba(0, 0, 0, 0.1);
+}
+
+.category-dropdown-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.category-dropdown-section::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.category-dropdown-section::-webkit-scrollbar-thumb {
+    background: #fbbf24;
+    /* Yellow accent */
+    border-radius: 3px;
+}
+
+.category-dropdown-section::-webkit-scrollbar-thumb:hover {
+    background: #f59e0b;
+    /* Darker yellow on hover */
+}
+
+/* Light theme scrollbar adjustments */
+@media (prefers-color-scheme: light) {
+    .category-dropdown-section::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.05);
+    }
+}
+
+/* Smooth transitions */
+.brand-item {
+    transition: all 0.2s ease-in-out;
+}
+
+.brand-item:hover {
+    transform: translateX(2px);
+}
+
+.category-item {
+    transition: all 0.15s ease-in-out;
+}
+
+.category-item:hover {
+    transform: translateX(4px);
+}

@@ -11,9 +11,9 @@ const CartPage: React.FC = () => {
 
   const handleCheckout = () => {
     // Navigate to checkout page (to be implemented)
-   navigate('/checkout', {
-    state: { items, summary }
-  });
+    navigate('/checkout', {
+      state: { items, summary }
+    });
   };
 
   const handleContinueShopping = () => {

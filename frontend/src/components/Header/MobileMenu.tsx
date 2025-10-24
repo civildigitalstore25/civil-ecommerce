@@ -1,7 +1,7 @@
 import React from 'react';
-import { Search, Phone, UserCheck, Shield, Filter, LogOut, User, Settings } from 'lucide-react';
+import { Search, Phone, UserCheck, Shield, LogOut, User, Settings, Package } from 'lucide-react';
 import { headerConfig } from './HeaderConfig';
-import FormSelect from '../Select/FormSelect';
+import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 interface MobileMenuProps {
@@ -12,12 +12,6 @@ interface MobileMenuProps {
   onSearchChange: (query: string) => void;
   onSearchKeyPress: (e: React.KeyboardEvent) => void;
   onNavigate: (href: string) => void;
-  categoryOptions: { value: string; label: string }[];
-  companyOptions: { value: string; label: string }[];
-  selectedCategory: string;
-  selectedCompany: string;
-  onCategoryChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onCompanyChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   user: any;
   onLogout: () => void;
 }
@@ -29,12 +23,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   onSearchChange,
   onSearchKeyPress,
   onNavigate,
-  categoryOptions,
-  companyOptions,
-  selectedCategory,
-  selectedCompany,
-  onCategoryChange,
-  onCompanyChange,
   user,
   onLogout
 }) => {
@@ -89,44 +77,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           className="rounded-lg p-3 space-y-3 transition-colors duration-200"
           style={{ backgroundColor: colors.background.secondary }}
         >
-          <div
-            className="flex items-center space-x-2 mb-2"
-            style={{ color: colors.text.secondary }}
-          >
-            <Filter className="w-4 h-4" />
-            <span className="text-sm font-medium">Filter Options</span>
-          </div>
-
-          {/* Category Dropdown - Mobile */}
+          {/* Currency Selector - Mobile */}
           <div className="space-y-1">
             <label
               className="block text-xs font-medium"
               style={{ color: colors.text.secondary }}
             >
-              Software Category
+              Currency
             </label>
-            <FormSelect
-              options={categoryOptions}
-              value={selectedCategory}
-              onChange={onCategoryChange}
-              className="w-full text-sm"
-            />
-          </div>
-
-          {/* Company/Brand Dropdown - Mobile */}
-          <div className="space-y-1">
-            <label
-              className="block text-xs font-medium"
-              style={{ color: colors.text.secondary }}
-            >
-              Brand
-            </label>
-            <FormSelect
-              options={companyOptions}
-              value={selectedCompany}
-              onChange={onCompanyChange}
-              className="w-full text-sm"
-            />
+            <CurrencyDropdown className="w-full" />
           </div>
         </div>
 
@@ -198,6 +157,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
               >
                 <User className="w-5 h-5" />
                 <span>Profile</span>
+              </button>
+              <button
+                onClick={() => onNavigate('/my-orders')}
+                className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+                }}
+              >
+                <Package className="w-5 h-5" />
+                <span>My Orders</span>
               </button>
               <button
                 onClick={onLogout}

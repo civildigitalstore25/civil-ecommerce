@@ -51,6 +51,7 @@ const UserSchema = new Schema<IUser>({
   },
 }, {
   timestamps: true,
+  toJSON: { virtuals: true },
 });
 
 // Index for faster queries

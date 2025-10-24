@@ -32,7 +32,7 @@ interface CartContextType {
   summary: CartSummary;
   isLoading: boolean;
   error: string | null;
-  addItem: (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity?: number) => void;
+  addItem: (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity?: number, subscriptionPlan?: { planId: string; planLabel: string; planType: string; }) => void;
   removeItem: (itemId: string) => void;
   updateQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
@@ -105,7 +105,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     licenseType: item.licenseType,
     quantity: item.quantity,
     price: item.price,
-    totalPrice: item.totalPrice
+    totalPrice: item.totalPrice,
+    subscriptionPlan: (item as any).subscriptionPlan
   })) || [];
 
   const summary: CartSummary = cartData?.summary || {
@@ -116,7 +117,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     itemCount: 0
   };
 
-  const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1) => {
+  const addItem = async (product: Product, licenseType: '1year' | '3year' | 'lifetime', quantity: number = 1, subscriptionPlan?: { planId: string; planLabel: string; planType: string; }) => {
     if (!user) {
       showErrorToast('Please login to add items to cart');
       return;
@@ -126,7 +127,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await addToCartMutation.mutateAsync({
         productId: product._id!,
         licenseType,
-        quantity
+        quantity,
+        subscriptionPlan
       });
       showSuccessToast('Item added to cart!');
     } catch (error) {

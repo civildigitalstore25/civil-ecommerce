@@ -25,73 +25,40 @@ interface AutodeskDropdownProps {
   buttonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
+// Real Autodesk categories from brand-category structure
 const autodeskCategories: AutodeskCategory[] = [
   {
-    name: "Architecture, Engineering & Construction",
+    name: "Design & CAD Software",
     products: [
-      {
-        name: "AutoCAD",
-        href: "/autodesk/autocad",
-        topProducts: [
-          { name: "AutoCAD LT", href: "/autodesk/autocad-lt" },
-          { name: "AutoCAD Architecture", href: "/autodesk/autocad-architecture" },
-          { name: "AutoCAD Electrical", href: "/autodesk/autocad-electrical" },
-          { name: "AutoCAD Map 3D", href: "/autodesk/autocad-map3d" },
-          { name: "AutoCAD MEP", href: "/autodesk/autocad-mep" },
-        ],
-      },
-      {
-        name: "Revit",
-        href: "/autodesk/revit",
-        topProducts: [
-          { name: "Revit Architecture", href: "/autodesk/revit-architecture" },
-          { name: "Revit MEP", href: "/autodesk/revit-mep" },
-          { name: "Revit Structure", href: "/autodesk/revit-structure" },
-          { name: "Revit LT", href: "/autodesk/revit-lt" },
-          { name: "Revit Add-ons", href: "/autodesk/revit-addons" },
-        ],
-      },
-      { name: "Civil 3D", href: "/autodesk/civil3d" },
-      { name: "BIM 360", href: "/autodesk/bim360" },
-      { name: "Navisworks", href: "/autodesk/navisworks" },
+      { name: "AutoCAD", href: "/category?brand=autodesk&category=autocad" },
+      { name: "AutoCAD LT", href: "/category?brand=autodesk&category=autocad-lt" },
+      { name: "AutoCAD Mechanical", href: "/category?brand=autodesk&category=autocad-mechanical" },
+      { name: "AutoCAD Electrical", href: "/category?brand=autodesk&category=autocad-electrical" },
+      { name: "AutoCAD MEP", href: "/category?brand=autodesk&category=autocad-mep" },
     ],
   },
   {
-    name: "Product Design & Manufacturing",
+    name: "3D Modeling & Animation",
     products: [
-      {
-        name: "Inventor",
-        href: "/autodesk/inventor",
-        topProducts: [
-          { name: "Inventor Professional", href: "/autodesk/inventor-pro" },
-          { name: "Inventor CAM", href: "/autodesk/inventor-cam" },
-          { name: "Inventor Nesting", href: "/autodesk/inventor-nesting" },
-          { name: "Inventor Tolerance Analysis", href: "/autodesk/inventor-tolerance" },
-          { name: "Inventor Publisher", href: "/autodesk/inventor-publisher" },
-        ],
-      },
-      { name: "Fusion 360", href: "/autodesk/fusion360" },
-      { name: "AutoCAD Mechanical", href: "/autodesk/autocad-mechanical" },
-      { name: "Vault", href: "/autodesk/vault" },
-      { name: "HSMWorks", href: "/autodesk/hsmworks" },
+      { name: "3ds MAX", href: "/category?brand=autodesk&category=3ds-max" },
+      { name: "Maya", href: "/category?brand=autodesk&category=maya" },
+      { name: "Revit", href: "/category?brand=autodesk&category=revit" },
     ],
   },
   {
-    name: "Media & Entertainment",
+    name: "Engineering & Manufacturing",
     products: [
-      { name: "3ds Max", href: "/autodesk/3dsmax" },
-      { name: "Maya", href: "/autodesk/maya" },
-      { name: "Arnold", href: "/autodesk/arnold" },
-      { name: "MotionBuilder", href: "/autodesk/motionbuilder" },
-      { name: "Mudbox", href: "/autodesk/mudbox" },
+      { name: "Fusion", href: "/category?brand=autodesk&category=fusion" },
+      { name: "Inventor Professional", href: "/category?brand=autodesk&category=inventor-professional" },
+      { name: "Civil 3D", href: "/category?brand=autodesk&category=civil-3d" },
+      { name: "Map 3D", href: "/category?brand=autodesk&category=map-3d" },
     ],
   },
   {
-    name: "Collections & Suites",
+    name: "Collections & Management",
     products: [
-      { name: "AEC Collection", href: "/autodesk/aec-collection" },
-      { name: "PDM Collection", href: "/autodesk/pdm-collection" },
-      { name: "ME Collection", href: "/autodesk/me-collection" },
+      { name: "AEC Collection", href: "/category?brand=autodesk&category=aec-collection" },
+      { name: "Navisworks Manage", href: "/category?brand=autodesk&category=navisworks-manage" },
     ],
   },
 ];

@@ -19,45 +19,33 @@ interface AdobeDropdownProps {
   buttonRef: React.RefObject<HTMLButtonElement | null>;
 }
 
+// Real Adobe categories from brand-category structure
 const adobeCategories: AdobeCategory[] = [
   {
-    name: "Creative Cloud",
+    name: "Document Management",
     products: [
-      { name: "Photoshop", href: "/adobe/photoshop" },
-      { name: "Illustrator", href: "/adobe/illustrator" },
-      { name: "InDesign", href: "/adobe/indesign" },
-      { name: "Premiere Pro", href: "/adobe/premiere-pro" },
-      { name: "After Effects", href: "/adobe/after-effects" },
-      { name: "Lightroom", href: "/adobe/lightroom" }
+      { name: "Adobe Acrobat", href: "/category?brand=adobe&category=adobe-acrobat" },
     ]
   },
   {
-    name: "Document Cloud",
+    name: "Photography & Imaging",
     products: [
-      { name: "Acrobat Pro DC", href: "/adobe/acrobat-pro" },
-      { name: "Acrobat Standard DC", href: "/adobe/acrobat-standard" },
-      { name: "Adobe Sign", href: "/adobe/sign" },
-      { name: "Adobe Scan", href: "/adobe/scan" }
+      { name: "Photoshop", href: "/category?brand=adobe&category=photoshop" },
+      { name: "Lightroom", href: "/category?brand=adobe&category=lightroom" },
     ]
   },
   {
-    name: "Experience Cloud",
+    name: "Video Production",
     products: [
-      { name: "Adobe Analytics", href: "/adobe/analytics" },
-      { name: "Adobe Target", href: "/adobe/target" },
-      { name: "Adobe Campaign", href: "/adobe/campaign" },
-      { name: "Adobe Experience Manager", href: "/adobe/experience-manager" }
+      { name: "After Effect", href: "/category?brand=adobe&category=after-effect" },
+      { name: "Premier Pro", href: "/category?brand=adobe&category=premier-pro" },
     ]
   },
   {
-    name: "Additional Products",
+    name: "Design & Illustration",
     products: [
-      { name: "Adobe XD", href: "/adobe/xd" },
-      { name: "Dimension", href: "/adobe/dimension" },
-      { name: "Substance 3D", href: "/adobe/substance-3d" },
-      { name: "Dreamweaver", href: "/adobe/dreamweaver" },
-      { name: "Animate", href: "/adobe/animate" },
-      { name: "Audition", href: "/adobe/audition" }
+      { name: "Illustrator", href: "/category?brand=adobe&category=illustrator" },
+      { name: "Adobe Creative Cloud", href: "/category?brand=adobe&category=adobe-creative-cloud" },
     ]
   }
 ];

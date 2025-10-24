@@ -6,6 +6,11 @@ export interface ICartItem {
   quantity: number;
   price: number;
   totalPrice: number;
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
 }
 
 export interface ICart extends Document {
@@ -45,6 +50,11 @@ const cartItemSchema = new Schema({
   totalPrice: {
     type: Number,
     required: true
+  },
+  subscriptionPlan: {
+    planId: { type: String },
+    planLabel: { type: String },
+    planType: { type: String }
   }
 });
 
@@ -66,9 +76,9 @@ const cartSchema = new Schema({
 }, { timestamps: true });
 
 // Calculate summary before saving
-cartSchema.pre('save', function(next) {
+cartSchema.pre('save', function (next) {
   const cart = this as ICart;
-  
+
   const subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
   const tax = subtotal * 0.18; // 18% GST
   const discount = 0; // Can be implemented later
