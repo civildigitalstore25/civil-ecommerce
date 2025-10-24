@@ -1,6 +1,6 @@
 import type { Banner, BannerResponse, BannerStats } from '../types/Banner'
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000/api';
 
 // Helper function to get auth token
 const getAuthToken = () => {
@@ -12,14 +12,14 @@ const createHeaders = (requireAuth = true) => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
-  
+
   if (requireAuth) {
     const token = getAuthToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
   }
-  
+
   return headers;
 };
 
@@ -30,15 +30,15 @@ export const bannerApi = {
     if (position) {
       url.searchParams.append('position', position);
     }
-    
+
     const response = await fetch(url.toString(), {
       headers: createHeaders(false),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch active banners');
     }
-    
+
     const result = await response.json();
     return result.data;
   },
@@ -55,7 +55,7 @@ export const bannerApi = {
     search?: string;
   }): Promise<BannerResponse> => {
     const url = new URL(`${API_BASE_URL}/banners`);
-    
+
     if (params) {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== '') {
@@ -63,15 +63,15 @@ export const bannerApi = {
         }
       });
     }
-    
+
     const response = await fetch(url.toString(), {
       headers: createHeaders(),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch banners');
     }
-    
+
     return response.json();
   },
 
@@ -79,11 +79,11 @@ export const bannerApi = {
     const response = await fetch(`${API_BASE_URL}/banners/${id}`, {
       headers: createHeaders(),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch banner');
     }
-    
+
     const result = await response.json();
     return result.data;
   },
@@ -94,12 +94,12 @@ export const bannerApi = {
       headers: createHeaders(),
       body: JSON.stringify(bannerData),
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to create banner');
     }
-    
+
     const result = await response.json();
     return result.data;
   },
@@ -110,12 +110,12 @@ export const bannerApi = {
       headers: createHeaders(),
       body: JSON.stringify(bannerData),
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to update banner');
     }
-    
+
     const result = await response.json();
     return result.data;
   },
@@ -125,7 +125,7 @@ export const bannerApi = {
       method: 'DELETE',
       headers: createHeaders(),
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to delete banner');
@@ -138,12 +138,12 @@ export const bannerApi = {
       headers: createHeaders(),
       body: JSON.stringify({ bannerIds, status }),
     });
-    
+
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || 'Failed to update banners');
     }
-    
+
     const result = await response.json();
     return result;
   },
@@ -152,11 +152,11 @@ export const bannerApi = {
     const response = await fetch(`${API_BASE_URL}/banners/stats`, {
       headers: createHeaders(),
     });
-    
+
     if (!response.ok) {
       throw new Error('Failed to fetch banner statistics');
     }
-    
+
     const result = await response.json();
     return result.data;
   },
