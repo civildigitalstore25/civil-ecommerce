@@ -34,6 +34,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
@@ -96,16 +98,16 @@ const testEmailService = async () => {
 
 const testRazorpayService = () => {
   console.log('\n💳 Testing Razorpay configuration...');
-  
+
   const keyId = process.env.RAZORPAY_KEY_ID;
   const keySecret = process.env.RAZORPAY_KEY_SECRET;
-  
+
   if (!keyId || !keySecret) {
     console.warn('⚠️  Missing Razorpay credentials in environment variables');
     console.warn('⚠️  Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env file');
     return false;
   }
-  
+
   console.log('✅ Razorpay credentials found');
   console.log(`   Key ID: ${keyId.substring(0, 12)}...`);
   return true;

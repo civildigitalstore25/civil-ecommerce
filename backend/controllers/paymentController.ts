@@ -392,6 +392,72 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
 };
 
 /**
+ * Update order status (Admin only)
+ */
+export const updateOrderStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    console.log('🔧 Backend - Update order status request received');
+    console.log('🔧 orderId from params:', orderId);
+    console.log('🔧 orderStatus from body:', orderStatus);
+    console.log('🔧 Full body:', req.body);
+
+    // Validate status
+    const validStatuses = ['processing', 'delivered', 'cancelled'];
+    if (!orderStatus || !validStatuses.includes(orderStatus)) {
+      console.log('❌ Backend - Invalid status:', orderStatus);
+      res.status(400).json({
+        success: false,
+        message: `Invalid order status. Must be one of: ${validStatuses.join(', ')}`
+      });
+      return;
+    }
+
+    console.log('🔧 Backend - Looking for order with orderId:', orderId);
+
+    // Try to find by orderId first, then by _id as fallback
+    let order = await Order.findOne({ orderId });
+
+    if (!order) {
+      console.log('🔧 Backend - Not found by orderId, trying _id...');
+      order = await Order.findById(orderId);
+    }
+
+    if (!order) {
+      console.log('❌ Backend - Order not found by orderId or _id:', orderId);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    console.log('✅ Backend - Order found:', order.orderId || order._id);
+
+    order.orderStatus = orderStatus;
+    await order.save();
+
+    console.log(`✅ Order ${orderId} status updated to: ${orderStatus}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      data: order
+    });
+  } catch (error: any) {
+    console.error('❌ Backend - Update order status error:', error);
+    console.error('❌ Backend - Error message:', error.message);
+    console.error('❌ Backend - Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
  * Initiate refund (Admin only)
  */
 export const initiateRefund = async (req: Request, res: Response): Promise<void> => {
@@ -495,6 +561,49 @@ export const deleteOrder = async (req: Request, res: Response): Promise<void> =>
     });
   } catch (error: any) {
     console.error('❌ Delete order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Delete order (Admin only - can delete any order)
+ */
+export const adminDeleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+
+    console.log('🗑️ Admin delete order request for:', orderId);
+
+    // Try to find by orderId first, then by _id as fallback
+    let order = await Order.findOne({ orderId });
+
+    if (!order) {
+      console.log('🔧 Not found by orderId, trying _id...');
+      order = await Order.findById(orderId);
+    }
+
+    if (!order) {
+      console.log('❌ Order not found:', orderId);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    await Order.deleteOne({ _id: order._id });
+
+    console.log('✅ Admin deleted order:', order.orderId || orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Admin delete order error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'

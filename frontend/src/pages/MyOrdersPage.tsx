@@ -20,10 +20,11 @@ const MyOrdersPage: React.FC = () => {
 
   // Queries
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['userOrders', sortBy],
+    queryKey: ['userOrders'],
     queryFn: getUserOrders,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 30 * 1000, // 30 seconds - shorter to pick up admin updates faster
+    refetchOnWindowFocus: true, // Refetch when user returns to page
+    refetchInterval: 30000, // Auto-refetch every 30 seconds to catch admin updates
   });
 
   // Mutations

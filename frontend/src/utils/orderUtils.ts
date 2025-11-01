@@ -27,6 +27,12 @@ export const getStatusColor = (status: string): string => {
 };
 
 /**
+ * Get status label for display
+ */
+export const getStatusLabel = (status: string): string => {
+  if (status.toLowerCase() === 'delivered') return 'Success';
+  return status.charAt(0).toUpperCase() + status.slice(1);
+};/**
  * Format order date for display
  */
 export const formatOrderDate = (date: string): string => {

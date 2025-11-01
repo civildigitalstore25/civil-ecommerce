@@ -1,25 +1,18 @@
 import React from 'react';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import type { IOrder } from '../../api/types/orderTypes';
-import DeleteButton from './DeleteButton';
 import ProductInfo from './ProductInfo';
 import OrderSummary from './OrderSummary';
 
 interface OrderCardProps {
   order: IOrder;
-  isDeleting: boolean;
-  canDelete: boolean;
   onToggleExpansion: () => void;
-  onDelete: () => void;
   onBuyAgain: () => void;
 }
 
 const OrderCard: React.FC<OrderCardProps> = React.memo(({
   order,
-  isDeleting,
-  canDelete,
   onToggleExpansion,
-  onDelete,
   onBuyAgain
 }) => {
   const { colors } = useAdminTheme();
@@ -46,6 +39,11 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    if (status.toLowerCase() === 'delivered') return 'Success';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  };
+
   const formatOrderDate = (date: string) => {
     return new Date(date).toLocaleDateString('en-US', {
       weekday: 'short',
@@ -63,11 +61,7 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
         borderColor: colors.interactive.primary
       }}
     >
-      <DeleteButton
-        onDelete={onDelete}
-        isDeleting={isDeleting}
-        canDelete={canDelete}
-      />
+      
 
       {/* Order Header */}
       <div className="p-4 sm:p-6">
@@ -78,7 +72,7 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
                 className="text-sm font-semibold mb-1"
                 style={{ color: getStatusColor(order.orderStatus) }}
               >
-                {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
+                {getStatusLabel(order.orderStatus)}
               </div>
               <div
                 className="text-xs sm:text-sm"
