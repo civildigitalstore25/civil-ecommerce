@@ -37,17 +37,33 @@ class GoogleReviewsService {
     private cache: ReviewResponse | null = null;
     private lastFetch: number = 0;
     private readonly cacheDuration = 30 * 60 * 1000; // 30 minutes
+    private disabled: boolean = false;
 
     constructor() {
-        this.apiKey = process.env.REVIEW_API_KEY!;
-        this.placeId = process.env.REVIEW_PLACE_ID!;
+        this.apiKey = process.env.REVIEW_API_KEY || '';
+        this.placeId = process.env.REVIEW_PLACE_ID || '';
 
         if (!this.apiKey || !this.placeId) {
-            throw new Error('Google API key and Place ID must be configured');
+            // Don't throw here — allow the app to start but mark the service as disabled.
+            console.warn('Google Reviews not configured: REVIEW_API_KEY and/or REVIEW_PLACE_ID missing. The service will return empty reviews.');
+            this.disabled = true;
         }
     }
 
     async getReviews(): Promise<ReviewResponse> {
+        if (this.disabled) {
+            // Return a safe empty response when the service is not configured
+            const now = Date.now();
+            return {
+                name: '',
+                rating: 0,
+                total: 0,
+                reviews: [],
+                lastUpdated: new Date(now).toISOString(),
+                nextUpdate: new Date(now + this.cacheDuration).toISOString(),
+                message: 'Google Reviews not configured',
+            };
+        }
         const now = Date.now();
 
         // Return cached data if still fresh
