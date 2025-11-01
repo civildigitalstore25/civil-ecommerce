@@ -1,26 +1,26 @@
-import express from 'express';
+import { Router } from 'express';
 import {
   createOrder,
-  handleCallback,
-  checkStatus,
+  verifyPayment,
+  paymentFailed,
+  getOrder,
   getUserOrders,
-  getOrderDetails,
-  deleteOrder,
+  getAllOrders,
   initiateRefund
 } from '../controllers/paymentController';
-import { authenticate} from '../middlewares/auth';
+import { authenticate, requireAdmin } from '../middlewares/auth';
 
-const router = express.Router();
+const router = Router();
 
-// Protected routes (require authentication)
+// User routes (require authentication)
 router.post('/create-order', authenticate, createOrder);
-router.get('/status/:merchantTransactionId', authenticate, checkStatus);
+router.post('/verify', authenticate, verifyPayment);
+router.post('/failed', authenticate, paymentFailed);
 router.get('/orders', authenticate, getUserOrders);
-router.get('/orders/:orderId', authenticate, getOrderDetails);
-router.delete('/orders/:orderId', authenticate, deleteOrder);
-router.post('/refund/:orderId', authenticate, initiateRefund);
+router.get('/orders/:orderId', authenticate, getOrder);
 
-// Public route (for PhonePe callback)
-router.post('/callback', handleCallback);
+// Admin routes
+router.get('/admin/orders', authenticate, requireAdmin, getAllOrders);
+router.post('/refund/:orderId', authenticate, requireAdmin, initiateRefund);
 
 export default router;

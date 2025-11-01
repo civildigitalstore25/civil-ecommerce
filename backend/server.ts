@@ -14,8 +14,7 @@ import emailService from "./services/emailService";
 import contactRoutes from "./routes/contactRoutes";
 import bannerRoutes from "./routes/bannerRoutes";
 import couponRoutes from './routes/couponRoutes';
-import paymentRoutes from './routes/paymentRoutes'; // NEW
-import { validatePhonePeConfig } from './config/phonepe'; // NEW
+import paymentRoutes from './routes/paymentRoutes';
 import reviewRoutes from "./routes/reviewRoutes";
 import googleReviewsRoutes from "./routes/googleReviewsRoutes";
 
@@ -62,9 +61,10 @@ app.use("/api/cart", cartRoutes);
 app.use('/api/contact', contactRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
-app.use('/api/payments', paymentRoutes); // NEW
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/google-reviews", googleReviewsRoutes);
+app.use('/api/payments', paymentRoutes);
+
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 
 const PORT = process.env.PORT || 5000;
@@ -94,17 +94,21 @@ const testEmailService = async () => {
   }
 };
 
-// Test PhonePe configuration on startup
-const testPhonePeConfig = () => {
-  console.log('\n🔧 Testing PhonePe configuration...');
-
-  const isValid = validatePhonePeConfig();
-  if (isValid) {
-    console.log('✅ PhonePe payment gateway is configured');
-  } else {
-    console.warn('⚠️  PhonePe configuration incomplete - payment functionality will not work');
-    console.warn('⚠️  Please set PHONEPE_MERCHANT_ID, PHONEPE_SALT_KEY in .env file');
+const testRazorpayService = () => {
+  console.log('\n💳 Testing Razorpay configuration...');
+  
+  const keyId = process.env.RAZORPAY_KEY_ID;
+  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  
+  if (!keyId || !keySecret) {
+    console.warn('⚠️  Missing Razorpay credentials in environment variables');
+    console.warn('⚠️  Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env file');
+    return false;
   }
+  
+  console.log('✅ Razorpay credentials found');
+  console.log(`   Key ID: ${keyId.substring(0, 12)}...`);
+  return true;
 };
 
 mongoose
@@ -115,8 +119,7 @@ mongoose
     // Test email service after database connection
     await testEmailService();
 
-    // Test PhonePe configuration
-    testPhonePeConfig();
+    testRazorpayService();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

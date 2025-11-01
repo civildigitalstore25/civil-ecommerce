@@ -7,7 +7,13 @@ import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
 import CouponForm from "../ui/checkout/CouponForm";
 
-// Types
+// Declare Razorpay on window
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
+
 interface CartItem {
   id: string | number;
   product: { name: string; price: number };
@@ -31,7 +37,6 @@ const CheckoutPage: React.FC = () => {
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
 
-  // Handle both cart structures
   const cartItems: CartItem[] = rawCartItems.map(item => ({
     id: item._id || item.id || item.product?._id,
     product: {
@@ -49,10 +54,6 @@ const CheckoutPage: React.FC = () => {
     itemCount: Number(rawSummary.itemCount) || cartItems.length,
   };
 
-  console.log('📦 Cart Items:', cartItems);
-  console.log('💰 Summary:', summary);
-
-  // State
   const [formData, setFormData] = useState({ name: "", whatsapp: "", email: "" });
   const [showCoupon, setShowCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -62,12 +63,10 @@ const CheckoutPage: React.FC = () => {
   const normalizePrice = (price: any) =>
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
 
-  // Form handlers
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Validate form before placing order
   const validateForm = () => {
     if (!formData.name.trim()) {
       toast.error("Please enter your name");
@@ -77,7 +76,6 @@ const CheckoutPage: React.FC = () => {
       toast.error("Please enter your WhatsApp number");
       return false;
     }
-    // Validate phone number (10 digits)
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(formData.whatsapp.replace(/[^0-9]/g, ''))) {
       toast.error("Please enter a valid 10-digit WhatsApp number");
@@ -87,7 +85,6 @@ const CheckoutPage: React.FC = () => {
       toast.error("Please enter your email address");
       return false;
     }
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast.error("Please enter a valid email address");
@@ -100,13 +97,22 @@ const CheckoutPage: React.FC = () => {
     return true;
   };
 
+  const loadRazorpayScript = (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
       return;
     }
 
     if (isProcessing) return;
-
     setIsProcessing(true);
 
     try {
@@ -118,11 +124,19 @@ const CheckoutPage: React.FC = () => {
         return;
       }
 
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error("Failed to load payment gateway. Please try again.");
+        setIsProcessing(false);
+        return;
+      }
+
       const subtotal = normalizePrice(summary.subtotal);
       const tax = normalizePrice(summary.tax);
       const finalTotal = subtotal + tax - discount;
 
-      // Prepare order data for backend
+      // Create order on backend
       const orderData = {
         items: cartItems.map(item => ({
           productId: item.id.toString(),
@@ -149,9 +163,6 @@ const CheckoutPage: React.FC = () => {
         notes: `Email: ${formData.email}`
       };
 
-      console.log('📤 Sending order data:', orderData);
-
-      // Call backend API to create order and initiate payment
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/create-order`,
         {
@@ -165,21 +176,125 @@ const CheckoutPage: React.FC = () => {
       );
 
       const data = await response.json();
-      console.log('📥 Response from backend:', data);
 
-      if (data.success && data.data.paymentUrl) {
-        // Store order details in localStorage for callback page
-        localStorage.setItem('pendingOrderId', data.data.orderId);
-        localStorage.setItem('merchantTransactionId', data.data.merchantTransactionId);
-
-        toast.success("Redirecting to payment gateway...");
-
-        // Redirect to PhonePe payment page
-        window.location.href = data.data.paymentUrl;
-      } else {
-        toast.error(data.message || "Failed to initiate payment");
+      if (!data.success) {
+        toast.error(data.message || "Failed to create order");
         setIsProcessing(false);
+        return;
       }
+
+      // Configure Razorpay options
+      const options = {
+        key: data.data.keyId,
+        amount: data.data.amount,
+        currency: data.data.currency,
+        name: "Your Store Name",
+        description: `Order #${data.data.orderId}`,
+        order_id: data.data.razorpayOrderId,
+        handler: async function (response: any) {
+          try {
+            // Verify payment on backend
+            const verifyResponse = await fetch(
+              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/verify`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature
+                })
+              }
+            );
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              toast.success("Payment successful!");
+              
+              // Clear cart (if you have a cart clearing function)
+              localStorage.removeItem('cart');
+              
+              // Navigate to success page
+              navigate('/payment-success', {
+                state: {
+                  orderId: data.data.orderId,
+                  paymentId: response.razorpay_payment_id,
+                  amount: finalTotal
+                }
+              });
+            } else {
+              toast.error("Payment verification failed");
+              setIsProcessing(false);
+            }
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error("Payment verification failed");
+            setIsProcessing(false);
+          }
+        },
+        prefill: {
+          name: formData.name,
+          email: formData.email,
+          contact: formData.whatsapp
+        },
+        notes: {
+          orderId: data.data.orderId,
+        },
+        theme: {
+          color: "#F59E0B"
+        },
+        modal: {
+          ondismiss: function() {
+            toast.error("Payment cancelled");
+            setIsProcessing(false);
+            
+            // Report payment failure
+            fetch(
+              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/failed`,
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  razorpay_order_id: data.data.razorpayOrderId,
+                  error: { description: 'Payment cancelled by user' }
+                })
+              }
+            );
+          }
+        }
+      };
+
+      const razorpay = new window.Razorpay(options);
+      
+      razorpay.on('payment.failed', async function (response: any) {
+        toast.error("Payment failed: " + response.error.description);
+        setIsProcessing(false);
+        
+        // Report payment failure
+        await fetch(
+          `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/failed`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+              razorpay_order_id: data.data.razorpayOrderId,
+              error: response.error
+            })
+          }
+        );
+      });
+
+      razorpay.open();
     } catch (error: any) {
       console.error("Order creation error:", error);
       toast.error("Failed to process order. Please try again.");
@@ -199,28 +314,20 @@ const CheckoutPage: React.FC = () => {
       return;
     }
 
-    try {
-      // const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+    const subtotal = normalizePrice(summary.subtotal);
+    let newDiscount = 0;
 
-      // If you have a coupon validation API, call it here
-      // For now, using simple validation
-      const subtotal = normalizePrice(summary.subtotal);
-      let newDiscount = 0;
-
-      if (code === "SAVE10") {
-        newDiscount = subtotal * 0.1;
-      } else if (code === "FLAT50") {
-        newDiscount = 50;
-      } else {
-        toast.error("Invalid coupon code");
-        return;
-      }
-
-      setDiscount(newDiscount);
-      toast.success(`Coupon applied! Discount: ₹${newDiscount.toFixed(2)}`);
-    } catch (error) {
-      toast.error("Failed to apply coupon");
+    if (code === "SAVE10") {
+      newDiscount = subtotal * 0.1;
+    } else if (code === "FLAT50") {
+      newDiscount = 50;
+    } else {
+      toast.error("Invalid coupon code");
+      return;
     }
+
+    setDiscount(newDiscount);
+    toast.success(`Coupon applied! Discount: ₹${newDiscount.toFixed(2)}`);
   };
 
   return (
@@ -228,7 +335,6 @@ const CheckoutPage: React.FC = () => {
       className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
       style={{ backgroundColor: colors.background.primary }}
     >
-      {/* Heading */}
       <h1
         className="text-3xl font-bold mb-8 text-center"
         style={{ color: colors.text.primary }}
@@ -237,8 +343,6 @@ const CheckoutPage: React.FC = () => {
       </h1>
 
       <div className="max-w-7xl mx-auto flex flex-col space-y-8">
-
-        {/* Coupon Section */}
         <div className="text-sm flex flex-col gap-2">
           <div className="flex items-center gap-2" style={{ color: colors.text.primary }}>
             <span>Have a coupon?</span>
@@ -263,7 +367,6 @@ const CheckoutPage: React.FC = () => {
           )}
         </div>
 
-        {/* Billing Form + Order Summary */}
         <form
           className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
           onSubmit={handleSubmit}
