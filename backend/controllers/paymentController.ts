@@ -21,19 +21,19 @@ const getNextOrderNumber = async (retries = 5): Promise<number> => {
       .sort({ orderNumber: -1 })
       .select('orderNumber')
       .lean();
-    
+
     const nextNumber = lastOrder && lastOrder.orderNumber ? lastOrder.orderNumber + 1 : 1001;
-    
+
     // Check if this number is already taken (race condition check)
     const exists = await Order.findOne({ orderNumber: nextNumber });
     if (!exists) {
       return nextNumber;
     }
-    
+
     // If exists, wait a bit and retry
     await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
   }
-  
+
   // Fallback: generate a random high number to avoid collision
   return 1001 + Math.floor(Math.random() * 1000000);
 };
@@ -44,7 +44,7 @@ const getNextOrderNumber = async (retries = 5): Promise<number> => {
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = (req as any).user;
-    
+
     if (!user) {
       res.status(401).json({
         success: false,
@@ -84,7 +84,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     // Generate order ID
     const orderId = generateOrderId();
-    
+
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
@@ -310,7 +310,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
     const { page = 1, limit = 10, status } = req.query;
 
     const query: any = { userId: user._id };
-    
+
     if (status) {
       query.orderStatus = status;
     }
@@ -350,11 +350,11 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
     const { page = 1, limit = 10, status, paymentStatus } = req.query;
 
     const query: any = {};
-    
+
     if (status) {
       query.orderStatus = status;
     }
-    
+
     if (paymentStatus) {
       query.paymentStatus = paymentStatus;
     }
