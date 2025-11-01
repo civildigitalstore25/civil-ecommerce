@@ -13,11 +13,29 @@ const generateOrderId = (): string => {
 };
 
 /**
- * Get next order number (auto-increment)
+ * Get next order number (auto-increment) with retry logic
  */
-const getNextOrderNumber = async (): Promise<number> => {
-  const lastOrder = await Order.findOne().sort({ orderNumber: -1 }).select('orderNumber');
-  return lastOrder && lastOrder.orderNumber ? lastOrder.orderNumber + 1 : 1001;
+const getNextOrderNumber = async (retries = 5): Promise<number> => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const lastOrder = await Order.findOne({ orderNumber: { $exists: true, $ne: null } })
+      .sort({ orderNumber: -1 })
+      .select('orderNumber')
+      .lean();
+    
+    const nextNumber = lastOrder && lastOrder.orderNumber ? lastOrder.orderNumber + 1 : 1001;
+    
+    // Check if this number is already taken (race condition check)
+    const exists = await Order.findOne({ orderNumber: nextNumber });
+    if (!exists) {
+      return nextNumber;
+    }
+    
+    // If exists, wait a bit and retry
+    await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
+  }
+  
+  // Fallback: generate a random high number to avoid collision
+  return 1001 + Math.floor(Math.random() * 1000000);
 };
 
 /**
@@ -66,6 +84,9 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     // Generate order ID
     const orderId = generateOrderId();
+    
+    // Get next order number
+    const orderNumber = await getNextOrderNumber();
 
     // Create Razorpay order
     const customerInfo = {
@@ -92,6 +113,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     const order = new Order({
       userId: user._id,
       orderId,
+      orderNumber,
       items,
       subtotal,
       discount,

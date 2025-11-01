@@ -22,7 +22,7 @@ export interface IShippingAddress {
 export interface IOrder extends Document {
   userId: mongoose.Types.ObjectId;
   orderId: string;
-  orderNumber?: number; // Optional field
+  orderNumber: number; // Sequential order number (required)
   items: IOrderItem[];
   subtotal: number;
   discount: number;
@@ -49,6 +49,11 @@ const OrderSchema = new Schema<IOrder>({
   },
   orderId: {
     type: String,
+    required: true,
+    unique: true
+  },
+  orderNumber: {
+    type: Number,
     required: true,
     unique: true
   },
