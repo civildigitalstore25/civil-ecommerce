@@ -12,19 +12,19 @@ const viewOrders = async () => {
         await mongoose.connect(mongoUri);
         console.log('✅ Connected to MongoDB');
 
-    const db = mongoose.connection.db!;
-    const orders = await db.collection('orders').find({}).project({ orderId: 1, orderNumber: 1, userId: 1, createdAt: 1 }).sort({ createdAt: -1 }).toArray();
-    
-    console.log('\n📦 All Orders:');
-    console.log('=====================================');
-    orders.forEach((order, index) => {
-      console.log(`${index + 1}. ID: ${order._id}`);
-      console.log(`   orderId: ${order.orderId}`);
-      console.log(`   orderNumber: ${order.orderNumber} (type: ${typeof order.orderNumber})`);
-      console.log(`   userId: ${order.userId}`);
-      console.log(`   createdAt: ${order.createdAt}`);
-      console.log('-------------------------------------');
-    });        console.log(`\n✅ Total orders: ${orders.length}`);
+        const db = mongoose.connection.db!;
+        const orders = await db.collection('orders').find({}).project({ orderId: 1, orderNumber: 1, userId: 1, createdAt: 1 }).sort({ createdAt: -1 }).toArray();
+
+        console.log('\n📦 All Orders:');
+        console.log('=====================================');
+        orders.forEach((order, index) => {
+            console.log(`${index + 1}. ID: ${order._id}`);
+            console.log(`   orderId: ${order.orderId}`);
+            console.log(`   orderNumber: ${order.orderNumber} (type: ${typeof order.orderNumber})`);
+            console.log(`   userId: ${order.userId}`);
+            console.log(`   createdAt: ${order.createdAt}`);
+            console.log('-------------------------------------');
+        }); console.log(`\n✅ Total orders: ${orders.length}`);
         await mongoose.disconnect();
     } catch (error) {
         console.error('❌ Error:', error);

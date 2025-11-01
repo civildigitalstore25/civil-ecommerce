@@ -47,18 +47,18 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
   };
 
   const formatOrderDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', { 
-      weekday: 'short', 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
   };
 
   return (
     <div
       className="relative rounded-lg border transition-all duration-200 hover:shadow-md"
-      style={{ 
+      style={{
         backgroundColor: colors.background.secondary,
         borderColor: colors.interactive.primary
       }}
@@ -74,13 +74,13 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 gap-3">
           <div className="flex items-center gap-3">
             <div>
-              <div 
+              <div
                 className="text-sm font-semibold mb-1"
                 style={{ color: getStatusColor(order.orderStatus) }}
               >
                 {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
               </div>
-              <div 
+              <div
                 className="text-xs sm:text-sm"
                 style={{ color: colors.text.secondary }}
               >
@@ -88,8 +88,8 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
               </div>
             </div>
           </div>
-          
-          <div 
+
+          <div
             className="text-left sm:text-right"
             style={{ color: colors.text.secondary }}
           >

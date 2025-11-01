@@ -22,7 +22,7 @@ export const getStatusColor = (status: string): string => {
     PAID: '#10b981',      // green
     FAILED: '#ef4444',    // red
   };
-  
+
   return statusColors[normalizedStatus as keyof typeof statusColors] || '#6b7280'; // gray default
 };
 
@@ -30,11 +30,11 @@ export const getStatusColor = (status: string): string => {
  * Format order date for display
  */
 export const formatOrderDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-US', { 
-    weekday: 'short', 
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric' 
+  return new Date(date).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
   });
 };
 
@@ -42,10 +42,10 @@ export const formatOrderDate = (date: string): string => {
  * Format full date for display
  */
 export const formatFullDate = (date: string): string => {
-  return new Date(date).toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
 };
 
