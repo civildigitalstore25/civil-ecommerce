@@ -6,7 +6,8 @@ import {
   getOrder,
   getUserOrders,
   getAllOrders,
-  initiateRefund
+  initiateRefund,
+  deleteOrder
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -18,6 +19,7 @@ router.post('/verify', authenticate, verifyPayment);
 router.post('/failed', authenticate, paymentFailed);
 router.get('/orders', authenticate, getUserOrders);
 router.get('/orders/:orderId', authenticate, getOrder);
+router.delete('/orders/:orderId', authenticate, deleteOrder);
 
 // Admin routes
 router.get('/admin/orders', authenticate, requireAdmin, getAllOrders);

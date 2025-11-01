@@ -130,7 +130,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     await order.save();
 
-    console.log('✅ Order created:', orderId);
+    console.log('✅ Order created:', orderId, 'for userId:', user._id);
 
     res.status(201).json({
       success: true,
@@ -307,7 +307,9 @@ export const getOrder = async (req: Request, res: Response): Promise<void> => {
 export const getUserOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = (req as any).user;
-    const { page = 1, limit = 10, status } = req.query;
+    const { page = 1, limit = 100, status } = req.query;
+
+    console.log('🔍 Fetching orders for user:', user._id);
 
     const query: any = { userId: user._id };
 
@@ -318,23 +320,25 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
     const orders = await Order.find(query)
       .sort({ createdAt: -1 })
       .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit));
+      .skip((Number(page) - 1) * Number(limit))
+      .lean();
 
     const total = await Order.countDocuments(query);
 
+    console.log(`📦 Found ${orders.length} orders for user ${user._id}`);
+    console.log('Orders:', orders.map(o => ({ orderId: o.orderId, orderNumber: o.orderNumber, userId: o.userId })));
+
     res.status(200).json({
       success: true,
-      data: {
-        orders,
-        pagination: {
-          currentPage: Number(page),
-          totalPages: Math.ceil(total / Number(limit)),
-          totalOrders: total
-        }
+      data: orders,
+      pagination: {
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / Number(limit)),
+        totalOrders: total
       }
     });
   } catch (error: any) {
-    console.error(' Get user orders error:', error);
+    console.error('❌ Get user orders error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -447,6 +451,50 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
     });
   } catch (error: any) {
     console.error(' Initiate refund error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Delete order (only for pending/failed orders)
+ */
+export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = (req as any).user;
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({ orderId, userId: user._id });
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    // Only allow deletion of pending or failed orders
+    if (order.paymentStatus === 'paid' || order.orderStatus === 'processing' || order.orderStatus === 'shipped' || order.orderStatus === 'delivered') {
+      res.status(400).json({
+        success: false,
+        message: 'Cannot delete orders that are paid or being processed'
+      });
+      return;
+    }
+
+    await Order.deleteOne({ _id: order._id });
+
+    console.log('🗑️ Order deleted:', order.orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Delete order error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'

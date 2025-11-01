@@ -5,21 +5,25 @@ import type { IOrder } from '../api/types/orderTypes';
  * Only allow deletion of orders that are not paid or are cancelled
  */
 export const canDeleteOrder = (order: IOrder): boolean => {
-  return order.paymentStatus !== 'PAID' || order.orderStatus === 'CANCELLED';
+  return order.paymentStatus !== 'paid' || order.orderStatus === 'cancelled';
 };
 
 /**
  * Get status color based on order status
  */
 export const getStatusColor = (status: string): string => {
+  const normalizedStatus = status.toUpperCase();
   const statusColors = {
     DELIVERED: '#10b981', // green
     PENDING: '#f59e0b',   // yellow
     CANCELLED: '#ef4444', // red
     SHIPPED: '#fbbf24',   // yellow (primary)
+    PROCESSING: '#3b82f6', // blue
+    PAID: '#10b981',      // green
+    FAILED: '#ef4444',    // red
   };
   
-  return statusColors[status as keyof typeof statusColors] || '#6b7280'; // gray default
+  return statusColors[normalizedStatus as keyof typeof statusColors] || '#6b7280'; // gray default
 };
 
 /**

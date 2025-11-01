@@ -7,7 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch ./ --ext ts --exec ts-node server.ts",
     "start": "ts-node server.ts",
-    "build": "tsc"
+    "build": "tsc",
+    "fix-orders": "ts-node scripts/fix-order-numbers.ts",
+    "view-orders": "ts-node scripts/view-orders.ts",
+    "cleanup-orders": "ts-node scripts/cleanup-orders.ts"
   },
   "keywords": [],
   "author": "",

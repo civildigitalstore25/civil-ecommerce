@@ -42,7 +42,8 @@ const MyOrdersPage: React.FC = () => {
   const orders = useMemo(() => {
     if (!data?.data) return [];
 
-    const ordersList = data.data as IOrder[];
+    // Handle both array and object responses
+    const ordersList = Array.isArray(data.data) ? data.data : [];
 
     // Sort orders based on selected option
     return [...ordersList].sort((a, b) => {
@@ -65,8 +66,8 @@ const MyOrdersPage: React.FC = () => {
     // Toggle expansion functionality can be implemented here if needed
   }, []);
 
-  const handleDeleteOrder = useCallback((orderId: string, orderNumber: string) => {
-    if (window.confirm(`Are you sure you want to delete order ${orderNumber}? This action cannot be undone.`)) {
+  const handleDeleteOrder = useCallback((orderId: string, orderNumber: number) => {
+    if (window.confirm(`Are you sure you want to delete order #${orderNumber}? This action cannot be undone.`)) {
       deleteOrderMutation.mutate(orderId);
     }
   }, [deleteOrderMutation]);
@@ -143,7 +144,7 @@ const MyOrdersPage: React.FC = () => {
               isDeleting={deleteOrderMutation.isPending}
               canDelete={canDeleteOrder(order)}
               onToggleExpansion={handleToggleExpansion}
-              onDelete={() => handleDeleteOrder(order._id, order.orderNumber)}
+              onDelete={() => handleDeleteOrder(order.orderId, order.orderNumber)}
               onBuyAgain={() => handleBuyAgain(order)}
             />
           ))}

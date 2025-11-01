@@ -20,8 +20,17 @@ api.interceptors.request.use((config) => {
  * Fetch all orders for the authenticated user
  */
 export const getUserOrders = async (): Promise<OrderResponse> => {
-  const response = await api.get('/payments/orders');
-  return response.data;
+  try {
+    console.log('🔍 Fetching orders...');
+    console.log('Token:', localStorage.getItem('token') ? 'Present' : 'Missing');
+    const response = await api.get('/payments/orders');
+    console.log('📦 Orders response:', response.data);
+    console.log('📦 Orders count:', response.data?.data?.length || 0);
+    return response.data;
+  } catch (error: any) {
+    console.error('❌ Error fetching orders:', error.response?.data || error.message);
+    throw error;
+  }
 };
 
 /**

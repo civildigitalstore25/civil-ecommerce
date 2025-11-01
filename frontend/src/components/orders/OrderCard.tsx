@@ -25,7 +25,8 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
   const { colors } = useAdminTheme();
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    const normalizedStatus = status.toUpperCase();
+    switch (normalizedStatus) {
       case 'DELIVERED':
         return colors.status.success;
       case 'PENDING':
@@ -34,6 +35,12 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
         return colors.status.error;
       case 'SHIPPED':
         return colors.interactive.primary;
+      case 'PROCESSING':
+        return colors.interactive.primary;
+      case 'PAID':
+        return colors.status.success;
+      case 'FAILED':
+        return colors.status.error;
       default:
         return colors.text.secondary;
     }
@@ -71,7 +78,7 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(({
                 className="text-sm font-semibold mb-1"
                 style={{ color: getStatusColor(order.orderStatus) }}
               >
-                {order.orderStatus}
+                {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
               </div>
               <div 
                 className="text-xs sm:text-sm"
