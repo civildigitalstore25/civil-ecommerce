@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { toast } from "react-hot-toast";
+import Swal from "sweetalert2";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
 import CouponForm from "../ui/checkout/CouponForm";
@@ -218,18 +219,48 @@ const CheckoutPage: React.FC = () => {
             const verifyData = await verifyResponse.json();
 
             if (verifyData.success) {
-              toast.success("Payment successful!");
-
-              // Clear cart (if you have a cart clearing function)
+              // Clear cart
               localStorage.removeItem("cart");
 
-              // Navigate to success page
-              navigate("/payment-success", {
-                state: {
-                  orderId: data.data.orderId,
-                  paymentId: response.razorpay_payment_id,
-                  amount: finalTotal,
-                },
+              // Show SweetAlert success message
+              await Swal.fire({
+                icon: "success",
+                title: "Payment Successful!",
+                html: `
+                  <div style="text-align: left; margin-top: 20px;">
+                    <p style="margin-bottom: 15px;">Thank you for your order. Your payment has been processed successfully.</p>
+                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>Order ID:</strong>
+                        <span style="font-family: monospace;">${data.data.orderId}</span>
+                      </div>
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>Payment ID:</strong>
+                        <span style="font-family: monospace; font-size: 12px;">${response.razorpay_payment_id}</span>
+                      </div>
+                      <div style="display: flex; justify-content: space-between;">
+                        <strong>Amount Paid:</strong>
+                        <span style="color: #10b981; font-weight: bold;">₹${finalTotal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
+                      📧 Order confirmation has been sent to your email and WhatsApp.
+                    </div>
+                  </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: "View Orders",
+                cancelButtonText: "Continue Shopping",
+                confirmButtonColor: "#10b981",
+                cancelButtonColor: "#6b7280",
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  navigate("/my-orders");
+                } else {
+                  navigate("/");
+                }
               });
             } else {
               toast.error("Payment verification failed");
