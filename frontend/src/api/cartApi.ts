@@ -1,8 +1,9 @@
-import axios from 'axios';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { CartItem as CartItemType, CartSummary } from '../types/cartTypes';
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { CartItem as CartItemType, CartSummary } from "../types/cartTypes";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/cart`,
@@ -10,7 +11,7 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -28,7 +29,7 @@ export interface CartResponse {
 
 export interface AddToCartRequest {
   productId: string;
-  licenseType: '1year' | '3year' | 'lifetime';
+  licenseType: "1year" | "3year" | "lifetime";
   quantity?: number;
   subscriptionPlan?: {
     planId: string;
@@ -39,16 +40,19 @@ export interface AddToCartRequest {
 
 export const cartApi = {
   getCart: async (): Promise<CartResponse> => {
-    const response = await api.get('/');
+    const response = await api.get("/");
     return response.data;
   },
 
   addToCart: async (data: AddToCartRequest): Promise<CartResponse> => {
-    const response = await api.post('/add', data);
+    const response = await api.post("/add", data);
     return response.data;
   },
 
-  updateCartItem: async (itemId: string, quantity: number): Promise<CartResponse> => {
+  updateCartItem: async (
+    itemId: string,
+    quantity: number,
+  ): Promise<CartResponse> => {
     const response = await api.put(`/item/${itemId}`, { quantity });
     return response.data;
   },
@@ -59,16 +63,16 @@ export const cartApi = {
   },
 
   clearCart: async (): Promise<CartResponse> => {
-    const response = await api.delete('/clear');
+    const response = await api.delete("/clear");
     return response.data;
   },
 };
 
 export const useCart = () => {
   return useQuery<CartResponse>({
-    queryKey: ['cart'],
+    queryKey: ["cart"],
     queryFn: cartApi.getCart,
-    enabled: !!localStorage.getItem('token'), // Only fetch if user is authenticated
+    enabled: !!localStorage.getItem("token"), // Only fetch if user is authenticated
   });
 };
 
@@ -78,7 +82,7 @@ export const useAddToCart = () => {
   return useMutation({
     mutationFn: cartApi.addToCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
@@ -90,7 +94,7 @@ export const useUpdateCartItem = () => {
     mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) =>
       cartApi.updateCartItem(itemId, quantity),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
@@ -101,7 +105,7 @@ export const useRemoveFromCart = () => {
   return useMutation({
     mutationFn: (itemId: string) => cartApi.removeFromCart(itemId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };
@@ -112,7 +116,7 @@ export const useClearCart = () => {
   return useMutation({
     mutationFn: cartApi.clearCart,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 };

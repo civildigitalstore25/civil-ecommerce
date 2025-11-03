@@ -12,7 +12,7 @@ const PaymentSuccessPage: React.FC = () => {
 
   React.useEffect(() => {
     if (!orderId) {
-      navigate('/');
+      navigate("/");
     }
   }, [orderId, navigate]);
 
@@ -25,7 +25,7 @@ const PaymentSuccessPage: React.FC = () => {
         className="max-w-md w-full p-8 rounded-2xl shadow-xl text-center"
         style={{
           backgroundColor: colors.background.secondary,
-          border: `1px solid ${colors.border.primary}`
+          border: `1px solid ${colors.border.primary}`,
         }}
       >
         <div className="flex justify-center mb-6">
@@ -39,11 +39,9 @@ const PaymentSuccessPage: React.FC = () => {
           Payment Successful!
         </h1>
 
-        <p
-          className="text-lg mb-6"
-          style={{ color: colors.text.secondary }}
-        >
-          Thank you for your order. Your payment has been processed successfully.
+        <p className="text-lg mb-6" style={{ color: colors.text.secondary }}>
+          Thank you for your order. Your payment has been processed
+          successfully.
         </p>
 
         <div
@@ -60,7 +58,9 @@ const PaymentSuccessPage: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span className="font-medium">Amount Paid:</span>
-            <span className="text-green-600 font-bold">₹{amount?.toFixed(2)}</span>
+            <span className="text-green-600 font-bold">
+              ₹{amount?.toFixed(2)}
+            </span>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ const PaymentSuccessPage: React.FC = () => {
           className="text-sm mb-6 p-3 rounded"
           style={{
             backgroundColor: colors.background.primary,
-            color: colors.text.secondary
+            color: colors.text.secondary,
           }}
         >
           📧 Order confirmation has been sent to your email and WhatsApp.
@@ -76,22 +76,22 @@ const PaymentSuccessPage: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => navigate('/orders')}
+            onClick={() => navigate("/orders")}
             className="flex-1 py-3 px-6 rounded-lg font-medium transition-colors"
             style={{
               backgroundColor: colors.interactive.primary,
-              color: 'white'
+              color: "white",
             }}
           >
             View Orders
           </button>
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate("/")}
             className="flex-1 py-3 px-6 rounded-lg font-medium transition-colors"
             style={{
               backgroundColor: colors.background.primary,
               color: colors.text.primary,
-              border: `1px solid ${colors.border.primary}`
+              border: `1px solid ${colors.border.primary}`,
             }}
           >
             Continue Shopping

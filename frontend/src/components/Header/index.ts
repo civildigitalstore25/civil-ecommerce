@@ -1,2 +1,2 @@
-export { default } from './Header';
-export { headerConfig } from './HeaderConfig';
+export { default } from "./Header";
+export { headerConfig } from "./HeaderConfig";

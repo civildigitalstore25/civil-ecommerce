@@ -66,7 +66,7 @@ export interface Product {
   additionalImages?: string[];
   videoUrl?: string;
   activationVideoUrl?: string;
-  status?: 'active' | 'inactive' | 'draft';
+  status?: "active" | "inactive" | "draft";
   isBestSeller?: boolean;
   faqs?: FAQ[];
   createdAt?: string;

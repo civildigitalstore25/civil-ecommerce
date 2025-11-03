@@ -11,5 +11,5 @@ export interface Banner {
   priority: number;
   status: string;
   backgroundColor?: string; // optional
-  textColor?: string;       // optional
+  textColor?: string; // optional
 }

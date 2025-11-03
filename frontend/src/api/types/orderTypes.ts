@@ -29,8 +29,8 @@ export interface IOrder {
   tax: number;
   totalAmount: number;
   shippingAddress: IShippingAddress;
-  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;
@@ -56,4 +56,3 @@ export interface OrderDetailResponse {
   data: IOrder;
   message?: string;
 }
-

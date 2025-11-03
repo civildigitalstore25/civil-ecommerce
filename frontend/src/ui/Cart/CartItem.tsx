@@ -1,8 +1,8 @@
-import React, { useRef, useCallback, useEffect } from 'react';
-import type { CartItem as CartItemType } from '../../types/cartTypes';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { useCurrency } from '../../contexts/CurrencyContext';
-import Swal from 'sweetalert2';
+import React, { useRef, useCallback, useEffect } from "react";
+import type { CartItem as CartItemType } from "../../types/cartTypes";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useCurrency } from "../../contexts/CurrencyContext";
+import Swal from "sweetalert2";
 
 interface CartItemProps {
   item: CartItemType;
@@ -13,7 +13,7 @@ interface CartItemProps {
 const CartItem: React.FC<CartItemProps> = ({
   item,
   onUpdateQuantity,
-  onRemoveItem
+  onRemoveItem,
 }) => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
@@ -33,7 +33,9 @@ const CartItem: React.FC<CartItemProps> = ({
       quantityDisplayRef.current.textContent = item.quantity.toString();
     }
     if (totalPriceRef.current) {
-      totalPriceRef.current.textContent = formatPriceWithSymbol(item.totalPrice);
+      totalPriceRef.current.textContent = formatPriceWithSymbol(
+        item.totalPrice,
+      );
     }
     if (decreaseButtonRef.current) {
       decreaseButtonRef.current.disabled = item.quantity <= 1;
@@ -41,42 +43,53 @@ const CartItem: React.FC<CartItemProps> = ({
   }, [item.quantity, item.totalPrice, formatPriceWithSymbol]);
 
   // Direct DOM update function - NO STATE CHANGE
-  const updateUIDirectly = useCallback((newQuantity: number) => {
-    const newTotalPrice = newQuantity * item.price;
+  const updateUIDirectly = useCallback(
+    (newQuantity: number) => {
+      const newTotalPrice = newQuantity * item.price;
 
-    // Update quantity display
-    if (quantityDisplayRef.current) {
-      quantityDisplayRef.current.textContent = newQuantity.toString();
-    }
+      // Update quantity display
+      if (quantityDisplayRef.current) {
+        quantityDisplayRef.current.textContent = newQuantity.toString();
+      }
 
-    // Update total price display
-    if (totalPriceRef.current) {
-      totalPriceRef.current.textContent = formatPriceWithSymbol(newTotalPrice);
-    }
+      // Update total price display
+      if (totalPriceRef.current) {
+        totalPriceRef.current.textContent =
+          formatPriceWithSymbol(newTotalPrice);
+      }
 
-    // Update decrease button state
-    if (decreaseButtonRef.current) {
-      decreaseButtonRef.current.disabled = newQuantity <= 1;
-    }
+      // Update decrease button state
+      if (decreaseButtonRef.current) {
+        decreaseButtonRef.current.disabled = newQuantity <= 1;
+      }
 
-    // Update the ref
-    currentQuantityRef.current = newQuantity;
-  }, [item.price, formatPriceWithSymbol]);
+      // Update the ref
+      currentQuantityRef.current = newQuantity;
+    },
+    [item.price, formatPriceWithSymbol],
+  );
 
-  const handleQuantityChange = useCallback(async (newQuantity: number) => {
-    if (newQuantity < 1) return;
+  const handleQuantityChange = useCallback(
+    async (newQuantity: number) => {
+      if (newQuantity < 1) return;
 
-    if (newQuantity > 10) {
-      Swal.fire('Maximum Quantity', 'You can only add up to 10 of this item', 'warning');
-      return;
-    }
+      if (newQuantity > 10) {
+        Swal.fire(
+          "Maximum Quantity",
+          "You can only add up to 10 of this item",
+          "warning",
+        );
+        return;
+      }
 
-    // Update UI immediately without re-render
-    updateUIDirectly(newQuantity);
+      // Update UI immediately without re-render
+      updateUIDirectly(newQuantity);
 
-    // Call API in background (this might cause parent re-render, but this component won't)
-    onUpdateQuantity(item.id, newQuantity);
-  }, [item.id, onUpdateQuantity, updateUIDirectly]);
+      // Call API in background (this might cause parent re-render, but this component won't)
+      onUpdateQuantity(item.id, newQuantity);
+    },
+    [item.id, onUpdateQuantity, updateUIDirectly],
+  );
 
   const handleIncrease = useCallback(() => {
     handleQuantityChange(currentQuantityRef.current + 1);
@@ -90,33 +103,63 @@ const CartItem: React.FC<CartItemProps> = ({
     onRemoveItem(item.id);
   }, [item.id, onRemoveItem]);
 
-  const getLicenseBadgeStyle = (licenseType: string, subscriptionPlan?: any) => {
+  const getLicenseBadgeStyle = (
+    licenseType: string,
+    subscriptionPlan?: any,
+  ) => {
     // If subscription plan details are available, use plan-specific styling
     if (subscriptionPlan && subscriptionPlan.planType) {
       switch (subscriptionPlan.planType) {
-        case 'admin-subscription':
-          return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
-        case 'subscription':
-          return { backgroundColor: `${colors.status.success}20`, color: colors.status.success };
-        case 'membership':
-          return { backgroundColor: `${colors.interactive.secondary}20`, color: colors.interactive.secondary };
-        case 'lifetime':
-          return { backgroundColor: `${colors.interactive.secondary}20`, color: colors.interactive.secondary };
+        case "admin-subscription":
+          return {
+            backgroundColor: `${colors.interactive.primary}20`,
+            color: colors.interactive.primary,
+          };
+        case "subscription":
+          return {
+            backgroundColor: `${colors.status.success}20`,
+            color: colors.status.success,
+          };
+        case "membership":
+          return {
+            backgroundColor: `${colors.interactive.secondary}20`,
+            color: colors.interactive.secondary,
+          };
+        case "lifetime":
+          return {
+            backgroundColor: `${colors.interactive.secondary}20`,
+            color: colors.interactive.secondary,
+          };
         default:
-          return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
+          return {
+            backgroundColor: `${colors.interactive.primary}20`,
+            color: colors.interactive.primary,
+          };
       }
     }
 
     // Otherwise, use generic license styling
     switch (licenseType) {
-      case '1year':
-        return { backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary };
-      case '3year':
-        return { backgroundColor: `${colors.status.success}20`, color: colors.status.success };
-      case 'lifetime':
-        return { backgroundColor: `${colors.interactive.secondary}20`, color: colors.interactive.secondary };
+      case "1year":
+        return {
+          backgroundColor: `${colors.interactive.primary}20`,
+          color: colors.interactive.primary,
+        };
+      case "3year":
+        return {
+          backgroundColor: `${colors.status.success}20`,
+          color: colors.status.success,
+        };
+      case "lifetime":
+        return {
+          backgroundColor: `${colors.interactive.secondary}20`,
+          color: colors.interactive.secondary,
+        };
       default:
-        return { backgroundColor: colors.background.secondary, color: colors.text.secondary };
+        return {
+          backgroundColor: colors.background.secondary,
+          color: colors.text.secondary,
+        };
     }
   };
 
@@ -128,14 +171,14 @@ const CartItem: React.FC<CartItemProps> = ({
 
     // Otherwise, use generic license labels
     switch (licenseType) {
-      case '1year':
-        return '1 Year License';
-      case '3year':
-        return '3 Year License';
-      case 'lifetime':
-        return 'Lifetime License';
+      case "1year":
+        return "1 Year License";
+      case "3year":
+        return "3 Year License";
+      case "lifetime":
+        return "Lifetime License";
       default:
-        return 'License';
+        return "License";
     }
   };
 
@@ -144,7 +187,7 @@ const CartItem: React.FC<CartItemProps> = ({
       className="rounded-xl border p-6 hover:shadow-md transition-all duration-200"
       style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       <div className="flex gap-4">
@@ -191,8 +234,18 @@ const CartItem: React.FC<CartItemProps> = ({
               }}
               aria-label="Remove item"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -201,7 +254,10 @@ const CartItem: React.FC<CartItemProps> = ({
           <div className="mb-3">
             <span
               className="inline-block px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200"
-              style={getLicenseBadgeStyle(item.licenseType, item.subscriptionPlan)}
+              style={getLicenseBadgeStyle(
+                item.licenseType,
+                item.subscriptionPlan,
+              )}
             >
               {getLicenseLabel(item.licenseType, item.subscriptionPlan)}
             </span>
@@ -229,16 +285,27 @@ const CartItem: React.FC<CartItemProps> = ({
                 style={{ color: colors.text.primary }}
                 onMouseEnter={(e) => {
                   if (!e.currentTarget.disabled) {
-                    e.currentTarget.style.backgroundColor = colors.interactive.secondaryHover;
+                    e.currentTarget.style.backgroundColor =
+                      colors.interactive.secondaryHover;
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
                 disabled={item.quantity <= 1}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M20 12H4"
+                  />
                 </svg>
               </button>
               <span
@@ -253,14 +320,25 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="p-2 transition-colors"
                 style={{ color: colors.text.primary }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.interactive.secondaryHover;
+                  e.currentTarget.style.backgroundColor =
+                    colors.interactive.secondaryHover;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
               </button>
             </div>

@@ -1,61 +1,81 @@
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package, CheckCircle, XCircle, Clock, Eye, X, Phone, Mail, User, Trash2 } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { getAllOrders, updateOrderStatus, deleteAdminOrder } from '../../api/adminOrderApi';
-import FormButton from '../../components/Button/FormButton';
-import Swal from 'sweetalert2';
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  Package,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Eye,
+  X,
+  Phone,
+  Mail,
+  User,
+  Trash2,
+} from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import {
+  getAllOrders,
+  updateOrderStatus,
+  deleteAdminOrder,
+} from "../../api/adminOrderApi";
+import FormButton from "../../components/Button/FormButton";
+import Swal from "sweetalert2";
 
 const Orders: React.FC = () => {
   const { colors } = useAdminTheme();
   const queryClient = useQueryClient();
-  const [statusFilter, setStatusFilter] = useState<string>('');
-  const [editedStatuses, setEditedStatuses] = useState<Record<string, string>>({});
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [editedStatuses, setEditedStatuses] = useState<Record<string, string>>(
+    {},
+  );
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   // Fetch all orders
   const { data, isLoading } = useQuery({
-    queryKey: ['adminOrders', statusFilter],
-    queryFn: () => getAllOrders({ status: statusFilter || undefined, limit: 100 }),
+    queryKey: ["adminOrders", statusFilter],
+    queryFn: () =>
+      getAllOrders({ status: statusFilter || undefined, limit: 100 }),
   });
 
   // Update order status mutation
   const updateStatusMutation = useMutation({
     mutationFn: ({ orderId, status }: { orderId: string; status: string }) => {
-      console.log('📡 Calling API with:', { orderId, status });
+      console.log("📡 Calling API with:", { orderId, status });
       return updateOrderStatus(orderId, status);
     },
     onSuccess: (data) => {
-      console.log('✅ Update successful:', data);
+      console.log("✅ Update successful:", data);
       Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Order status updated successfully',
+        icon: "success",
+        title: "Success",
+        text: "Order status updated successfully",
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       // Invalidate all admin order queries
-      queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
       // Invalidate all user order queries (this will refresh My Orders page)
-      queryClient.invalidateQueries({ queryKey: ['userOrders'] });
+      queryClient.invalidateQueries({ queryKey: ["userOrders"] });
       // Refetch immediately to ensure UI is up to date
-      queryClient.refetchQueries({ queryKey: ['adminOrders'] });
-      queryClient.refetchQueries({ queryKey: ['userOrders'] });
+      queryClient.refetchQueries({ queryKey: ["adminOrders"] });
+      queryClient.refetchQueries({ queryKey: ["userOrders"] });
       // Clear the edited status after successful update
       setEditedStatuses({});
     },
     onError: (error: any) => {
-      console.error('❌ Update failed:', error);
-      console.error('Error response:', error.response);
-      console.error('Error message:', error.response?.data?.message);
-      console.error('Error status:', error.response?.status);
+      console.error("❌ Update failed:", error);
+      console.error("Error response:", error.response);
+      console.error("Error message:", error.response?.data?.message);
+      console.error("Error status:", error.response?.status);
 
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Failed to update order status',
-        footer: error.response?.status ? `Status Code: ${error.response.status}` : ''
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to update order status",
+        footer: error.response?.status
+          ? `Status Code: ${error.response.status}`
+          : "",
       });
     },
   });
@@ -63,29 +83,29 @@ const Orders: React.FC = () => {
   // Delete order mutation (Admin only)
   const deleteOrderMutation = useMutation({
     mutationFn: (orderId: string) => {
-      console.log('🗑️ Deleting order:', orderId);
+      console.log("🗑️ Deleting order:", orderId);
       return deleteAdminOrder(orderId);
     },
     onSuccess: (data) => {
-      console.log('✅ Delete successful:', data);
+      console.log("✅ Delete successful:", data);
       Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: 'Order has been deleted successfully',
+        icon: "success",
+        title: "Deleted!",
+        text: "Order has been deleted successfully",
         timer: 2000,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
       // Invalidate and refetch queries
-      queryClient.invalidateQueries({ queryKey: ['adminOrders'] });
-      queryClient.invalidateQueries({ queryKey: ['userOrders'] });
-      queryClient.refetchQueries({ queryKey: ['adminOrders'] });
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+      queryClient.invalidateQueries({ queryKey: ["userOrders"] });
+      queryClient.refetchQueries({ queryKey: ["adminOrders"] });
     },
     onError: (error: any) => {
-      console.error('❌ Delete failed:', error);
+      console.error("❌ Delete failed:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.response?.data?.message || 'Failed to delete order',
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to delete order",
       });
     },
   });
@@ -99,18 +119,24 @@ const Orders: React.FC = () => {
 
   // Debug: Log first order to check structure
   if (orders.length > 0) {
-    console.log('📦 First order structure:', orders[0]);
-    console.log('📦 First order orderId:', orders[0].orderId);
-    console.log('📦 First order _id:', orders[0]._id);
-    console.log('📦 Using ID for updates:', getOrderId(orders[0]));
+    console.log("📦 First order structure:", orders[0]);
+    console.log("📦 First order orderId:", orders[0].orderId);
+    console.log("📦 First order _id:", orders[0]._id);
+    console.log("📦 Using ID for updates:", getOrderId(orders[0]));
   }
 
-  const completedOrders = orders.filter((o: any) => o.orderStatus === 'delivered');
-  const processingOrders = orders.filter((o: any) => o.orderStatus === 'processing');
-  const cancelledOrders = orders.filter((o: any) => o.orderStatus === 'cancelled');
+  const completedOrders = orders.filter(
+    (o: any) => o.orderStatus === "delivered",
+  );
+  const processingOrders = orders.filter(
+    (o: any) => o.orderStatus === "processing",
+  );
+  const cancelledOrders = orders.filter(
+    (o: any) => o.orderStatus === "cancelled",
+  );
 
   const getStatusLabel = (status: string) => {
-    if (status.toLowerCase() === 'delivered') return 'Success';
+    if (status.toLowerCase() === "delivered") return "Success";
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
@@ -119,34 +145,34 @@ const Orders: React.FC = () => {
   };
 
   const handleStatusChange = (orderId: string, newStatus: string) => {
-    console.log('🔄 Attempting to update order:', { orderId, newStatus });
+    console.log("🔄 Attempting to update order:", { orderId, newStatus });
 
     if (!orderId) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Order ID is missing. Cannot update status.'
+        icon: "error",
+        title: "Error",
+        text: "Order ID is missing. Cannot update status.",
       });
-      console.error('❌ orderId is undefined or empty:', orderId);
+      console.error("❌ orderId is undefined or empty:", orderId);
       return;
     }
 
     Swal.fire({
-      title: 'Update Order Status?',
+      title: "Update Order Status?",
       text: `Are you sure you want to change the status to ${getStatusLabel(newStatus)}?`,
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Yes, update it',
-      cancelButtonText: 'Cancel'
+      confirmButtonText: "Yes, update it",
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('✅ User confirmed, calling mutation...');
+        console.log("✅ User confirmed, calling mutation...");
         updateStatusMutation.mutate({
           orderId,
           status: newStatus,
         });
       } else {
-        console.log('❌ User cancelled update');
+        console.log("❌ User cancelled update");
       }
     });
   };
@@ -163,20 +189,20 @@ const Orders: React.FC = () => {
 
   const handleDeleteOrder = (order: any) => {
     Swal.fire({
-      title: 'Delete Order?',
+      title: "Delete Order?",
       html: `Are you sure you want to delete order <strong>#${order.orderNumber}</strong>?<br/><small>This action cannot be undone.</small>`,
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes, delete it!',
-      cancelButtonText: 'Cancel'
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
     }).then((result) => {
       if (result.isConfirmed) {
-        console.log('✅ Admin confirmed delete, calling mutation...');
+        console.log("✅ Admin confirmed delete, calling mutation...");
         deleteOrderMutation.mutate(getOrderId(order));
       } else {
-        console.log('❌ Admin cancelled delete');
+        console.log("❌ Admin cancelled delete");
       }
     });
   };
@@ -185,8 +211,10 @@ const Orders: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
-            style={{ borderColor: colors.interactive.primary }}></div>
+          <div
+            className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4"
+            style={{ borderColor: colors.interactive.primary }}
+          ></div>
           <p style={{ color: colors.text.secondary }}>Loading orders...</p>
         </div>
       </div>
@@ -196,7 +224,10 @@ const Orders: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: colors.text.primary }}
+        >
           Orders Management
         </h2>
         <div className="flex items-center space-x-3">
@@ -232,11 +263,17 @@ const Orders: React.FC = () => {
               <p className="text-sm" style={{ color: colors.text.secondary }}>
                 Success Orders
               </p>
-              <h3 className="text-3xl font-bold mt-1" style={{ color: colors.status.success }}>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.status.success }}
+              >
                 {completedOrders.length}
               </h3>
             </div>
-            <CheckCircle className="w-12 h-12" style={{ color: colors.status.success, opacity: 0.2 }} />
+            <CheckCircle
+              className="w-12 h-12"
+              style={{ color: colors.status.success, opacity: 0.2 }}
+            />
           </div>
         </div>
         <div
@@ -251,11 +288,17 @@ const Orders: React.FC = () => {
               <p className="text-sm" style={{ color: colors.text.secondary }}>
                 Processing Orders
               </p>
-              <h3 className="text-3xl font-bold mt-1" style={{ color: colors.interactive.primary }}>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.interactive.primary }}
+              >
                 {processingOrders.length}
               </h3>
             </div>
-            <Clock className="w-12 h-12" style={{ color: colors.interactive.primary, opacity: 0.2 }} />
+            <Clock
+              className="w-12 h-12"
+              style={{ color: colors.interactive.primary, opacity: 0.2 }}
+            />
           </div>
         </div>
         <div
@@ -270,11 +313,17 @@ const Orders: React.FC = () => {
               <p className="text-sm" style={{ color: colors.text.secondary }}>
                 Cancelled Orders
               </p>
-              <h3 className="text-3xl font-bold mt-1" style={{ color: colors.status.error }}>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.status.error }}
+              >
                 {cancelledOrders.length}
               </h3>
             </div>
-            <XCircle className="w-12 h-12" style={{ color: colors.status.error, opacity: 0.2 }} />
+            <XCircle
+              className="w-12 h-12"
+              style={{ color: colors.status.error, opacity: 0.2 }}
+            />
           </div>
         </div>
       </div>
@@ -284,7 +333,7 @@ const Orders: React.FC = () => {
         className="rounded-xl shadow-sm border overflow-hidden transition-colors duration-200"
         style={{
           backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary
+          borderColor: colors.border.primary,
         }}
       >
         <div className="overflow-x-auto">
@@ -293,7 +342,7 @@ const Orders: React.FC = () => {
               className="border-b transition-colors duration-200"
               style={{
                 backgroundColor: colors.background.tertiary,
-                borderBottomColor: colors.border.primary
+                borderBottomColor: colors.border.primary,
               }}
             >
               <tr>
@@ -347,10 +396,17 @@ const Orders: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y transition-colors duration-200" style={{ borderColor: colors.border.secondary }}>
+            <tbody
+              className="divide-y transition-colors duration-200"
+              style={{ borderColor: colors.border.secondary }}
+            >
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center" style={{ color: colors.text.secondary }}>
+                  <td
+                    colSpan={8}
+                    className="py-8 text-center"
+                    style={{ color: colors.text.secondary }}
+                  >
                     No orders found
                   </td>
                 </tr>
@@ -359,32 +415,52 @@ const Orders: React.FC = () => {
                   <tr
                     key={order._id}
                     className="transition-colors duration-200"
-                    style={{ backgroundColor: 'transparent' }}
+                    style={{ backgroundColor: "transparent" }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor = colors.background.accent;
+                      e.currentTarget.style.backgroundColor =
+                        colors.background.accent;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.backgroundColor = "transparent";
                     }}
                   >
-                    <td className="py-4 px-4 font-medium" style={{ color: colors.interactive.primary }}>
+                    <td
+                      className="py-4 px-4 font-medium"
+                      style={{ color: colors.interactive.primary }}
+                    >
                       #{order.orderNumber}
                     </td>
                     <td className="py-4 px-4">
-                      <div className="font-medium" style={{ color: colors.text.primary }}>
-                        {order.userId?.fullName || order.shippingAddress?.fullName || 'N/A'}
+                      <div
+                        className="font-medium"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {order.userId?.fullName ||
+                          order.shippingAddress?.fullName ||
+                          "N/A"}
                       </div>
-                      <div className="text-sm" style={{ color: colors.text.secondary }}>
-                        {order.userId?.email || order.shippingAddress?.phoneNumber || ''}
+                      <div
+                        className="text-sm"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        {order.userId?.email ||
+                          order.shippingAddress?.phoneNumber ||
+                          ""}
                       </div>
                     </td>
-                    <td className="py-4 px-4" style={{ color: colors.text.primary }}>
+                    <td
+                      className="py-4 px-4"
+                      style={{ color: colors.text.primary }}
+                    >
                       <div className="flex items-center">
                         <Package className="w-4 h-4 mr-2" />
                         {order.items?.length || 0} item(s)
                       </div>
                     </td>
-                    <td className="py-4 px-4 font-medium" style={{ color: colors.text.primary }}>
+                    <td
+                      className="py-4 px-4 font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
                       ₹{order.totalAmount?.toLocaleString()}
                     </td>
                     <td className="py-4 px-4">
@@ -392,46 +468,64 @@ const Orders: React.FC = () => {
                         className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full"
                         style={{
                           backgroundColor: colors.background.accent,
-                          color: order.paymentStatus === 'paid' ? colors.status.success : colors.status.warning,
+                          color:
+                            order.paymentStatus === "paid"
+                              ? colors.status.success
+                              : colors.status.warning,
                         }}
                       >
-                        {order.paymentStatus?.charAt(0).toUpperCase() + order.paymentStatus?.slice(1)}
+                        {order.paymentStatus?.charAt(0).toUpperCase() +
+                          order.paymentStatus?.slice(1)}
                       </span>
                     </td>
                     <td className="py-4 px-4 flex items-center gap-2">
                       <select
-                        value={editedStatuses[getOrderId(order)] || order.orderStatus}
-                        onChange={(e) => handleStatusSelect(getOrderId(order), e.target.value)}
+                        value={
+                          editedStatuses[getOrderId(order)] || order.orderStatus
+                        }
+                        onChange={(e) =>
+                          handleStatusSelect(getOrderId(order), e.target.value)
+                        }
                         className="border rounded px-2 py-1 text-sm transition-colors duration-200"
                         style={{
                           backgroundColor: colors.background.tertiary,
                           borderColor: colors.border.primary,
-                          color: colors.text.primary
+                          color: colors.text.primary,
                         }}
                       >
                         <option value="processing">Processing</option>
                         <option value="delivered">Success</option>
                         <option value="cancelled">Cancelled</option>
                       </select>
-                      {editedStatuses[getOrderId(order)] && editedStatuses[getOrderId(order)] !== order.orderStatus && (
-                        <FormButton
-                          onClick={() => handleStatusChange(getOrderId(order), editedStatuses[getOrderId(order)])}
-                          className="text-sm transition-colors duration-200"
-                          style={{
-                            color: colors.interactive.primary,
-                            backgroundColor: 'transparent',
-                            border: 'none'
-                          }}
-                        >
-                          Update
-                        </FormButton>
-                      )}
+                      {editedStatuses[getOrderId(order)] &&
+                        editedStatuses[getOrderId(order)] !==
+                          order.orderStatus && (
+                          <FormButton
+                            onClick={() =>
+                              handleStatusChange(
+                                getOrderId(order),
+                                editedStatuses[getOrderId(order)],
+                              )
+                            }
+                            className="text-sm transition-colors duration-200"
+                            style={{
+                              color: colors.interactive.primary,
+                              backgroundColor: "transparent",
+                              border: "none",
+                            }}
+                          >
+                            Update
+                          </FormButton>
+                        )}
                     </td>
-                    <td className="py-4 px-4" style={{ color: colors.text.secondary }}>
-                      {new Date(order.createdAt).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
+                    <td
+                      className="py-4 px-4"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
                       })}
                     </td>
                     <td className="py-4 px-4">
@@ -444,12 +538,15 @@ const Orders: React.FC = () => {
                             color: colors.interactive.primary,
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = colors.interactive.primary;
-                            e.currentTarget.style.color = '#ffffff';
+                            e.currentTarget.style.backgroundColor =
+                              colors.interactive.primary;
+                            e.currentTarget.style.color = "#ffffff";
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = colors.background.accent;
-                            e.currentTarget.style.color = colors.interactive.primary;
+                            e.currentTarget.style.backgroundColor =
+                              colors.background.accent;
+                            e.currentTarget.style.color =
+                              colors.interactive.primary;
                           }}
                           title="View order details"
                         >
@@ -465,12 +562,14 @@ const Orders: React.FC = () => {
                           }}
                           onMouseEnter={(e) => {
                             if (!deleteOrderMutation.isPending) {
-                              e.currentTarget.style.backgroundColor = colors.status.error;
-                              e.currentTarget.style.color = '#ffffff';
+                              e.currentTarget.style.backgroundColor =
+                                colors.status.error;
+                              e.currentTarget.style.color = "#ffffff";
                             }
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = colors.background.accent;
+                            e.currentTarget.style.backgroundColor =
+                              colors.background.accent;
                             e.currentTarget.style.color = colors.status.error;
                           }}
                           title="Delete order"
@@ -507,10 +606,16 @@ const Orders: React.FC = () => {
               }}
             >
               <div>
-                <h3 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
+                <h3
+                  className="text-2xl font-bold"
+                  style={{ color: colors.text.primary }}
+                >
                   Order Details
                 </h3>
-                <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: colors.text.secondary }}
+                >
                   Order #{selectedOrder.orderNumber} • {selectedOrder.orderId}
                 </p>
               </div>
@@ -534,16 +639,19 @@ const Orders: React.FC = () => {
                     borderColor: colors.border.primary,
                   }}
                 >
-                  <p className="text-sm mb-1" style={{ color: colors.text.secondary }}>
+                  <p
+                    className="text-sm mb-1"
+                    style={{ color: colors.text.secondary }}
+                  >
                     Order Status
                   </p>
                   <p
                     className="text-lg font-semibold capitalize"
                     style={{
                       color:
-                        selectedOrder.orderStatus === 'delivered'
+                        selectedOrder.orderStatus === "delivered"
                           ? colors.status.success
-                          : selectedOrder.orderStatus === 'cancelled'
+                          : selectedOrder.orderStatus === "cancelled"
                             ? colors.status.error
                             : colors.interactive.primary,
                     }}
@@ -558,14 +666,17 @@ const Orders: React.FC = () => {
                     borderColor: colors.border.primary,
                   }}
                 >
-                  <p className="text-sm mb-1" style={{ color: colors.text.secondary }}>
+                  <p
+                    className="text-sm mb-1"
+                    style={{ color: colors.text.secondary }}
+                  >
                     Payment Status
                   </p>
                   <p
                     className="text-lg font-semibold capitalize"
                     style={{
                       color:
-                        selectedOrder.paymentStatus === 'paid'
+                        selectedOrder.paymentStatus === "paid"
                           ? colors.status.success
                           : colors.status.warning,
                     }}
@@ -580,15 +691,24 @@ const Orders: React.FC = () => {
                     borderColor: colors.border.primary,
                   }}
                 >
-                  <p className="text-sm mb-1" style={{ color: colors.text.secondary }}>
+                  <p
+                    className="text-sm mb-1"
+                    style={{ color: colors.text.secondary }}
+                  >
                     Order Date
                   </p>
-                  <p className="text-lg font-semibold" style={{ color: colors.text.primary }}>
-                    {new Date(selectedOrder.createdAt).toLocaleDateString('en-IN', {
-                      day: '2-digit',
-                      month: 'short',
-                      year: 'numeric',
-                    })}
+                  <p
+                    className="text-lg font-semibold"
+                    style={{ color: colors.text.primary }}
+                  >
+                    {new Date(selectedOrder.createdAt).toLocaleDateString(
+                      "en-IN",
+                      {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                      },
+                    )}
                   </p>
                 </div>
               </div>
@@ -610,35 +730,62 @@ const Orders: React.FC = () => {
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <User className="w-5 h-5 mt-0.5" style={{ color: colors.text.secondary }} />
+                    <User
+                      className="w-5 h-5 mt-0.5"
+                      style={{ color: colors.text.secondary }}
+                    />
                     <div>
-                      <p className="text-sm" style={{ color: colors.text.secondary }}>
+                      <p
+                        className="text-sm"
+                        style={{ color: colors.text.secondary }}
+                      >
                         Name
                       </p>
-                      <p className="font-medium" style={{ color: colors.text.primary }}>
+                      <p
+                        className="font-medium"
+                        style={{ color: colors.text.primary }}
+                      >
                         {selectedOrder.shippingAddress.fullName}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 mt-0.5" style={{ color: colors.text.secondary }} />
+                    <Phone
+                      className="w-5 h-5 mt-0.5"
+                      style={{ color: colors.text.secondary }}
+                    />
                     <div>
-                      <p className="text-sm" style={{ color: colors.text.secondary }}>
+                      <p
+                        className="text-sm"
+                        style={{ color: colors.text.secondary }}
+                      >
                         Phone
                       </p>
-                      <p className="font-medium" style={{ color: colors.text.primary }}>
+                      <p
+                        className="font-medium"
+                        style={{ color: colors.text.primary }}
+                      >
                         {selectedOrder.shippingAddress.phoneNumber}
                       </p>
                     </div>
                   </div>
                   {selectedOrder.userId?.email && (
                     <div className="flex items-start gap-3">
-                      <Mail className="w-5 h-5 mt-0.5" style={{ color: colors.text.secondary }} />
+                      <Mail
+                        className="w-5 h-5 mt-0.5"
+                        style={{ color: colors.text.secondary }}
+                      />
                       <div>
-                        <p className="text-sm" style={{ color: colors.text.secondary }}>
+                        <p
+                          className="text-sm"
+                          style={{ color: colors.text.secondary }}
+                        >
                           Email
                         </p>
-                        <p className="font-medium" style={{ color: colors.text.primary }}>
+                        <p
+                          className="font-medium"
+                          style={{ color: colors.text.primary }}
+                        >
                           {selectedOrder.userId.email}
                         </p>
                       </div>
@@ -707,15 +854,25 @@ const Orders: React.FC = () => {
                         />
                       )}
                       <div className="flex-1">
-                        <p className="font-medium" style={{ color: colors.text.primary }}>
+                        <p
+                          className="font-medium"
+                          style={{ color: colors.text.primary }}
+                        >
                           {item.name}
                         </p>
-                        <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
-                          Quantity: {item.quantity} × ₹{item.price.toLocaleString()}
+                        <p
+                          className="text-sm mt-1"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Quantity: {item.quantity} × ₹
+                          {item.price.toLocaleString()}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold" style={{ color: colors.text.primary }}>
+                        <p
+                          className="font-semibold"
+                          style={{ color: colors.text.primary }}
+                        >
                           ₹{(item.quantity * item.price).toLocaleString()}
                         </p>
                       </div>
@@ -740,14 +897,18 @@ const Orders: React.FC = () => {
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span style={{ color: colors.text.secondary }}>Subtotal</span>
+                    <span style={{ color: colors.text.secondary }}>
+                      Subtotal
+                    </span>
                     <span style={{ color: colors.text.primary }}>
                       ₹{selectedOrder.subtotal.toLocaleString()}
                     </span>
                   </div>
                   {selectedOrder.discount > 0 && (
                     <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>Discount</span>
+                      <span style={{ color: colors.text.secondary }}>
+                        Discount
+                      </span>
                       <span style={{ color: colors.status.success }}>
                         -₹{selectedOrder.discount.toLocaleString()}
                       </span>
@@ -755,7 +916,9 @@ const Orders: React.FC = () => {
                   )}
                   {selectedOrder.shippingCharges > 0 && (
                     <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>Shipping</span>
+                      <span style={{ color: colors.text.secondary }}>
+                        Shipping
+                      </span>
                       <span style={{ color: colors.text.primary }}>
                         ₹{selectedOrder.shippingCharges.toLocaleString()}
                       </span>
@@ -773,7 +936,9 @@ const Orders: React.FC = () => {
                     className="flex justify-between pt-3 border-t text-lg font-bold"
                     style={{ borderTopColor: colors.border.primary }}
                   >
-                    <span style={{ color: colors.text.primary }}>Total Amount</span>
+                    <span style={{ color: colors.text.primary }}>
+                      Total Amount
+                    </span>
                     <span style={{ color: colors.interactive.primary }}>
                       ₹{selectedOrder.totalAmount.toLocaleString()}
                     </span>
@@ -796,7 +961,9 @@ const Orders: React.FC = () => {
                   >
                     Notes
                   </h4>
-                  <p style={{ color: colors.text.secondary }}>{selectedOrder.notes}</p>
+                  <p style={{ color: colors.text.secondary }}>
+                    {selectedOrder.notes}
+                  </p>
                 </div>
               )}
 
@@ -817,15 +984,25 @@ const Orders: React.FC = () => {
                   </h4>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>Payment ID</span>
-                      <span className="font-mono" style={{ color: colors.text.primary }}>
+                      <span style={{ color: colors.text.secondary }}>
+                        Payment ID
+                      </span>
+                      <span
+                        className="font-mono"
+                        style={{ color: colors.text.primary }}
+                      >
                         {selectedOrder.razorpayPaymentId}
                       </span>
                     </div>
                     {selectedOrder.razorpayOrderId && (
                       <div className="flex justify-between">
-                        <span style={{ color: colors.text.secondary }}>Razorpay Order ID</span>
-                        <span className="font-mono" style={{ color: colors.text.primary }}>
+                        <span style={{ color: colors.text.secondary }}>
+                          Razorpay Order ID
+                        </span>
+                        <span
+                          className="font-mono"
+                          style={{ color: colors.text.primary }}
+                        >
                           {selectedOrder.razorpayOrderId}
                         </span>
                       </div>
@@ -848,7 +1025,7 @@ const Orders: React.FC = () => {
                 className="px-6 py-2.5 rounded-lg font-medium transition-colors duration-200"
                 style={{
                   backgroundColor: colors.interactive.primary,
-                  color: '#ffffff',
+                  color: "#ffffff",
                 }}
               >
                 Close

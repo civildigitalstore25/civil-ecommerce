@@ -8,7 +8,7 @@ const MarqueeBanner: React.FC = () => {
     <section
       className="w-full overflow-hidden shadow-md transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`
+        background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
       }}
     >
       <div className="relative flex overflow-hidden">
@@ -16,8 +16,13 @@ const MarqueeBanner: React.FC = () => {
           className="animate-marquee flex items-center space-x-12 py-2 text-base font-medium transition-colors duration-200"
           style={{ color: colors.background.primary }}
         >
-          <span>🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it now!</span>
-          <span>🎉 Limited time offer – <strong>Hurry, stocks running out!</strong></span>
+          <span>
+            🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it
+            now!
+          </span>
+          <span>
+            🎉 Limited time offer – <strong>Hurry, stocks running out!</strong>
+          </span>
           <span>⭐ Trusted by 10,000+ users – Don't miss your chance!..</span>
           <span className="inline-block w-1"></span>
         </div>
@@ -27,8 +32,13 @@ const MarqueeBanner: React.FC = () => {
           aria-hidden="true"
           style={{ color: colors.background.primary }}
         >
-          <span>🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it now!</span>
-          <span>🎉 Limited time offer – <strong>Hurry, stocks running out!</strong></span>
+          <span>
+            🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it
+            now!
+          </span>
+          <span>
+            🎉 Limited time offer – <strong>Hurry, stocks running out!</strong>
+          </span>
           <span>⭐ Trusted by 10,000+ users – Don't miss your chance!</span>
         </div>
       </div>

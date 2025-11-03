@@ -1,5 +1,5 @@
 // ui/admin/AdminDashboard.tsx
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   BarChart3,
   Package,
@@ -7,60 +7,72 @@ import {
   Building2,
   ShoppingCart,
   Settings as SettingsIcon,
-  Users, Image, TicketPercent,
+  Users,
+  Image,
+  TicketPercent,
   MessageSquare,
-} from 'lucide-react';
-import Dashboard from './Dashboard';
-import Products from './products/Products';
-import Categories from './Categories';
-import Companies from './Companies';
-import Orders from './Orders';
-import Settings from './Settings';
-import UserManagement from './users/UserManagement';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import Banner from './Banner';
-import Coupons from '../admin/coupons/Coupons';
-import Reviews from './Reviews';
-type MenuType = 'dashboard' | 'users' | 'products' | 'categories' | 'companies' | 'orders' | 'settings' | 'banner' | 'coupons' | 'reviews';
+} from "lucide-react";
+import Dashboard from "./Dashboard";
+import Products from "./products/Products";
+import Categories from "./Categories";
+import Companies from "./Companies";
+import Orders from "./Orders";
+import Settings from "./Settings";
+import UserManagement from "./users/UserManagement";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import Banner from "./Banner";
+import Coupons from "../admin/coupons/Coupons";
+import Reviews from "./Reviews";
+type MenuType =
+  | "dashboard"
+  | "users"
+  | "products"
+  | "categories"
+  | "companies"
+  | "orders"
+  | "settings"
+  | "banner"
+  | "coupons"
+  | "reviews";
 
 const AdminDashboardContent: React.FC = () => {
-  const [activeMenu, setActiveMenu] = useState<MenuType>('dashboard');
+  const [activeMenu, setActiveMenu] = useState<MenuType>("dashboard");
   const { colors } = useAdminTheme();
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'products', label: 'Products', icon: Package },
-    { id: 'categories', label: 'Categories', icon: Tag },
-    { id: 'companies', label: 'Companies', icon: Building2 },
-    { id: 'orders', label: 'Orders', icon: ShoppingCart },
-    { id: 'reviews', label: 'Reviews', icon: MessageSquare },
-    { id: 'banner', label: 'Banner', icon: Image },
-    { id: 'coupons', label: 'Coupons', icon: TicketPercent },
-    { id: 'settings', label: 'Settings', icon: SettingsIcon }
+    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+    { id: "users", label: "Users", icon: Users },
+    { id: "products", label: "Products", icon: Package },
+    { id: "categories", label: "Categories", icon: Tag },
+    { id: "companies", label: "Companies", icon: Building2 },
+    { id: "orders", label: "Orders", icon: ShoppingCart },
+    { id: "reviews", label: "Reviews", icon: MessageSquare },
+    { id: "banner", label: "Banner", icon: Image },
+    { id: "coupons", label: "Coupons", icon: TicketPercent },
+    { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
   const renderContent = () => {
     switch (activeMenu) {
-      case 'dashboard':
+      case "dashboard":
         return <Dashboard />;
-      case 'users':
+      case "users":
         return <UserManagement />;
-      case 'products':
+      case "products":
         return <Products />;
-      case 'categories':
+      case "categories":
         return <Categories />;
-      case 'companies':
+      case "companies":
         return <Companies />;
-      case 'orders':
+      case "orders":
         return <Orders />;
-      case 'reviews':
+      case "reviews":
         return <Reviews />;
-      case 'banner':
+      case "banner":
         return <Banner />;
-      case 'coupons':
+      case "coupons":
         return <Coupons />;
-      case 'settings':
+      case "settings":
         return <Settings />;
       default:
         return <Dashboard />;
@@ -78,7 +90,7 @@ const AdminDashboardContent: React.FC = () => {
         style={{
           backgroundColor: colors.background.tertiary,
           borderBottomColor: colors.border.primary,
-          borderBottomWidth: '1px'
+          borderBottomWidth: "1px",
         }}
       >
         <div className="px-6 py-4">
@@ -112,8 +124,12 @@ const AdminDashboardContent: React.FC = () => {
                   onClick={() => setActiveMenu(item.id as MenuType)}
                   className="flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap"
                   style={{
-                    borderBottomColor: isActive ? colors.interactive.primary : 'transparent',
-                    color: isActive ? colors.interactive.primary : colors.text.secondary,
+                    borderBottomColor: isActive
+                      ? colors.interactive.primary
+                      : "transparent",
+                    color: isActive
+                      ? colors.interactive.primary
+                      : colors.text.secondary,
                   }}
                   onMouseEnter={(e) => {
                     if (!isActive) {
@@ -136,9 +152,7 @@ const AdminDashboardContent: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 py-8">
-        {renderContent()}
-      </div>
+      <div className="px-6 py-8">{renderContent()}</div>
     </div>
   );
 };

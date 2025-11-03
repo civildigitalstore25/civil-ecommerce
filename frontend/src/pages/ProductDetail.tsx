@@ -1,14 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useProductDetail } from '../api/productApi';
-import { useCartContext } from '../contexts/CartContext';
-import { useUser } from '../api/userQueries';
-import { useAdminTheme } from '../contexts/AdminThemeContext';
-import { useCurrency } from '../contexts/CurrencyContext';
-import { getProductReviews, getProductReviewStats, createReview, updateReview, deleteReview, type Review, type ReviewStats } from '../api/reviewApi';
-import BannerCarousel from '../ui/admin/banner/BannerCarousel';
-import Swal from 'sweetalert2';
-import * as LucideIcons from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useProductDetail } from "../api/productApi";
+import { useCartContext } from "../contexts/CartContext";
+import { useUser } from "../api/userQueries";
+import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { useCurrency } from "../contexts/CurrencyContext";
+import {
+  getProductReviews,
+  getProductReviewStats,
+  createReview,
+  updateReview,
+  deleteReview,
+  type Review,
+  type ReviewStats,
+} from "../api/reviewApi";
+import BannerCarousel from "../ui/admin/banner/BannerCarousel";
+import Swal from "sweetalert2";
+import * as LucideIcons from "lucide-react";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -18,7 +26,12 @@ interface FAQItemProps {
   colors: any;
 }
 
-const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) => {
+const FAQItem: React.FC<FAQItemProps> = ({
+  question,
+  answer,
+  index,
+  colors,
+}) => {
   const [isOpen, setIsOpen] = useState(index === 0); // First item open by default
 
   return (
@@ -26,7 +39,9 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) =>
       className="rounded-2xl border transition-all duration-300"
       style={{
         backgroundColor: colors.background.secondary,
-        borderColor: isOpen ? colors.interactive.primary : colors.border.primary
+        borderColor: isOpen
+          ? colors.interactive.primary
+          : colors.border.primary,
       }}
     >
       <button
@@ -38,8 +53,10 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) =>
           <div
             className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors duration-200"
             style={{
-              backgroundColor: isOpen ? colors.interactive.primary : colors.background.primary,
-              color: isOpen ? colors.background.primary : colors.text.secondary
+              backgroundColor: isOpen
+                ? colors.interactive.primary
+                : colors.background.primary,
+              color: isOpen ? colors.background.primary : colors.text.secondary,
             }}
           >
             {index + 1}
@@ -49,7 +66,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) =>
           </h4>
         </div>
         <div
-          className={`w-6 h-6 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+          className={`w-6 h-6 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
           style={{ color: colors.interactive.primary }}
         >
           <LucideIcons.ChevronDown size={24} />
@@ -60,7 +77,7 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) =>
         <div className="px-6 pb-6">
           <div
             className="pl-12 border-l-2 transition-colors duration-200"
-            style={{ borderColor: colors.interactive.primary + '30' }}
+            style={{ borderColor: colors.interactive.primary + "30" }}
           >
             <p
               className="leading-relaxed"
@@ -78,9 +95,11 @@ const FAQItem: React.FC<FAQItemProps> = ({ question, answer, index, colors }) =>
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: product, isLoading } = useProductDetail(id);
-  const [selectedLicense, setSelectedLicense] = useState<string>('yearly');
+  const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
   const [mainImage, setMainImage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'features' | 'requirements' | 'reviews' | 'faq'>('features');
+  const [activeTab, setActiveTab] = useState<
+    "features" | "requirements" | "reviews" | "faq"
+  >("features");
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -93,9 +112,8 @@ const ProductDetail: React.FC = () => {
   const [reviewsLoading, setReviewsLoading] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
-  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: '' });
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
-
 
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
@@ -109,7 +127,7 @@ const ProductDetail: React.FC = () => {
 
   // Load reviews when component mounts or product changes
   useEffect(() => {
-    console.log('useEffect triggered with id:', id);
+    console.log("useEffect triggered with id:", id);
     if (id) {
       loadReviews();
       loadReviewStats();
@@ -124,7 +142,7 @@ const ProductDetail: React.FC = () => {
       const response = await getProductReviews(id);
       setReviews(response.reviews);
     } catch (error) {
-      console.error('Error loading reviews:', error);
+      console.error("Error loading reviews:", error);
     } finally {
       setReviewsLoading(false);
     }
@@ -132,18 +150,18 @@ const ProductDetail: React.FC = () => {
 
   // Load review statistics
   const loadReviewStats = async () => {
-    console.log('loadReviewStats called with id:', id);
+    console.log("loadReviewStats called with id:", id);
     if (!id) {
-      console.log('No id provided, returning');
+      console.log("No id provided, returning");
       return;
     }
     try {
-      console.log('Calling getProductReviewStats with id:', id);
+      console.log("Calling getProductReviewStats with id:", id);
       const stats = await getProductReviewStats(id);
-      console.log('Review stats loaded:', stats);
+      console.log("Review stats loaded:", stats);
       setReviewStats(stats);
     } catch (error) {
-      console.error('Error loading review stats:', error);
+      console.error("Error loading review stats:", error);
     }
   };
 
@@ -152,21 +170,21 @@ const ProductDetail: React.FC = () => {
     e.preventDefault();
     if (!user) {
       Swal.fire({
-        title: 'Login Required',
-        text: 'Please login to post a review',
-        icon: 'info',
-        confirmButtonText: 'Login',
+        title: "Login Required",
+        text: "Please login to post a review",
+        icon: "info",
+        confirmButtonText: "Login",
         showCancelButton: true,
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/signin');
+          navigate("/signin");
         }
       });
       return;
     }
 
     if (!reviewForm.comment.trim()) {
-      Swal.fire('Error', 'Please enter a comment', 'error');
+      Swal.fire("Error", "Please enter a comment", "error");
       return;
     }
 
@@ -174,19 +192,23 @@ const ProductDetail: React.FC = () => {
       setSubmittingReview(true);
       if (editingReview) {
         await updateReview(editingReview._id, reviewForm);
-        Swal.fire('Success', 'Review updated successfully', 'success');
+        Swal.fire("Success", "Review updated successfully", "success");
       } else {
         await createReview(id!, reviewForm);
-        Swal.fire('Success', 'Review posted successfully', 'success');
+        Swal.fire("Success", "Review posted successfully", "success");
       }
 
-      setReviewForm({ rating: 5, comment: '' });
+      setReviewForm({ rating: 5, comment: "" });
       setShowReviewForm(false);
       setEditingReview(null);
       loadReviews();
       loadReviewStats();
     } catch (error: any) {
-      Swal.fire('Error', error.response?.data?.message || 'Failed to submit review', 'error');
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to submit review",
+        "error",
+      );
     } finally {
       setSubmittingReview(false);
     }
@@ -194,12 +216,16 @@ const ProductDetail: React.FC = () => {
 
   // Handle review editing
   const handleEditReview = (review: Review) => {
-    console.log('handleEditReview called');
-    console.log('user:', user);
-    console.log('user.id:', user?.id);
-    console.log('review.user._id:', review.user._id);
-    console.log('user.role:', user?.role);
-    console.log('Comparison result:', user?.id !== review.user._id, user?.role !== 'admin');
+    console.log("handleEditReview called");
+    console.log("user:", user);
+    console.log("user.id:", user?.id);
+    console.log("review.user._id:", review.user._id);
+    console.log("user.role:", user?.role);
+    console.log(
+      "Comparison result:",
+      user?.id !== review.user._id,
+      user?.role !== "admin",
+    );
 
     // Temporarily allow all edits for debugging
     // if (!user || (user.id !== review.user._id && user.role !== 'admin')) {
@@ -216,22 +242,26 @@ const ProductDetail: React.FC = () => {
     if (!user) return;
 
     const result = await Swal.fire({
-      title: 'Delete Review',
-      text: 'Are you sure you want to delete this review?',
-      icon: 'warning',
+      title: "Delete Review",
+      text: "Are you sure you want to delete this review?",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: 'Delete',
+      confirmButtonText: "Delete",
     });
 
     if (!result.isConfirmed) return;
 
     try {
       await deleteReview(reviewId);
-      Swal.fire('Success', 'Review deleted successfully', 'success');
+      Swal.fire("Success", "Review deleted successfully", "success");
       loadReviews();
       loadReviewStats();
     } catch (error: any) {
-      Swal.fire('Error', error.response?.data?.message || 'Failed to delete review', 'error');
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to delete review",
+        "error",
+      );
     }
   };
 
@@ -242,77 +272,104 @@ const ProductDetail: React.FC = () => {
     const options = [];
 
     // Add subscription durations if available (main pricing options)
-    if (product.subscriptionDurations && product.subscriptionDurations.length > 0) {
+    if (
+      product.subscriptionDurations &&
+      product.subscriptionDurations.length > 0
+    ) {
       product.subscriptionDurations.forEach((sub, index) => {
-        if ((sub.price && sub.price > 0) || (sub.priceINR && sub.priceINR > 0) || (sub.priceUSD && sub.priceUSD > 0)) {
+        if (
+          (sub.price && sub.price > 0) ||
+          (sub.priceINR && sub.priceINR > 0) ||
+          (sub.priceUSD && sub.priceUSD > 0)
+        ) {
           options.push({
             id: `subscription-${index}`,
             label: sub.duration,
             priceINR: sub.priceINR || sub.price || 0,
             priceUSD: sub.priceUSD || (sub.price ? sub.price / 83 : 0),
-            type: 'subscription',
-            badge: sub.duration.toLowerCase().includes('1') ? 'Most Popular' :
-              sub.duration.toLowerCase().includes('3') ? 'Save 30%' : null,
-            savings: null
+            type: "subscription",
+            badge: sub.duration.toLowerCase().includes("1")
+              ? "Most Popular"
+              : sub.duration.toLowerCase().includes("3")
+                ? "Save 30%"
+                : null,
+            savings: null,
           });
         }
       });
     } else {
       // Fallback to legacy pricing structure
-      if ((product.price1 && product.price1 > 0) || (product.price1INR && product.price1INR > 0)) {
+      if (
+        (product.price1 && product.price1 > 0) ||
+        (product.price1INR && product.price1INR > 0)
+      ) {
         options.push({
-          id: 'yearly',
-          label: '1 Year License',
+          id: "yearly",
+          label: "1 Year License",
           priceINR: product.price1INR || product.price1 || 0,
-          priceUSD: product.price1USD || (product.price1 ? product.price1 / 83 : 0),
-          type: 'yearly',
-          badge: 'Most Popular',
-          savings: null
+          priceUSD:
+            product.price1USD || (product.price1 ? product.price1 / 83 : 0),
+          type: "yearly",
+          badge: "Most Popular",
+          savings: null,
         });
       }
 
-      if ((product.price3 && product.price3 > 0) || (product.price3INR && product.price3INR > 0)) {
+      if (
+        (product.price3 && product.price3 > 0) ||
+        (product.price3INR && product.price3INR > 0)
+      ) {
         options.push({
-          id: '3year',
-          label: '3 Year License',
+          id: "3year",
+          label: "3 Year License",
           priceINR: product.price3INR || product.price3 || 0,
-          priceUSD: product.price3USD || (product.price3 ? product.price3 / 83 : 0),
-          type: '3year',
-          badge: 'Save 30%',
-          savings: null
+          priceUSD:
+            product.price3USD || (product.price3 ? product.price3 / 83 : 0),
+          type: "3year",
+          badge: "Save 30%",
+          savings: null,
         });
       }
     }
 
     // Add lifetime option if available
-    const lifetimePrice = product.lifetimePriceINR || product.priceLifetime || product.lifetimePrice || 0;
+    const lifetimePrice =
+      product.lifetimePriceINR ||
+      product.priceLifetime ||
+      product.lifetimePrice ||
+      0;
     if (lifetimePrice > 0) {
-      const yearlyPrice = options.find(opt => opt.type === 'yearly' || opt.type === 'subscription')?.priceINR || 0;
+      const yearlyPrice =
+        options.find(
+          (opt) => opt.type === "yearly" || opt.type === "subscription",
+        )?.priceINR || 0;
       const threeYearTotal = yearlyPrice * 3;
-      const savings = threeYearTotal > lifetimePrice ? threeYearTotal - lifetimePrice : 0;
+      const savings =
+        threeYearTotal > lifetimePrice ? threeYearTotal - lifetimePrice : 0;
 
       options.push({
-        id: 'lifetime',
-        label: 'Lifetime License',
+        id: "lifetime",
+        label: "Lifetime License",
         priceINR: lifetimePrice,
-        priceUSD: product.lifetimePriceUSD || (lifetimePrice / 83),
-        type: 'lifetime',
-        badge: 'Best Value',
-        savings: savings > 0 ? `Save ₹${savings.toLocaleString()}` : null
+        priceUSD: product.lifetimePriceUSD || lifetimePrice / 83,
+        type: "lifetime",
+        badge: "Best Value",
+        savings: savings > 0 ? `Save ₹${savings.toLocaleString()}` : null,
       });
     }
 
     // Add membership option if available
-    const membershipPrice = product.membershipPriceINR || product.membershipPrice || 0;
+    const membershipPrice =
+      product.membershipPriceINR || product.membershipPrice || 0;
     if (membershipPrice > 0) {
       options.push({
-        id: 'membership',
-        label: 'Membership',
+        id: "membership",
+        label: "Membership",
         priceINR: membershipPrice,
-        priceUSD: product.membershipPriceUSD || (membershipPrice / 83),
-        type: 'membership',
-        badge: 'Premium Access',
-        savings: null
+        priceUSD: product.membershipPriceUSD || membershipPrice / 83,
+        type: "membership",
+        badge: "Premium Access",
+        savings: null,
       });
     }
 
@@ -324,30 +381,47 @@ const ProductDetail: React.FC = () => {
     if (!product || !product.subscriptions) return [];
 
     return product.subscriptions
-      .filter(sub => (sub.price && sub.price > 0) || (sub.priceINR && sub.priceINR > 0) || (sub.priceUSD && sub.priceUSD > 0))
+      .filter(
+        (sub) =>
+          (sub.price && sub.price > 0) ||
+          (sub.priceINR && sub.priceINR > 0) ||
+          (sub.priceUSD && sub.priceUSD > 0),
+      )
       .map((sub, index) => ({
         id: `admin-subscription-${index}`,
         label: sub.duration,
         priceINR: sub.priceINR || sub.price || 0,
         priceUSD: sub.priceUSD || (sub.price ? sub.price / 83 : 0),
-        type: 'admin-subscription',
-        badge: sub.duration.toLowerCase().includes('monthly') ? 'Flexible' :
-          sub.duration.toLowerCase().includes('annual') ? 'Best Deal' : null,
-        savings: null
+        type: "admin-subscription",
+        badge: sub.duration.toLowerCase().includes("monthly")
+          ? "Flexible"
+          : sub.duration.toLowerCase().includes("annual")
+            ? "Best Deal"
+            : null,
+        savings: null,
       }));
   };
 
   const pricingOptions = getAllPricingOptions();
   const adminSubscriptionPlans = getAdminSubscriptionPlans();
   const allPricingOptions = [...pricingOptions, ...adminSubscriptionPlans];
-  const selectedOption = allPricingOptions.find(opt => opt.id === selectedLicense) || allPricingOptions[0];
+  const selectedOption =
+    allPricingOptions.find((opt) => opt.id === selectedLicense) ||
+    allPricingOptions[0];
 
   // Group pricing options by type
-  const licenseOptions = pricingOptions.filter(opt => opt.type === 'yearly' || opt.type === '3year');
-  const subscriptionOptions = pricingOptions.filter(opt => opt.type === 'subscription');
-  const lifetimeOptions = pricingOptions.filter(opt => opt.type === 'lifetime');
-  const membershipOptions = pricingOptions.filter(opt => opt.type === 'membership');
-
+  const licenseOptions = pricingOptions.filter(
+    (opt) => opt.type === "yearly" || opt.type === "3year",
+  );
+  const subscriptionOptions = pricingOptions.filter(
+    (opt) => opt.type === "subscription",
+  );
+  const lifetimeOptions = pricingOptions.filter(
+    (opt) => opt.type === "lifetime",
+  );
+  const membershipOptions = pricingOptions.filter(
+    (opt) => opt.type === "membership",
+  );
 
   React.useEffect(() => {
     if (allPricingOptions.length > 0 && !selectedOption) {
@@ -355,34 +429,32 @@ const ProductDetail: React.FC = () => {
     }
   }, [allPricingOptions, selectedOption]);
 
-
-
-
-
-
   // Early returns after all hooks are defined to avoid hook order violations
-  if (isLoading) return (
-    <div
-      className="text-center py-20 transition-colors duration-200"
-      style={{ color: colors.text.primary }}
-    >
-      Loading...
-    </div>
-  );
+  if (isLoading)
+    return (
+      <div
+        className="text-center py-20 transition-colors duration-200"
+        style={{ color: colors.text.primary }}
+      >
+        Loading...
+      </div>
+    );
 
-  if (!product) return (
-    <div
-      className="text-center py-20 transition-colors duration-200"
-      style={{ color: colors.text.primary }}
-    >
-      Product not found.
-    </div>
-  );
+  if (!product)
+    return (
+      <div
+        className="text-center py-20 transition-colors duration-200"
+        style={{ color: colors.text.primary }}
+      >
+        Product not found.
+      </div>
+    );
 
   // Images - prioritize imageUrl over image field, and handle additional images
   const mainImageUrl = product.imageUrl || product.image;
-  const additionalImages = product.additionalImages?.filter(img => img && img.trim() !== '') || [];
-  const images = [mainImageUrl, ...additionalImages].filter(img => img);
+  const additionalImages =
+    product.additionalImages?.filter((img) => img && img.trim() !== "") || [];
+  const images = [mainImageUrl, ...additionalImages].filter((img) => img);
 
   // Include demo video as part of media gallery
   const mediaItems = [...images];
@@ -396,53 +468,73 @@ const ProductDetail: React.FC = () => {
   const handleAddToCart = async () => {
     if (!user) {
       // Redirect to login if user is not authenticated
-      navigate('/login', { state: { returnTo: `/product/${id}` } });
+      navigate("/login", { state: { returnTo: `/product/${id}` } });
       return;
     }
 
     // Convert license types for cart compatibility
-    const getCartLicenseType = (): '1year' | '3year' | 'lifetime' => {
+    const getCartLicenseType = (): "1year" | "3year" | "lifetime" => {
       // Handle lifetime license
-      if (selectedLicense === 'lifetime') return 'lifetime';
+      if (selectedLicense === "lifetime") return "lifetime";
 
       // Handle main subscription/pricing options
-      if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
-      if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
+      if (
+        selectedLicense === "yearly" ||
+        selectedLicense.includes("subscription-0")
+      )
+        return "1year";
+      if (
+        selectedLicense === "3year" ||
+        selectedLicense.includes("subscription-1")
+      )
+        return "3year";
 
       // Handle admin subscription plans and membership
-      if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
+      if (
+        selectedLicense.includes("admin-subscription-") ||
+        selectedLicense === "membership"
+      ) {
         const selectedPlan = selectedOption;
         if (selectedPlan) {
           // Map by duration text to supported cart license types
           const duration = selectedPlan.label.toLowerCase();
-          if (duration.includes('3') && duration.includes('year')) return '3year';
-          if (duration.includes('1') && duration.includes('year') || duration.includes('annual')) return '1year';
+          if (duration.includes("3") && duration.includes("year"))
+            return "3year";
+          if (
+            (duration.includes("1") && duration.includes("year")) ||
+            duration.includes("annual")
+          )
+            return "1year";
           // For monthly subscriptions, memberships, and other types, map to 1year as default
-          return '1year';
+          return "1year";
         }
       }
 
       // Default fallback
-      return '1year';
+      return "1year";
     };
 
     const cartLicenseType = getCartLicenseType();
 
     if (isInCart) {
       Swal.fire({
-        title: 'Already in Cart',
+        title: "Already in Cart",
         text: `${product.name} is already in your cart with ${selectedOption?.label} license`,
-        icon: 'info',
-        confirmButtonText: 'View Cart'
+        icon: "info",
+        confirmButtonText: "View Cart",
       }).then((result) => {
         if (result.isConfirmed) {
-          navigate('/cart');
+          navigate("/cart");
         }
       });
       return;
     }
 
-    if (product && selectedOption && (selectedOption.priceINR > 0 || selectedOption.priceUSD > 0)) {
+    if (
+      product &&
+      selectedOption &&
+      (selectedOption.priceINR > 0 || selectedOption.priceUSD > 0)
+    ) {
       try {
         // Create a temporary product object with the selected subscription plan price
         // This ensures the backend uses the correct price for the selected plan
@@ -453,105 +545,141 @@ const ProductDetail: React.FC = () => {
             planId: selectedOption.id,
             planLabel: selectedOption.label,
             planPrice: selectedOption.priceINR,
-            planType: selectedOption.type
-          }
+            planType: selectedOption.type,
+          },
         };
 
         // Temporarily override pricing based on selected option
-        if (cartLicenseType === '1year') {
+        if (cartLicenseType === "1year") {
           productWithSelectedPrice.price1INR = selectedOption.priceINR;
           productWithSelectedPrice.price1 = selectedOption.priceINR;
-        } else if (cartLicenseType === '3year') {
+        } else if (cartLicenseType === "3year") {
           productWithSelectedPrice.price3INR = selectedOption.priceINR;
           productWithSelectedPrice.price3 = selectedOption.priceINR;
-        } else if (cartLicenseType === 'lifetime') {
+        } else if (cartLicenseType === "lifetime") {
           productWithSelectedPrice.lifetimePriceINR = selectedOption.priceINR;
           productWithSelectedPrice.priceLifetime = selectedOption.priceINR;
         }
 
-        console.log('Adding to cart:', {
+        console.log("Adding to cart:", {
           product: product.name,
           selectedOption,
           cartLicenseType,
-          price: selectedOption.priceINR
+          price: selectedOption.priceINR,
         });
 
         // Create subscription plan details to pass to cart
         const subscriptionPlanDetails = {
           planId: selectedOption.id,
           planLabel: selectedOption.label,
-          planType: selectedOption.type
+          planType: selectedOption.type,
         };
 
-        await addItem(productWithSelectedPrice, cartLicenseType, 1, subscriptionPlanDetails);
+        await addItem(
+          productWithSelectedPrice,
+          cartLicenseType,
+          1,
+          subscriptionPlanDetails,
+        );
         Swal.fire({
-          title: 'Added to Cart!',
+          title: "Added to Cart!",
           text: `${product.name} has been added to your cart with ${selectedOption.label}`,
-          icon: 'success',
+          icon: "success",
           showCancelButton: true,
-          confirmButtonText: 'View Cart',
-          cancelButtonText: 'Continue Shopping'
+          confirmButtonText: "View Cart",
+          cancelButtonText: "Continue Shopping",
         }).then((result) => {
           if (result.isConfirmed) {
-            navigate('/cart');
+            navigate("/cart");
           }
         });
       } catch (error) {
-        console.error('Add to cart error:', error);
-        Swal.fire('Error', 'Failed to add item to cart. Please try again.', 'error');
+        console.error("Add to cart error:", error);
+        Swal.fire(
+          "Error",
+          "Failed to add item to cart. Please try again.",
+          "error",
+        );
       }
     } else {
-      console.warn('Cannot add to cart:', {
+      console.warn("Cannot add to cart:", {
         product: !!product,
         selectedOption,
         selectedLicense,
-        cartLicenseType
+        cartLicenseType,
       });
-      Swal.fire('Error', 'Please select a valid pricing option.', 'error');
+      Swal.fire("Error", "Please select a valid pricing option.", "error");
     }
   };
 
-  const getCartLicenseTypeForCheck = (): '1year' | '3year' | 'lifetime' => {
+  const getCartLicenseTypeForCheck = (): "1year" | "3year" | "lifetime" => {
     // Handle lifetime license
-    if (selectedLicense === 'lifetime') return 'lifetime';
+    if (selectedLicense === "lifetime") return "lifetime";
 
     // Handle main subscription/pricing options
-    if (selectedLicense === 'yearly' || selectedLicense.includes('subscription-0')) return '1year';
-    if (selectedLicense === '3year' || selectedLicense.includes('subscription-1')) return '3year';
+    if (
+      selectedLicense === "yearly" ||
+      selectedLicense.includes("subscription-0")
+    )
+      return "1year";
+    if (
+      selectedLicense === "3year" ||
+      selectedLicense.includes("subscription-1")
+    )
+      return "3year";
 
     // Handle admin subscription plans and membership
-    if (selectedLicense.includes('admin-subscription-') || selectedLicense === 'membership') {
+    if (
+      selectedLicense.includes("admin-subscription-") ||
+      selectedLicense === "membership"
+    ) {
       const selectedPlan = selectedOption;
       if (selectedPlan) {
         // Map by duration text to supported cart license types
         const duration = selectedPlan.label.toLowerCase();
-        if (duration.includes('3') && duration.includes('year')) return '3year';
-        if (duration.includes('1') && duration.includes('year') || duration.includes('annual')) return '1year';
+        if (duration.includes("3") && duration.includes("year")) return "3year";
+        if (
+          (duration.includes("1") && duration.includes("year")) ||
+          duration.includes("annual")
+        )
+          return "1year";
         // For monthly subscriptions, memberships, and other types, map to 1year as default
-        return '1year';
+        return "1year";
       }
     }
 
     // Default fallback
-    return '1year';
+    return "1year";
   };
 
   const cartLicenseType = getCartLicenseTypeForCheck();
-  const isInCart = product ? isItemInCart(product._id!, cartLicenseType) : false;
-  const cartQuantity = product ? getItemQuantity(product._id!, cartLicenseType) : 0;
+  const isInCart = product
+    ? isItemInCart(product._id!, cartLicenseType)
+    : false;
+  const cartQuantity = product
+    ? getItemQuantity(product._id!, cartLicenseType)
+    : 0;
   return (
     <div
       className="min-h-screen transition-colors duration-200 pt-20"
-      style={{ backgroundColor: colors.background.primary, color: colors.text.primary }}
+      style={{
+        backgroundColor: colors.background.primary,
+        color: colors.text.primary,
+      }}
     >
       {/* Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
-        <div className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-x-auto" style={{ color: colors.text.secondary }}>
+        <div
+          className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-x-auto"
+          style={{ color: colors.text.secondary }}
+        >
           <span>Home</span>
-          <span>{'>'}</span>
+          <span>{">"}</span>
           <span>{product.category}</span>
-          <span>{'>'}</span>
-          <span style={{ color: colors.interactive.primary }}>{product.name}</span>
+          <span>{">"}</span>
+          <span style={{ color: colors.interactive.primary }}>
+            {product.name}
+          </span>
         </div>
       </div>
       {/* Product Page Banner */}
@@ -564,12 +692,19 @@ const ProductDetail: React.FC = () => {
           <div className="space-y-3 lg:space-y-4">
             {/* Main Media Display */}
             <div className="aspect-square flex items-center justify-center p-2 lg:p-4">
-              {currentMainImage && currentMainImage.startsWith('video:') ? (
+              {currentMainImage && currentMainImage.startsWith("video:") ? (
                 <div className="w-full h-full flex items-center justify-center">
                   <div className="aspect-video w-full max-w-sm lg:max-w-md rounded-lg lg:rounded-xl overflow-hidden shadow-lg">
-                    {currentMainImage.replace('video:', '').includes('youtube.com') || currentMainImage.replace('video:', '').includes('youtu.be') ? (
+                    {currentMainImage
+                      .replace("video:", "")
+                      .includes("youtube.com") ||
+                    currentMainImage
+                      .replace("video:", "")
+                      .includes("youtu.be") ? (
                       <iframe
-                        src={currentMainImage.replace('video:', '').replace('watch?v=', 'embed/')}
+                        src={currentMainImage
+                          .replace("video:", "")
+                          .replace("watch?v=", "embed/")}
                         className="w-full h-full"
                         frameBorder="0"
                         allowFullScreen
@@ -577,7 +712,7 @@ const ProductDetail: React.FC = () => {
                       />
                     ) : (
                       <video
-                        src={currentMainImage.replace('video:', '')}
+                        src={currentMainImage.replace("video:", "")}
                         className="w-full h-full"
                         controls
                         title="Product Demo Video"
@@ -601,11 +736,14 @@ const ProductDetail: React.FC = () => {
                   key={idx}
                   className="w-16 h-16 lg:w-20 lg:h-20 rounded-lg lg:rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-200 relative"
                   style={{
-                    borderColor: item === currentMainImage ? colors.interactive.primary : colors.border.primary
+                    borderColor:
+                      item === currentMainImage
+                        ? colors.interactive.primary
+                        : colors.border.primary,
                   }}
                   onClick={() => setMainImage(item)}
                 >
-                  {item.startsWith('video:') ? (
+                  {item.startsWith("video:") ? (
                     <div className="w-full h-full flex items-center justify-center relative bg-gradient-to-br from-blue-500 to-purple-600">
                       <LucideIcons.Play
                         className="absolute inset-0 m-auto text-white bg-black bg-opacity-50 rounded-full p-1"
@@ -616,7 +754,11 @@ const ProductDetail: React.FC = () => {
                       </div>
                     </div>
                   ) : (
-                    <img src={item} className="object-cover w-full h-full" alt={`thumb-${idx}`} />
+                    <img
+                      src={item}
+                      className="object-cover w-full h-full"
+                      alt={`thumb-${idx}`}
+                    />
                   )}
                 </div>
               ))}
@@ -631,28 +773,41 @@ const ProductDetail: React.FC = () => {
                 className="px-2 py-1 lg:px-3 lg:py-1 rounded-lg text-xs lg:text-sm font-bold transition-colors duration-200"
                 style={{
                   backgroundColor: colors.interactive.primary,
-                  color: colors.background.primary
+                  color: colors.background.primary,
                 }}
               >
                 {product.brand || product.company}
               </span>
-              <span style={{ color: colors.interactive.primary }} className="text-sm">{product.version}</span>
+              <span
+                style={{ color: colors.interactive.primary }}
+                className="text-sm"
+              >
+                {product.version}
+              </span>
             </div>
 
             {/* Product Title */}
-            <h1 className="text-2xl lg:text-4xl font-bold" style={{ color: colors.text.primary }}>{product.name}</h1>
+            <h1
+              className="text-2xl lg:text-4xl font-bold"
+              style={{ color: colors.text.primary }}
+            >
+              {product.name}
+            </h1>
 
             {/* Rating */}
             <div className="flex items-center gap-2">
               <div className="flex text-yellow-400">
-                {'★'.repeat(4)}
+                {"★".repeat(4)}
                 <span style={{ color: colors.text.secondary }}>☆</span>
               </div>
               <span style={{ color: colors.text.primary }}>4.9 (2,341)</span>
             </div>
 
             {/* Description */}
-            <p className="text-base lg:text-lg leading-relaxed" style={{ color: colors.text.secondary }}>
+            <p
+              className="text-base lg:text-lg leading-relaxed"
+              style={{ color: colors.text.secondary }}
+            >
               {product.shortDescription}
             </p>
 
@@ -662,13 +817,18 @@ const ProductDetail: React.FC = () => {
               style={{ backgroundColor: colors.background.secondary }}
             >
               <div className="flex items-center justify-between mb-3 lg:mb-4">
-                <h3 className="text-base lg:text-lg font-bold" style={{ color: colors.text.primary }}>Choose Your License</h3>
+                <h3
+                  className="text-base lg:text-lg font-bold"
+                  style={{ color: colors.text.primary }}
+                >
+                  Choose Your License
+                </h3>
                 {selectedOption?.badge && (
                   <span
                     className="px-2 py-1 rounded text-xs font-bold"
                     style={{
-                      backgroundColor: '#10b981',
-                      color: colors.background.primary
+                      backgroundColor: "#10b981",
+                      color: colors.background.primary,
                     }}
                   >
                     {selectedOption.badge}
@@ -679,7 +839,12 @@ const ProductDetail: React.FC = () => {
               {/* License Plans Section - Small boxes in a row */}
               {licenseOptions.length > 0 && (
                 <div className="mb-3">
-                  <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>License Plans</h4>
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    License Plans
+                  </h4>
                   <div className="flex gap-2 overflow-x-auto">
                     {licenseOptions.map((option) => (
                       <div
@@ -687,24 +852,45 @@ const ProductDetail: React.FC = () => {
                         onClick={() => setSelectedLicense(option.id)}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[100px]"
                         style={{
-                          borderColor: selectedLicense === option.id ? colors.interactive.primary : colors.border.primary,
-                          backgroundColor: selectedLicense === option.id ? colors.interactive.primary + '20' : 'transparent'
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          backgroundColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary + "20"
+                              : "transparent",
                         }}
                       >
-                        <div className="text-xs font-bold mb-1" style={{ color: colors.text.primary }}>
-                          {option.label.replace(' License', '')}
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {option.label.replace(" License", "")}
                         </div>
                         {option.badge && (
-                          <div className="text-xs px-1 py-0.5 rounded font-bold mb-1" style={{
-                            backgroundColor: option.badge === 'Most Popular' ? '#3b82f6' : '#f59e0b',
-                            color: colors.background.primary,
-                            fontSize: '10px'
-                          }}>
+                          <div
+                            className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                            style={{
+                              backgroundColor:
+                                option.badge === "Most Popular"
+                                  ? "#3b82f6"
+                                  : "#f59e0b",
+                              color: colors.background.primary,
+                              fontSize: "10px",
+                            }}
+                          >
                             {option.badge}
                           </div>
                         )}
-                        <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
                         </div>
                       </div>
                     ))}
@@ -715,7 +901,12 @@ const ProductDetail: React.FC = () => {
               {/* Subscription Plans Section - Small boxes in a row */}
               {subscriptionOptions.length > 0 && (
                 <div className="mb-3">
-                  <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>Pricing Plans</h4>
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Pricing Plans
+                  </h4>
                   <div className="flex gap-2 overflow-x-auto">
                     {subscriptionOptions.map((option) => (
                       <div
@@ -723,15 +914,30 @@ const ProductDetail: React.FC = () => {
                         onClick={() => setSelectedLicense(option.id)}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[90px]"
                         style={{
-                          borderColor: selectedLicense === option.id ? colors.interactive.primary : colors.border.primary,
-                          backgroundColor: selectedLicense === option.id ? colors.interactive.primary + '20' : 'transparent'
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          backgroundColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary + "20"
+                              : "transparent",
                         }}
                       >
-                        <div className="text-xs font-bold mb-1" style={{ color: colors.text.primary }}>
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
                           {option.label}
                         </div>
-                        <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
                         </div>
                       </div>
                     ))}
@@ -742,7 +948,12 @@ const ProductDetail: React.FC = () => {
               {/* Lifetime License Section - Small box */}
               {lifetimeOptions.length > 0 && (
                 <div className="mb-3">
-                  <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>Lifetime Access</h4>
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Lifetime Access
+                  </h4>
                   <div className="flex gap-2">
                     {lifetimeOptions.map((option) => (
                       <div
@@ -750,25 +961,45 @@ const ProductDetail: React.FC = () => {
                         onClick={() => setSelectedLicense(option.id)}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[120px]"
                         style={{
-                          borderColor: selectedLicense === option.id ? colors.interactive.primary : colors.border.primary,
-                          backgroundColor: selectedLicense === option.id ? colors.interactive.primary + '20' : 'transparent'
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          backgroundColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary + "20"
+                              : "transparent",
                         }}
                       >
-                        <div className="text-xs font-bold mb-1" style={{ color: colors.text.primary }}>
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
                           {option.label}
                         </div>
-                        <div className="text-xs px-1 py-0.5 rounded font-bold mb-1" style={{
-                          backgroundColor: '#10b981',
-                          color: colors.background.primary,
-                          fontSize: '10px'
-                        }}>
+                        <div
+                          className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                          style={{
+                            backgroundColor: "#10b981",
+                            color: colors.background.primary,
+                            fontSize: "10px",
+                          }}
+                        >
                           Best Value
                         </div>
-                        <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
                         </div>
                         {option.savings && (
-                          <div className="text-xs text-green-400 mt-1">{option.savings}</div>
+                          <div className="text-xs text-green-400 mt-1">
+                            {option.savings}
+                          </div>
                         )}
                       </div>
                     ))}
@@ -779,7 +1010,12 @@ const ProductDetail: React.FC = () => {
               {/* Membership Section - Small box */}
               {membershipOptions.length > 0 && (
                 <div className="mb-3">
-                  <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>Premium Membership</h4>
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Premium Membership
+                  </h4>
                   <div className="flex gap-2">
                     {membershipOptions.map((option) => (
                       <div
@@ -787,22 +1023,40 @@ const ProductDetail: React.FC = () => {
                         onClick={() => setSelectedLicense(option.id)}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
                         style={{
-                          borderColor: selectedLicense === option.id ? colors.interactive.primary : colors.border.primary,
-                          backgroundColor: selectedLicense === option.id ? colors.interactive.primary + '20' : 'transparent'
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          backgroundColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary + "20"
+                              : "transparent",
                         }}
                       >
-                        <div className="text-xs font-bold mb-1" style={{ color: colors.text.primary }}>
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
                           {option.label}
                         </div>
-                        <div className="text-xs px-1 py-0.5 rounded font-bold mb-1" style={{
-                          backgroundColor: '#f59e0b',
-                          color: colors.background.primary,
-                          fontSize: '10px'
-                        }}>
+                        <div
+                          className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                          style={{
+                            backgroundColor: "#f59e0b",
+                            color: colors.background.primary,
+                            fontSize: "10px",
+                          }}
+                        >
                           Premium
                         </div>
-                        <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
                         </div>
                       </div>
                     ))}
@@ -813,7 +1067,12 @@ const ProductDetail: React.FC = () => {
               {/* Admin Subscription Plans */}
               {adminSubscriptionPlans.length > 0 && (
                 <div className="mb-3">
-                  <h4 className="text-xs font-semibold mb-2" style={{ color: colors.text.secondary }}>Subscription Plans</h4>
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Subscription Plans
+                  </h4>
                   <div className="flex gap-2">
                     {adminSubscriptionPlans.map((option) => (
                       <div
@@ -821,24 +1080,45 @@ const ProductDetail: React.FC = () => {
                         onClick={() => setSelectedLicense(option.id)}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
                         style={{
-                          borderColor: selectedLicense === option.id ? colors.interactive.primary : colors.border.primary,
-                          backgroundColor: selectedLicense === option.id ? colors.interactive.primary + '20' : 'transparent'
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          backgroundColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary + "20"
+                              : "transparent",
                         }}
                       >
-                        <div className="text-xs font-bold mb-1" style={{ color: colors.text.primary }}>
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
                           {option.label}
                         </div>
                         {option.badge && (
-                          <div className="text-xs px-1 py-0.5 rounded font-bold mb-1" style={{
-                            backgroundColor: option.badge === 'Flexible' ? '#10b981' : '#3b82f6',
-                            color: colors.background.primary,
-                            fontSize: '10px'
-                          }}>
+                          <div
+                            className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                            style={{
+                              backgroundColor:
+                                option.badge === "Flexible"
+                                  ? "#10b981"
+                                  : "#3b82f6",
+                              color: colors.background.primary,
+                              fontSize: "10px",
+                            }}
+                          >
                             {option.badge}
                           </div>
                         )}
-                        <div className="text-sm font-bold" style={{ color: colors.text.primary }}>
-                          {formatPriceWithSymbol(option.priceINR, option.priceUSD)}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
                         </div>
                       </div>
                     ))}
@@ -852,10 +1132,19 @@ const ProductDetail: React.FC = () => {
                   className="rounded-lg p-3 text-center transition-colors duration-200"
                   style={{ backgroundColor: colors.background.primary }}
                 >
-                  <div className="text-lg lg:text-2xl font-bold mb-1" style={{ color: colors.text.primary }}>
-                    {formatPriceWithSymbol(selectedOption.priceINR, selectedOption.priceUSD)}
+                  <div
+                    className="text-lg lg:text-2xl font-bold mb-1"
+                    style={{ color: colors.text.primary }}
+                  >
+                    {formatPriceWithSymbol(
+                      selectedOption.priceINR,
+                      selectedOption.priceUSD,
+                    )}
                   </div>
-                  <p className="text-xs lg:text-sm" style={{ color: colors.text.secondary }}>
+                  <p
+                    className="text-xs lg:text-sm"
+                    style={{ color: colors.text.secondary }}
+                  >
                     {selectedOption.label} • GST Included
                   </p>
                 </div>
@@ -869,17 +1158,19 @@ const ProductDetail: React.FC = () => {
                 className="w-full font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2"
                 style={{
                   backgroundColor: colors.interactive.primary,
-                  color: colors.background.primary
+                  color: colors.background.primary,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                  e.currentTarget.style.backgroundColor =
+                    colors.interactive.primaryHover;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                  e.currentTarget.style.backgroundColor =
+                    colors.interactive.primary;
                 }}
               >
                 <span>🛒</span>
-                {isInCart ? `In Cart (${cartQuantity})` : 'Add to Cart'}
+                {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
               </button>
 
               <button
@@ -887,14 +1178,15 @@ const ProductDetail: React.FC = () => {
                 style={{
                   borderColor: colors.interactive.primary,
                   color: colors.interactive.primary,
-                  backgroundColor: 'transparent'
+                  backgroundColor: "transparent",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                  e.currentTarget.style.backgroundColor =
+                    colors.interactive.primary;
                   e.currentTarget.style.color = colors.background.primary;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                   e.currentTarget.style.color = colors.interactive.primary;
                 }}
               >
@@ -906,13 +1198,14 @@ const ProductDetail: React.FC = () => {
                 style={{
                   borderColor: colors.border.primary,
                   color: colors.text.secondary,
-                  backgroundColor: 'transparent'
+                  backgroundColor: "transparent",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.secondary;
+                  e.currentTarget.style.backgroundColor =
+                    colors.background.secondary;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
                 <span>❓</span>
@@ -931,15 +1224,25 @@ const ProductDetail: React.FC = () => {
             >
               <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-6">
                 <span className="text-xl lg:text-2xl">▶️</span>
-                <h2 className="text-xl lg:text-2xl font-bold" style={{ color: colors.text.primary }}>Activation Video Demo</h2>
+                <h2
+                  className="text-xl lg:text-2xl font-bold"
+                  style={{ color: colors.text.primary }}
+                >
+                  Activation Video Demo
+                </h2>
               </div>
               <p className="mb-6" style={{ color: colors.text.secondary }}>
-                Watch this step-by-step guide to activate your {product.name} license
+                Watch this step-by-step guide to activate your {product.name}{" "}
+                license
               </p>
               <div className="aspect-video bg-black rounded-xl overflow-hidden">
-                {product.activationVideoUrl.includes('youtube.com') || product.activationVideoUrl.includes('youtu.be') ? (
+                {product.activationVideoUrl.includes("youtube.com") ||
+                product.activationVideoUrl.includes("youtu.be") ? (
                   <iframe
-                    src={product.activationVideoUrl.replace('watch?v=', 'embed/')}
+                    src={product.activationVideoUrl.replace(
+                      "watch?v=",
+                      "embed/",
+                    )}
                     className="w-full h-full"
                     frameBorder="0"
                     allowFullScreen
@@ -961,21 +1264,33 @@ const ProductDetail: React.FC = () => {
         {/* Tabs Section */}
         <div className="mt-8 lg:mt-16">
           {/* Tab Navigation */}
-          <div className="border-b" style={{ borderColor: colors.border.primary }}>
+          <div
+            className="border-b"
+            style={{ borderColor: colors.border.primary }}
+          >
             <div className="flex gap-4 lg:gap-8 overflow-x-auto scrollbar-hide">
               {[
-                { key: 'features', label: 'Features' },
-                { key: 'requirements', label: 'System' },
-                { key: 'reviews', label: `Reviews (${reviewStats?.totalReviews || 0})` },
-                { key: 'faq', label: 'FAQ' }
+                { key: "features", label: "Features" },
+                { key: "requirements", label: "System" },
+                {
+                  key: "reviews",
+                  label: `Reviews (${reviewStats?.totalReviews || 0})`,
+                },
+                { key: "faq", label: "FAQ" },
               ].map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key as typeof activeTab)}
                   className="py-3 lg:py-4 px-1 lg:px-2 font-medium transition-colors duration-200 border-b-2 whitespace-nowrap text-sm lg:text-base flex-shrink-0"
                   style={{
-                    borderColor: activeTab === tab.key ? colors.interactive.primary : 'transparent',
-                    color: activeTab === tab.key ? colors.interactive.primary : colors.text.secondary
+                    borderColor:
+                      activeTab === tab.key
+                        ? colors.interactive.primary
+                        : "transparent",
+                    color:
+                      activeTab === tab.key
+                        ? colors.interactive.primary
+                        : colors.text.secondary,
                   }}
                   onMouseEnter={(e) => {
                     if (activeTab !== tab.key) {
@@ -996,11 +1311,20 @@ const ProductDetail: React.FC = () => {
 
           {/* Tab Content */}
           <div className="py-4 lg:py-8">
-            {activeTab === 'features' && (
+            {activeTab === "features" && (
               <div>
-                <h3 className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6" style={{ color: colors.text.primary }}>Key Features</h3>
-                <p className="mb-6 lg:mb-8 text-sm lg:text-base" style={{ color: colors.text.secondary }}>
-                  Comprehensive overview of {product.name} capabilities and tools
+                <h3
+                  className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6"
+                  style={{ color: colors.text.primary }}
+                >
+                  Key Features
+                </h3>
+                <p
+                  className="mb-6 lg:mb-8 text-sm lg:text-base"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Comprehensive overview of {product.name} capabilities and
+                  tools
                 </p>
 
                 {/* Show structured features if available */}
@@ -1012,16 +1336,26 @@ const ProductDetail: React.FC = () => {
                         className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200"
                         style={{
                           backgroundColor: colors.background.secondary,
-                          borderColor: colors.border.primary
+                          borderColor: colors.border.primary,
                         }}
                       >
                         <div className="flex items-center gap-2 lg:gap-3 mb-3 lg:mb-4">
                           <div className="text-yellow-400 flex-shrink-0">
                             {renderIcon(feature.icon, "w-5 h-5 lg:w-6 lg:h-6")}
                           </div>
-                          <h4 className="text-lg lg:text-xl font-bold" style={{ color: colors.text.primary }}>{feature.title}</h4>
+                          <h4
+                            className="text-lg lg:text-xl font-bold"
+                            style={{ color: colors.text.primary }}
+                          >
+                            {feature.title}
+                          </h4>
                         </div>
-                        <p className="text-sm lg:text-base" style={{ color: colors.text.secondary }}>{feature.description}</p>
+                        <p
+                          className="text-sm lg:text-base"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          {feature.description}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -1033,60 +1367,103 @@ const ProductDetail: React.FC = () => {
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Check', 'text-green-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Advanced 2D Drafting</h4>
+                        {renderIcon("Check", "text-green-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Advanced 2D Drafting
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Precise drafting tools with automated workflows</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Precise drafting tools with automated workflows
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Zap', 'text-orange-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>3D Modeling & Visualization</h4>
+                        {renderIcon("Zap", "text-orange-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          3D Modeling & Visualization
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Create stunning 3D models with photorealistic rendering</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Create stunning 3D models with photorealistic rendering
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Users', 'text-blue-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Cloud Collaboration</h4>
+                        {renderIcon("Users", "text-blue-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Cloud Collaboration
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Real-time collaboration with team members worldwide</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Real-time collaboration with team members worldwide
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Shield', 'text-purple-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Industry-Specific Toolsets</h4>
+                        {renderIcon("Shield", "text-purple-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Industry-Specific Toolsets
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Specialized tools for architecture, engineering, and construction</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Specialized tools for architecture, engineering, and
+                        construction
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Smartphone', 'text-yellow-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Mobile & Web Access</h4>
+                        {renderIcon("Smartphone", "text-yellow-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Mobile & Web Access
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Access your designs anywhere with mobile and web apps</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Access your designs anywhere with mobile and web apps
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Lock', 'text-red-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Enhanced Security</h4>
+                        {renderIcon("Lock", "text-red-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Enhanced Security
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Enterprise-grade security features and compliance</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Enterprise-grade security features and compliance
+                      </p>
                     </div>
                   </div>
                 )}
@@ -1096,32 +1473,64 @@ const ProductDetail: React.FC = () => {
                   className="mt-8 rounded-2xl p-6 transition-colors duration-200"
                   style={{ backgroundColor: colors.background.secondary }}
                 >
-                  <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Product Information</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4" style={{ color: colors.text.secondary }}>
+                  <h4
+                    className="text-xl font-bold mb-4"
+                    style={{ color: colors.text.primary }}
+                  >
+                    Product Information
+                  </h4>
+                  <div
+                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
+                    style={{ color: colors.text.secondary }}
+                  >
                     <div>
-                      <span className="font-medium" style={{ color: colors.interactive.primary }}>Category:</span>
-                      <span className="ml-2 capitalize">{product.category?.replace('-', ' ')}</span>
+                      <span
+                        className="font-medium"
+                        style={{ color: colors.interactive.primary }}
+                      >
+                        Category:
+                      </span>
+                      <span className="ml-2 capitalize">
+                        {product.category?.replace("-", " ")}
+                      </span>
                     </div>
                     <div>
-                      <span className="font-medium" style={{ color: colors.interactive.primary }}>Brand:</span>
-                      <span className="ml-2">{product.brand || product.company}</span>
+                      <span
+                        className="font-medium"
+                        style={{ color: colors.interactive.primary }}
+                      >
+                        Brand:
+                      </span>
+                      <span className="ml-2">
+                        {product.brand || product.company}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-orange-400 font-medium">Version:</span>
+                      <span className="text-orange-400 font-medium">
+                        Version:
+                      </span>
                       <span className="ml-2">{product.version}</span>
                     </div>
                     {product.status && (
                       <div>
-                        <span className="text-orange-400 font-medium">Status:</span>
-                        <span className={`ml-2 capitalize ${product.status === 'active' ? 'text-green-400' : 'text-yellow-400'}`}>
+                        <span className="text-orange-400 font-medium">
+                          Status:
+                        </span>
+                        <span
+                          className={`ml-2 capitalize ${product.status === "active" ? "text-green-400" : "text-yellow-400"}`}
+                        >
                           {product.status}
                         </span>
                       </div>
                     )}
                     {product.isBestSeller && (
                       <div>
-                        <span className="text-orange-400 font-medium">Badge:</span>
-                        <span className="ml-2 text-yellow-400">⭐ Best Seller</span>
+                        <span className="text-orange-400 font-medium">
+                          Badge:
+                        </span>
+                        <span className="ml-2 text-yellow-400">
+                          ⭐ Best Seller
+                        </span>
                       </div>
                     )}
                   </div>
@@ -1129,15 +1538,21 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {activeTab === 'requirements' && (
+            {activeTab === "requirements" && (
               <div>
-                <h3 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>System Requirements</h3>
+                <h3
+                  className="text-2xl font-bold mb-6"
+                  style={{ color: colors.text.primary }}
+                >
+                  System Requirements
+                </h3>
                 <p className="mb-8" style={{ color: colors.text.secondary }}>
                   Minimum system specifications for {product.name}
                 </p>
 
                 {/* Show structured requirements if available */}
-                {product.systemRequirements && product.systemRequirements.length > 0 ? (
+                {product.systemRequirements &&
+                product.systemRequirements.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {product.systemRequirements.map((requirement, index) => (
                       <div
@@ -1145,16 +1560,23 @@ const ProductDetail: React.FC = () => {
                         className="rounded-2xl p-6 border transition-colors duration-200"
                         style={{
                           backgroundColor: colors.background.secondary,
-                          borderColor: colors.border.primary
+                          borderColor: colors.border.primary,
                         }}
                       >
                         <div className="flex items-center gap-3 mb-4">
                           <div className="text-blue-400">
                             {renderIcon(requirement.icon, "w-6 h-6")}
                           </div>
-                          <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>{requirement.title}</h4>
+                          <h4
+                            className="text-xl font-bold"
+                            style={{ color: colors.text.primary }}
+                          >
+                            {requirement.title}
+                          </h4>
                         </div>
-                        <p style={{ color: colors.text.secondary }}>{requirement.description}</p>
+                        <p style={{ color: colors.text.secondary }}>
+                          {requirement.description}
+                        </p>
                       </div>
                     ))}
                   </div>
@@ -1166,69 +1588,120 @@ const ProductDetail: React.FC = () => {
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Monitor', 'text-blue-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Operating System</h4>
+                        {renderIcon("Monitor", "text-blue-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Operating System
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Windows 10/11 (64-bit) or macOS 10.15+</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Windows 10/11 (64-bit) or macOS 10.15+
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Cpu', 'text-green-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Processor</h4>
+                        {renderIcon("Cpu", "text-green-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Processor
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Intel Core i5 or equivalent AMD processor (2.5GHz or higher)</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Intel Core i5 or equivalent AMD processor (2.5GHz or
+                        higher)
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('MemoryStick', 'text-purple-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Memory (RAM)</h4>
+                        {renderIcon("MemoryStick", "text-purple-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Memory (RAM)
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>8 GB RAM minimum (16 GB recommended for optimal performance)</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        8 GB RAM minimum (16 GB recommended for optimal
+                        performance)
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Gamepad2', 'text-orange-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Graphics Card</h4>
+                        {renderIcon("Gamepad2", "text-orange-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Graphics Card
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>DirectX 11 or DirectX 12 compatible graphics card with 1GB VRAM</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        DirectX 11 or DirectX 12 compatible graphics card with
+                        1GB VRAM
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('HardDrive', 'text-yellow-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Storage Space</h4>
+                        {renderIcon("HardDrive", "text-yellow-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Storage Space
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>7 GB free disk space for installation</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        7 GB free disk space for installation
+                      </p>
                     </div>
                     <div
                       className="rounded-2xl p-6 transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
-                        {renderIcon('Wifi', 'text-cyan-400 w-6 h-6')}
-                        <h4 className="text-xl font-bold" style={{ color: colors.text.primary }}>Internet Connection</h4>
+                        {renderIcon("Wifi", "text-cyan-400 w-6 h-6")}
+                        <h4
+                          className="text-xl font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Internet Connection
+                        </h4>
                       </div>
-                      <p style={{ color: colors.text.secondary }}>Broadband internet connection required for activation and cloud features</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        Broadband internet connection required for activation
+                        and cloud features
+                      </p>
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {activeTab === 'reviews' && (
+            {activeTab === "reviews" && (
               <div>
-                <h3 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>Customer Reviews</h3>
+                <h3
+                  className="text-2xl font-bold mb-6"
+                  style={{ color: colors.text.primary }}
+                >
+                  Customer Reviews
+                </h3>
                 <p className="mb-8" style={{ color: colors.text.secondary }}>
                   What users are saying about {product.name}
                 </p>
@@ -1241,31 +1714,48 @@ const ProductDetail: React.FC = () => {
                   >
                     <div className="flex items-center gap-6 mb-4">
                       <div className="text-center">
-                        <div className="text-3xl font-bold" style={{ color: colors.interactive.primary }}>
+                        <div
+                          className="text-3xl font-bold"
+                          style={{ color: colors.interactive.primary }}
+                        >
                           {reviewStats.averageRating.toFixed(1)}
                         </div>
                         <div className="flex text-yellow-400 mb-1">
-                          {'★'.repeat(Math.floor(reviewStats.averageRating))}
-                          {'☆'.repeat(5 - Math.floor(reviewStats.averageRating))}
+                          {"★".repeat(Math.floor(reviewStats.averageRating))}
+                          {"☆".repeat(
+                            5 - Math.floor(reviewStats.averageRating),
+                          )}
                         </div>
-                        <div className="text-sm" style={{ color: colors.text.secondary }}>
+                        <div
+                          className="text-sm"
+                          style={{ color: colors.text.secondary }}
+                        >
                           {reviewStats.totalReviews} reviews
                         </div>
                       </div>
                       <div className="flex-1">
                         {[5, 4, 3, 2, 1].map((star) => (
-                          <div key={star} className="flex items-center gap-2 mb-1">
+                          <div
+                            key={star}
+                            className="flex items-center gap-2 mb-1"
+                          >
                             <span className="text-sm w-8">{star}★</span>
                             <div className="flex-1 bg-gray-700 rounded-full h-2">
                               <div
                                 className="h-2 rounded-full"
                                 style={{
                                   width: `${reviewStats.totalReviews > 0 ? (reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution] / reviewStats.totalReviews) * 100 : 0}%`,
-                                  backgroundColor: colors.interactive.primary
+                                  backgroundColor: colors.interactive.primary,
                                 }}
                               ></div>
                             </div>
-                            <span className="text-sm w-8">{reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution]}</span>
+                            <span className="text-sm w-8">
+                              {
+                                reviewStats.ratingDistribution[
+                                  star as keyof typeof reviewStats.ratingDistribution
+                                ]
+                              }
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -1282,13 +1772,15 @@ const ProductDetail: React.FC = () => {
                         className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
                         style={{
                           backgroundColor: colors.interactive.primary,
-                          color: colors.background.primary
+                          color: colors.background.primary,
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                          e.currentTarget.style.backgroundColor =
+                            colors.interactive.primaryHover;
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                          e.currentTarget.style.backgroundColor =
+                            colors.interactive.primary;
                         }}
                       >
                         Write a Review
@@ -1298,20 +1790,33 @@ const ProductDetail: React.FC = () => {
                         className="rounded-2xl p-6 transition-colors duration-200"
                         style={{ backgroundColor: colors.background.secondary }}
                       >
-                        <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>Write a Review</h4>
-                        <p className="mb-4" style={{ color: colors.text.secondary }}>Please login to share your experience with this product.</p>
+                        <h4
+                          className="text-xl font-bold mb-4"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Write a Review
+                        </h4>
+                        <p
+                          className="mb-4"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Please login to share your experience with this
+                          product.
+                        </p>
                         <button
-                          onClick={() => navigate('/signin')}
+                          onClick={() => navigate("/signin")}
                           className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
                           style={{
                             backgroundColor: colors.interactive.primary,
-                            color: colors.background.primary
+                            color: colors.background.primary,
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                            e.currentTarget.style.backgroundColor =
+                              colors.interactive.primaryHover;
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                            e.currentTarget.style.backgroundColor =
+                              colors.interactive.primary;
                           }}
                         >
                           Login to Review
@@ -1327,21 +1832,37 @@ const ProductDetail: React.FC = () => {
                     className="rounded-2xl p-6 mb-8 transition-colors duration-200"
                     style={{ backgroundColor: colors.background.secondary }}
                   >
-                    <h4 className="text-xl font-bold mb-4" style={{ color: colors.text.primary }}>
-                      {editingReview ? 'Edit Review' : 'Write a Review'}
+                    <h4
+                      className="text-xl font-bold mb-4"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {editingReview ? "Edit Review" : "Write a Review"}
                     </h4>
                     <form onSubmit={handleReviewSubmit}>
                       <div className="mb-4">
-                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Rating</label>
+                        <label
+                          className="block mb-2 font-medium"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Rating
+                        </label>
                         <div className="flex gap-1">
                           {[1, 2, 3, 4, 5].map((star) => (
                             <button
                               key={star}
                               type="button"
-                              onClick={() => setReviewForm(prev => ({ ...prev, rating: star }))}
+                              onClick={() =>
+                                setReviewForm((prev) => ({
+                                  ...prev,
+                                  rating: star,
+                                }))
+                              }
                               className="text-2xl transition-colors"
                               style={{
-                                color: star <= reviewForm.rating ? '#fbbf24' : colors.text.secondary
+                                color:
+                                  star <= reviewForm.rating
+                                    ? "#fbbf24"
+                                    : colors.text.secondary,
                               }}
                             >
                               ★
@@ -1350,15 +1871,25 @@ const ProductDetail: React.FC = () => {
                         </div>
                       </div>
                       <div className="mb-4">
-                        <label className="block mb-2 font-medium" style={{ color: colors.text.primary }}>Comment</label>
+                        <label
+                          className="block mb-2 font-medium"
+                          style={{ color: colors.text.primary }}
+                        >
+                          Comment
+                        </label>
                         <textarea
                           value={reviewForm.comment}
-                          onChange={(e) => setReviewForm(prev => ({ ...prev, comment: e.target.value }))}
+                          onChange={(e) =>
+                            setReviewForm((prev) => ({
+                              ...prev,
+                              comment: e.target.value,
+                            }))
+                          }
                           className="w-full p-3 rounded-lg border transition-colors"
                           style={{
                             backgroundColor: colors.background.primary,
                             borderColor: colors.border.primary,
-                            color: colors.text.primary
+                            color: colors.text.primary,
                           }}
                           rows={4}
                           placeholder="Share your experience with this product..."
@@ -1372,23 +1903,27 @@ const ProductDetail: React.FC = () => {
                           className="font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
                           style={{
                             backgroundColor: colors.interactive.primary,
-                            color: colors.background.primary
+                            color: colors.background.primary,
                           }}
                         >
-                          {submittingReview ? 'Submitting...' : (editingReview ? 'Update Review' : 'Post Review')}
+                          {submittingReview
+                            ? "Submitting..."
+                            : editingReview
+                              ? "Update Review"
+                              : "Post Review"}
                         </button>
                         <button
                           type="button"
                           onClick={() => {
                             setShowReviewForm(false);
                             setEditingReview(null);
-                            setReviewForm({ rating: 5, comment: '' });
+                            setReviewForm({ rating: 5, comment: "" });
                           }}
                           className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
                           style={{
                             backgroundColor: colors.background.primary,
                             color: colors.text.primary,
-                            border: `1px solid ${colors.border.primary}`
+                            border: `1px solid ${colors.border.primary}`,
                           }}
                         >
                           Cancel
@@ -1402,15 +1937,25 @@ const ProductDetail: React.FC = () => {
                 <div className="space-y-6">
                   {reviewsLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: colors.interactive.primary }}></div>
-                      <p className="mt-2" style={{ color: colors.text.secondary }}>Loading reviews...</p>
+                      <div
+                        className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto"
+                        style={{ borderColor: colors.interactive.primary }}
+                      ></div>
+                      <p
+                        className="mt-2"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Loading reviews...
+                      </p>
                     </div>
                   ) : reviews.length === 0 ? (
                     <div
                       className="rounded-2xl p-8 text-center transition-colors duration-200"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
-                      <p style={{ color: colors.text.secondary }}>No reviews yet. Be the first to review this product!</p>
+                      <p style={{ color: colors.text.secondary }}>
+                        No reviews yet. Be the first to review this product!
+                      </p>
                     </div>
                   ) : (
                     reviews.map((review) => (
@@ -1425,50 +1970,65 @@ const ProductDetail: React.FC = () => {
                               className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
                               style={{
                                 backgroundColor: colors.interactive.primary,
-                                color: colors.background.primary
+                                color: colors.background.primary,
                               }}
                             >
                               {review.user.fullName.charAt(0).toUpperCase()}
                             </div>
                             <div>
-                              <h5 className="font-bold" style={{ color: colors.text.primary }}>{review.user.fullName}</h5>
+                              <h5
+                                className="font-bold"
+                                style={{ color: colors.text.primary }}
+                              >
+                                {review.user.fullName}
+                              </h5>
                               <div className="flex items-center gap-2">
                                 <div className="flex text-yellow-400">
-                                  {'★'.repeat(review.rating)}
-                                  {'☆'.repeat(5 - review.rating)}
+                                  {"★".repeat(review.rating)}
+                                  {"☆".repeat(5 - review.rating)}
                                 </div>
-                                <span className="text-sm" style={{ color: colors.text.secondary }}>
-                                  {new Date(review.createdAt).toLocaleDateString()}
+                                <span
+                                  className="text-sm"
+                                  style={{ color: colors.text.secondary }}
+                                >
+                                  {new Date(
+                                    review.createdAt,
+                                  ).toLocaleDateString()}
                                 </span>
                               </div>
                             </div>
                           </div>
-                          {(user && (user.id === review.user._id || user.role === 'admin')) && (
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => handleEditReview(review)}
-                                className="text-sm px-3 py-1 rounded transition-colors"
-                                style={{
-                                  color: colors.interactive.primary,
-                                  backgroundColor: colors.background.primary
-                                }}
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteReview(review._id)}
-                                className="text-sm px-3 py-1 rounded transition-colors"
-                                style={{
-                                  color: '#ef4444',
-                                  backgroundColor: colors.background.primary
-                                }}
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          )}
+                          {user &&
+                            (user.id === review.user._id ||
+                              user.role === "admin") && (
+                              <div className="flex gap-2">
+                                <button
+                                  onClick={() => handleEditReview(review)}
+                                  className="text-sm px-3 py-1 rounded transition-colors"
+                                  style={{
+                                    color: colors.interactive.primary,
+                                    backgroundColor: colors.background.primary,
+                                  }}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteReview(review._id)}
+                                  className="text-sm px-3 py-1 rounded transition-colors"
+                                  style={{
+                                    color: "#ef4444",
+                                    backgroundColor: colors.background.primary,
+                                  }}
+                                >
+                                  Delete
+                                </button>
+                              </div>
+                            )}
                         </div>
-                        <p className="mb-4" style={{ color: colors.text.secondary }}>
+                        <p
+                          className="mb-4"
+                          style={{ color: colors.text.secondary }}
+                        >
                           {review.comment}
                         </p>
                       </div>
@@ -1478,9 +2038,14 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {activeTab === 'faq' && (
+            {activeTab === "faq" && (
               <div>
-                <h3 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>Frequently Asked Questions</h3>
+                <h3
+                  className="text-2xl font-bold mb-6"
+                  style={{ color: colors.text.primary }}
+                >
+                  Frequently Asked Questions
+                </h3>
                 <p className="mb-8" style={{ color: colors.text.secondary }}>
                   Get answers to common questions about {product.name}
                 </p>
@@ -1546,24 +2111,53 @@ const ProductDetail: React.FC = () => {
         <div className="mt-8 lg:mt-16">
           <div className="flex items-center justify-between mb-6 lg:mb-8">
             <h2 className="text-xl lg:text-3xl font-bold">Related Products</h2>
-            <button className="text-orange-400 hover:text-orange-300 font-medium">View All</button>
+            <button className="text-orange-400 hover:text-orange-300 font-medium">
+              View All
+            </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Sample Related Products */}
             {[
-              { name: 'Inventor Professional 2025', price: '$2,300', image: '/api/placeholder/300/200' },
-              { name: '3ds Max 2025', price: '$1,950', image: '/api/placeholder/300/200' },
-              { name: 'Maya 2025', price: '$2,100', image: '/api/placeholder/300/200' },
-              { name: 'Revit Architecture 2025', price: '$2,650', image: '/api/placeholder/300/200' }
+              {
+                name: "Inventor Professional 2025",
+                price: "$2,300",
+                image: "/api/placeholder/300/200",
+              },
+              {
+                name: "3ds Max 2025",
+                price: "$1,950",
+                image: "/api/placeholder/300/200",
+              },
+              {
+                name: "Maya 2025",
+                price: "$2,100",
+                image: "/api/placeholder/300/200",
+              },
+              {
+                name: "Revit Architecture 2025",
+                price: "$2,650",
+                image: "/api/placeholder/300/200",
+              },
             ].map((relatedProduct, index) => (
-              <div key={index} className="bg-gray-800 rounded-2xl overflow-hidden hover:bg-gray-700 transition-colors duration-200 cursor-pointer">
+              <div
+                key={index}
+                className="bg-gray-800 rounded-2xl overflow-hidden hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
+              >
                 <div className="aspect-video bg-gray-700 flex items-center justify-center">
-                  <img src={relatedProduct.image} alt={relatedProduct.name} className="w-full h-full object-cover" />
+                  <img
+                    src={relatedProduct.image}
+                    alt={relatedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="p-4">
-                  <h4 className="font-bold text-lg mb-2">{relatedProduct.name}</h4>
+                  <h4 className="font-bold text-lg mb-2">
+                    {relatedProduct.name}
+                  </h4>
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-orange-400">{relatedProduct.price}</span>
+                    <span className="text-2xl font-bold text-orange-400">
+                      {relatedProduct.price}
+                    </span>
                     <button className="bg-orange-400 hover:bg-orange-500 text-black font-bold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
                       Add
                     </button>

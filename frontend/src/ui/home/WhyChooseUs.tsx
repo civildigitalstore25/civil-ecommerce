@@ -36,7 +36,7 @@ const WhyChooseUs: React.FC = () => {
     <section
       className="w-full rounded-3xl shadow-sm py-14 px-6 md:px-20 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
       {/* Heading */}
@@ -69,7 +69,10 @@ const WhyChooseUs: React.FC = () => {
                 className="flex items-center justify-center w-16 h-16 rounded-xl shadow-sm transition-colors duration-200"
                 style={{ backgroundColor: colors.background.secondary }}
               >
-                <IconComponent className="h-8 w-8" style={{ color: colors.interactive.primary }} />
+                <IconComponent
+                  className="h-8 w-8"
+                  style={{ color: colors.interactive.primary }}
+                />
               </div>
               <h3
                 className="mt-5 text-lg font-semibold transition-colors duration-200"

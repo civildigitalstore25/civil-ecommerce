@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
-import { TrendingUp, Users, Package2, BarChart3 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { useProducts } from '../../api/productApi';
-import { getAllOrders } from '../../api/adminOrderApi';
-import axios from 'axios';
+import React, { useMemo } from "react";
+import { TrendingUp, Users, Package2, BarChart3 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useProducts } from "../../api/productApi";
+import { getAllOrders } from "../../api/adminOrderApi";
+import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const Dashboard: React.FC = () => {
   const { colors } = useAdminTheme();
@@ -16,18 +17,18 @@ const Dashboard: React.FC = () => {
 
   // Fetch orders
   const { data: ordersData } = useQuery({
-    queryKey: ['adminOrders'],
+    queryKey: ["adminOrders"],
     queryFn: () => getAllOrders({ limit: 1000 }),
     refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 
   // Fetch users count
   const { data: usersData } = useQuery({
-    queryKey: ['usersCount'],
+    queryKey: ["usersCount"],
     queryFn: async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const response = await axios.get(`${API_BASE_URL}/api/users`, {
-        headers: { Authorization: `Bearer ${token}` }
+        headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;
     },
@@ -42,7 +43,7 @@ const Dashboard: React.FC = () => {
 
     // Calculate total revenue
     const totalRevenue = orders
-      .filter((order: any) => order.paymentStatus === 'paid')
+      .filter((order: any) => order.paymentStatus === "paid")
       .reduce((sum: number, order: any) => sum + order.totalAmount, 0);
 
     // Count orders by date
@@ -60,14 +61,14 @@ const Dashboard: React.FC = () => {
     // Get companies with product counts
     const companyCounts: Record<string, number> = {};
     products.forEach((product: any) => {
-      const company = product.company || 'Unknown';
+      const company = product.company || "Unknown";
       companyCounts[company] = (companyCounts[company] || 0) + 1;
     });
 
     // Get category counts
     const categoryCounts: Record<string, number> = {};
     products.forEach((product: any) => {
-      const category = product.category || 'Unknown';
+      const category = product.category || "Unknown";
       categoryCounts[category] = (categoryCounts[category] || 0) + 1;
     });
 
@@ -96,7 +97,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <div className="flex items-center justify-between">
@@ -111,7 +112,7 @@ const Dashboard: React.FC = () => {
                 className="text-2xl font-bold"
                 style={{ color: colors.text.primary }}
               >
-                ₹{stats.totalRevenue.toLocaleString('en-IN')}
+                ₹{stats.totalRevenue.toLocaleString("en-IN")}
               </p>
               <p
                 className="text-sm flex items-center mt-1"
@@ -134,7 +135,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <div className="flex items-center justify-between">
@@ -174,7 +175,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <div className="flex items-center justify-between">
@@ -191,10 +192,7 @@ const Dashboard: React.FC = () => {
               >
                 {stats.totalUsers}
               </p>
-              <p
-                className="text-sm"
-                style={{ color: colors.status.success }}
-              >
+              <p className="text-sm" style={{ color: colors.status.success }}>
                 Registered Users
               </p>
             </div>
@@ -214,7 +212,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <div className="flex items-center justify-between">
@@ -233,7 +231,12 @@ const Dashboard: React.FC = () => {
               </p>
               <p
                 className="text-sm"
-                style={{ color: stats.todayOrders > 0 ? colors.status.success : colors.text.secondary }}
+                style={{
+                  color:
+                    stats.todayOrders > 0
+                      ? colors.status.success
+                      : colors.text.secondary,
+                }}
               >
                 Today: {stats.todayOrders} orders
               </p>
@@ -256,7 +259,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3
@@ -278,7 +281,7 @@ const Dashboard: React.FC = () => {
                   className="text-sm px-2 py-1 rounded"
                   style={{
                     color: colors.interactive.primary,
-                    backgroundColor: colors.background.accent
+                    backgroundColor: colors.background.accent,
                   }}
                 >
                   {category.products} products
@@ -295,7 +298,7 @@ const Dashboard: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3
@@ -317,7 +320,7 @@ const Dashboard: React.FC = () => {
                   className="text-sm px-2 py-1 rounded"
                   style={{
                     color: colors.interactive.primary,
-                    backgroundColor: colors.background.accent
+                    backgroundColor: colors.background.accent,
                   }}
                 >
                   {company.products} products

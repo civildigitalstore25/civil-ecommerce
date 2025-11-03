@@ -9,7 +9,7 @@ const HomeProducts: React.FC = () => {
     <section
       className="w-full rounded-3xl shadow-sm py-14 px-6 md:px-20 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
       {/* Section Heading */}
@@ -24,7 +24,8 @@ const HomeProducts: React.FC = () => {
           className="mt-3 text-lg transition-colors duration-200"
           style={{ color: colors.text.secondary }}
         >
-          Genuine civil engineering software licenses trusted by thousands of professionals across India
+          Genuine civil engineering software licenses trusted by thousands of
+          professionals across India
         </p>
       </div>
 

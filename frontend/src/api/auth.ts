@@ -1,7 +1,8 @@
-import axios from 'axios';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Swal from 'sweetalert2';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Swal from "sweetalert2";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/auth`,
@@ -9,7 +10,7 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,7 +22,7 @@ export interface User {
   email: string;
   fullName?: string;
   phoneNumber?: string;
-  role: 'user' | 'admin';
+  role: "user" | "admin";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -37,9 +38,9 @@ export const authApi = {
     email: string,
     password: string,
     fullName?: string,
-    phoneNumber?: string
+    phoneNumber?: string,
   ): Promise<AuthResponse> => {
-    const response = await api.post('/register', {
+    const response = await api.post("/register", {
       email,
       password,
       fullName,
@@ -49,29 +50,32 @@ export const authApi = {
   },
 
   signIn: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await api.post('/login', { email, password });
+    const response = await api.post("/login", { email, password });
     return response.data;
   },
 
   getCurrentUser: async (): Promise<User> => {
     try {
-      const response = await api.get('/me');
+      const response = await api.get("/me");
       return response.data;
     } catch (error) {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       throw error;
     }
   },
 
   logout: async (): Promise<void> => {
-    await api.post('/logout');
+    await api.post("/logout");
   },
 
   googleAuth: (): void => {
     window.location.href = `${API_BASE_URL}/api/auth/google`;
   },
-  updateProfile: async (data: { fullName?: string; phoneNumber?: string }): Promise<User> => {
-    const response = await api.put('/profile', data);
+  updateProfile: async (data: {
+    fullName?: string;
+    phoneNumber?: string;
+  }): Promise<User> => {
+    const response = await api.put("/profile", data);
     return response.data;
   },
 };
@@ -85,7 +89,7 @@ export const useSignUp = () => {
       email,
       password,
       fullName,
-      phoneNumber
+      phoneNumber,
     }: {
       email: string;
       password: string;
@@ -93,8 +97,8 @@ export const useSignUp = () => {
       phoneNumber?: string;
     }) => authApi.signUp(email, password, fullName, phoneNumber),
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      queryClient.setQueryData(['currentUser'], data.user);
+      localStorage.setItem("token", data.token);
+      queryClient.setQueryData(["currentUser"], data.user);
     },
   });
 };
@@ -106,15 +110,15 @@ export const useSignIn = () => {
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       authApi.signIn(email, password),
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      queryClient.setQueryData(['currentUser'], data.user);
+      localStorage.setItem("token", data.token);
+      queryClient.setQueryData(["currentUser"], data.user);
     },
   });
 };
 
 export const useCurrentUser = () => {
   return useQuery({
-    queryKey: ['currentUser'],
+    queryKey: ["currentUser"],
     queryFn: authApi.getCurrentUser,
     retry: (failureCount, error: any) => {
       // Don't retry if it's an authentication error (401)
@@ -134,14 +138,14 @@ export const useLogout = () => {
   return useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
-      localStorage.removeItem('token');
-      queryClient.setQueryData(['currentUser'], null);
+      localStorage.removeItem("token");
+      queryClient.setQueryData(["currentUser"], null);
       queryClient.clear(); // Optional: clear all queries on logout
     },
     onError: () => {
       // Still clear local data even if the server logout fails
-      localStorage.removeItem('token');
-      queryClient.setQueryData(['currentUser'], null);
+      localStorage.removeItem("token");
+      queryClient.setQueryData(["currentUser"], null);
     },
   });
 };
@@ -154,23 +158,23 @@ export const useUpdateProfile = () => {
     mutationFn: (data: { fullName?: string; phoneNumber?: string }) =>
       authApi.updateProfile(data),
     onSuccess: (data) => {
-      queryClient.setQueryData(['currentUser'], data);
+      queryClient.setQueryData(["currentUser"], data);
 
       // Show success message
       Swal.fire({
-        title: 'Success!',
-        text: 'Your profile has been updated successfully.',
-        icon: 'success',
-        confirmButtonText: 'OK'
+        title: "Success!",
+        text: "Your profile has been updated successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
       });
     },
     onError: (error: any) => {
       // Show error message
       Swal.fire({
-        title: 'Error!',
-        text: error.response?.data?.message || 'Failed to update profile.',
-        icon: 'error',
-        confirmButtonText: 'OK'
+        title: "Error!",
+        text: error.response?.data?.message || "Failed to update profile.",
+        icon: "error",
+        confirmButtonText: "OK",
       });
     },
   });

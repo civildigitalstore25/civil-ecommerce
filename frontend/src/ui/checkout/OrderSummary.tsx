@@ -32,9 +32,8 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   normalizePrice,
   formatPriceWithSymbol,
   onPlaceOrder,
-  isProcessing = false
+  isProcessing = false,
 }) => {
-
   return (
     <div
       className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"
@@ -44,7 +43,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         border: `1px solid ${colors.border.primary}`,
       }}
     >
-      <h2 className="text-2xl font-bold mb-6" style={{ color: colors.text.primary }}>Your Order</h2>
+      <h2
+        className="text-2xl font-bold mb-6"
+        style={{ color: colors.text.primary }}
+      >
+        Your Order
+      </h2>
 
       <div className="flex justify-between text-sm font-medium text-gray-500 mb-2">
         <span>Product</span>
@@ -60,7 +64,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               {item.product.name} × {Number(item.quantity) || 1}
             </span>
             <span className="font-medium text-blue-800">
-              {formatPriceWithSymbol(normalizePrice(item.product.price) * Number(item.quantity))}
+              {formatPriceWithSymbol(
+                normalizePrice(item.product.price) * Number(item.quantity),
+              )}
             </span>
           </div>
         ))
@@ -69,39 +75,60 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <hr className="my-4" style={{ borderColor: colors.border.primary }} />
 
       {/* Breakdown */}
-      <div className="flex justify-between text-sm mb-2" style={{ color: colors.text.secondary }}>
+      <div
+        className="flex justify-between text-sm mb-2"
+        style={{ color: colors.text.secondary }}
+      >
         <span>Subtotal</span>
         <span>{formatPriceWithSymbol(normalizePrice(summary.subtotal))}</span>
       </div>
 
       {summary.tax > 0 && (
-        <div className="flex justify-between text-sm mb-2" style={{ color: colors.text.secondary }}>
+        <div
+          className="flex justify-between text-sm mb-2"
+          style={{ color: colors.text.secondary }}
+        >
           <span>Tax</span>
           <span>{formatPriceWithSymbol(normalizePrice(summary.tax))}</span>
         </div>
       )}
 
       {summary.discount > 0 && (
-        <div className="flex justify-between text-sm mb-2" style={{ color: "red" }}>
+        <div
+          className="flex justify-between text-sm mb-2"
+          style={{ color: "red" }}
+        >
           <span>Discount</span>
-          <span>-{formatPriceWithSymbol(normalizePrice(summary.discount))}</span>
+          <span>
+            -{formatPriceWithSymbol(normalizePrice(summary.discount))}
+          </span>
         </div>
       )}
 
-      <div className="flex justify-between text-lg font-bold mb-6" style={{ color: colors.text.primary }}>
+      <div
+        className="flex justify-between text-lg font-bold mb-6"
+        style={{ color: colors.text.primary }}
+      >
         <span>Total</span>
-        <span className="text-yellow-600">{formatPriceWithSymbol(normalizePrice(summary.total))}</span>
+        <span className="text-yellow-600">
+          {formatPriceWithSymbol(normalizePrice(summary.total))}
+        </span>
       </div>
 
       <div className="bg-gray-100 p-4 rounded-md mb-4 text-sm text-gray-600 leading-relaxed">
         <strong>PhonePe Payment Solutions</strong>
         <br />
-        All UPI apps, Debit and Credit Cards, and NetBanking accepted | Powered by PhonePe
+        All UPI apps, Debit and Credit Cards, and NetBanking accepted | Powered
+        by PhonePe
       </div>
 
       <p className="text-xs text-gray-500 mb-6 leading-snug">
-        Your personal data will be used to process your order, support your experience, and for purposes described in our{" "}
-        <a href="/privacy-policy" className="text-yellow-600 underline">privacy policy</a>.
+        Your personal data will be used to process your order, support your
+        experience, and for purposes described in our{" "}
+        <a href="/privacy-policy" className="text-yellow-600 underline">
+          privacy policy
+        </a>
+        .
       </p>
 
       <FormButton
@@ -109,7 +136,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         variant="primary"
         className={`w-full py-3 text-lg transition duration-300 ease-in-out 
                    bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
-                   hover:shadow-lg ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+                   hover:shadow-lg ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
         onClick={onPlaceOrder}
         disabled={isProcessing}
       >
@@ -134,7 +161,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             Processing...
           </span>
         ) : (
-          'PLACE ORDER'
+          "PLACE ORDER"
         )}
       </FormButton>
     </div>

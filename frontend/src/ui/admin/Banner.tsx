@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Edit3, Trash, Plus, Calendar, ExternalLink } from 'lucide-react';
-import BannerForm from './BannerForm';
-import { useAdminThemeStyles } from '../../hooks/useAdminThemeStyles';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React, { useEffect, useState } from "react";
+import { Edit3, Trash, Plus, Calendar, ExternalLink } from "lucide-react";
+import BannerForm from "./BannerForm";
+import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import type { Banner } from "../../types/Banner";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const truncate = (s: string, n = 120) => (s && s.length > n ? s.slice(0, n).trim() + '...' : s);
+const truncate = (s: string, n = 120) =>
+  s && s.length > n ? s.slice(0, n).trim() + "..." : s;
 
 const BannerManagement: React.FC = () => {
   const { cardStyle, buttonStyle } = useAdminThemeStyles();
@@ -17,13 +18,17 @@ const BannerManagement: React.FC = () => {
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const { colors } = useAdminTheme();
 
-  useEffect(() => { fetchBanners(); }, []);
+  useEffect(() => {
+    fetchBanners();
+  }, []);
 
   const fetchBanners = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/banners`, { headers: { Authorization: `Bearer ${token}` } });
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/banners`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       setBanners(data.success ? data.data : []);
     } catch (err) {
@@ -35,31 +40,43 @@ const BannerManagement: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this banner?')) return;
+    if (!confirm("Delete this banner?")) return;
     try {
-      const token = localStorage.getItem('token');
-      const res = await fetch(`${API_URL}/api/banners/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
-      if (!res.ok) throw new Error('delete failed');
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/banners/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("delete failed");
       fetchBanners();
     } catch (err) {
       console.error(err);
-      alert('Error deleting banner');
+      alert("Error deleting banner");
     }
   };
 
   const handleFormSubmit = async (data: Banner) => {
     try {
-      const token = localStorage.getItem('token');
-      const url = editingBanner ? `${API_URL}/api/banners/${editingBanner._id}` : `${API_URL}/api/banners`;
-      const method = editingBanner ? 'PUT' : 'POST';
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(data) });
-      if (!res.ok) throw new Error('save failed');
+      const token = localStorage.getItem("token");
+      const url = editingBanner
+        ? `${API_URL}/api/banners/${editingBanner._id}`
+        : `${API_URL}/api/banners`;
+      const method = editingBanner ? "PUT" : "POST";
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) throw new Error("save failed");
       setShowForm(false);
       setEditingBanner(null);
       fetchBanners();
     } catch (err) {
       console.error(err);
-      alert('Error saving banner');
+      alert("Error saving banner");
     }
   };
 
@@ -108,7 +125,10 @@ const BannerManagement: React.FC = () => {
       {/* Banner List */}
       <div className="mt-4 sm:mt-6 flex flex-col gap-4">
         {loading ? (
-          <div className="text-center py-16" style={{ color: colors.text.secondary }}>
+          <div
+            className="text-center py-16"
+            style={{ color: colors.text.secondary }}
+          >
             Loading...
           </div>
         ) : banners.length === 0 ? (
@@ -170,9 +190,9 @@ const BannerManagement: React.FC = () => {
                   <span
                     className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
                     style={{
-                      backgroundColor: colors.interactive.primary + '20',
+                      backgroundColor: colors.interactive.primary + "20",
                       color: colors.interactive.primary,
-                      borderColor: colors.interactive.primary + '40',
+                      borderColor: colors.interactive.primary + "40",
                     }}
                   >
                     {b.bannerType}
@@ -181,20 +201,21 @@ const BannerManagement: React.FC = () => {
                   <span
                     className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
                     style={{
-                      backgroundColor: '#f4d96eff', // yellow
-                      color: '#000',               // black text for visibility
-                      borderColor: '#fcd34d'       // slightly darker yellow for border
+                      backgroundColor: "#f4d96eff", // yellow
+                      color: "#000", // black text for visibility
+                      borderColor: "#fcd34d", // slightly darker yellow for border
                     }}
                   >
                     {b.status}
                   </span>
-
                 </div>
 
                 {/* === Main Content === */}
                 <div className="flex flex-col gap-2 min-w-0">
                   <h3 className="text-lg sm:text-xl font-bold">{b.title}</h3>
-                  <p className="text-sm sm:text-base">{truncate(b.description, 100)}</p>
+                  <p className="text-sm sm:text-base">
+                    {truncate(b.description, 100)}
+                  </p>
 
                   {/* === Date + Priority + Position + Buttons Row === */}
                   <div className="flex flex-wrap justify-between items-center mt-3 gap-3">
@@ -209,11 +230,16 @@ const BannerManagement: React.FC = () => {
                       <span className="hidden sm:inline">|</span>
                       <div className="flex items-center gap-1 sm:gap-2">
                         <ExternalLink size={14} />
-                        <span className="font-semibold">Priority: {b.priority}/10</span>
+                        <span className="font-semibold">
+                          Priority: {b.priority}/10
+                        </span>
                       </div>
                       <span className="hidden sm:inline">|</span>
                       <div className="flex items-center gap-1 sm:gap-2">
-                        <span className="font-medium" style={{ color: colors.text.secondary }}>
+                        <span
+                          className="font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
                           Position: {b.position}
                         </span>
                       </div>
@@ -255,14 +281,11 @@ const BannerManagement: React.FC = () => {
                   </div>
                 </div>
               </div>
-
             );
-
           })
         )}
       </div>
     </div>
-
   );
 };
 

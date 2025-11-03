@@ -1,7 +1,7 @@
 export const headerConfig = {
   logo: {
     text: "webforest",
-    href: "/"
+    href: "/",
   },
   navigation: [
     { label: "Home", href: "/" },
@@ -9,17 +9,17 @@ export const headerConfig = {
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },
     { label: "Antivirus", href: "/antivirus" },
-    { label: "Contact", href: "/contact" }
+    { label: "Contact", href: "/contact" },
   ],
   contact: {
     phone: "790-355-4767",
-    phoneHref: "tel:+17903554767"
+    phoneHref: "tel:+17903554767",
   },
   search: {
-    placeholder: "Search for software, brands, or categories..."
+    placeholder: "Search for software, brands, or categories...",
   },
   auth: {
     customer: { label: "Login", href: "/signin" },
-    admin: { label: "Register", href: "/signup" }
-  }
+    admin: { label: "Register", href: "/signup" },
+  },
 };

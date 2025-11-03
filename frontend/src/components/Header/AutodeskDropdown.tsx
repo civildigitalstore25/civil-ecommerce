@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronRight } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface AutodeskSubProduct {
   name: string;
@@ -31,10 +31,22 @@ const autodeskCategories: AutodeskCategory[] = [
     name: "Design & CAD Software",
     products: [
       { name: "AutoCAD", href: "/category?brand=autodesk&category=autocad" },
-      { name: "AutoCAD LT", href: "/category?brand=autodesk&category=autocad-lt" },
-      { name: "AutoCAD Mechanical", href: "/category?brand=autodesk&category=autocad-mechanical" },
-      { name: "AutoCAD Electrical", href: "/category?brand=autodesk&category=autocad-electrical" },
-      { name: "AutoCAD MEP", href: "/category?brand=autodesk&category=autocad-mep" },
+      {
+        name: "AutoCAD LT",
+        href: "/category?brand=autodesk&category=autocad-lt",
+      },
+      {
+        name: "AutoCAD Mechanical",
+        href: "/category?brand=autodesk&category=autocad-mechanical",
+      },
+      {
+        name: "AutoCAD Electrical",
+        href: "/category?brand=autodesk&category=autocad-electrical",
+      },
+      {
+        name: "AutoCAD MEP",
+        href: "/category?brand=autodesk&category=autocad-mep",
+      },
     ],
   },
   {
@@ -49,7 +61,10 @@ const autodeskCategories: AutodeskCategory[] = [
     name: "Engineering & Manufacturing",
     products: [
       { name: "Fusion", href: "/category?brand=autodesk&category=fusion" },
-      { name: "Inventor Professional", href: "/category?brand=autodesk&category=inventor-professional" },
+      {
+        name: "Inventor Professional",
+        href: "/category?brand=autodesk&category=inventor-professional",
+      },
       { name: "Civil 3D", href: "/category?brand=autodesk&category=civil-3d" },
       { name: "Map 3D", href: "/category?brand=autodesk&category=map-3d" },
     ],
@@ -57,8 +72,14 @@ const autodeskCategories: AutodeskCategory[] = [
   {
     name: "Collections & Management",
     products: [
-      { name: "AEC Collection", href: "/category?brand=autodesk&category=aec-collection" },
-      { name: "Navisworks Manage", href: "/category?brand=autodesk&category=navisworks-manage" },
+      {
+        name: "AEC Collection",
+        href: "/category?brand=autodesk&category=aec-collection",
+      },
+      {
+        name: "Navisworks Manage",
+        href: "/category?brand=autodesk&category=navisworks-manage",
+      },
     ],
   },
 ];
@@ -123,16 +144,19 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
         borderColor: colors.border.primary,
         top: `${buttonPosition.top}px`,
         left: `${buttonPosition.left}px`,
-        minWidth: '900px',
-        maxWidth: '1200px',
-        maxHeight: '85vh',
-        overflowY: 'auto',
+        minWidth: "900px",
+        maxWidth: "1200px",
+        maxHeight: "85vh",
+        overflowY: "auto",
       }}
     >
       <div className="p-8">
         {/* Header */}
         <div className="mb-6">
-          <h3 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+          <h3
+            className="text-2xl font-semibold"
+            style={{ color: colors.text.primary }}
+          >
             Autodesk Product Categories
           </h3>
           <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
@@ -168,7 +192,12 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
                       onMouseLeave={() => scheduleClose()}
                     >
                       <button
-                        onClick={() => handleProductClick(product.href, !!product.topProducts)}
+                        onClick={() =>
+                          handleProductClick(
+                            product.href,
+                            !!product.topProducts,
+                          )
+                        }
                         className="flex items-center justify-between w-full text-left px-4 py-3 rounded-md transition-all duration-200 group-hover:scale-[1.02]"
                         style={{
                           backgroundColor: colors.background.secondary,
@@ -191,8 +220,8 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
                             backgroundColor: colors.background.primary,
                             borderColor: colors.border.primary,
                             top: 0,
-                            left: 'calc(100% + 16px)',
-                            minWidth: '350px',
+                            left: "calc(100% + 16px)",
+                            minWidth: "350px",
                             zIndex: 60,
                           }}
                           onMouseEnter={() => clearCloseTimeout()}
@@ -212,11 +241,15 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
                             {product.topProducts.map((sub, i) => (
                               <li key={i}>
                                 <button
-                                  onClick={() => handleSubProductClick(sub.href)}
+                                  onClick={() =>
+                                    handleSubProductClick(sub.href)
+                                  }
                                   className="flex items-center justify-between w-full text-left px-3 py-2 rounded-md transition-all duration-200 group"
                                   style={{ color: colors.text.secondary }}
                                 >
-                                  <span className="text-[14px]">{sub.name}</span>
+                                  <span className="text-[14px]">
+                                    {sub.name}
+                                  </span>
                                   <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                                 </button>
                               </li>
@@ -233,10 +266,13 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
         </div>
 
         {/* Bottom button */}
-        <div className="mt-8 pt-6 border-t flex justify-center" style={{ borderColor: colors.border.primary }}>
+        <div
+          className="mt-8 pt-6 border-t flex justify-center"
+          style={{ borderColor: colors.border.primary }}
+        >
           <button
             onClick={() => {
-              onNavigate('/autodesk');
+              onNavigate("/autodesk");
               onClose();
             }}
             className="py-3 px-6 rounded-lg font-medium transition-all duration-200 text-lg"

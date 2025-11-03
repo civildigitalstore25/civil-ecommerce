@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Trash2 } from "lucide-react";
 import type { User } from "../../../api/types/userTypes";
 import FormButton from "../../../components/Button/FormButton";
-import { useAdminTheme } from '../../../contexts/AdminThemeContext';
+import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 interface Props {
   users: User[];
@@ -28,7 +28,7 @@ const UserTable: React.FC<Props> = ({
       className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
       style={{
         backgroundColor: colors.background.secondary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       <div className="overflow-x-auto">
@@ -37,7 +37,7 @@ const UserTable: React.FC<Props> = ({
             className="border-b transition-colors duration-200"
             style={{
               backgroundColor: colors.background.tertiary,
-              borderBottomColor: colors.border.primary
+              borderBottomColor: colors.border.primary,
             }}
           >
             <tr>
@@ -81,12 +81,13 @@ const UserTable: React.FC<Props> = ({
               <tr
                 key={user._id}
                 className="transition-colors duration-200"
-                style={{ backgroundColor: 'transparent' }}
+                style={{ backgroundColor: "transparent" }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = colors.background.accent;
+                  e.currentTarget.style.backgroundColor =
+                    colors.background.accent;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
                 <td className="py-4 px-4">
@@ -130,30 +131,32 @@ const UserTable: React.FC<Props> = ({
                     style={{
                       backgroundColor: colors.background.tertiary,
                       borderColor: colors.border.primary,
-                      color: colors.text.primary
+                      color: colors.text.primary,
                     }}
                   >
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
-                  {editedRoles[user._id] && editedRoles[user._id] !== user.role && (
-                    <FormButton
-                      onClick={() =>
-                        handleRoleChange(user._id, editedRoles[user._id] as "user" | "admin")
-                      }
-                      className="text-sm transition-colors duration-200"
-                      style={{
-                        color: colors.interactive.primary,
-                        backgroundColor: 'transparent',
-                        border: 'none'
-                      }}
-                    >
-                      Update
-                    </FormButton>
-                  )}
+                  {editedRoles[user._id] &&
+                    editedRoles[user._id] !== user.role && (
+                      <FormButton
+                        onClick={() =>
+                          handleRoleChange(
+                            user._id,
+                            editedRoles[user._id] as "user" | "admin",
+                          )
+                        }
+                        className="text-sm transition-colors duration-200"
+                        style={{
+                          color: colors.interactive.primary,
+                          backgroundColor: "transparent",
+                          border: "none",
+                        }}
+                      >
+                        Update
+                      </FormButton>
+                    )}
                 </td>
-
-
 
                 {/* Joined */}
                 <td
@@ -170,10 +173,10 @@ const UserTable: React.FC<Props> = ({
                     className="p-1 transition-colors duration-200"
                     style={{ color: colors.status.error }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.opacity = '0.8';
+                      e.currentTarget.style.opacity = "0.8";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.opacity = '1';
+                      e.currentTarget.style.opacity = "1";
                     }}
                     title="Delete user"
                   >

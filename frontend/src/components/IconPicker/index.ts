@@ -1,1 +1,1 @@
-export { default } from './IconPicker';
+export { default } from "./IconPicker";

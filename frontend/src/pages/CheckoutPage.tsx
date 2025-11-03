@@ -37,7 +37,7 @@ const CheckoutPage: React.FC = () => {
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
 
-  const cartItems: CartItem[] = rawCartItems.map(item => ({
+  const cartItems: CartItem[] = rawCartItems.map((item) => ({
     id: item._id || item.id || item.product?._id,
     product: {
       name: item.product?.name || "Unknown Product",
@@ -54,7 +54,11 @@ const CheckoutPage: React.FC = () => {
     itemCount: Number(rawSummary.itemCount) || cartItems.length,
   };
 
-  const [formData, setFormData] = useState({ name: "", whatsapp: "", email: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    whatsapp: "",
+    email: "",
+  });
   const [showCoupon, setShowCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -64,7 +68,7 @@ const CheckoutPage: React.FC = () => {
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const validateForm = () => {
@@ -77,7 +81,7 @@ const CheckoutPage: React.FC = () => {
       return false;
     }
     const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(formData.whatsapp.replace(/[^0-9]/g, ''))) {
+    if (!phoneRegex.test(formData.whatsapp.replace(/[^0-9]/g, ""))) {
       toast.error("Please enter a valid 10-digit WhatsApp number");
       return false;
     }
@@ -99,8 +103,8 @@ const CheckoutPage: React.FC = () => {
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -116,11 +120,12 @@ const CheckoutPage: React.FC = () => {
     setIsProcessing(true);
 
     try {
-      const token = localStorage.getItem('token') || localStorage.getItem('authToken');
+      const token =
+        localStorage.getItem("token") || localStorage.getItem("authToken");
 
       if (!token) {
         toast.error("Please login to continue");
-        navigate('/login');
+        navigate("/login");
         return;
       }
 
@@ -138,12 +143,12 @@ const CheckoutPage: React.FC = () => {
 
       // Create order on backend
       const orderData = {
-        items: cartItems.map(item => ({
+        items: cartItems.map((item) => ({
           productId: item.id.toString(),
           name: item.product.name,
           quantity: item.quantity,
           price: item.product.price,
-          image: null
+          image: null,
         })),
         subtotal: subtotal,
         discount: discount,
@@ -157,22 +162,22 @@ const CheckoutPage: React.FC = () => {
           city: "N/A",
           state: "N/A",
           pincode: "000000",
-          country: "India"
+          country: "India",
         },
         couponCode: couponCode || null,
-        notes: `Email: ${formData.email}`
+        notes: `Email: ${formData.email}`,
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/create-order`,
+        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/create-order`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify(orderData)
-        }
+          body: JSON.stringify(orderData),
+        },
       );
 
       const data = await response.json();
@@ -195,43 +200,43 @@ const CheckoutPage: React.FC = () => {
           try {
             // Verify payment on backend
             const verifyResponse = await fetch(
-              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/verify`,
+              `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/verify`,
               {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature
-                })
-              }
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              },
             );
 
             const verifyData = await verifyResponse.json();
 
             if (verifyData.success) {
               toast.success("Payment successful!");
-              
+
               // Clear cart (if you have a cart clearing function)
-              localStorage.removeItem('cart');
-              
+              localStorage.removeItem("cart");
+
               // Navigate to success page
-              navigate('/payment-success', {
+              navigate("/payment-success", {
                 state: {
                   orderId: data.data.orderId,
                   paymentId: response.razorpay_payment_id,
-                  amount: finalTotal
-                }
+                  amount: finalTotal,
+                },
               });
             } else {
               toast.error("Payment verification failed");
               setIsProcessing(false);
             }
           } catch (error) {
-            console.error('Payment verification error:', error);
+            console.error("Payment verification error:", error);
             toast.error("Payment verification failed");
             setIsProcessing(false);
           }
@@ -239,58 +244,58 @@ const CheckoutPage: React.FC = () => {
         prefill: {
           name: formData.name,
           email: formData.email,
-          contact: formData.whatsapp
+          contact: formData.whatsapp,
         },
         notes: {
           orderId: data.data.orderId,
         },
         theme: {
-          color: "#F59E0B"
+          color: "#F59E0B",
         },
         modal: {
-          ondismiss: function() {
+          ondismiss: function () {
             toast.error("Payment cancelled");
             setIsProcessing(false);
-            
+
             // Report payment failure
             fetch(
-              `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/failed`,
+              `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/failed`,
               {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
                   razorpay_order_id: data.data.razorpayOrderId,
-                  error: { description: 'Payment cancelled by user' }
-                })
-              }
+                  error: { description: "Payment cancelled by user" },
+                }),
+              },
             );
-          }
-        }
+          },
+        },
       };
 
       const razorpay = new window.Razorpay(options);
-      
-      razorpay.on('payment.failed', async function (response: any) {
+
+      razorpay.on("payment.failed", async function (response: any) {
         toast.error("Payment failed: " + response.error.description);
         setIsProcessing(false);
-        
+
         // Report payment failure
         await fetch(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/payments/failed`,
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/failed`,
           {
-            method: 'POST',
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
               razorpay_order_id: data.data.razorpayOrderId,
-              error: response.error
-            })
-          }
+              error: response.error,
+            }),
+          },
         );
       });
 
@@ -344,13 +349,16 @@ const CheckoutPage: React.FC = () => {
 
       <div className="max-w-7xl mx-auto flex flex-col space-y-8">
         <div className="text-sm flex flex-col gap-2">
-          <div className="flex items-center gap-2" style={{ color: colors.text.primary }}>
+          <div
+            className="flex items-center gap-2"
+            style={{ color: colors.text.primary }}
+          >
             <span>Have a coupon?</span>
             <button
               type="button"
               className="underline font-medium"
               style={{ color: colors.interactive.primary }}
-              onClick={() => setShowCoupon(prev => !prev)}
+              onClick={() => setShowCoupon((prev) => !prev)}
             >
               Click here to enter your code
             </button>
@@ -371,7 +379,11 @@ const CheckoutPage: React.FC = () => {
           className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
           onSubmit={handleSubmit}
         >
-          <BillingForm formData={formData} handleChange={handleChange} colors={colors} />
+          <BillingForm
+            formData={formData}
+            handleChange={handleChange}
+            colors={colors}
+          />
           <OrderSummary
             cartItems={cartItems}
             summary={{

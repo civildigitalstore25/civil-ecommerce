@@ -1,23 +1,32 @@
-import React, { useState, useRef } from 'react';
-import { Search, User, ShoppingCart, Menu, X, LogOut, Settings, Package } from 'lucide-react';
-import { headerConfig } from './HeaderConfig';
-import DesktopNavigation from './DesktopNavigation';
-import AuthDropdown from './AuthDropdown';
-import MobileMenu from './MobileMenu';
-import AdminDashboard from '../../ui/admin/AdminDashboard';
-import AutodeskDropdown from './AutodeskDropdown';
-import MicrosoftDropdown from './MicrosoftDropdown';
-import AdobeDropdown from './AdobeDropdown';
-import AntivirusDropdown from './AntivirusDropdown';
-import AllCategoriesDropdown from './AllCategoriesDropdown';
-import { useNavigate } from 'react-router-dom';
-import { clearAuth, isAdmin } from '../../utils/auth';
-import { useUser, useUserInvalidate, useLogout } from '../../api/userQueries';
-import { useCartContext } from '../../contexts/CartContext';
-import AdminThemeToggle from '../ThemeToggle/AdminThemeToggle';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import CurrencyDropdown from '../CurrencyDropdown/CurrencyDropdown';
-import logo from '../../assets/logo.png';
+import React, { useState, useRef } from "react";
+import {
+  Search,
+  User,
+  ShoppingCart,
+  Menu,
+  X,
+  LogOut,
+  Settings,
+  Package,
+} from "lucide-react";
+import { headerConfig } from "./HeaderConfig";
+import DesktopNavigation from "./DesktopNavigation";
+import AuthDropdown from "./AuthDropdown";
+import MobileMenu from "./MobileMenu";
+import AdminDashboard from "../../ui/admin/AdminDashboard";
+import AutodeskDropdown from "./AutodeskDropdown";
+import MicrosoftDropdown from "./MicrosoftDropdown";
+import AdobeDropdown from "./AdobeDropdown";
+import AntivirusDropdown from "./AntivirusDropdown";
+import AllCategoriesDropdown from "./AllCategoriesDropdown";
+import { useNavigate } from "react-router-dom";
+import { clearAuth, isAdmin } from "../../utils/auth";
+import { useUser, useUserInvalidate, useLogout } from "../../api/userQueries";
+import { useCartContext } from "../../contexts/CartContext";
+import AdminThemeToggle from "../ThemeToggle/AdminThemeToggle";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
+import logo from "../../assets/logo.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -27,8 +36,9 @@ const Header: React.FC = () => {
   const [isMicrosoftDropdownOpen, setIsMicrosoftDropdownOpen] = useState(false);
   const [isAdobeDropdownOpen, setIsAdobeDropdownOpen] = useState(false);
   const [isAntivirusDropdownOpen, setIsAntivirusDropdownOpen] = useState(false);
-  const [isAllCategoriesDropdownOpen, setIsAllCategoriesDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isAllCategoriesDropdownOpen, setIsAllCategoriesDropdownOpen] =
+    useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
   const autodeskButtonRef = useRef<HTMLButtonElement>(null);
@@ -42,10 +52,6 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
   const { colors } = useAdminTheme();
-
-
-
-
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
@@ -73,18 +79,18 @@ const Header: React.FC = () => {
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
 
   const handleNavigation = (href: string) => {
-    if (href === '/admin-login') {
+    if (href === "/admin-login") {
       setShowAdminDashboard(true);
-    } else if (href === '/') {
+    } else if (href === "/") {
       setShowAdminDashboard(false);
-      navigate('/');
-    } else if (href === '/logout') {
+      navigate("/");
+    } else if (href === "/logout") {
       handleLogout();
     } else {
       navigate(href);
@@ -106,15 +112,15 @@ const Header: React.FC = () => {
       onSuccess: () => {
         clearAuth();
         invalidateUser();
-        navigate('/');
+        navigate("/");
         window.location.reload();
       },
       onError: () => {
         clearAuth();
         invalidateUser();
-        navigate('/');
+        navigate("/");
         window.location.reload();
-      }
+      },
     });
   };
 
@@ -139,7 +145,9 @@ const Header: React.FC = () => {
 
               <div className="flex-1 flex items-center justify-center">
                 <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
-                  <span className="text-sm font-medium">Admin Panel Active</span>
+                  <span className="text-sm font-medium">
+                    Admin Panel Active
+                  </span>
                 </div>
               </div>
 
@@ -164,7 +172,7 @@ const Header: React.FC = () => {
       className="shadow-sm border-b w-full transition-colors duration-200 fixed top-0 left-0 right-0 z-50"
       style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       {/* Main header content */}
@@ -214,7 +222,7 @@ const Header: React.FC = () => {
                   style={{
                     backgroundColor: colors.background.primary,
                     borderColor: colors.border.primary,
-                    color: colors.text.primary
+                    color: colors.text.primary,
                   }}
                   onFocus={(e) => {
                     e.target.style.borderColor = colors.interactive.primary;
@@ -228,7 +236,7 @@ const Header: React.FC = () => {
                   className="absolute right-1 top-1/2 transform -translate-y-1/2 p-1.5 rounded-md hover:opacity-80 transition-all duration-200"
                   style={{
                     backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    color: colors.text.inverse,
                   }}
                 >
                   <Search className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -250,18 +258,30 @@ const Header: React.FC = () => {
                   className="flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
                   style={{ color: colors.text.secondary }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.interactive.primary;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.text.secondary;
                   }}
                 >
                   <User className="w-4 h-4 lg:w-5 lg:h-5" />
                   <span className="text-sm lg:text-base whitespace-nowrap">
                     {user.fullName || user.email}
                   </span>
-                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <svg
+                    className="w-3 h-3 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
@@ -271,21 +291,27 @@ const Header: React.FC = () => {
                     className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
                     style={{
                       backgroundColor: colors.background.primary,
-                      borderColor: colors.border.primary
+                      borderColor: colors.border.primary,
                     }}
                   >
                     {isAdmin(user) && (
                       <button
-                        onClick={() => handleNavigation('/admin-dashboard')}
+                        onClick={() => handleNavigation("/admin-dashboard")}
                         className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
                         style={{ color: colors.text.secondary }}
                         onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = colors.background.secondary;
+                          (e.currentTarget as HTMLElement).style.color =
+                            colors.interactive.primary;
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = "transparent";
+                          (e.currentTarget as HTMLElement).style.color =
+                            colors.text.secondary;
                         }}
                       >
                         <Settings className="w-4 h-4" />
@@ -293,48 +319,60 @@ const Header: React.FC = () => {
                       </button>
                     )}
                     <button
-                      onClick={() => handleNavigation('/profile')}
+                      onClick={() => handleNavigation("/profile")}
                       className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
                       style={{ color: colors.text.secondary }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.interactive.primary;
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "transparent";
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.text.secondary;
                       }}
                     >
                       <User className="w-4 h-4" />
                       <span>Profile</span>
                     </button>
                     <button
-                      onClick={() => handleNavigation('/my-orders')}
+                      onClick={() => handleNavigation("/my-orders")}
                       className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
                       style={{ color: colors.text.secondary }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.interactive.primary;
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "transparent";
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.text.secondary;
                       }}
                     >
                       <Package className="w-4 h-4" />
                       <span>My Orders</span>
                     </button>
                     <button
-                      onClick={() => handleNavigation('/logout')}
+                      onClick={() => handleNavigation("/logout")}
                       className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
                       style={{ color: colors.text.secondary }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.status.error;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          colors.background.secondary;
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.status.error;
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        (e.currentTarget as HTMLElement).style.backgroundColor =
+                          "transparent";
+                        (e.currentTarget as HTMLElement).style.color =
+                          colors.text.secondary;
                       }}
                     >
                       <LogOut className="w-4 h-4" />
@@ -350,16 +388,30 @@ const Header: React.FC = () => {
                   className="flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
                   style={{ color: colors.text.secondary }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.interactive.primary;
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.text.secondary;
                   }}
                 >
                   <User className="w-4 h-4 lg:w-5 lg:h-5" />
-                  <span className="text-sm lg:text-base whitespace-nowrap">Sign In</span>
-                  <svg className="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <span className="text-sm lg:text-base whitespace-nowrap">
+                    Sign In
+                  </span>
+                  <svg
+                    className="w-3 h-3 ml-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
                 <AuthDropdown
@@ -375,24 +427,28 @@ const Header: React.FC = () => {
 
             {/* Cart */}
             <button
-              onClick={() => handleNavigation('/cart')}
+              onClick={() => handleNavigation("/cart")}
               className="relative flex items-center space-x-1 lg:space-x-2 hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
               style={{ color: colors.text.secondary }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                (e.currentTarget as HTMLElement).style.color =
+                  colors.interactive.primary;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                (e.currentTarget as HTMLElement).style.color =
+                  colors.text.secondary;
               }}
             >
               <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
-              <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">My Cart</span>
+              <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">
+                My Cart
+              </span>
               {getItemCount() > 0 && (
                 <span
                   className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center"
                   style={{
                     backgroundColor: colors.interactive.primary,
-                    color: colors.text.inverse
+                    color: colors.text.inverse,
                   }}
                 >
                   {getItemCount()}
@@ -406,7 +462,11 @@ const Header: React.FC = () => {
               className="lg:hidden p-1.5 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-2"
               style={{ color: colors.text.secondary }}
             >
-              {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
+              {isMenuOpen ? (
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+              ) : (
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+              )}
             </button>
           </div>
         </div>
@@ -426,7 +486,13 @@ const Header: React.FC = () => {
       />
 
       {/* Overlay to close dropdowns */}
-      {(isAuthDropdownOpen || isUserDropdownOpen || isAutodeskDropdownOpen || isMicrosoftDropdownOpen || isAdobeDropdownOpen || isAntivirusDropdownOpen || isAllCategoriesDropdownOpen) && (
+      {(isAuthDropdownOpen ||
+        isUserDropdownOpen ||
+        isAutodeskDropdownOpen ||
+        isMicrosoftDropdownOpen ||
+        isAdobeDropdownOpen ||
+        isAntivirusDropdownOpen ||
+        isAllCategoriesDropdownOpen) && (
         <div
           className="fixed inset-0 z-40"
           onClick={() => {

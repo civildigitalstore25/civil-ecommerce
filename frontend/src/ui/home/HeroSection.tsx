@@ -36,9 +36,18 @@ const features = [
 ];
 
 const paymentMethods = [
-  { icon: <DevicePhoneMobileIcon className="h-5 w-5 text-pink-500" />, label: "UPI & Mobile Payments" },
-  { icon: <CreditCardIcon className="h-5 w-5 text-blue-600" />, label: "Secure Cards" },
-  { icon: <BoltIcon className="h-5 w-5 text-yellow-400" />, label: "Instant Activation" },
+  {
+    icon: <DevicePhoneMobileIcon className="h-5 w-5 text-pink-500" />,
+    label: "UPI & Mobile Payments",
+  },
+  {
+    icon: <CreditCardIcon className="h-5 w-5 text-blue-600" />,
+    label: "Secure Cards",
+  },
+  {
+    icon: <BoltIcon className="h-5 w-5 text-yellow-400" />,
+    label: "Instant Activation",
+  },
 ];
 
 const HeroSection: React.FC = () => {
@@ -52,14 +61,15 @@ const HeroSection: React.FC = () => {
     <section
       className="py-14 px-4 sm:py-20 sm:px-6 transition-colors duration-300"
       style={{
-        background: theme === "light"
-          ? "linear-gradient(to bottom right, #f9fafb, #ffffff)"
-          : "linear-gradient(to bottom right, #111827, #1f2937)",
+        background:
+          theme === "light"
+            ? "linear-gradient(to bottom right, #f9fafb, #ffffff)"
+            : "linear-gradient(to bottom right, #111827, #1f2937)",
       }}
     >
       <div className="max-w-7xl mx-auto">
         {/* ===== Banner Carousel ===== */}
-        <BannerCarousel page="home"  />
+        <BannerCarousel page="home" />
 
         {/* ===== Hero Content ===== */}
         <div className="flex flex-col items-center mt-12">
@@ -75,8 +85,8 @@ const HeroSection: React.FC = () => {
             className="mb-12 text-lg sm:text-xl font-serif leading-relaxed text-center max-w-2xl"
             style={{ color: colors.text.secondary }}
           >
-            Get authentic AutoCAD, Revit, Lumion, Tekla and other professional software licenses
-            with instant delivery and lifetime support.
+            Get authentic AutoCAD, Revit, Lumion, Tekla and other professional
+            software licenses with instant delivery and lifetime support.
           </p>
 
           <button
@@ -87,10 +97,12 @@ const HeroSection: React.FC = () => {
               color: colors.text.inverse,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+              e.currentTarget.style.backgroundColor =
+                colors.interactive.primaryHover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.interactive.primary;
+              e.currentTarget.style.backgroundColor =
+                colors.interactive.primary;
             }}
           >
             Explore Products

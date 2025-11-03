@@ -35,9 +35,9 @@ export default function ForgotPasswordPage() {
         showConfirmButton: false,
         timerProgressBar: true,
       });
-
     } catch (err: any) {
-      const errorMessage = err.message || "Failed to send reset email. Please try again.";
+      const errorMessage =
+        err.message || "Failed to send reset email. Please try again.";
       setError(errorMessage);
 
       Swal.fire({
@@ -77,7 +77,7 @@ export default function ForgotPasswordPage() {
           <div
             className="py-8 px-6 rounded-t-2xl flex flex-col items-center"
             style={{
-              background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+              background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
             }}
           >
             <div
@@ -115,26 +115,21 @@ export default function ForgotPasswordPage() {
               className="border rounded-lg p-4"
               style={{
                 backgroundColor: `${colors.status.info}20`,
-                borderColor: colors.status.info
+                borderColor: colors.status.info,
               }}
             >
               <Mail
                 className="h-8 w-8 mx-auto mb-2"
                 style={{ color: colors.status.info }}
               />
-              <p
-                className="text-sm"
-                style={{ color: colors.text.primary }}
-              >
-                Please check your email inbox (and spam folder) for the password reset link.
+              <p className="text-sm" style={{ color: colors.text.primary }}>
+                Please check your email inbox (and spam folder) for the password
+                reset link.
               </p>
             </div>
 
             <div className="space-y-4">
-              <p
-                className="text-sm"
-                style={{ color: colors.text.secondary }}
-              >
+              <p className="text-sm" style={{ color: colors.text.secondary }}>
                 Didn't receive the email?
               </p>
 
@@ -190,7 +185,7 @@ export default function ForgotPasswordPage() {
         <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
           }}
         >
           <div
@@ -240,7 +235,7 @@ export default function ForgotPasswordPage() {
                 backgroundColor: `${colors.status.error}20`,
                 borderColor: colors.status.error,
                 color: colors.status.error,
-                border: `1px solid ${colors.status.error}`
+                border: `1px solid ${colors.status.error}`,
               }}
             >
               {error}
@@ -265,9 +260,25 @@ export default function ForgotPasswordPage() {
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Sending...
                 </span>

@@ -8,7 +8,7 @@ import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     email: "",
@@ -29,11 +29,19 @@ export default function SignupPage() {
 
   const validateForm = () => {
     if (formData.password !== formData.confirmPassword) {
-      Swal.fire({ icon: "error", title: "Validation Error", text: "Passwords do not match" });
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Passwords do not match",
+      });
       return false;
     }
     if (formData.password.length < 6) {
-      Swal.fire({ icon: "error", title: "Validation Error", text: "Password too short" });
+      Swal.fire({
+        icon: "error",
+        title: "Validation Error",
+        text: "Password too short",
+      });
       return false;
     }
     return true;
@@ -54,13 +62,22 @@ export default function SignupPage() {
           fullName: data.user.fullName,
         });
         invalidateUser();
-        Swal.fire({ icon: "success", title: "Signup Successful!", timer: 2000, showConfirmButton: false });
+        Swal.fire({
+          icon: "success",
+          title: "Signup Successful!",
+          timer: 2000,
+          showConfirmButton: false,
+        });
         navigate("/");
       },
       onError: (err: any) => {
         const errorMessage = err.response?.data?.message || "Signup failed";
         setError(errorMessage);
-        Swal.fire({ icon: "error", title: "Signup Failed", text: errorMessage });
+        Swal.fire({
+          icon: "error",
+          title: "Signup Failed",
+          text: errorMessage,
+        });
       },
     });
   };
@@ -83,7 +100,7 @@ export default function SignupPage() {
         <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
           }}
         >
           <div
@@ -115,7 +132,7 @@ export default function SignupPage() {
                 backgroundColor: `${colors.status.error}20`,
                 borderColor: colors.status.error,
                 color: colors.status.error,
-                border: `1px solid ${colors.status.error}`
+                border: `1px solid ${colors.status.error}`,
               }}
             >
               {error}
@@ -123,9 +140,30 @@ export default function SignupPage() {
           )}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <FormInput label="Full Name " name="fullName" required value={formData.fullName} onChange={handleChange} placeholder="Enter your full name" />
-            <FormInput label="Email " type="email" name="email" required value={formData.email} onChange={handleChange} placeholder="Enter your email" />
-            <FormInput label="Phone (Optional)" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} placeholder="Enter your phone number" />
+            <FormInput
+              label="Full Name "
+              name="fullName"
+              required
+              value={formData.fullName}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+            />
+            <FormInput
+              label="Email "
+              type="email"
+              name="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+            />
+            <FormInput
+              label="Phone (Optional)"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              placeholder="Enter your phone number"
+            />
 
             <PasswordInput
               label="Password "
@@ -146,8 +184,14 @@ export default function SignupPage() {
               required
             />
 
-            <FormButton type="submit" disabled={signUpMutation.isPending} className="w-full">
-              {signUpMutation.isPending ? "Creating Account..." : "Create Account"}
+            <FormButton
+              type="submit"
+              disabled={signUpMutation.isPending}
+              className="w-full"
+            >
+              {signUpMutation.isPending
+                ? "Creating Account..."
+                : "Create Account"}
             </FormButton>
           </form>
 

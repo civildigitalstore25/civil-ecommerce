@@ -1,6 +1,6 @@
-import React from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 // Types
 interface Category {
@@ -17,7 +17,7 @@ const sampleCategories: Category[] = [
   { id: 3, name: "Design Software", products: 3, icon: "🎨" },
   { id: 4, name: "Rendering", products: 2, icon: "🖼️" },
   { id: 5, name: "Simulation", products: 2, icon: "⚙️" },
-  { id: 6, name: "Structural Analysis", products: 1, icon: "🏗️" }
+  { id: 6, name: "Structural Analysis", products: 1, icon: "🏗️" },
 ];
 
 const Categories: React.FC = () => {
@@ -36,10 +36,15 @@ const Categories: React.FC = () => {
           className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
           style={{
             backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse
+            color: colors.text.inverse,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primaryHover}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primary}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor =
+              colors.interactive.primaryHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = colors.interactive.primary)
+          }
         >
           <Plus className="w-4 h-4" />
           <span>Add Category</span>
@@ -53,7 +58,7 @@ const Categories: React.FC = () => {
             className="rounded-xl p-6 shadow-xl border transition-colors duration-200"
             style={{
               backgroundColor: colors.background.secondary,
-              borderColor: colors.border.primary
+              borderColor: colors.border.primary,
             }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -67,16 +72,24 @@ const Categories: React.FC = () => {
                 <button
                   className="p-1 transition-colors duration-200"
                   style={{ color: colors.text.secondary }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.status.success}
-                  onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = colors.status.success)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = colors.text.secondary)
+                  }
                 >
                   <Edit className="w-4 h-4" />
                 </button>
                 <button
                   className="p-1 transition-colors duration-200"
                   style={{ color: colors.text.secondary }}
-                  onMouseEnter={(e) => e.currentTarget.style.color = colors.status.error}
-                  onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = colors.status.error)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = colors.text.secondary)
+                  }
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

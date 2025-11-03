@@ -1,8 +1,9 @@
-import axios from 'axios';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { User, UsersResponse } from './types/userTypes';
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { User, UsersResponse } from "./types/userTypes";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api/users`,
@@ -10,7 +11,7 @@ const api = axios.create({
 
 // Add token to requests
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -24,7 +25,7 @@ export const userApi = {
     search?: string;
     role?: string;
   }): Promise<UsersResponse> => {
-    const response = await api.get('/', { params });
+    const response = await api.get("/", { params });
     return response.data;
   },
 
@@ -37,14 +38,17 @@ export const userApi = {
     email: string;
     fullName: string;
     phoneNumber?: string;
-    role: 'user' | 'admin';
+    role: "user" | "admin";
     password: string;
   }): Promise<User> => {
-    const response = await api.post('/', userData);
+    const response = await api.post("/", userData);
     return response.data;
   },
 
-  updateUser: async (id: string, data: { role?: string; isActive?: boolean }): Promise<User> => {
+  updateUser: async (
+    id: string,
+    data: { role?: string; isActive?: boolean },
+  ): Promise<User> => {
     const response = await api.put(`/${id}`, data);
     return response.data;
   },
@@ -61,14 +65,14 @@ export const useUsers = (params?: {
   role?: string;
 }) => {
   return useQuery<UsersResponse>({
-    queryKey: ['users', params],
+    queryKey: ["users", params],
     queryFn: () => userApi.getUsers(params),
   });
 };
 
 export const useUser = (id: string) => {
   return useQuery<User>({
-    queryKey: ['user', id],
+    queryKey: ["user", id],
     queryFn: () => userApi.getUserById(id),
     enabled: !!id,
   });
@@ -78,10 +82,15 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { role?: string; isActive?: boolean } }) =>
-      userApi.updateUser(id, data),
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: { role?: string; isActive?: boolean };
+    }) => userApi.updateUser(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };
@@ -94,11 +103,11 @@ export const useCreateUser = () => {
       email: string;
       fullName: string;
       phoneNumber?: string;
-      role: 'user' | 'admin';
+      role: "user" | "admin";
       password: string;
     }) => userApi.createUser(userData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };
@@ -109,7 +118,7 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: (id: string) => userApi.deleteUser(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };

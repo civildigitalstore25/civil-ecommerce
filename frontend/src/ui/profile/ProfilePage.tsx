@@ -1,18 +1,18 @@
 // EnhancedProfilePage.tsx
-import { useEffect, useState } from 'react';
-import { useCurrentUser, useUpdateProfile } from '../../api/auth';
-import FormInput from '../../components/Input/FormInput';
-import FormButton from '../../components/Button/FormButton';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import Swal from 'sweetalert2';
+import { useEffect, useState } from "react";
+import { useCurrentUser, useUpdateProfile } from "../../api/auth";
+import FormInput from "../../components/Input/FormInput";
+import FormButton from "../../components/Button/FormButton";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import Swal from "sweetalert2";
 
 export default function ProfilePage() {
   const { data: user, isLoading, error, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
+    fullName: "",
+    phoneNumber: "",
   });
   const { colors } = useAdminTheme();
 
@@ -20,25 +20,28 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        fullName: user.fullName || '',
-        phoneNumber: user.phoneNumber || '',
+        fullName: user.fullName || "",
+        phoneNumber: user.phoneNumber || "",
       });
     }
   }, [user, isEditing]); // Added isEditing to dependencies
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = async () => {
     // Check if there are any changes
-    if (formData.fullName === user?.fullName && formData.phoneNumber === user?.phoneNumber) {
+    if (
+      formData.fullName === user?.fullName &&
+      formData.phoneNumber === user?.phoneNumber
+    ) {
       Swal.fire({
-        title: 'No Changes',
-        text: 'You haven\'t made any changes to your profile.',
-        icon: 'info',
-        confirmButtonText: 'OK',
+        title: "No Changes",
+        text: "You haven't made any changes to your profile.",
+        icon: "info",
+        confirmButtonText: "OK",
         timer: 2000,
       });
       return;
@@ -50,15 +53,15 @@ export default function ProfilePage() {
       setIsEditing(false);
 
       Swal.fire({
-        title: 'Success!',
-        text: 'Your profile has been updated successfully.',
-        icon: 'success',
-        confirmButtonText: 'OK',
+        title: "Success!",
+        text: "Your profile has been updated successfully.",
+        icon: "success",
+        confirmButtonText: "OK",
         timer: 2000,
         timerProgressBar: true,
       });
     } catch (error) {
-      console.error('Update error:', error);
+      console.error("Update error:", error);
     }
   };
 
@@ -66,8 +69,8 @@ export default function ProfilePage() {
     // Reset form data to original values
     if (user) {
       setFormData({
-        fullName: user.fullName || '',
-        phoneNumber: user.phoneNumber || '',
+        fullName: user.fullName || "",
+        phoneNumber: user.phoneNumber || "",
       });
     }
     setIsEditing(false);
@@ -128,7 +131,7 @@ export default function ProfilePage() {
           <div
             className="p-6 transition-colors duration-200"
             style={{
-              background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`
+              background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
             }}
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
@@ -176,7 +179,11 @@ export default function ProfilePage() {
                     viewBox="0 0 20 20"
                     style={{ color: colors.interactive.primary }}
                   >
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   Personal Information
                 </h2>
@@ -211,7 +218,7 @@ export default function ProfilePage() {
                         className="transition-colors duration-200"
                         style={{ color: colors.text.primary }}
                       >
-                        {user?.fullName || 'Not provided'}
+                        {user?.fullName || "Not provided"}
                       </p>
                     </div>
                     <div>
@@ -225,7 +232,7 @@ export default function ProfilePage() {
                         className="transition-colors duration-200"
                         style={{ color: colors.text.primary }}
                       >
-                        {user?.phoneNumber || 'Not provided'}
+                        {user?.phoneNumber || "Not provided"}
                       </p>
                     </div>
                   </div>
@@ -247,7 +254,11 @@ export default function ProfilePage() {
                     viewBox="0 0 20 20"
                     style={{ color: colors.interactive.primary }}
                   >
-                    <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   Account Information
                 </h2>
@@ -297,7 +308,9 @@ export default function ProfilePage() {
                       className="transition-colors duration-200"
                       style={{ color: colors.text.primary }}
                     >
-                      {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
+                      {user?.createdAt
+                        ? new Date(user.createdAt).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </div>
                   <div>
@@ -311,7 +324,9 @@ export default function ProfilePage() {
                       className="transition-colors duration-200"
                       style={{ color: colors.text.primary }}
                     >
-                      {user?.updatedAt ? new Date(user.updatedAt).toLocaleDateString() : 'N/A'}
+                      {user?.updatedAt
+                        ? new Date(user.updatedAt).toLocaleDateString()
+                        : "N/A"}
                     </p>
                   </div>
                 </div>
@@ -339,14 +354,29 @@ export default function ProfilePage() {
                 >
                   {updateProfileMutation.isPending ? (
                     <span className="flex items-center">
-                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       Saving...
                     </span>
                   ) : (
-                    'Save Changes'
+                    "Save Changes"
                   )}
                 </FormButton>
               </div>
@@ -359,7 +389,7 @@ export default function ProfilePage() {
           className="mt-6 p-4 rounded-lg border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <div className="flex">
@@ -369,7 +399,11 @@ export default function ProfilePage() {
               viewBox="0 0 20 20"
               style={{ color: colors.interactive.primary }}
             >
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              <path
+                fillRule="evenodd"
+                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                clipRule="evenodd"
+              />
             </svg>
             <div>
               <h3
@@ -382,7 +416,8 @@ export default function ProfilePage() {
                 className="text-sm mt-1 transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
-                Your personal information is secure and will not be shared with third parties.
+                Your personal information is secure and will not be shared with
+                third parties.
               </p>
             </div>
           </div>

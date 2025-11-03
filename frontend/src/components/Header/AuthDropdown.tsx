@@ -1,7 +1,7 @@
-import React from 'react';
-import { UserCheck, Shield } from 'lucide-react';
-import { headerConfig } from './HeaderConfig';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { UserCheck, Shield } from "lucide-react";
+import { headerConfig } from "./HeaderConfig";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface AuthDropdownProps {
   isOpen: boolean;
@@ -19,7 +19,7 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onNavigate }) => {
       className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
       style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       <button
@@ -27,11 +27,14 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onNavigate }) => {
         className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
         style={{ color: colors.text.secondary }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+          (e.currentTarget as HTMLElement).style.backgroundColor =
+            colors.background.secondary;
+          (e.currentTarget as HTMLElement).style.color =
+            colors.interactive.primary;
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+          (e.currentTarget as HTMLElement).style.backgroundColor =
+            "transparent";
           (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
         }}
       >
@@ -43,11 +46,14 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onNavigate }) => {
         className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
         style={{ color: colors.text.secondary }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+          (e.currentTarget as HTMLElement).style.backgroundColor =
+            colors.background.secondary;
+          (e.currentTarget as HTMLElement).style.color =
+            colors.interactive.primary;
         }}
         onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
+          (e.currentTarget as HTMLElement).style.backgroundColor =
+            "transparent";
           (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
         }}
       >

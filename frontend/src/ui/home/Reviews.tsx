@@ -27,9 +27,14 @@ const Reviews: React.FC = () => {
 
   // Function to generate initials avatar
   const getInitialsAvatar = (name: string) => {
-    const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-    const bgColor = colors.interactive.primary || '#3B82F6';
-    const textColor = '#ffffff';
+    const initials = name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+    const bgColor = colors.interactive.primary || "#3B82F6";
+    const textColor = "#ffffff";
 
     // Create SVG data URL for initials avatar
     const svg = `
@@ -53,10 +58,10 @@ const Reviews: React.FC = () => {
           setIsVisible(true);
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
-    const element = document.getElementById('google-reviews-section');
+    const element = document.getElementById("google-reviews-section");
     if (element) {
       observer.observe(element);
     }
@@ -81,7 +86,8 @@ const Reviews: React.FC = () => {
       } catch (err: any) {
         console.error("Error fetching reviews:", err);
 
-        const errorMsg = err.response?.data?.message ||
+        const errorMsg =
+          err.response?.data?.message ||
           "Failed to load reviews. Please try again later.";
         setError(errorMsg);
       } finally {
@@ -90,14 +96,14 @@ const Reviews: React.FC = () => {
     };
 
     fetchReviews();
-  }, [isVisible]);  // Loading State
+  }, [isVisible]); // Loading State
   if (loading) {
     return (
       <section
         id="google-reviews-section"
         className="w-full py-16 transition-colors duration-200"
         style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
         }}
       >
         <div className="text-center mb-12">
@@ -149,7 +155,7 @@ const Reviews: React.FC = () => {
         id="google-reviews-section"
         className="w-full py-16 transition-colors duration-200"
         style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
         }}
       >
         <div className="text-center mb-12">
@@ -177,7 +183,7 @@ const Reviews: React.FC = () => {
         id="google-reviews-section"
         className="w-full py-16 transition-colors duration-200"
         style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
         }}
       >
         <div className="text-center mb-12">
@@ -204,7 +210,7 @@ const Reviews: React.FC = () => {
       id="google-reviews-section"
       className="w-full py-16 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
       <div className="text-center mb-12">
@@ -219,7 +225,7 @@ const Reviews: React.FC = () => {
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className={`h-5 w-5 ${i < Math.floor(data.rating) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
+                className={`h-5 w-5 ${i < Math.floor(data.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
               />
             ))}
           </div>
@@ -260,7 +266,7 @@ const Reviews: React.FC = () => {
               {Array.from({ length: 5 }).map((_, i) => (
                 <Star
                   key={i}
-                  className={`h-5 w-5 ${i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'}`}
+                  className={`h-5 w-5 ${i < review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
                 />
               ))}
             </div>
@@ -270,13 +276,15 @@ const Reviews: React.FC = () => {
               className="italic mb-6 transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
-              "{review.text || 'No review text provided'}"
+              "{review.text || "No review text provided"}"
             </p>
 
             {/* Profile */}
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 rounded-full border-2 transition-colors duration-200 overflow-hidden flex-shrink-0"
-                style={{ borderColor: colors.interactive.primary }}>
+              <div
+                className="w-12 h-12 rounded-full border-2 transition-colors duration-200 overflow-hidden flex-shrink-0"
+                style={{ borderColor: colors.interactive.primary }}
+              >
                 <img
                   src={getInitialsAvatar(review.author_name)}
                   alt={review.author_name}

@@ -1,7 +1,8 @@
 import React from "react";
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
-interface GoogleButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface GoogleButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   text: string;
 }
 

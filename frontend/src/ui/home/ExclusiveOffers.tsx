@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import FormButton from "../../components/Button/FormButton";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
-
 type Offer = {
   id: string | number;
   title: string;
@@ -29,7 +28,9 @@ const defaultOffers: Offer[] = [
   },
 ];
 
-const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers }) => {
+const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
+  offers = defaultOffers,
+}) => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
 
@@ -37,7 +38,7 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers 
     <section
       className="w-full rounded-3xl shadow-sm py-14 px-6 md:px-20 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`
+        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
       <div className="max-w-7xl mx-auto px-6">
@@ -67,7 +68,7 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers 
               style={{
                 backgroundColor: colors.background.primary,
                 borderColor: colors.border.primary,
-                boxShadow: `0 0 25px ${colors.interactive.primary}20`
+                boxShadow: `0 0 25px ${colors.interactive.primary}20`,
               }}
             >
               {/* content */}
@@ -129,7 +130,7 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers 
                   style={{
                     background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
                     color: colors.background.primary,
-                    boxShadow: `0 0 20px ${colors.interactive.primary}60`
+                    boxShadow: `0 0 20px ${colors.interactive.primary}60`,
                   }}
                 >
                   <span className="relative z-10">View Offer</span>
@@ -137,7 +138,9 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({ offers = defaultOffers 
                   <span
                     className="absolute left-[-40%] top-0 w-1/2 h-full transform skew-x-[-20deg]
                                opacity-0 group-hover:opacity-80 transition-all duration-500"
-                    style={{ backgroundColor: `${colors.background.primary}20` }}
+                    style={{
+                      backgroundColor: `${colors.background.primary}20`,
+                    }}
                   />
                 </FormButton>
               </div>
