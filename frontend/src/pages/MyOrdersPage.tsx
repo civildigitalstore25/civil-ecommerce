@@ -142,10 +142,7 @@ const MyOrdersPage: React.FC = () => {
             <OrderCard
               key={order._id}
               order={order}
-              isDeleting={deleteOrderMutation.isPending}
-              canDelete={canDeleteOrder(order)}
               onToggleExpansion={handleToggleExpansion}
-              onDelete={() => handleDeleteOrder(order.orderId, order.orderNumber)}
               onBuyAgain={() => handleBuyAgain(order)}
             />
           ))}
