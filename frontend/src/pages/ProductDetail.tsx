@@ -667,19 +667,43 @@ const ProductDetail: React.FC = () => {
         color: colors.text.primary,
       }}
     >
-      {/* Breadcrumb */}
+      {/* Back Button and Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
-        <div
-          className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-x-auto"
-          style={{ color: colors.text.secondary }}
-        >
-          <span>Home</span>
-          <span>{">"}</span>
-          <span>{product.category}</span>
-          <span>{">"}</span>
-          <span style={{ color: colors.interactive.primary }}>
-            {product.name}
-          </span>
+        <div className="flex items-start justify-between gap-4 mb-3">
+          {/* Breadcrumb */}
+          <div
+            className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-x-auto"
+            style={{ color: colors.text.secondary }}
+          >
+            <span>Home</span>
+            <span>{">"}</span>
+            <span>{product.category}</span>
+            <span>{">"}</span>
+            <span style={{ color: colors.interactive.primary }}>
+              {product.name}
+            </span>
+          </div>
+
+          {/* Back Button */}
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 flex-shrink-0"
+            style={{
+              color: colors.text.secondary,
+              backgroundColor: colors.background.secondary,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = colors.background.accent;
+              e.currentTarget.style.color = colors.interactive.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = colors.background.secondary;
+              e.currentTarget.style.color = colors.text.secondary;
+            }}
+          >
+            <LucideIcons.ArrowLeft size={18} />
+            <span className="text-sm font-medium">Back</span>
+          </button>
         </div>
       </div>
       {/* Product Page Banner */}
