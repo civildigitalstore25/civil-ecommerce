@@ -184,17 +184,17 @@ const CartItem: React.FC<CartItemProps> = ({
 
   return (
     <div
-      className="rounded-xl border p-6 hover:shadow-md transition-all duration-200"
+      className="rounded-lg sm:rounded-xl border p-3 sm:p-6 hover:shadow-md transition-all duration-200"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
       }}
     >
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         {/* Product Image */}
-        <div className="flex-shrink-0">
+        <div className="flex-shrink-0 flex sm:block justify-center">
           <div
-            className="w-24 h-24 rounded-lg overflow-hidden transition-colors duration-200"
+            className="w-20 h-20 sm:w-28 sm:h-28 rounded-md sm:rounded-lg overflow-hidden transition-colors duration-200"
             style={{ backgroundColor: colors.background.secondary }}
           >
             <img
@@ -206,17 +206,18 @@ const CartItem: React.FC<CartItemProps> = ({
         </div>
 
         {/* Product Details */}
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-start mb-2">
-            <div>
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Header: Title and Remove Button */}
+          <div className="flex justify-between items-start gap-2 mb-1.5 sm:mb-2">
+            <div className="flex-1 min-w-0">
               <h3
-                className="text-lg font-semibold truncate transition-colors duration-200"
+                className="text-sm sm:text-lg font-semibold truncate transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
                 {item.product.name}
               </h3>
               <p
-                className="text-sm transition-colors duration-200"
+                className="text-xs sm:text-sm transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
                 {item.product.company}
@@ -224,7 +225,7 @@ const CartItem: React.FC<CartItemProps> = ({
             </div>
             <button
               onClick={handleRemove}
-              className="hover:scale-110 transition-all duration-200"
+              className="hover:scale-110 transition-all duration-200 flex-shrink-0"
               style={{ color: colors.text.accent }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = colors.status.error;
@@ -251,9 +252,9 @@ const CartItem: React.FC<CartItemProps> = ({
           </div>
 
           {/* License Type Badge */}
-          <div className="mb-3">
+          <div className="mb-2 sm:mb-3">
             <span
-              className="inline-block px-3 py-1 rounded-full text-xs font-medium transition-colors duration-200"
+              className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium transition-colors duration-200"
               style={getLicenseBadgeStyle(
                 item.licenseType,
                 item.subscriptionPlan,
@@ -265,95 +266,109 @@ const CartItem: React.FC<CartItemProps> = ({
 
           {/* Product Description */}
           <p
-            className="text-sm mb-4 line-clamp-2 transition-colors duration-200"
+            className="text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 transition-colors duration-200"
             style={{ color: colors.text.secondary }}
           >
             {item.product.description}
           </p>
 
-          {/* Bottom Row: Quantity and Price */}
-          <div className="flex justify-between items-center">
+          {/* Bottom Section: Quantity and Price */}
+          <div className="mt-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
             {/* Quantity Controls */}
-            <div
-              className="flex items-center border rounded-lg transition-colors duration-200"
-              style={{ borderColor: colors.border.primary }}
-            >
-              <button
-                ref={decreaseButtonRef}
-                onClick={handleDecrease}
-                className="p-2 transition-colors disabled:opacity-50"
-                style={{ color: colors.text.primary }}
-                onMouseEnter={(e) => {
-                  if (!e.currentTarget.disabled) {
+            <div className="flex-shrink-0">
+              <p
+                className="text-xs font-medium mb-2 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                Quantity
+              </p>
+              <div
+                className="inline-flex items-center border rounded-lg transition-colors duration-200"
+                style={{ borderColor: colors.border.primary }}
+              >
+                <button
+                  ref={decreaseButtonRef}
+                  onClick={handleDecrease}
+                  className="p-2 transition-colors disabled:opacity-50"
+                  style={{ color: colors.text.primary }}
+                  onMouseEnter={(e) => {
+                    if (!e.currentTarget.disabled) {
+                      e.currentTarget.style.backgroundColor =
+                        colors.interactive.secondaryHover;
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
+                  disabled={item.quantity <= 1}
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M20 12H4"
+                    />
+                  </svg>
+                </button>
+                <span
+                  ref={quantityDisplayRef}
+                  className="px-4 py-2 font-medium min-w-[3rem] text-center transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
+                  {item.quantity}
+                </span>
+                <button
+                  onClick={handleIncrease}
+                  className="p-2 transition-colors"
+                  style={{ color: colors.text.primary }}
+                  onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor =
                       colors.interactive.secondaryHover;
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-                disabled={item.quantity <= 1}
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "transparent";
+                  }}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 12H4"
-                  />
-                </svg>
-              </button>
-              <span
-                ref={quantityDisplayRef}
-                className="px-4 py-2 font-medium min-w-[3rem] text-center transition-colors duration-200"
-                style={{ color: colors.text.primary }}
-              >
-                {item.quantity}
-              </span>
-              <button
-                onClick={handleIncrease}
-                className="p-2 transition-colors"
-                style={{ color: colors.text.primary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.interactive.secondaryHover;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                }}
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Price */}
-            <div className="text-right">
+            <div className="flex-shrink-0 sm:text-right">
+              <p
+                className="text-xs font-medium mb-1 transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                Price
+              </p>
               <div
                 ref={totalPriceRef}
-                className="text-lg font-bold transition-colors duration-200"
+                className="text-lg sm:text-xl font-bold transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
                 {formatPriceWithSymbol(item.totalPrice)}
               </div>
               <div
-                className="text-sm transition-colors duration-200"
+                className="text-xs sm:text-sm transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
                 {formatPriceWithSymbol(item.price)} each
