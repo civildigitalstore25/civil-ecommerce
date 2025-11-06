@@ -34,21 +34,21 @@ const WhyChooseUs: React.FC = () => {
 
   return (
     <section
-      className="w-full rounded-3xl shadow-sm py-14 px-6 md:px-20 transition-colors duration-200"
+      className="w-full rounded-2xl sm:rounded-3xl shadow-sm py-6 sm:py-14 px-2 sm:px-6 md:px-20 transition-colors duration-200"
       style={{
         background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
       {/* Heading */}
-      <div className="text-center mb-14">
+      <div className="text-center mb-4 sm:mb-14">
         <h2
-          className="text-3xl md:text-4xl font-bold transition-colors duration-200"
+          className="text-lg sm:text-3xl md:text-4xl font-bold transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
           Why Choose CivilDigitalStore?
         </h2>
         <p
-          className="mt-3 text-lg transition-colors duration-200"
+          className="mt-1 sm:mt-3 text-xs sm:text-lg transition-colors duration-200"
           style={{ color: colors.text.secondary }}
         >
           Trusted by engineers worldwide for authentic software solutions
@@ -56,32 +56,32 @@ const WhyChooseUs: React.FC = () => {
       </div>
 
       {/* Features */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 text-center">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-10 text-center">
         {features.map((feature, index) => {
           const IconComponent = feature.icon;
           return (
             <div
               key={index}
-              className="flex flex-col items-center transition-all duration-300 hover:scale-105 hover:shadow-md rounded-2xl p-6"
+              className="flex flex-col items-center transition-all duration-300 hover:scale-105 hover:shadow-md rounded-lg sm:rounded-2xl p-2 sm:p-6"
               style={{ backgroundColor: colors.background.primary }}
             >
               <div
-                className="flex items-center justify-center w-16 h-16 rounded-xl shadow-sm transition-colors duration-200"
+                className="flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl shadow-sm transition-colors duration-200"
                 style={{ backgroundColor: colors.background.secondary }}
               >
                 <IconComponent
-                  className="h-8 w-8"
+                  className="h-5 w-5 sm:h-8 sm:w-8"
                   style={{ color: colors.interactive.primary }}
                 />
               </div>
               <h3
-                className="mt-5 text-lg font-semibold transition-colors duration-200"
+                className="mt-2 sm:mt-5 text-[10px] sm:text-lg font-semibold transition-colors duration-200 line-clamp-2"
                 style={{ color: colors.text.primary }}
               >
                 {feature.title}
               </h3>
               <p
-                className="text-sm mt-2 max-w-[220px] transition-colors duration-200"
+                className="text-[8px] sm:text-sm mt-1 sm:mt-2 max-w-[220px] transition-colors duration-200 line-clamp-2"
                 style={{ color: colors.text.secondary }}
               >
                 {feature.description}

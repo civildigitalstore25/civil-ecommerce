@@ -73,21 +73,21 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
       className="transition-colors duration-200"
       style={{ backgroundColor: colors.background.secondary }}
     >
-      <div className="max-w-7xl mx-auto py-6 px-4">
+      <div className="w-full mx-auto py-3 md:py-6 px-1 md:px-4">
         {showCount && (
           <p
-            className="text-lg mb-4 transition-colors duration-200"
+            className="text-sm md:text-lg mb-2 md:mb-4 transition-colors duration-200 px-1"
             style={{ color: colors.text.secondary }}
           >
             {displayedProducts.length} featured product
             {displayedProducts.length !== 1 && "s"}
           </p>
         )}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-1 md:gap-8">
           {displayedProducts.map((product: any) => (
             <div
               key={product._id}
-              className="border rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-5 flex flex-col hover:scale-[1.02]"
+              className="border rounded-lg md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
               style={{
                 backgroundColor: colors.background.primary,
                 borderColor: colors.border.primary,
@@ -95,7 +95,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
             >
               {/* Image */}
               <div
-                className="rounded-xl overflow-hidden h-52 mb-3 cursor-pointer transition-colors duration-200 relative"
+                className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
                 style={{ backgroundColor: colors.background.secondary }}
                 onClick={() => navigate(`/product/${product._id}`)}
               >
@@ -106,13 +106,14 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 />
                 {/* Best Seller Ribbon */}
                 {product.isBestSeller && (
-                  <div className="absolute top-3 right-3 z-10 transform transition-all duration-300 hover:scale-110">
+                  <div className="absolute top-1 right-1 md:top-3 md:right-3 z-10 transform transition-all duration-300 hover:scale-110">
                     <div className="relative">
                       {/* Main ribbon */}
-                      <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-black text-xs font-bold px-4 py-2 rounded-md shadow-2xl border-2 border-white/50 backdrop-blur-sm">
-                        <div className="flex items-center space-x-1.5">
-                          <Star className="w-3.5 h-3.5 fill-current text-yellow-100 animate-pulse" />
-                          <span className="tracking-wide">BEST SELLER</span>
+                      <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-black text-[8px] md:text-xs font-bold px-1.5 py-0.5 md:px-4 md:py-2 rounded-sm md:rounded-md shadow-2xl border md:border-2 border-white/50 backdrop-blur-sm">
+                        <div className="flex items-center space-x-0.5 md:space-x-1.5">
+                          <Star className="w-2 h-2 md:w-3.5 md:h-3.5 fill-current text-yellow-100 animate-pulse" />
+                          <span className="tracking-wide hidden md:inline">BEST SELLER</span>
+                          <span className="tracking-wide md:hidden">BEST</span>
                         </div>
                       </div>
                       {/* Glow effect */}
@@ -123,9 +124,9 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
               </div>
 
               {/* Badges */}
-              <div className="flex flex-wrap gap-2 mb-2">
+              <div className="flex flex-wrap gap-1 md:gap-2 mb-1 md:mb-2">
                 <span
-                  className="text-xs px-2 py-1 rounded-full transition-colors duration-200"
+                  className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
                   style={{
                     backgroundColor: `${colors.interactive.primary}20`,
                     color: colors.interactive.primary,
@@ -134,7 +135,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                   {product.category}
                 </span>
                 <span
-                  className="text-xs px-2 py-1 rounded-full transition-colors duration-200"
+                  className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
                   style={{
                     backgroundColor: colors.background.secondary,
                     color: colors.text.secondary,
@@ -146,7 +147,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
               {/* Name */}
               <h2
-                className="text-lg font-semibold mb-1 transition-colors duration-200"
+                className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2"
                 style={{ color: colors.text.primary }}
               >
                 {product.name}
@@ -162,15 +163,15 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
               {/* Description */}
               <p
-                className="text-sm mb-2 line-clamp-2 transition-colors duration-200"
+                className="text-[9px] md:text-sm mb-1 md:mb-2 line-clamp-2 transition-colors duration-200 hidden md:block"
                 style={{ color: colors.text.secondary }}
               >
                 {product.description}
               </p>
 
               {/* Stars & Ratings */}
-              <div className="flex items-center text-sm mb-2">
-                <span className="text-yellow-400 mr-1">
+              <div className="flex items-center text-[10px] md:text-sm mb-1 md:mb-2">
+                <span className="text-yellow-400 mr-0.5 md:mr-1">
                   {"★".repeat(Math.round(product.rating || 4))}{" "}
                 </span>
                 <span
@@ -183,7 +184,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
               {/* Price Block */}
               <div
-                className="font-semibold text-xl mb-1 transition-colors duration-200"
+                className="font-semibold text-sm md:text-xl mb-0.5 md:mb-1 transition-colors duration-200"
                 style={{ color: colors.interactive.primary }}
               >
                 {formatPriceWithSymbol(
@@ -191,28 +192,39 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                   product.price1USD ||
                     (product.price1 ? product.price1 / 83 : 0),
                 )}
-                /<span className="text-sm font-normal">year</span>
+                /<span className="text-[10px] md:text-sm font-normal">year</span>
               </div>
               <div
-                className="text-xs mb-4 transition-colors duration-200"
+                className="text-[8px] md:text-xs mb-2 md:mb-4 transition-colors duration-200 line-clamp-1"
                 style={{ color: colors.text.secondary }}
               >
                 {(product.price3 || product.price3INR || product.price3USD) && (
                   <>
-                    3-year:{" "}
+                    3yr:{" "}
+                    <span className="hidden md:inline">
                     {formatPriceWithSymbol(
                       product.price3INR || product.price3 || 0,
                       product.price3USD ||
                         (product.price3 ? product.price3 / 83 : 0),
-                    )}{" "}
-                    •{" "}
+                    )}
+                    </span>
+                    <span className="md:hidden">
+                    {formatPriceWithSymbol(
+                      product.price3INR || product.price3 || 0,
+                      product.price3USD ||
+                        (product.price3 ? product.price3 / 83 : 0),
+                    )}
+                    </span>
+                    {" "}•{" "}
                   </>
                 )}
                 {(product.priceLifetime ||
                   product.priceLifetimeINR ||
                   product.priceLifetimeUSD) && (
                   <>
-                    Lifetime:{" "}
+                    <span className="hidden md:inline">Lifetime:</span>
+                    <span className="md:hidden">Life:</span>
+                    {" "}
                     {formatPriceWithSymbol(
                       product.priceLifetimeINR || product.priceLifetime || 0,
                       product.priceLifetimeUSD ||
@@ -225,10 +237,10 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+              <div className="flex flex-col gap-1 md:gap-2 mt-auto">
                 <button
                   onClick={() => navigate(`/product/${product._id}`)}
-                  className="w-full border font-medium rounded-lg py-2 transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
                     borderColor: colors.border.primary,
                     color: colors.text.primary,
@@ -245,7 +257,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                   BUY NOW
                 </button>
                 <button
-                  className="w-full rounded-lg py-2 font-semibold transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full rounded-md md:rounded-lg py-1 md:py-2 font-semibold text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
                     background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
                     color: colors.background.primary,

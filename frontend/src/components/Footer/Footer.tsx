@@ -78,11 +78,11 @@ const Footer = () => {
 
       {/* Main Footer Content */}
       <div
-        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 py-12 px-6 border-b transition-colors duration-200"
+        className="max-w-7xl mx-auto py-12 px-6 border-b transition-colors duration-200"
         style={{ borderColor: colors.border.primary }}
       >
         {/* Company Description */}
-        <div>
+        <div className="mb-8 md:mb-0">
           <div className="flex items-center gap-3 mb-4">
             <img
               src={logo}
@@ -101,15 +101,17 @@ const Footer = () => {
           </p>
         </div>
 
+        {/* Our Services & Policies - Mobile: Side by Side, Desktop: Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-10 mt-8 md:mt-0">
         {/* Our Services */}
         <div>
           <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
+            className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
             style={{ color: colors.interactive.primary }}
           >
             OUR SERVICES
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-xs md:text-base">
             <li>
               <Link
                 to="/advertising"
@@ -176,12 +178,12 @@ const Footer = () => {
         {/* Policies */}
         <div>
           <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
+            className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
             style={{ color: colors.interactive.primary }}
           >
             CUSTOMER POLICIES
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-xs md:text-base">
             <li>
               <Link
                 to="/terms-and-conditions"
@@ -231,14 +233,14 @@ const Footer = () => {
         </div>
 
         {/* Software */}
-        <div>
+        <div className="col-span-2 md:col-span-1">
           <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
+            className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
             style={{ color: colors.interactive.primary }}
           >
             SOFTWARE
           </h3>
-          <ul className="space-y-2">
+          <ul className="space-y-2 text-xs md:text-base grid grid-cols-2 md:grid-cols-1 gap-x-4">
             <li>
               <Link
                 to="/software?category=CAD Software"
@@ -333,15 +335,15 @@ const Footer = () => {
         </div>
 
         {/* Download App */}
-        <div>
+        <div className="col-span-2 md:col-span-1">
           <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
+            className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
             style={{ color: colors.interactive.primary }}
           >
             DOWNLOAD APP
           </h3>
           <h4
-            className="space-y-2 mb-2 transition-colors duration-200"
+            className="space-y-2 mb-2 transition-colors duration-200 text-xs md:text-base"
             style={{ color: colors.text.secondary }}
           >
             Get it on Google Play Store
@@ -358,6 +360,7 @@ const Footer = () => {
               className="h-30 space-y-2 md:pr-6"
             />
           </a>
+        </div>
         </div>
       </div>
 

@@ -69,7 +69,7 @@ const HeroSection: React.FC = () => {
 
   return (
     <section
-      className="py-14 px-4 sm:py-20 sm:px-6 transition-colors duration-300"
+      className="pt-0 pb-14 px-4 sm:pt-0 sm:pb-20 sm:px-6 transition-colors duration-300"
       style={{
         background:
           theme === "light"
