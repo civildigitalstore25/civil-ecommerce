@@ -19,6 +19,7 @@ import ProfilePage from "./ui/profile/ProfilePage";
 import { Orders, Settings, Categories, Companies, Dashboard } from "./ui/admin";
 import BrandCategoryListing from "./pages/BrandCategoryListing";
 import BrandSubcategoriesPage from "./pages/BrandSubcategoriesPage";
+import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetail from "./pages/ProductDetail";
 import CartPage from "./pages/CartPage";
 import AuthGuard from "./components/Auth/AuthGuard";
@@ -172,6 +173,14 @@ function AppLayout() {
           element={
             <AuthGuard>
               <Dashboard />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <AuthGuard>
+              <AllProductsPage />
             </AuthGuard>
           }
         />
