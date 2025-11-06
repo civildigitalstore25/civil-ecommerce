@@ -42,6 +42,8 @@ const couponSchema = new mongoose_1.Schema({
     discountValue: { type: Number, required: true },
     validFrom: { type: Date, required: true },
     validTo: { type: Date, required: true },
+    usageLimit: { type: Number, required: true, default: 1, min: 1 },
+    usedCount: { type: Number, default: 0, min: 0 },
     status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model('Coupon', couponSchema);

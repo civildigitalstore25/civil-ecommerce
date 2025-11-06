@@ -121,7 +121,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       tax,
       totalAmount,
       shippingAddress,
-      couponCode,
+      couponCode: couponCode ? couponCode.toUpperCase() : null,
       notes,
       razorpayOrderId: razorpayOrder.orderId,
       paymentStatus: 'pending',
@@ -130,7 +130,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     await order.save();
 
-    console.log('✅ Order created:', orderId, 'for userId:', user._id);
+    console.log('✅ Order created:', orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
 
     res.status(201).json({
       success: true,
@@ -157,11 +157,13 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
  */
 export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('🔔 Payment verification started');
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature
     } = req.body;
+    console.log('📦 Razorpay Order ID:', razorpay_order_id);
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       res.status(400).json({
@@ -190,6 +192,7 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
     const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
 
     if (!order) {
+      console.log('❌ Order not found for Razorpay Order ID:', razorpay_order_id);
       res.status(404).json({
         success: false,
         message: 'Order not found'
@@ -197,11 +200,50 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    console.log('✅ Order found:', order.orderId);
+    console.log('🎟️ Coupon code in order:', order.couponCode || 'None');
+
     order.razorpayPaymentId = razorpay_payment_id;
     order.razorpaySignature = razorpay_signature;
     order.paymentStatus = 'paid';
     order.orderStatus = 'processing';
     await order.save();
+    console.log('✅ Order status updated to processing');
+
+    // Apply coupon if used
+    if (order.couponCode) {
+      try {
+        console.log(`🎫 Processing coupon: ${order.couponCode}`);
+        const Coupon = (await import('../models/Coupon')).default;
+        const coupon = await Coupon.findOne({ code: order.couponCode.toUpperCase() });
+
+        if (!coupon) {
+          console.log(`❌ Coupon not found: ${order.couponCode}`);
+        } else if (coupon.status !== 'Active') {
+          console.log(`⚠️ Coupon ${coupon.code} is already ${coupon.status}`);
+        } else if (coupon.usedCount >= coupon.usageLimit) {
+          console.log(`⚠️ Coupon ${coupon.code} has reached usage limit (${coupon.usedCount}/${coupon.usageLimit})`);
+        } else {
+          // Increment usage count
+          coupon.usedCount += 1;
+          console.log(`✅ Coupon ${coupon.code} usage incremented: ${coupon.usedCount}/${coupon.usageLimit}`);
+          
+          // Auto-deactivate if usage limit reached
+          if (coupon.usedCount >= coupon.usageLimit) {
+            coupon.status = 'Inactive';
+            console.log(`🚫 Coupon ${coupon.code} auto-deactivated - limit reached!`);
+          }
+          
+          await coupon.save();
+          console.log(`💾 Coupon ${coupon.code} saved successfully`);
+        }
+      } catch (couponError) {
+        console.error('❌ Error applying coupon:', couponError);
+        // Don't fail the payment if coupon update fails
+      }
+    } else {
+      console.log('ℹ️ No coupon code in order');
+    }
 
     console.log('✅ Payment verified for order:', order.orderId);
 

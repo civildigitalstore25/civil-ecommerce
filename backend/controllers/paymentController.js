@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -94,14 +127,14 @@ const createOrder = async (req, res) => {
             tax,
             totalAmount,
             shippingAddress,
-            couponCode,
+            couponCode: couponCode ? couponCode.toUpperCase() : null,
             notes,
             razorpayOrderId: razorpayOrder.orderId,
             paymentStatus: 'pending',
             orderStatus: 'pending'
         });
         await order.save();
-        console.log('✅ Order created:', orderId, 'for userId:', user._id);
+        console.log('✅ Order created:', orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
         res.status(201).json({
             success: true,
             message: 'Order created successfully',
@@ -128,7 +161,10 @@ exports.createOrder = createOrder;
  */
 const verifyPayment = async (req, res) => {
     try {
+        console.log('🔔 Payment verification started');
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+        console.log('📦 Razorpay Order ID:', razorpay_order_id);
+        
         if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
             res.status(400).json({
                 success: false,
@@ -148,17 +184,58 @@ const verifyPayment = async (req, res) => {
         // Update order in database
         const order = await Order_1.default.findOne({ razorpayOrderId: razorpay_order_id });
         if (!order) {
+            console.log('❌ Order not found for Razorpay Order ID:', razorpay_order_id);
             res.status(404).json({
                 success: false,
                 message: 'Order not found'
             });
             return;
         }
+        console.log('✅ Order found:', order.orderId);
+        console.log('🎟️ Coupon code in order:', order.couponCode || 'None');
+        
         order.razorpayPaymentId = razorpay_payment_id;
         order.razorpaySignature = razorpay_signature;
         order.paymentStatus = 'paid';
         order.orderStatus = 'processing';
         await order.save();
+        console.log('✅ Order status updated to processing');
+        // Apply coupon if used
+        if (order.couponCode) {
+            try {
+                console.log(`🎫 Processing coupon: ${order.couponCode}`);
+                const Coupon = (await Promise.resolve().then(() => __importStar(require('../models/Coupon')))).default;
+                const coupon = await Coupon.findOne({ code: order.couponCode.toUpperCase() });
+                if (!coupon) {
+                    console.log(`❌ Coupon not found: ${order.couponCode}`);
+                }
+                else if (coupon.status !== 'Active') {
+                    console.log(`⚠️ Coupon ${coupon.code} is already ${coupon.status}`);
+                }
+                else if (coupon.usedCount >= coupon.usageLimit) {
+                    console.log(`⚠️ Coupon ${coupon.code} has reached usage limit (${coupon.usedCount}/${coupon.usageLimit})`);
+                }
+                else {
+                    // Increment usage count
+                    coupon.usedCount += 1;
+                    console.log(`✅ Coupon ${coupon.code} usage incremented: ${coupon.usedCount}/${coupon.usageLimit}`);
+                    // Auto-deactivate if usage limit reached
+                    if (coupon.usedCount >= coupon.usageLimit) {
+                        coupon.status = 'Inactive';
+                        console.log(`🚫 Coupon ${coupon.code} auto-deactivated - limit reached!`);
+                    }
+                    await coupon.save();
+                    console.log(`💾 Coupon ${coupon.code} saved successfully`);
+                }
+            }
+            catch (couponError) {
+                console.error('❌ Error applying coupon:', couponError);
+                // Don't fail the payment if coupon update fails
+            }
+        }
+        else {
+            console.log('ℹ️ No coupon code in order');
+        }
         console.log('✅ Payment verified for order:', order.orderId);
         res.status(200).json({
             success: true,

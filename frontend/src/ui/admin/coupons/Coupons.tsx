@@ -10,9 +10,10 @@ import {
   Package,
 } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import Swal from "sweetalert2";
 
 interface Coupon {
-  id?: string;
+  _id?: string;
   code: string;
   name: string;
   description?: string;
@@ -20,6 +21,8 @@ interface Coupon {
   discountValue: number;
   validFrom: string;
   validTo: string;
+  usageLimit: number;
+  usedCount: number;
   status: "Active" | "Inactive";
   createdAt?: string;
   updatedAt?: string;
@@ -58,7 +61,7 @@ const Coupons: React.FC = () => {
     try {
       const method = editingCoupon ? "PUT" : "POST";
       const url = editingCoupon
-        ? `${apiBase}/api/coupons/${editingCoupon.id}`
+        ? `${apiBase}/api/coupons/${editingCoupon._id}`
         : `${apiBase}/api/coupons`;
       const res = await fetch(url, {
         method,
@@ -72,18 +75,31 @@ const Coupons: React.FC = () => {
       const data = await res.json();
       if (editingCoupon)
         setCoupons((prev) =>
-          prev.map((c) => (c.id === editingCoupon.id ? data : c)),
+          prev.map((c) => (c._id === editingCoupon._id ? data : c)),
         );
       else setCoupons((prev) => [data, ...prev]);
       setShowForm(false);
       setEditingCoupon(null);
-      alert(
-        editingCoupon
-          ? "Coupon updated successfully!"
-          : "Coupon created successfully!",
-      );
+      
+      // Show success message with SweetAlert
+      await Swal.fire({
+        icon: "success",
+        title: editingCoupon ? "Coupon Updated!" : "Coupon Created!",
+        text: editingCoupon
+          ? `Coupon "${coupon.code}" has been updated successfully.`
+          : `Coupon "${coupon.code}" has been created successfully.`,
+        confirmButtonColor: "#10b981",
+        timer: 3000,
+        timerProgressBar: true,
+      });
     } catch (err: any) {
-      alert("Failed to save coupon: " + err.message);
+      // Show error message with SweetAlert
+      await Swal.fire({
+        icon: "error",
+        title: "Operation Failed",
+        text: err.message || "Failed to save coupon. Please try again.",
+        confirmButtonColor: "#ef4444",
+      });
       throw err;
     }
   };
@@ -94,24 +110,47 @@ const Coupons: React.FC = () => {
   };
 
   const handleDelete = async (coupon: Coupon) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete coupon "${coupon.code}"?`,
-      )
-    )
-      return;
+    // Show confirmation dialog with SweetAlert
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Delete Coupon?",
+      text: `Are you sure you want to delete coupon "${coupon.code}"? This action cannot be undone.`,
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      const res = await fetch(`${apiBase}/api/coupons/${coupon.id}`, {
+      const res = await fetch(`${apiBase}/api/coupons/${coupon._id}`, {
         method: "DELETE",
       });
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.message);
       }
-      setCoupons((prev) => prev.filter((c) => c.id !== coupon.id));
-      alert("Coupon deleted successfully!");
+      setCoupons((prev) => prev.filter((c) => c._id !== coupon._id));
+      
+      // Show success message
+      await Swal.fire({
+        icon: "success",
+        title: "Deleted!",
+        text: `Coupon "${coupon.code}" has been deleted successfully.`,
+        confirmButtonColor: "#10b981",
+        timer: 3000,
+        timerProgressBar: true,
+      });
     } catch (err: any) {
-      alert("Failed to delete coupon: " + err.message);
+      // Show error message
+      await Swal.fire({
+        icon: "error",
+        title: "Delete Failed",
+        text: err.message || "Failed to delete coupon. Please try again.",
+        confirmButtonColor: "#ef4444",
+      });
     }
   };
 
@@ -159,20 +198,35 @@ const Coupons: React.FC = () => {
             Manage discount coupons for your store
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditingCoupon(null);
-            setShowForm(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
-          style={{
-            backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse,
-          }}
-        >
-          <Plus size={16} />
-          Add Coupon
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={fetchCoupons}
+            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
+            style={{
+              backgroundColor: colors.background.tertiary,
+              color: colors.text.primary,
+              border: `1px solid ${colors.border.primary}`,
+            }}
+            title="Refresh coupons"
+          >
+            <RefreshCcw size={16} />
+            Refresh
+          </button>
+          <button
+            onClick={() => {
+              setEditingCoupon(null);
+              setShowForm(true);
+            }}
+            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
+            style={{
+              backgroundColor: colors.interactive.primary,
+              color: colors.text.inverse,
+            }}
+          >
+            <Plus size={16} />
+            Add Coupon
+          </button>
+        </div>
       </div>
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -330,7 +384,7 @@ const Coupons: React.FC = () => {
 
               return (
                 <div
-                  key={coupon.id}
+                  key={coupon._id}
                   className="rounded-lg border p-4 transition-all duration-200 hover:shadow-lg"
                   style={{
                     backgroundColor: colors.background.secondary,
@@ -404,21 +458,30 @@ const Coupons: React.FC = () => {
                       </span>
                     </div>
 
-                    {/* Usage Stats (mock data for now) */}
+                    {/* Usage Stats */}
                     <div className="flex items-center gap-2">
                       <Users
                         size={16}
-                        style={{ color: colors.text.secondary }}
+                        style={{ 
+                          color: coupon.usedCount >= coupon.usageLimit
+                            ? colors.status.error
+                            : colors.text.secondary 
+                        }}
                       />
                       <span
-                        className="text-sm"
-                        style={{ color: colors.text.secondary }}
+                        className="text-sm font-semibold"
+                        style={{
+                          color: coupon.usedCount >= coupon.usageLimit
+                            ? colors.status.error
+                            : colors.text.secondary
+                        }}
                       >
-                        0/∞ used
+                        {coupon.usedCount}/{coupon.usageLimit} used
+                        {coupon.usedCount >= coupon.usageLimit && " 🚫"}
                       </span>
                     </div>
 
-                    {/* Min/Max Purchase */}
+                    {/* Discount Type */}
                     <div className="flex items-center gap-2">
                       <Package
                         size={16}
@@ -428,10 +491,24 @@ const Coupons: React.FC = () => {
                         className="text-sm"
                         style={{ color: colors.text.secondary }}
                       >
-                        Min: $10
+                        {coupon.discountType}
                       </span>
                     </div>
                   </div>
+
+                  {/* Usage Limit Warning */}
+                  {coupon.usedCount >= coupon.usageLimit && (
+                    <div
+                      className="mb-3 p-2 rounded text-sm"
+                      style={{
+                        backgroundColor: colors.status.error + "20",
+                        color: colors.status.error,
+                        border: `1px solid ${colors.status.error}`,
+                      }}
+                    >
+                      ⚠️ Usage limit reached - This coupon will auto-deactivate on next use
+                    </div>
+                  )}
 
                   {/* Action Buttons */}
                   <div className="flex justify-end gap-2">
@@ -501,6 +578,7 @@ const CouponFormModal: React.FC<{
     discountValue: 0,
     validFrom: "",
     validTo: "",
+    usageLimit: 1,
     status: "Active" as "Active" | "Inactive",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -529,6 +607,7 @@ const CouponFormModal: React.FC<{
         discountValue: editingCoupon.discountValue,
         validFrom: editingCoupon.validFrom?.split("T")[0] || "",
         validTo: editingCoupon.validTo?.split("T")[0] || "",
+        usageLimit: editingCoupon.usageLimit || 1,
         status: editingCoupon.status,
       });
     }
@@ -586,6 +665,10 @@ const CouponFormModal: React.FC<{
     }
     if (new Date(formData.validFrom) > new Date(formData.validTo)) {
       alert("Valid From date must be before Valid To date");
+      return;
+    }
+    if (formData.usageLimit < 1) {
+      alert("Usage limit must be at least 1");
       return;
     }
 
@@ -811,6 +894,36 @@ const CouponFormModal: React.FC<{
                 required
               />
             </div>
+          </div>
+          {/* Usage Limit */}
+          <div>
+            <label
+              className="block text-sm mb-1 font-medium"
+              style={{ color: colors.text.primary }}
+            >
+              Usage Limit <span style={{ color: colors.status.error }}>*</span>
+            </label>
+            <input
+              type="number"
+              name="usageLimit"
+              value={formData.usageLimit}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border rounded"
+              style={{
+                borderColor: colors.border.primary,
+                color: colors.text.primary,
+                backgroundColor: colors.background.primary,
+              }}
+              min={1}
+              required
+              placeholder="How many times can this coupon be used?"
+            />
+            <p
+              className="text-xs mt-1"
+              style={{ color: colors.text.secondary }}
+            >
+              Maximum number of times this coupon can be used. Coupon will automatically deactivate when limit is reached.
+            </p>
           </div>
           {/* Status */}
           <div>
