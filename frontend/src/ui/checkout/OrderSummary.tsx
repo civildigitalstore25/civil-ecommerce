@@ -62,7 +62,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span style={{ color: colors.text.primary }}>
               {item.product.name} × {Number(item.quantity) || 1}
             </span>
-            <span className="font-medium text-blue-800">
+            <span className="font-medium text-white-800">
               {formatPriceWithSymbol(
                 normalizePrice(item.product.price) * Number(item.quantity),
               )}
@@ -85,7 +85,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       {summary.discount > 0 && (
         <div
           className="flex justify-between text-sm mb-2"
-          style={{ color: "red" }}
+          style={{ color: "green" }}
         >
           <span>Discount</span>
           <span>

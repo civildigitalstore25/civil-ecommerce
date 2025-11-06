@@ -66,7 +66,7 @@ const BillingForm: React.FC<BillingFormProps> = ({
         }}
       >
         <p className="leading-relaxed">
-          📱 Order confirmation will be sent to your WhatsApp and Email.
+          Order confirmation will be sent to your WhatsApp and Email.
         </p>
       </div>
     </div>
