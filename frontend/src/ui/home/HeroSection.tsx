@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 import {
@@ -52,10 +52,20 @@ const paymentMethods = [
 
 const HeroSection: React.FC = () => {
   const { colors, theme } = useAdminTheme();
+  const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
 
   const handleExploreProducts = () => {
     window.location.href = "/products";
   };
+
+  // Auto-play carousel for mobile
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentFeatureIndex((prev) => (prev + 1) % features.length);
+    }, 3000); // Change slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <section
@@ -108,8 +118,8 @@ const HeroSection: React.FC = () => {
             Explore Products
           </button>
 
-          {/* ===== Features Grid ===== */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full mb-12">
+          {/* ===== Features Grid (Desktop) ===== */}
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full mb-12">
             {features.map((f) => (
               <div
                 key={f.label}
@@ -136,6 +146,49 @@ const HeroSection: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* ===== Features Carousel (Mobile) ===== */}
+          <div className="sm:hidden w-full mb-12 px-4">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentFeatureIndex * 100}%)`,
+                }}
+              >
+                {features.map((f) => (
+                  <div
+                    key={f.label}
+                    className="w-full flex-shrink-0 px-2"
+                  >
+                    <div
+                      className="flex flex-col items-center rounded-2xl py-8 px-6 shadow-lg"
+                      style={{
+                        backgroundColor: colors.background.secondary,
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderColor: colors.border.primary,
+                      }}
+                    >
+                      <div className="mb-4">{f.icon}</div>
+                      <div
+                        className="text-3xl font-extrabold mb-2 font-sans"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {f.value}
+                      </div>
+                      <div
+                        className="text-lg font-medium font-sans text-center"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        {f.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* ===== Payment Info ===== */}
