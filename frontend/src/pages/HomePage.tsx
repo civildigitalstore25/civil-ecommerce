@@ -5,6 +5,7 @@ import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
 import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
+import { MobileShopByCategory } from "../components/Header";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 
 const HomePage: React.FC = () => {
@@ -25,6 +26,16 @@ const HomePage: React.FC = () => {
 
         <section className="px-4 sm:px-6 lg:px-8">
           <HeroSection />
+        </section>
+
+        {/* Shop by Category - Mobile Only */}
+        <section className="px-2 sm:px-6 lg:hidden">
+          <div
+            className="rounded-lg transition-colors duration-200"
+            style={{ backgroundColor: colors.background.secondary }}
+          >
+            <MobileShopByCategory />
+          </div>
         </section>
 
         <section className="px-4 sm:px-6 lg:px-8">
