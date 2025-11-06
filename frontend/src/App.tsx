@@ -18,6 +18,7 @@ import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import ProfilePage from "./ui/profile/ProfilePage";
 import { Orders, Settings, Categories, Companies, Dashboard } from "./ui/admin";
 import BrandCategoryListing from "./pages/BrandCategoryListing";
+import BrandSubcategoriesPage from "./pages/BrandSubcategoriesPage";
 import ProductDetail from "./pages/ProductDetail";
 import CartPage from "./pages/CartPage";
 import AuthGuard from "./components/Auth/AuthGuard";
@@ -195,6 +196,38 @@ function AppLayout() {
           element={
             <AuthGuard>
               <CartPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/autodesk"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/microsoft"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/adobe"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/antivirus"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
             </AuthGuard>
           }
         />

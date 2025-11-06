@@ -13,25 +13,25 @@ const categories = [
   {
     icon: Ruler,
     label: "AutoDesk",
-    href: "/autodesk",
+    brand: "autodesk",
     color: "#f59e0b", // amber
   },
   {
     icon: FileText,
     label: "Microsoft",
-    href: "/microsoft",
+    brand: "microsoft",
     color: "#3b82f6", // blue
   },
   {
     icon: Palette,
     label: "Adobe",
-    href: "/adobe",
+    brand: "adobe",
     color: "#ec4899", // pink
   },
   {
     icon: Shield,
     label: "Antivirus",
-    href: "/antivirus",
+    brand: "antivirus",
     color: "#10b981", // green
   },
 ];
@@ -40,8 +40,8 @@ const MobileShopByCategory: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
 
-  const handleCategoryClick = (href: string) => {
-    navigate(href);
+  const handleCategoryClick = (brand: string) => {
+    navigate(`/${brand}`);
   };
 
   return (
@@ -69,7 +69,7 @@ const MobileShopByCategory: React.FC = () => {
           return (
             <button
               key={category.label}
-              onClick={() => handleCategoryClick(category.href)}
+              onClick={() => handleCategoryClick(category.brand)}
               className="flex flex-col items-center p-3 rounded-xl transition-all duration-200 hover:scale-105"
               style={{ backgroundColor: colors.background.secondary }}
             >
