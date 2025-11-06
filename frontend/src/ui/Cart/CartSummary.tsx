@@ -23,7 +23,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   // Refs for direct DOM updates
   const itemCountRef = useRef<HTMLSpanElement>(null);
   const subtotalRef = useRef<HTMLSpanElement>(null);
-  const taxRef = useRef<HTMLSpanElement>(null);
   const discountRef = useRef<HTMLDivElement>(null);
   const totalRef = useRef<HTMLSpanElement>(null);
 
@@ -34,9 +33,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
     }
     if (subtotalRef.current) {
       subtotalRef.current.textContent = formatPriceWithSymbol(summary.subtotal);
-    }
-    if (taxRef.current) {
-      taxRef.current.textContent = formatPriceWithSymbol(summary.tax);
     }
     if (totalRef.current) {
       totalRef.current.textContent = formatPriceWithSymbol(summary.total);
@@ -81,17 +77,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             style={{ color: colors.text.primary }}
           >
             {formatPriceWithSymbol(summary.subtotal)}
-          </span>
-        </div>
-
-        <div className="flex justify-between text-sm">
-          <span style={{ color: colors.text.secondary }}>Tax (GST)</span>
-          <span
-            ref={taxRef}
-            className="font-medium"
-            style={{ color: colors.text.primary }}
-          >
-            {formatPriceWithSymbol(summary.tax)}
           </span>
         </div>
 

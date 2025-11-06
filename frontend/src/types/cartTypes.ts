@@ -37,7 +37,6 @@ export interface Product {
 
 export interface CartSummary {
   subtotal: number;
-  tax: number;
   discount: number;
   total: number;
   itemCount: number;

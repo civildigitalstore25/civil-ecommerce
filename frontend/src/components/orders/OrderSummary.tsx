@@ -44,18 +44,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
           </span>
         </div>
 
-        {order.tax > 0 && (
-          <div className="flex justify-between items-center text-xs sm:text-sm">
-            <span style={{ color: colors.text.secondary }}>Tax:</span>
-            <span
-              className="font-semibold"
-              style={{ color: colors.text.primary }}
-            >
-              {formatPriceWithSymbol(order.tax)}
-            </span>
-          </div>
-        )}
-
         {order.discount > 0 && (
           <div className="flex justify-between items-center text-xs sm:text-sm">
             <span style={{ color: colors.text.secondary }}>Discount:</span>

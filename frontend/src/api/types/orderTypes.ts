@@ -26,7 +26,6 @@ export interface IOrder {
   subtotal: number;
   discount: number;
   shippingCharges: number;
-  tax: number;
   totalAmount: number;
   shippingAddress: IShippingAddress;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";

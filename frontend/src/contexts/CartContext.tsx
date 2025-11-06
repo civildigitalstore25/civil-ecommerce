@@ -125,7 +125,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const summary: CartSummary = cartData?.summary || {
     subtotal: 0,
-    tax: 0,
     discount: 0,
     total: 0,
     itemCount: 0,

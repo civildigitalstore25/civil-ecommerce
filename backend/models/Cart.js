@@ -74,7 +74,6 @@ const cartSchema = new mongoose_1.Schema({
     items: [cartItemSchema],
     summary: {
         subtotal: { type: Number, default: 0 },
-        tax: { type: Number, default: 0 },
         discount: { type: Number, default: 0 },
         total: { type: Number, default: 0 },
         itemCount: { type: Number, default: 0 }
@@ -84,13 +83,11 @@ const cartSchema = new mongoose_1.Schema({
 cartSchema.pre('save', function (next) {
     const cart = this;
     const subtotal = cart.items.reduce((sum, item) => sum + item.totalPrice, 0);
-    const tax = subtotal * 0.18; // 18% GST
     const discount = 0; // Can be implemented later
-    const total = subtotal + tax - discount;
+    const total = subtotal - discount;
     const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
     cart.summary = {
         subtotal: Math.round(subtotal * 100) / 100,
-        tax: Math.round(tax * 100) / 100,
         discount: Math.round(discount * 100) / 100,
         total: Math.round(total * 100) / 100,
         itemCount

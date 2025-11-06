@@ -81,7 +81,7 @@ const createOrder = async (req, res) => {
             });
             return;
         }
-        const { items, subtotal, discount = 0, shippingCharges = 0, tax = 0, totalAmount, shippingAddress, couponCode, notes } = req.body;
+        const { items, subtotal, discount = 0, shippingCharges = 0, totalAmount, shippingAddress, couponCode, notes } = req.body;
         // Validation
         if (!items || items.length === 0) {
             res.status(400).json({
@@ -124,7 +124,6 @@ const createOrder = async (req, res) => {
             subtotal,
             discount,
             shippingCharges,
-            tax,
             totalAmount,
             shippingAddress,
             couponCode: couponCode ? couponCode.toUpperCase() : null,

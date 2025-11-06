@@ -76,7 +76,6 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
         items: [],
         summary: {
           subtotal: 0,
-          tax: 0,
           discount: 0,
           total: 0,
           itemCount: 0,
@@ -109,14 +108,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
 // Calculate cart summary
 const calculateSummary = (items: CartItem[]): CartSummary => {
   const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0);
-  const tax = subtotal * 0.18; // 18% GST
   const discount = 0; // Can be implemented later with coupon codes
-  const total = subtotal + tax - discount;
+  const total = subtotal - discount;
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   return {
     subtotal: Math.round(subtotal * 100) / 100,
-    tax: Math.round(tax * 100) / 100,
     discount: Math.round(discount * 100) / 100,
     total: Math.round(total * 100) / 100,
     itemCount,
@@ -150,7 +147,6 @@ const initialCartState: CartState = {
   items: [],
   summary: {
     subtotal: 0,
-    tax: 0,
     discount: 0,
     total: 0,
     itemCount: 0,

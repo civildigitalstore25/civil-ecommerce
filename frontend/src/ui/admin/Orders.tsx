@@ -924,14 +924,6 @@ const Orders: React.FC = () => {
                       </span>
                     </div>
                   )}
-                  {selectedOrder.tax > 0 && (
-                    <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>Tax</span>
-                      <span style={{ color: colors.text.primary }}>
-                        ₹{selectedOrder.tax.toLocaleString()}
-                      </span>
-                    </div>
-                  )}
                   <div
                     className="flex justify-between pt-3 border-t text-lg font-bold"
                     style={{ borderTopColor: colors.border.primary }}

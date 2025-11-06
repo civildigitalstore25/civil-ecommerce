@@ -23,7 +23,6 @@ interface CartItem {
 
 interface Summary {
   subtotal: number;
-  tax: number;
   discount: number;
   total: number;
   itemCount: number;
@@ -49,7 +48,6 @@ const CheckoutPage: React.FC = () => {
 
   const summary: Summary = {
     subtotal: Number(rawSummary.subtotal) || 0,
-    tax: Number(rawSummary.tax) || 0,
     discount: Number(rawSummary.discount) || 0,
     total: Number(rawSummary.total) || 0,
     itemCount: Number(rawSummary.itemCount) || cartItems.length,
@@ -139,8 +137,7 @@ const CheckoutPage: React.FC = () => {
       }
 
       const subtotal = normalizePrice(summary.subtotal);
-      const tax = normalizePrice(summary.tax);
-      const finalTotal = subtotal + tax - discount;
+      const finalTotal = subtotal - discount;
 
       // Create order on backend
       const orderData = {
@@ -154,7 +151,6 @@ const CheckoutPage: React.FC = () => {
         subtotal: subtotal,
         discount: discount,
         shippingCharges: 0,
-        tax: tax,
         totalAmount: finalTotal,
         shippingAddress: {
           fullName: formData.name,
@@ -581,9 +577,8 @@ const CheckoutPage: React.FC = () => {
             cartItems={cartItems}
             summary={{
               subtotal: summary.subtotal,
-              tax: summary.tax,
               discount: discount,
-              total: summary.total - discount,
+              total: summary.subtotal - discount,
               itemCount: summary.itemCount,
             }}
             colors={colors}

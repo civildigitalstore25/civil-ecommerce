@@ -9,7 +9,6 @@ interface CartItem {
 
 interface Summary {
   subtotal: number;
-  tax: number;
   discount: number;
   total: number;
   itemCount: number;
@@ -83,16 +82,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         <span>{formatPriceWithSymbol(normalizePrice(summary.subtotal))}</span>
       </div>
 
-      {summary.tax > 0 && (
-        <div
-          className="flex justify-between text-sm mb-2"
-          style={{ color: colors.text.secondary }}
-        >
-          <span>Tax</span>
-          <span>{formatPriceWithSymbol(normalizePrice(summary.tax))}</span>
-        </div>
-      )}
-
       {summary.discount > 0 && (
         <div
           className="flex justify-between text-sm mb-2"
@@ -115,17 +104,33 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         </span>
       </div>
 
-      <div className="bg-gray-100 p-4 rounded-md mb-4 text-sm text-gray-600 leading-relaxed">
-        <strong>PhonePe Payment Solutions</strong>
+      <div
+        className="p-4 rounded-md mb-4 text-sm leading-relaxed"
+        style={{
+          backgroundColor: colors.background.tertiary,
+          color: colors.text.secondary,
+          border: `1px solid ${colors.border.primary}`,
+        }}
+      >
+        <strong style={{ color: colors.text.primary }}>
+          Razorpay Payment Gateway
+        </strong>
         <br />
         All UPI apps, Debit and Credit Cards, and NetBanking accepted | Powered
-        by PhonePe
+        by Razorpay
       </div>
 
-      <p className="text-xs text-gray-500 mb-6 leading-snug">
+      <p
+        className="text-xs mb-6 leading-snug"
+        style={{ color: colors.text.secondary }}
+      >
         Your personal data will be used to process your order, support your
         experience, and for purposes described in our{" "}
-        <a href="/privacy-policy" className="text-yellow-600 underline">
+        <a
+          href="/privacy-policy"
+          className="underline"
+          style={{ color: colors.interactive.primary }}
+        >
           privacy policy
         </a>
         .
