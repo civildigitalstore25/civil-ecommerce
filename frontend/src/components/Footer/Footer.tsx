@@ -334,33 +334,7 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Download App */}
-        <div className="col-span-2 md:col-span-1">
-          <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
-            style={{ color: colors.interactive.primary }}
-          >
-            DOWNLOAD APP
-          </h3>
-          <h4
-            className="space-y-2 mb-2 transition-colors duration-200 text-xs md:text-base"
-            style={{ color: colors.text.secondary }}
-          >
-            Get it on Google Play Store
-          </h4>
-          <a
-            href="https://play.google.com/store/apps/details?id=YOUR_APP_ID"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block"
-          >
-            <img
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-              alt="Get it on Google Play"
-              className="h-30 space-y-2 md:pr-6"
-            />
-          </a>
-        </div>
+        
         </div>
       </div>
 
