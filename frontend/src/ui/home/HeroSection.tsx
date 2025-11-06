@@ -95,7 +95,7 @@ const HeroSection: React.FC = () => {
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-serif leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Get authentic AutoCAD, Revit, Lumion, Tekla and other professional
+            Get authentic AutoDesk,Microsoft, Adobe, Antivirus and other professional
             software licenses with instant delivery and lifetime support.
           </p>
 
