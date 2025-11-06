@@ -103,28 +103,28 @@ const testRazorpayService = () => {
 mongoose_1.default
     .connect(process.env.MONGODB_URI)
     .then(async () => {
-    console.log("✅ MongoDB connected");
-    // Test email service after database connection
-    await testEmailService();
-    testRazorpayService();
-    app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
-        console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-        console.log('\n📧 Password reset endpoints available:');
-        console.log(`   POST /api/auth/forgot-password`);
-        console.log(`   GET  /api/auth/validate-reset-token/:token`);
-        console.log(`   POST /api/auth/reset-password/:token`);
-        console.log('\n💳 PhonePe payment endpoints available:');
-        console.log(`   POST /api/payments/create-order`);
-        console.log(`   POST /api/payments/callback`);
-        console.log(`   GET  /api/payments/status/:merchantTransactionId`);
-        console.log(`   GET  /api/payments/orders`);
-        console.log(`   GET  /api/payments/orders/:orderId`);
-        console.log(`   POST /api/payments/refund/:orderId`);
-        console.log('\n' + '='.repeat(50));
-    });
-})
+        console.log("✅ MongoDB connected");
+        // Test email service after database connection
+        await testEmailService();
+        testRazorpayService();
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
+            console.log('\n📧 Password reset endpoints available:');
+            console.log(`   POST /api/auth/forgot-password`);
+            console.log(`   GET  /api/auth/validate-reset-token/:token`);
+            console.log(`   POST /api/auth/reset-password/:token`);
+            console.log('\n💳 PhonePe payment endpoints available:');
+            console.log(`   POST /api/payments/create-order`);
+            console.log(`   POST /api/payments/callback`);
+            console.log(`   GET  /api/payments/status/:merchantTransactionId`);
+            console.log(`   GET  /api/payments/orders`);
+            console.log(`   GET  /api/payments/orders/:orderId`);
+            console.log(`   POST /api/payments/refund/:orderId`);
+            console.log('\n' + '='.repeat(50));
+        });
+    })
     .catch((err) => {
-    console.error("❌ MongoDB connection error:", err);
-    process.exit(1);
-});
+        console.error("❌ MongoDB connection error:", err);
+        process.exit(1);
+    });
