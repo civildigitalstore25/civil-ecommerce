@@ -497,7 +497,7 @@ const CheckoutPage: React.FC = () => {
       }
     } catch (error) {
       console.error("Error validating coupon:", error);
-      
+
       Swal.fire({
         icon: "error",
         title: "Connection Error",

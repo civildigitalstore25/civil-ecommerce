@@ -227,13 +227,13 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
           // Increment usage count
           coupon.usedCount += 1;
           console.log(`✅ Coupon ${coupon.code} usage incremented: ${coupon.usedCount}/${coupon.usageLimit}`);
-          
+
           // Auto-deactivate if usage limit reached
           if (coupon.usedCount >= coupon.usageLimit) {
             coupon.status = 'Inactive';
             console.log(`🚫 Coupon ${coupon.code} auto-deactivated - limit reached!`);
           }
-          
+
           await coupon.save();
           console.log(`💾 Coupon ${coupon.code} saved successfully`);
         }

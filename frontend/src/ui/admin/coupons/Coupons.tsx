@@ -80,7 +80,7 @@ const Coupons: React.FC = () => {
       else setCoupons((prev) => [data, ...prev]);
       setShowForm(false);
       setEditingCoupon(null);
-      
+
       // Show success message with SweetAlert
       await Swal.fire({
         icon: "success",
@@ -133,7 +133,7 @@ const Coupons: React.FC = () => {
         throw new Error(errorData.message);
       }
       setCoupons((prev) => prev.filter((c) => c._id !== coupon._id));
-      
+
       // Show success message
       await Swal.fire({
         icon: "success",
@@ -462,10 +462,10 @@ const Coupons: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <Users
                         size={16}
-                        style={{ 
+                        style={{
                           color: coupon.usedCount >= coupon.usageLimit
                             ? colors.status.error
-                            : colors.text.secondary 
+                            : colors.text.secondary
                         }}
                       />
                       <span
