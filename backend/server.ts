@@ -16,7 +16,6 @@ import bannerRoutes from "./routes/bannerRoutes";
 import couponRoutes from './routes/couponRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import reviewRoutes from "./routes/reviewRoutes";
-import googleReviewsRoutes from "./routes/googleReviewsRoutes";
 
 const app = express();
 
@@ -64,7 +63,6 @@ app.use('/api/contact', contactRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/google-reviews", googleReviewsRoutes);
 app.use('/api/payments', paymentRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));

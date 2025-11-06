@@ -21,7 +21,6 @@ const bannerRoutes_1 = __importDefault(require("./routes/bannerRoutes"));
 const couponRoutes_1 = __importDefault(require("./routes/couponRoutes"));
 const paymentRoutes_1 = __importDefault(require("./routes/paymentRoutes"));
 const reviewRoutes_1 = __importDefault(require("./routes/reviewRoutes"));
-const googleReviewsRoutes_1 = __importDefault(require("./routes/googleReviewsRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: (origin, callback) => {
@@ -62,7 +61,6 @@ app.use('/api/contact', contactRoutes_1.default);
 app.use("/api/banners", bannerRoutes_1.default);
 app.use('/api/coupons', couponRoutes_1.default);
 app.use("/api/reviews", reviewRoutes_1.default);
-app.use("/api/google-reviews", googleReviewsRoutes_1.default);
 app.use('/api/payments', paymentRoutes_1.default);
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 const PORT = process.env.PORT || 5000;

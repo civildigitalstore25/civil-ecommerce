@@ -1,26 +1,77 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import { Star } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
-interface GoogleReview {
+interface Review {
   author_name: string;
-  profile_photo_url: string;
   rating: number;
   text: string;
   relative_time_description: string;
 }
 
-interface ReviewResponse {
-  name: string;
-  rating: number;
-  total: number;
-  reviews: GoogleReview[];
-  lastUpdated?: string;
-  nextUpdate?: string;
-  stale?: boolean;
-  message?: string;
-}
+// Static review data
+const staticReviews: Review[] = [
+  {
+    author_name: "Rajesh Kumar",
+    rating: 5,
+    text: "Excellent service! Got my software license instantly. The support team was very helpful in guiding me through the installation process.",
+    relative_time_description: "2 weeks ago",
+  },
+  {
+    author_name: "Priya Sharma",
+    rating: 5,
+    text: "Best place to buy genuine software at affordable prices. I purchased Microsoft Office and the activation was seamless. Highly recommended!",
+    relative_time_description: "1 month ago",
+  },
+  {
+    author_name: "Amit Patel",
+    rating: 4,
+    text: "Great collection of software products. Delivery was quick and customer support responded promptly to my queries. Will buy again!",
+    relative_time_description: "3 weeks ago",
+  },
+  {
+    author_name: "Sneha Reddy",
+    rating: 5,
+    text: "Trustworthy seller with genuine products. I was skeptical at first but the product key worked perfectly. Thanks for the amazing service!",
+    relative_time_description: "1 week ago",
+  },
+  {
+    author_name: "Vikram Singh",
+    rating: 5,
+    text: "Outstanding experience! Bought AutoCAD for my firm and got excellent after-sales support. Very professional and reliable.",
+    relative_time_description: "2 months ago",
+  },
+  {
+    author_name: "Ananya Iyer",
+    rating: 4,
+    text: "Good prices and genuine software licenses. The checkout process was smooth and I received my product key within minutes.",
+    relative_time_description: "3 weeks ago",
+  },
+  {
+    author_name: "Karthik Menon",
+    rating: 5,
+    text: "Impressive collection of design software! Purchased Adobe Creative Suite and the entire process was hassle-free. Definitely coming back!",
+    relative_time_description: "1 month ago",
+  },
+  {
+    author_name: "Divya Nair",
+    rating: 5,
+    text: "Excellent customer service and genuine products. They helped me choose the right antivirus for my needs. Very satisfied with the purchase!",
+    relative_time_description: "2 weeks ago",
+  },
+  {
+    author_name: "Arjun Kapoor",
+    rating: 4,
+    text: "Reliable platform for software purchases. Fast delivery and authentic licenses. The prices are competitive compared to other sellers.",
+    relative_time_description: "1 week ago",
+  },
+  {
+    author_name: "Meera Desai",
+    rating: 5,
+    text: "Fantastic service! Bought Windows 11 Pro and the installation guide provided was very helpful. Will definitely recommend to friends and family!",
+    relative_time_description: "4 weeks ago",
+  },
+];
 
 const Reviews: React.FC = () => {
   const { colors } = useAdminTheme();
@@ -46,168 +97,16 @@ const Reviews: React.FC = () => {
 
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   };
-  const [data, setData] = useState<ReviewResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !isVisible) {
-          setIsVisible(true);
-        }
-      },
-      { threshold: 0.1 },
-    );
+  // Calculate average rating
+  const averageRating =
+    staticReviews.reduce((sum, review) => sum + review.rating, 0) /
+    staticReviews.length;
+  const totalReviews = staticReviews.length;
 
-    const element = document.getElementById("google-reviews-section");
-    if (element) {
-      observer.observe(element);
-    }
-
-    return () => {
-      if (element) {
-        observer.unobserve(element);
-      }
-    };
-  }, [isVisible]);
-
-  useEffect(() => {
-    if (!isVisible) return;
-
-    const fetchReviews = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const res = await axios.get<ReviewResponse>("/api/google-reviews");
-        setData(res.data);
-      } catch (err: any) {
-        console.error("Error fetching reviews:", err);
-
-        const errorMsg =
-          err.response?.data?.message ||
-          "Failed to load reviews. Please try again later.";
-        setError(errorMsg);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchReviews();
-  }, [isVisible]); // Loading State
-  if (loading) {
-    return (
-      <section
-        id="google-reviews-section"
-        className="w-full py-16 transition-colors duration-200"
-        style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
-        }}
-      >
-        <div className="text-center mb-12">
-          <h2
-            className="text-3xl md:text-4xl font-bold transition-colors duration-200"
-            style={{ color: colors.text.primary }}
-          >
-            Customer Reviews
-          </h2>
-          <p
-            className="mt-2 text-lg transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            Loading reviews...
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 md:px-20">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="rounded-2xl shadow-md p-6 flex flex-col justify-between animate-pulse"
-              style={{ backgroundColor: colors.background.primary }}
-            >
-              <div className="flex justify-center mb-4">
-                <div className="h-5 w-20 bg-gray-300 rounded"></div>
-              </div>
-              <div className="mb-6">
-                <div className="h-4 bg-gray-300 rounded mb-2"></div>
-                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
-                <div>
-                  <div className="h-4 bg-gray-300 rounded w-24 mb-2"></div>
-                  <div className="h-3 bg-gray-300 rounded w-32"></div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  // Error State
-  if (error) {
-    return (
-      <section
-        id="google-reviews-section"
-        className="w-full py-16 transition-colors duration-200"
-        style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
-        }}
-      >
-        <div className="text-center mb-12">
-          <h2
-            className="text-3xl md:text-4xl font-bold transition-colors duration-200"
-            style={{ color: colors.text.primary }}
-          >
-            Customer Reviews
-          </h2>
-          <p
-            className="mt-2 text-lg transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            {error}
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  // No Reviews State
-  if (!data || !data.reviews || data.reviews.length === 0) {
-    return (
-      <section
-        id="google-reviews-section"
-        className="w-full py-16 transition-colors duration-200"
-        style={{
-          background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
-        }}
-      >
-        <div className="text-center mb-12">
-          <h2
-            className="text-3xl md:text-4xl font-bold transition-colors duration-200"
-            style={{ color: colors.text.primary }}
-          >
-            Customer Reviews
-          </h2>
-          <p
-            className="mt-2 text-lg transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            No reviews available yet.
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  // Success State
   return (
     <section
-      id="google-reviews-section"
+      id="reviews-section"
       className="w-full py-16 transition-colors duration-200"
       style={{
         background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
@@ -225,7 +124,7 @@ const Reviews: React.FC = () => {
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className={`h-5 w-5 ${i < Math.floor(data.rating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                className={`h-5 w-5 ${i < Math.floor(averageRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
               />
             ))}
           </div>
@@ -233,29 +132,20 @@ const Reviews: React.FC = () => {
             className="text-lg font-semibold transition-colors duration-200"
             style={{ color: colors.text.primary }}
           >
-            {data.rating.toFixed(1)}
+            {averageRating.toFixed(1)}
           </span>
           <span
             className="text-sm transition-colors duration-200"
             style={{ color: colors.text.secondary }}
           >
-            ({data.total.toLocaleString()} reviews)
+            ({totalReviews} reviews)
           </span>
         </div>
-
-        {/* Show stale data warning */}
-        {data.stale && (
-          <div className="mt-3 bg-yellow-50 border border-yellow-200 rounded-lg p-3 max-w-md mx-auto">
-            <p className="text-sm text-yellow-800">
-              ⚠️ {data.message || "Showing cached data"}
-            </p>
-          </div>
-        )}
       </div>
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 md:px-20">
-        {data.reviews.slice(0, 6).map((review, index) => (
+        {staticReviews.map((review, index) => (
           <div
             key={index}
             className="rounded-2xl shadow-md p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
@@ -276,7 +166,7 @@ const Reviews: React.FC = () => {
               className="italic mb-6 transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
-              "{review.text || "No review text provided"}"
+              "{review.text}"
             </p>
 
             {/* Profile */}
@@ -309,17 +199,6 @@ const Reviews: React.FC = () => {
           </div>
         ))}
       </div>
-
-      {data.lastUpdated && (
-        <div className="text-center mt-8">
-          <p
-            className="text-xs transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            Last updated: {new Date(data.lastUpdated).toLocaleString()}
-          </p>
-        </div>
-      )}
     </section>
   );
 };
