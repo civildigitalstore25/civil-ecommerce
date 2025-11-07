@@ -124,7 +124,6 @@ const OrderSchema = new Schema<IOrder>({
 
 // Index for faster queries
 OrderSchema.index({ userId: 1, createdAt: -1 });
-OrderSchema.index({ orderId: 1 });
 OrderSchema.index({ razorpayOrderId: 1 });
 
 const Order = mongoose.model<IOrder>('Order', OrderSchema);
