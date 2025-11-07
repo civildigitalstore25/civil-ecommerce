@@ -166,7 +166,7 @@ const CheckoutPage: React.FC = () => {
       };
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/create-order`,
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/create-order`,
         {
           method: "POST",
           headers: {
@@ -197,7 +197,7 @@ const CheckoutPage: React.FC = () => {
           try {
             // Verify payment on backend
             const verifyResponse = await fetch(
-              `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/verify`,
+              `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/verify`,
               {
                 method: "POST",
                 headers: {
@@ -286,7 +286,7 @@ const CheckoutPage: React.FC = () => {
 
             // Report payment failure
             fetch(
-              `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/failed`,
+              `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/failed`,
               {
                 method: "POST",
                 headers: {
@@ -311,7 +311,7 @@ const CheckoutPage: React.FC = () => {
 
         // Report payment failure
         await fetch(
-          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/payments/failed`,
+          `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/failed`,
           {
             method: "POST",
             headers: {
@@ -369,7 +369,7 @@ const CheckoutPage: React.FC = () => {
     try {
       // Validate coupon with backend
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/coupons/validate`,
+        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/coupons/validate`,
         {
           method: "POST",
           headers: {
