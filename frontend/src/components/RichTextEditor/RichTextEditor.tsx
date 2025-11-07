@@ -1,198 +1,209 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Bold, Italic, Underline, List, ListOrdered, Link, Image, Code, Quote } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import {
+  Bold,
+  Italic,
+  Underline,
+  List,
+  ListOrdered,
+  Link,
+  Image,
+  Code,
+  Quote,
+} from "lucide-react";
 
 interface RichTextEditorProps {
-    value: string;
-    onChange: (value: string) => void;
-    placeholder?: string;
-    className?: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  className?: string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
-    value,
-    onChange,
-    placeholder = "Enter text...",
-    className = ""
+  value,
+  onChange,
+  placeholder = "Enter text...",
+  className = "",
 }) => {
-    const editorRef = useRef<HTMLDivElement>(null);
-    const [characterCount, setCharacterCount] = useState(0);
-    const [isUpdating, setIsUpdating] = useState(false);
+  const editorRef = useRef<HTMLDivElement>(null);
+  const [characterCount, setCharacterCount] = useState(0);
+  const [isUpdating, setIsUpdating] = useState(false);
 
-    const updateCharacterCount = (content: string) => {
-        const textContent = content.replace(/<[^>]*>/g, '');
-        setCharacterCount(textContent.length);
-    };
+  const updateCharacterCount = (content: string) => {
+    const textContent = content.replace(/<[^>]*>/g, "");
+    setCharacterCount(textContent.length);
+  };
 
-    const handleInput = () => {
-        if (editorRef.current && !isUpdating) {
-            const content = editorRef.current.innerHTML;
-            onChange(content);
-            updateCharacterCount(content);
-        }
-    };
+  const handleInput = () => {
+    if (editorRef.current && !isUpdating) {
+      const content = editorRef.current.innerHTML;
+      onChange(content);
+      updateCharacterCount(content);
+    }
+  };
 
-    const formatText = (command: string, value?: string) => {
-        // Ensure the editor is focused
-        if (editorRef.current) {
-            editorRef.current.focus();
-        }
+  const formatText = (command: string, value?: string) => {
+    // Ensure the editor is focused
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
 
-        // Execute the formatting command
-        document.execCommand(command, false, value);
+    // Execute the formatting command
+    document.execCommand(command, false, value);
 
-        // Get the updated content and notify parent
-        if (editorRef.current) {
-            const content = editorRef.current.innerHTML;
-            onChange(content);
-            updateCharacterCount(content);
-        }
-    };
+    // Get the updated content and notify parent
+    if (editorRef.current) {
+      const content = editorRef.current.innerHTML;
+      onChange(content);
+      updateCharacterCount(content);
+    }
+  };
 
-    const insertLink = () => {
-        const url = prompt('Enter URL:');
-        if (url) {
-            formatText('createLink', url);
-        }
-    };
+  const insertLink = () => {
+    const url = prompt("Enter URL:");
+    if (url) {
+      formatText("createLink", url);
+    }
+  };
 
-    const insertImage = () => {
-        const url = prompt('Enter image URL:');
-        if (url) {
-            formatText('insertImage', url);
-        }
-    };
+  const insertImage = () => {
+    const url = prompt("Enter image URL:");
+    if (url) {
+      formatText("insertImage", url);
+    }
+  };
 
-    // Update editor content when value prop changes (but avoid infinite loops)
-    useEffect(() => {
-        if (editorRef.current && editorRef.current.innerHTML !== value) {
-            setIsUpdating(true);
-            editorRef.current.innerHTML = value;
-            updateCharacterCount(value);
-            setIsUpdating(false);
-        }
-    }, [value]);
+  // Update editor content when value prop changes (but avoid infinite loops)
+  useEffect(() => {
+    if (editorRef.current && editorRef.current.innerHTML !== value) {
+      setIsUpdating(true);
+      editorRef.current.innerHTML = value;
+      updateCharacterCount(value);
+      setIsUpdating(false);
+    }
+  }, [value]);
 
-    // Set initial content
-    useEffect(() => {
-        if (editorRef.current && value) {
-            editorRef.current.innerHTML = value;
-            updateCharacterCount(value);
-        }
-    }, []);
+  // Set initial content
+  useEffect(() => {
+    if (editorRef.current && value) {
+      editorRef.current.innerHTML = value;
+      updateCharacterCount(value);
+    }
+  }, []);
 
-    return (
-        <div className={`border border-gray-300 rounded-lg overflow-hidden ${className}`}>
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b border-gray-200">
-                <button
-                    type="button"
-                    onClick={() => formatText('bold')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Bold"
-                >
-                    <Bold className="h-4 w-4" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => formatText('italic')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Italic"
-                >
-                    <Italic className="h-4 w-4" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => formatText('underline')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Underline"
-                >
-                    <Underline className="h-4 w-4" />
-                </button>
+  return (
+    <div
+      className={`border border-gray-300 rounded-lg overflow-hidden ${className}`}
+    >
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b border-gray-200">
+        <button
+          type="button"
+          onClick={() => formatText("bold")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Bold"
+        >
+          <Bold className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => formatText("italic")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Italic"
+        >
+          <Italic className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => formatText("underline")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Underline"
+        >
+          <Underline className="h-4 w-4" />
+        </button>
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-gray-300 mx-1" />
 
-                <button
-                    type="button"
-                    onClick={() => formatText('insertUnorderedList')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Bullet List"
-                >
-                    <List className="h-4 w-4" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => formatText('insertOrderedList')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Numbered List"
-                >
-                    <ListOrdered className="h-4 w-4" />
-                </button>
+        <button
+          type="button"
+          onClick={() => formatText("insertUnorderedList")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Bullet List"
+        >
+          <List className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => formatText("insertOrderedList")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Numbered List"
+        >
+          <ListOrdered className="h-4 w-4" />
+        </button>
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-gray-300 mx-1" />
 
-                <button
-                    type="button"
-                    onClick={insertLink}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Insert Link"
-                >
-                    <Link className="h-4 w-4" />
-                </button>
-                <button
-                    type="button"
-                    onClick={insertImage}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Insert Image"
-                >
-                    <Image className="h-4 w-4" />
-                </button>
+        <button
+          type="button"
+          onClick={insertLink}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Insert Link"
+        >
+          <Link className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={insertImage}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Insert Image"
+        >
+          <Image className="h-4 w-4" />
+        </button>
 
-                <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-gray-300 mx-1" />
 
-                <button
-                    type="button"
-                    onClick={() => formatText('formatBlock', 'blockquote')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Quote"
-                >
-                    <Quote className="h-4 w-4" />
-                </button>
-                <button
-                    type="button"
-                    onClick={() => formatText('formatBlock', 'pre')}
-                    className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
-                    title="Code Block"
-                >
-                    <Code className="h-4 w-4" />
-                </button>
-            </div>
+        <button
+          type="button"
+          onClick={() => formatText("formatBlock", "blockquote")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Quote"
+        >
+          <Quote className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => formatText("formatBlock", "pre")}
+          className="p-2 hover:bg-gray-200 rounded text-yellow-600 transition-colors"
+          title="Code Block"
+        >
+          <Code className="h-4 w-4" />
+        </button>
+      </div>
 
-            {/* Editor */}
-            <div
-                ref={editorRef}
-                contentEditable
-                onInput={handleInput}
-                className="min-h-[150px] p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rich-text-editor"
-                style={{
-                    whiteSpace: 'pre-wrap',
-                    wordWrap: 'break-word',
-                    lineHeight: '1.6'
-                }}
-                suppressContentEditableWarning={true}
-                data-placeholder={placeholder}
-            />
+      {/* Editor */}
+      <div
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        className="min-h-[150px] p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rich-text-editor"
+        style={{
+          whiteSpace: "pre-wrap",
+          wordWrap: "break-word",
+          lineHeight: "1.6",
+        }}
+        suppressContentEditableWarning={true}
+        data-placeholder={placeholder}
+      />
 
-            {/* Footer */}
-            <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
-                <div>
-                    Supports <strong>bold</strong>, <em>italic</em>, <u>underline</u> • bullets, 1. numbers, [links](url), ![images](url)
-                </div>
-                <div>
-                    {characterCount} characters
-                </div>
-            </div>
+      {/* Footer */}
+      <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
+        <div>
+          Supports <strong>bold</strong>, <em>italic</em>, <u>underline</u> •
+          bullets, 1. numbers, [links](url), ![images](url)
+        </div>
+        <div>{characterCount} characters</div>
+      </div>
 
-            <style>{`
+      <style>{`
         .rich-text-editor:empty:before {
           content: attr(data-placeholder);
           color: #9ca3af;
@@ -255,8 +266,8 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           margin: 0.5rem 0;
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default RichTextEditor;

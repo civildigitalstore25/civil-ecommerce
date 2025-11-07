@@ -1,7 +1,7 @@
-import React from 'react';
-import { ChevronDown } from 'lucide-react';
-import { headerConfig } from './HeaderConfig';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { ChevronDown } from "lucide-react";
+import { headerConfig } from "./HeaderConfig";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface DesktopNavigationProps {
   onNavigate: (href: string) => void;
@@ -28,7 +28,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   antivirusButtonRef,
   onAntivirusClick,
   allCategoriesButtonRef,
-  onAllCategoriesClick
+  onAllCategoriesClick,
 }) => {
   const { colors } = useAdminTheme();
 
@@ -41,7 +41,8 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+          (e.currentTarget as HTMLElement).style.color =
+            colors.interactive.primary;
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
@@ -62,147 +63,172 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
         style={{ color: colors.text.secondary }}
         onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+          (e.currentTarget as HTMLElement).style.color =
+            colors.interactive.primary;
         }}
         onMouseLeave={(e) => {
           (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
         }}
       >
         <span>All Categories</span>
-        <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
+        <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
       </button>
 
-      {headerConfig.navigation.filter(item => item.label !== "Home").map((item) => {
-        // Special handling for AutoDesk menu item
-        if (item.label === 'AutoDesk') {
+      {headerConfig.navigation
+        .filter((item) => item.label !== "Home")
+        .map((item) => {
+          // Special handling for AutoDesk menu item
+          if (item.label === "AutoDesk") {
+            return (
+              <button
+                key={item.href}
+                ref={autodeskButtonRef}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("AutoDesk button clicked");
+                  if (onAutodeskClick) {
+                    onAutodeskClick();
+                  }
+                }}
+                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ display: "inline-block" }}
+                />
+              </button>
+            );
+          }
+
+          // Special handling for Microsoft menu item
+          if (item.label === "Microsoft") {
+            return (
+              <button
+                key={item.href}
+                ref={microsoftButtonRef}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Microsoft button clicked");
+                  if (onMicrosoftClick) {
+                    onMicrosoftClick();
+                  }
+                }}
+                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ display: "inline-block" }}
+                />
+              </button>
+            );
+          }
+
+          // Special handling for Adobe menu item
+          if (item.label === "Adobe") {
+            return (
+              <button
+                key={item.href}
+                ref={adobeButtonRef}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Adobe button clicked");
+                  if (onAdobeClick) {
+                    onAdobeClick();
+                  }
+                }}
+                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ display: "inline-block" }}
+                />
+              </button>
+            );
+          }
+
+          // Special handling for Antivirus menu item
+          if (item.label === "Antivirus") {
+            return (
+              <button
+                key={item.href}
+                ref={antivirusButtonRef}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Antivirus button clicked");
+                  if (onAntivirusClick) {
+                    onAntivirusClick();
+                  }
+                }}
+                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                }}
+              >
+                <span>{item.label}</span>
+                <ChevronDown
+                  className="w-4 h-4"
+                  style={{ display: "inline-block" }}
+                />
+              </button>
+            );
+          }
+
+          // Regular navigation items
           return (
             <button
               key={item.href}
-              ref={autodeskButtonRef}
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('AutoDesk button clicked');
-                if (onAutodeskClick) {
-                  onAutodeskClick();
-                }
-              }}
-              className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+              onClick={() => onNavigate(item.href)}
+              className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
               style={{ color: colors.text.secondary }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                (e.currentTarget as HTMLElement).style.color =
+                  colors.interactive.primary;
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                (e.currentTarget as HTMLElement).style.color =
+                  colors.text.secondary;
               }}
             >
-              <span>{item.label}</span>
-              <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
+              {item.label}
             </button>
           );
-        }
-
-        // Special handling for Microsoft menu item
-        if (item.label === 'Microsoft') {
-          return (
-            <button
-              key={item.href}
-              ref={microsoftButtonRef}
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Microsoft button clicked');
-                if (onMicrosoftClick) {
-                  onMicrosoftClick();
-                }
-              }}
-              className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-              }}
-            >
-              <span>{item.label}</span>
-              <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
-            </button>
-          );
-        }
-
-        // Special handling for Adobe menu item
-        if (item.label === 'Adobe') {
-          return (
-            <button
-              key={item.href}
-              ref={adobeButtonRef}
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Adobe button clicked');
-                if (onAdobeClick) {
-                  onAdobeClick();
-                }
-              }}
-              className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-              }}
-            >
-              <span>{item.label}</span>
-              <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
-            </button>
-          );
-        }
-
-        // Special handling for Antivirus menu item
-        if (item.label === 'Antivirus') {
-          return (
-            <button
-              key={item.href}
-              ref={antivirusButtonRef}
-              onClick={(e) => {
-                e.preventDefault();
-                console.log('Antivirus button clicked');
-                if (onAntivirusClick) {
-                  onAntivirusClick();
-                }
-              }}
-              className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-              }}
-            >
-              <span>{item.label}</span>
-              <ChevronDown className="w-4 h-4" style={{ display: 'inline-block' }} />
-            </button>
-          );
-        }
-
-        // Regular navigation items
-        return (
-          <button
-            key={item.href}
-            onClick={() => onNavigate(item.href)}
-            className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-            }}
-          >
-            {item.label}
-          </button>
-        );
-      })}
+        })}
     </nav>
   );
 };

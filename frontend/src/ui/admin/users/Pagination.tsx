@@ -6,7 +6,11 @@ interface Props {
   setCurrentPage: (val: number) => void;
 }
 
-const Pagination: React.FC<Props> = ({ currentPage, totalPages, setCurrentPage }) => {
+const Pagination: React.FC<Props> = ({
+  currentPage,
+  totalPages,
+  setCurrentPage,
+}) => {
   if (totalPages <= 1) return null;
 
   return (

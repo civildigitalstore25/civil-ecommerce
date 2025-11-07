@@ -1,7 +1,7 @@
 export interface CartItem {
   id: string;
   product: Product;
-  licenseType: '1year' | '3year' | 'lifetime';
+  licenseType: "1year" | "3year" | "lifetime";
   quantity: number;
   price: number;
   totalPrice: number;
@@ -37,7 +37,6 @@ export interface Product {
 
 export interface CartSummary {
   subtotal: number;
-  tax: number;
   discount: number;
   total: number;
   itemCount: number;
@@ -51,10 +50,10 @@ export interface CartState {
 }
 
 export type CartAction =
-  | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
-  | { type: 'CLEAR_CART' }
-  | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'RECALCULATE_SUMMARY' };
+  | { type: "ADD_ITEM"; payload: CartItem }
+  | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } }
+  | { type: "CLEAR_CART" }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_ERROR"; payload: string | null }
+  | { type: "RECALCULATE_SUMMARY" };

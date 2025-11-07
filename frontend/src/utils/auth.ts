@@ -7,23 +7,23 @@ export interface AuthData {
 }
 
 export const saveAuth = (authData: AuthData): void => {
-  localStorage.setItem('token', authData.token);
-  localStorage.setItem('email', authData.email);
-  localStorage.setItem('role', authData.role);
+  localStorage.setItem("token", authData.token);
+  localStorage.setItem("email", authData.email);
+  localStorage.setItem("role", authData.role);
   if (authData.userId) {
-    localStorage.setItem('userId', authData.userId);
+    localStorage.setItem("userId", authData.userId);
   }
   if (authData.fullName) {
-    localStorage.setItem('fullName', authData.fullName);
+    localStorage.setItem("fullName", authData.fullName);
   }
 };
 
 export const getAuth = (): AuthData | null => {
-  const token = localStorage.getItem('token');
-  const email = localStorage.getItem('email');
-  const role = localStorage.getItem('role');
-  const userId = localStorage.getItem('userId');
-  const fullName = localStorage.getItem('fullName');
+  const token = localStorage.getItem("token");
+  const email = localStorage.getItem("email");
+  const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+  const fullName = localStorage.getItem("fullName");
 
   if (!token || !email || !role) {
     return null;
@@ -39,23 +39,23 @@ export const getAuth = (): AuthData | null => {
 };
 
 export const clearAuth = (): void => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('email');
-  localStorage.removeItem('role');
-  localStorage.removeItem('userId');
-  localStorage.removeItem('fullName');
+  localStorage.removeItem("token");
+  localStorage.removeItem("email");
+  localStorage.removeItem("role");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("fullName");
 };
 
 export const isAuthenticated = (): boolean => {
-  return !!localStorage.getItem('token');
+  return !!localStorage.getItem("token");
 };
 
 export const isAdmin = (user?: any): boolean => {
   // Check if user object is provided and has admin role
-  if (user && user.role === 'admin') {
+  if (user && user.role === "admin") {
     return true;
   }
-  
+
   // Fallback to localStorage check
-  return localStorage.getItem('role') === 'admin';
+  return localStorage.getItem("role") === "admin";
 };

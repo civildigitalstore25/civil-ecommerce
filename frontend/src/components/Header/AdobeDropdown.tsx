@@ -1,6 +1,6 @@
-import React from 'react';
-import { ChevronRight, X } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { ChevronRight, X } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface AdobeProduct {
   name: string;
@@ -24,47 +24,65 @@ const adobeCategories: AdobeCategory[] = [
   {
     name: "Document Management",
     products: [
-      { name: "Adobe Acrobat", href: "/category?brand=adobe&category=adobe-acrobat" },
-    ]
+      {
+        name: "Adobe Acrobat",
+        href: "/category?brand=adobe&category=adobe-acrobat",
+      },
+    ],
   },
   {
     name: "Photography & Imaging",
     products: [
       { name: "Photoshop", href: "/category?brand=adobe&category=photoshop" },
       { name: "Lightroom", href: "/category?brand=adobe&category=lightroom" },
-    ]
+    ],
   },
   {
     name: "Video Production",
     products: [
-      { name: "After Effect", href: "/category?brand=adobe&category=after-effect" },
-      { name: "Premier Pro", href: "/category?brand=adobe&category=premier-pro" },
-    ]
+      {
+        name: "After Effect",
+        href: "/category?brand=adobe&category=after-effect",
+      },
+      {
+        name: "Premier Pro",
+        href: "/category?brand=adobe&category=premier-pro",
+      },
+    ],
   },
   {
     name: "Design & Illustration",
     products: [
-      { name: "Illustrator", href: "/category?brand=adobe&category=illustrator" },
-      { name: "Adobe Creative Cloud", href: "/category?brand=adobe&category=adobe-creative-cloud" },
-    ]
-  }
+      {
+        name: "Illustrator",
+        href: "/category?brand=adobe&category=illustrator",
+      },
+      {
+        name: "Adobe Creative Cloud",
+        href: "/category?brand=adobe&category=adobe-creative-cloud",
+      },
+    ],
+  },
 ];
 
 const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  buttonRef
+  buttonRef,
 }) => {
   const { colors } = useAdminTheme();
-  const [buttonPosition, setButtonPosition] = React.useState({ top: 0, left: 0 });
+  const [buttonPosition, setButtonPosition] = React.useState({
+    top: 0,
+    left: 0,
+  });
 
   React.useEffect(() => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
       setButtonPosition({
         top: rect.bottom + window.scrollY + 6,
-        left: rect.left + window.scrollX
+        left: rect.left + window.scrollX,
       });
     }
   }, [isOpen, buttonRef]);
@@ -82,7 +100,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
       <div
         className="fixed inset-0 z-40"
         onClick={onClose}
-        style={{ background: 'transparent' }}
+        style={{ background: "transparent" }}
       />
 
       {/* Dropdown panel */}
@@ -93,9 +111,9 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
           borderColor: colors.border.primary,
           top: `${buttonPosition.top}px`,
           left: `${buttonPosition.left}px`,
-          width: 'clamp(700px, 80vw, 950px)',
-          maxHeight: '80vh',
-          overflowY: 'auto'
+          width: "clamp(700px, 80vw, 950px)",
+          maxHeight: "80vh",
+          overflowY: "auto",
         }}
       >
         <div className="relative p-6 md:p-8">
@@ -131,7 +149,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
                   className="font-semibold text-sm uppercase tracking-wide pb-2 border-b"
                   style={{
                     color: colors.interactive.primary,
-                    borderColor: colors.border.primary
+                    borderColor: colors.border.primary,
                   }}
                 >
                   {category.name}
@@ -145,12 +163,18 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
                         className="flex items-center justify-between w-full text-left px-4 py-2 rounded-lg transition-all duration-200 group text-sm md:text-base"
                         style={{ color: colors.text.secondary }}
                         onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = colors.background.secondary;
+                          (e.currentTarget as HTMLElement).style.color =
+                            colors.interactive.primary;
                         }}
                         onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                          (
+                            e.currentTarget as HTMLElement
+                          ).style.backgroundColor = "transparent";
+                          (e.currentTarget as HTMLElement).style.color =
+                            colors.text.secondary;
                         }}
                       >
                         <span>{product.name}</span>
@@ -164,19 +188,22 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
           </div>
 
           {/* Footer button */}
-          <div className="mt-6 pt-5 border-t" style={{ borderColor: colors.border.primary }}>
+          <div
+            className="mt-6 pt-5 border-t"
+            style={{ borderColor: colors.border.primary }}
+          >
             <button
-              onClick={() => handleProductClick('/adobe')}
+              onClick={() => handleProductClick("/adobe")}
               className="w-full py-3 px-6 rounded-lg font-medium transition-all duration-200"
               style={{
                 backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse
+                color: colors.text.inverse,
               }}
               onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = '0.9';
+                (e.currentTarget as HTMLElement).style.opacity = "0.9";
               }}
               onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.opacity = '1';
+                (e.currentTarget as HTMLElement).style.opacity = "1";
               }}
             >
               View All Adobe Products

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Plus, Eye, Edit, Trash2, Building2 } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { Plus, Eye, Edit, Trash2, Building2 } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 // Types
 interface Company {
@@ -15,7 +15,7 @@ const sampleCompanies: Company[] = [
   { id: 2, name: "Microsoft", products: 3 },
   { id: 3, name: "Trimble", products: 2 },
   { id: 4, name: "Adobe", products: 2 },
-  { id: 5, name: "ANSYS", products: 1 }
+  { id: 5, name: "ANSYS", products: 1 },
 ];
 
 const Companies: React.FC = () => {
@@ -34,10 +34,15 @@ const Companies: React.FC = () => {
           className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
           style={{
             backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse
+            color: colors.text.inverse,
           }}
-          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primaryHover}
-          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = colors.interactive.primary}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor =
+              colors.interactive.primaryHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = colors.interactive.primary)
+          }
         >
           <Plus className="w-4 h-4" />
           <span>Add Company</span>
@@ -48,7 +53,7 @@ const Companies: React.FC = () => {
         className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
         style={{
           backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary
+          borderColor: colors.border.primary,
         }}
       >
         <table className="w-full">
@@ -56,7 +61,7 @@ const Companies: React.FC = () => {
             className="border-b transition-colors duration-200"
             style={{
               backgroundColor: colors.background.tertiary,
-              borderBottomColor: colors.border.primary
+              borderBottomColor: colors.border.primary,
             }}
           >
             <tr>
@@ -88,8 +93,13 @@ const Companies: React.FC = () => {
               <tr
                 key={company.id}
                 className="transition-colors duration-200"
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = colors.background.accent}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor =
+                    colors.background.accent)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "transparent")
+                }
               >
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-3">
@@ -97,7 +107,7 @@ const Companies: React.FC = () => {
                       className="w-10 h-10 rounded-lg flex items-center justify-center"
                       style={{
                         backgroundColor: colors.interactive.primary,
-                        color: colors.text.inverse
+                        color: colors.text.inverse,
                       }}
                     >
                       <Building2 className="w-5 h-5" />
@@ -121,24 +131,37 @@ const Companies: React.FC = () => {
                     <button
                       className="p-1 transition-colors duration-200"
                       style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = colors.interactive.primary}
-                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color =
+                          colors.interactive.primary)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = colors.text.secondary)
+                      }
                     >
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
                       className="p-1 transition-colors duration-200"
                       style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = colors.status.success}
-                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = colors.status.success)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = colors.text.secondary)
+                      }
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       className="p-1 transition-colors duration-200"
                       style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => e.currentTarget.style.color = colors.status.error}
-                      onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = colors.status.error)
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = colors.text.secondary)
+                      }
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

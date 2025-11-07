@@ -7,14 +7,18 @@ interface BillingFormProps {
   colors: any;
 }
 
-const BillingForm: React.FC<BillingFormProps> = ({ formData, handleChange, colors }) => {
+const BillingForm: React.FC<BillingFormProps> = ({
+  formData,
+  handleChange,
+  colors,
+}) => {
   return (
-   <div
+    <div
       className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"
       style={{
         backgroundColor: colors.background.secondary,
         color: colors.text.primary,
-        border: `1px solid ${colors.border.primary}`, 
+        border: `1px solid ${colors.border.primary}`,
       }}
     >
       <h2 className="text-2xl font-semibold mb-6">Billing Details</h2>
@@ -53,16 +57,16 @@ const BillingForm: React.FC<BillingFormProps> = ({ formData, handleChange, color
       />
 
       {/* Info Note */}
-      <div 
+      <div
         className="mt-4 p-3 rounded-lg text-sm"
         style={{
           backgroundColor: colors.background.primary,
           color: colors.text.secondary,
-          border: `1px solid ${colors.border.primary}`
+          border: `1px solid ${colors.border.primary}`,
         }}
       >
         <p className="leading-relaxed">
-          📱 Order confirmation will be sent to your WhatsApp and Email.
+          Order confirmation will be sent to your WhatsApp and Email.
         </p>
       </div>
     </div>

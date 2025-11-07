@@ -1,8 +1,8 @@
 // ============================================
 // FILE: src/components/banners/BannerDisplay.tsx
 // ============================================
-import React, { useState, useEffect } from 'react';
-import { X, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { X, ExternalLink } from "lucide-react";
 
 interface Banner {
   _id: string;
@@ -16,7 +16,7 @@ interface Banner {
 }
 
 interface BannerDisplayProps {
-  position: 'home' | 'product';
+  position: "home" | "product";
 }
 
 const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
@@ -40,13 +40,13 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
 
   const fetchBanners = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
       const response = await fetch(`${API_URL}/api/banners/active/${position}`);
       const data = await response.json();
       setBanners(data);
       setIsLoading(false);
     } catch (error) {
-      console.error('Error fetching banners:', error);
+      console.error("Error fetching banners:", error);
       setIsLoading(false);
     }
   };
@@ -72,14 +72,14 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
   // Fallback gradient based on banner type
   const getBannerGradient = (type: string) => {
     switch (type.toUpperCase()) {
-      case 'FESTIVAL':
-        return 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-      case 'FLASH SALE':
-        return 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-      case 'SEASONAL':
-        return 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)';
+      case "FESTIVAL":
+        return "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+      case "FLASH SALE":
+        return "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+      case "SEASONAL":
+        return "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)";
       default:
-        return 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)';
+        return "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)";
     }
   };
 
@@ -88,8 +88,10 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
       <div
         className="relative overflow-hidden rounded-lg shadow-lg"
         style={{
-          background: currentBanner.backgroundColor || getBannerGradient(currentBanner.bannerType),
-          color: currentBanner.textColor || '#FFFFFF',
+          background:
+            currentBanner.backgroundColor ||
+            getBannerGradient(currentBanner.bannerType),
+          color: currentBanner.textColor || "#FFFFFF",
         }}
       >
         {/* Close Button */}
@@ -127,7 +129,7 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
             <button
               onClick={handleCTAClick}
               className="inline-flex items-center gap-2 bg-white px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-              style={{ color: currentBanner.backgroundColor || '#3B82F6' }}
+              style={{ color: currentBanner.backgroundColor || "#3B82F6" }}
             >
               {currentBanner.ctaButtonText}
               {currentBanner.ctaButtonLink && <ExternalLink size={18} />}
@@ -144,8 +146,8 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
                 onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all ${
                   index === currentIndex
-                    ? 'bg-white w-8'
-                    : 'bg-white bg-opacity-50 hover:bg-opacity-75'
+                    ? "bg-white w-8"
+                    : "bg-white bg-opacity-50 hover:bg-opacity-75"
                 }`}
                 aria-label={`Go to banner ${index + 1}`}
               />

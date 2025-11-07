@@ -20,17 +20,19 @@ export interface IOrderItem {
 export interface IOrder {
   _id: string;
   userId: string;
-  orderNumber: string;
+  orderId: string;
+  orderNumber: number;
   items: IOrderItem[];
   subtotal: number;
   discount: number;
   shippingCharges: number;
-  tax: number;
   totalAmount: number;
   shippingAddress: IShippingAddress;
-  paymentStatus: 'PENDING' | 'PAID' | 'FAILED' | 'REFUNDED';
-  orderStatus: 'CREATED' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  paymentId?: string;
+  paymentStatus: "pending" | "paid" | "failed" | "refunded";
+  orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
   couponCode?: string;
   notes?: string;
   createdAt: string;
@@ -40,6 +42,11 @@ export interface IOrder {
 export interface OrderResponse {
   success: boolean;
   data: IOrder[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalOrders: number;
+  };
   message?: string;
 }
 
@@ -48,4 +55,3 @@ export interface OrderDetailResponse {
   data: IOrder;
   message?: string;
 }
-

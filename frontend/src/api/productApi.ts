@@ -1,10 +1,10 @@
-import axios from 'axios';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Product } from './types/productTypes';
-import { getAuth } from '../utils/auth';
+import axios from "axios";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { Product } from "./types/productTypes";
+import { getAuth } from "../utils/auth";
 
 // Use Vite's import.meta.env instead of process.env
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 const apiClient = axios.create({
   baseURL: `${apiBaseUrl}/api/products`,
@@ -13,17 +13,17 @@ const apiClient = axios.create({
 // Add request interceptor to include auth token
 apiClient.interceptors.request.use((config) => {
   const auth = getAuth();
-  console.log('API Request config:', {
+  console.log("API Request config:", {
     url: config.url,
     method: config.method,
     hasAuth: !!auth?.token,
-    role: auth?.role
+    role: auth?.role,
   });
   if (auth?.token) {
     config.headers.Authorization = `Bearer ${auth.token}`;
-    console.log('Added Authorization header');
+    console.log("Added Authorization header");
   } else {
-    console.log('No auth token found');
+    console.log("No auth token found");
   }
   return config;
 });
@@ -32,15 +32,15 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error('API Response error:', {
+    console.error("API Response error:", {
       status: error.response?.status,
       statusText: error.response?.statusText,
       data: error.response?.data,
       url: error.config?.url,
-      method: error.config?.method
+      method: error.config?.method,
     });
     return Promise.reject(error);
-  }
+  },
 );
 
 export const useProducts = (params?: {
@@ -56,9 +56,9 @@ export const useProducts = (params?: {
     currentPage: number;
     total: number;
   }>({
-    queryKey: ['products', params],
+    queryKey: ["products", params],
     queryFn: async () => {
-      const { data } = await apiClient.get('/', { params });
+      const { data } = await apiClient.get("/", { params });
       return data;
     },
   });
@@ -66,7 +66,7 @@ export const useProducts = (params?: {
 
 export const useProductDetail = (id?: string) => {
   return useQuery<Product | null>({
-    queryKey: ['product', id],
+    queryKey: ["product", id],
     enabled: !!id, // Only run if id is present
     queryFn: async () => {
       if (!id) return null;
@@ -78,43 +78,43 @@ export const useProductDetail = (id?: string) => {
 
 export const useCategories = () => {
   return useQuery<string[]>({
-    queryKey: ['categories'],
+    queryKey: ["categories"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/filters/categories');
+      const { data } = await apiClient.get("/filters/categories");
       return data;
     },
   });
-}
+};
 
 export const useCompanies = () => {
   return useQuery<string[]>({
-    queryKey: ['companies'],
+    queryKey: ["companies"],
     queryFn: async () => {
-      const { data } = await apiClient.get('/filters/companies');
+      const { data } = await apiClient.get("/filters/companies");
       return data;
     },
   });
-}
+};
 
 export const useCreateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (newProduct: Product) => {
-      console.log('Creating product:', newProduct);
-      const { data } = await apiClient.post('/', newProduct);
-      console.log('Product created successfully:', data);
+      console.log("Creating product:", newProduct);
+      const { data } = await apiClient.post("/", newProduct);
+      console.log("Product created successfully:", data);
       return data;
     },
     onSuccess: () => {
-      console.log('Create product mutation success, invalidating queries');
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      console.log("Create product mutation success, invalidating queries");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (error: any) => {
-      console.error('Create product error:', error);
-      console.error('Error response:', error.response?.data);
+      console.error("Create product error:", error);
+      console.error("Error response:", error.response?.data);
       throw error;
-    }
+    },
   });
 };
 
@@ -122,21 +122,27 @@ export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, updatedProduct }: { id: string; updatedProduct: Product }) => {
-      console.log('Updating product:', id, updatedProduct);
+    mutationFn: async ({
+      id,
+      updatedProduct,
+    }: {
+      id: string;
+      updatedProduct: Product;
+    }) => {
+      console.log("Updating product:", id, updatedProduct);
       const { data } = await apiClient.put(`/${id}`, updatedProduct);
-      console.log('Product updated successfully:', data);
+      console.log("Product updated successfully:", data);
       return data;
     },
     onSuccess: () => {
-      console.log('Update product mutation success, invalidating queries');
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      console.log("Update product mutation success, invalidating queries");
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
     onError: (error: any) => {
-      console.error('Update product error:', error);
-      console.error('Error response:', error.response?.data);
+      console.error("Update product error:", error);
+      console.error("Error response:", error.response?.data);
       throw error;
-    }
+    },
   });
 };
 
@@ -148,7 +154,7 @@ export const useDeleteProduct = () => {
       await apiClient.delete(`/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 };

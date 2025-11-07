@@ -9,7 +9,7 @@ import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
 
 export default function SigninPage() {
   const [email, setEmail] = useState("");
@@ -49,7 +49,8 @@ export default function SigninPage() {
           navigate("/");
         },
         onError: (err: any) => {
-          const errorMessage = err.response?.data?.message || "Something went wrong";
+          const errorMessage =
+            err.response?.data?.message || "Something went wrong";
           setError(errorMessage);
 
           Swal.fire({
@@ -61,7 +62,7 @@ export default function SigninPage() {
             timerProgressBar: true,
           });
         },
-      }
+      },
     );
   };
 
@@ -83,7 +84,7 @@ export default function SigninPage() {
         <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
           }}
         >
           <div
@@ -115,7 +116,7 @@ export default function SigninPage() {
                 backgroundColor: `${colors.status.error}20`,
                 borderColor: colors.status.error,
                 color: colors.status.error,
-                border: `1px solid ${colors.status.error}`
+                border: `1px solid ${colors.status.error}`,
               }}
             >
               {error}
@@ -126,8 +127,9 @@ export default function SigninPage() {
           <GoogleButton
             text="Continue with Google"
             onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-                }/api/auth/google`;
+              window.location.href = `${
+                import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+              }/api/auth/google`;
             }}
           />
 
@@ -179,7 +181,8 @@ export default function SigninPage() {
                     color: colors.interactive.primary,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = colors.interactive.primaryHover;
+                    e.currentTarget.style.color =
+                      colors.interactive.primaryHover;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = colors.interactive.primary;
@@ -190,7 +193,11 @@ export default function SigninPage() {
               </div>
             </div>
 
-            <FormButton type="submit" disabled={signInMutation.isPending} className="w-full">
+            <FormButton
+              type="submit"
+              disabled={signInMutation.isPending}
+              className="w-full"
+            >
               {signInMutation.isPending ? "Signing in..." : "Sign In"}
             </FormButton>
           </form>

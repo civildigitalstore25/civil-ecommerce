@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from "react";
 import { Calendar } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
-interface FormDateInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface FormDateInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   required?: boolean;
 }
@@ -74,7 +75,8 @@ const FormDateInput: React.FC<FormDateInputProps> = ({
         className="block font-medium mb-1 transition-colors duration-200"
         style={{ color: colors.text.primary }}
       >
-        {label} {required && <span style={{ color: colors.status.error }}>*</span>}
+        {label}{" "}
+        {required && <span style={{ color: colors.status.error }}>*</span>}
       </label>
 
       <div className="relative">
@@ -127,14 +129,16 @@ const FormDateInput: React.FC<FormDateInputProps> = ({
         </span>
       </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           input::placeholder {
             color: ${colors.text.accent};
             opacity: 0.7;
           }
-        `
-      }} />
+        `,
+        }}
+      />
     </div>
   );
 };

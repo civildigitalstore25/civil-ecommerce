@@ -1,5 +1,5 @@
-import {  useQueryClient } from '@tanstack/react-query';
-import { useCurrentUser, useSignIn, useSignUp, useLogout } from './auth';
+import { useQueryClient } from "@tanstack/react-query";
+import { useCurrentUser, useSignIn, useSignUp, useLogout } from "./auth";
 
 // Keep this hook for backward compatibility
 export const useUser = () => {
@@ -8,9 +8,9 @@ export const useUser = () => {
 
 export const useUserInvalidate = () => {
   const queryClient = useQueryClient();
-   const invalidateUser = () => {
+  const invalidateUser = () => {
     queryClient.invalidateQueries({
-      queryKey: ['currentUser'],
+      queryKey: ["currentUser"],
     });
   };
 

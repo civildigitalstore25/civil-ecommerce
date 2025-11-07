@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronRight } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React, { useState, useEffect, useRef } from "react";
+import { ChevronRight } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface MicrosoftSubProduct {
   name: string;
@@ -30,14 +30,23 @@ const microsoftCategories: MicrosoftCategory[] = [
   {
     name: "Productivity & Collaboration",
     products: [
-      { name: "Microsoft 365", href: "/category?brand=microsoft&category=microsoft-365" },
-      { name: "Microsoft Professional", href: "/category?brand=microsoft&category=microsoft-professional" },
+      {
+        name: "Microsoft 365",
+        href: "/category?brand=microsoft&category=microsoft-365",
+      },
+      {
+        name: "Microsoft Professional",
+        href: "/category?brand=microsoft&category=microsoft-professional",
+      },
     ],
   },
   {
     name: "Project Management",
     products: [
-      { name: "Microsoft Projects", href: "/category?brand=microsoft&category=microsoft-projects" },
+      {
+        name: "Microsoft Projects",
+        href: "/category?brand=microsoft&category=microsoft-projects",
+      },
     ],
   },
   {
@@ -108,16 +117,19 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
         borderColor: colors.border.primary,
         top: `${buttonPosition.top}px`,
         left: `${buttonPosition.left}px`,
-        minWidth: '900px',
-        maxWidth: '1200px',
-        maxHeight: '85vh',
-        overflowY: 'auto',
+        minWidth: "900px",
+        maxWidth: "1200px",
+        maxHeight: "85vh",
+        overflowY: "auto",
       }}
     >
       <div className="p-8">
         {/* Header */}
         <div className="mb-6">
-          <h3 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+          <h3
+            className="text-2xl font-semibold"
+            style={{ color: colors.text.primary }}
+          >
             Microsoft Product Categories
           </h3>
           <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
@@ -153,7 +165,12 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
                       onMouseLeave={() => scheduleClose()}
                     >
                       <button
-                        onClick={() => handleProductClick(product.href, !!product.topProducts)}
+                        onClick={() =>
+                          handleProductClick(
+                            product.href,
+                            !!product.topProducts,
+                          )
+                        }
                         className="flex items-center justify-between w-full text-left px-4 py-3 rounded-md transition-all duration-200 group-hover:scale-[1.02]"
                         style={{
                           backgroundColor: colors.background.secondary,
@@ -176,8 +193,8 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
                             backgroundColor: colors.background.primary,
                             borderColor: colors.border.primary,
                             top: 0,
-                            left: 'calc(100% + 16px)',
-                            minWidth: '350px',
+                            left: "calc(100% + 16px)",
+                            minWidth: "350px",
                             zIndex: 60,
                           }}
                           onMouseEnter={() => clearCloseTimeout()}
@@ -197,11 +214,15 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
                             {product.topProducts.map((sub, i) => (
                               <li key={i}>
                                 <button
-                                  onClick={() => handleSubProductClick(sub.href)}
+                                  onClick={() =>
+                                    handleSubProductClick(sub.href)
+                                  }
                                   className="flex items-center justify-between w-full text-left px-3 py-2 rounded-md transition-all duration-200 group"
                                   style={{ color: colors.text.secondary }}
                                 >
-                                  <span className="text-[14px]">{sub.name}</span>
+                                  <span className="text-[14px]">
+                                    {sub.name}
+                                  </span>
                                   <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                                 </button>
                               </li>
@@ -218,10 +239,13 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
         </div>
 
         {/* Bottom button */}
-        <div className="mt-8 pt-6 border-t flex justify-center" style={{ borderColor: colors.border.primary }}>
+        <div
+          className="mt-8 pt-6 border-t flex justify-center"
+          style={{ borderColor: colors.border.primary }}
+        >
           <button
             onClick={() => {
-              onNavigate('/microsoft');
+              onNavigate("/microsoft");
               onClose();
             }}
             className="py-3 px-6 rounded-lg font-medium transition-all duration-200 text-lg"

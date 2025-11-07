@@ -1,149 +1,131 @@
-import mongoose, { Schema, Document } from 'mongoose';
-import { IOrder, IOrderItem, IShippingAddress } from '../types/payment.types';
+import mongoose, { Document, Schema } from 'mongoose';
 
-const orderItemSchema = new Schema<IOrderItem>({
-  productId: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1
-  },
-  price: {
-    type: Number,
-    required: true
-  },
-  image: {
-    type: String,
-    default: null
-  }
-});
+export interface IOrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  image?: string;
+}
 
-const shippingAddressSchema = new Schema<IShippingAddress>({
-  fullName: {
-    type: String,
-    required: true
-  },
-  phoneNumber: {
-    type: String,
-    required: true
-  },
-  addressLine1: {
-    type: String,
-    required: true
-  },
-  addressLine2: {
-    type: String,
-    default: null
-  },
-  city: {
-    type: String,
-    required: true
-  },
-  state: {
-    type: String,
-    required: true
-  },
-  pincode: {
-    type: String,
-    required: true
-  },
-  country: {
-    type: String,
-    default: 'India'
-  }
-});
+export interface IShippingAddress {
+  fullName: string;
+  phoneNumber: string;
+  addressLine1: string;
+  addressLine2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+}
 
-const orderSchema = new Schema<IOrder>({
+export interface IOrder extends Document {
+  userId: mongoose.Types.ObjectId;
+  orderId: string;
+  orderNumber: number; // Sequential order number (required)
+  items: IOrderItem[];
+  subtotal: number;
+  discount: number;
+  shippingCharges: number;
+  totalAmount: number;
+  shippingAddress: IShippingAddress;
+  couponCode?: string;
+  notes?: string;
+  paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
+  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  razorpayOrderId?: string;
+  razorpayPaymentId?: string;
+  razorpaySignature?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const OrderSchema = new Schema<IOrder>({
   userId: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true
   },
-  orderNumber: {
+  orderId: {
     type: String,
+    required: true,
     unique: true
   },
-  items: [orderItemSchema],
+  orderNumber: {
+    type: Number,
+    required: true,
+    unique: true
+  },
+  items: [{
+    productId: { type: String, required: true },
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true, min: 1 },
+    price: { type: Number, required: true, min: 0 },
+    image: { type: String }
+  }],
   subtotal: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   discount: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
   shippingCharges: {
     type: Number,
-    default: 0
-  },
-  tax: {
-    type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
   totalAmount: {
     type: Number,
-    required: true
+    required: true,
+    min: 0
   },
   shippingAddress: {
-    type: shippingAddressSchema,
-    required: true
+    fullName: { type: String, required: true },
+    phoneNumber: { type: String, required: true },
+    addressLine1: { type: String, required: true },
+    addressLine2: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    pincode: { type: String, required: true },
+    country: { type: String, required: true, default: 'India' }
+  },
+  couponCode: {
+    type: String
+  },
+  notes: {
+    type: String
   },
   paymentStatus: {
     type: String,
-    enum: ['PENDING', 'PAID', 'FAILED', 'REFUNDED'],
-    default: 'PENDING'
+    enum: ['pending', 'paid', 'failed', 'refunded'],
+    default: 'pending'
   },
   orderStatus: {
     type: String,
-    enum: ['CREATED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
-    default: 'CREATED'
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    default: 'pending'
   },
-  paymentId: {
-    type: String,
-    default: null
+  razorpayOrderId: {
+    type: String
   },
-  couponCode: {
-    type: String,
-    default: null
+  razorpayPaymentId: {
+    type: String
   },
-  notes: {
-    type: String,
-    default: null
+  razorpaySignature: {
+    type: String
   }
 }, {
   timestamps: true
 });
 
-// Generate order number before validation
-orderSchema.pre('validate', async function(next) {
-  if (!this.orderNumber) {
-    try {
-      // Get count of all orders
-      const count = await mongoose.model('Order').countDocuments();
-      const timestamp = Date.now();
-      const paddedCount = (count + 1).toString().padStart(4, '0');
-      this.orderNumber = `ORD${timestamp}${paddedCount}`;
-    } catch (error) {
-      // Fallback if counting fails
-      const timestamp = Date.now();
-      const random = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-      this.orderNumber = `ORD${timestamp}${random}`;
-    }
-  }
-  next();
-});
+// Index for faster queries
+OrderSchema.index({ userId: 1, createdAt: -1 });
+OrderSchema.index({ razorpayOrderId: 1 });
 
-// Indexes
-orderSchema.index({ userId: 1, createdAt: -1 });
-orderSchema.index({ orderNumber: 1 });
-orderSchema.index({ orderStatus: 1 });
-
-const Order = mongoose.model<IOrder>('Order', orderSchema);
+const Order = mongoose.model<IOrder>('Order', OrderSchema);
 
 export default Order;

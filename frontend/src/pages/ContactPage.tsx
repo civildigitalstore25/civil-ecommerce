@@ -22,7 +22,7 @@ const ContactPage: React.FC = () => {
   const { colors } = useAdminTheme();
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -42,13 +42,11 @@ const ContactPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-[calc(100vh-120px)] p-6 md:p-10 relative"
+      className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
       style={{
-        background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`
+        background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`,
       }}
     >
-      
-
       <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
         style={{ backgroundColor: colors.background.secondary }}
@@ -58,7 +56,7 @@ const ContactPage: React.FC = () => {
           className="p-10 text-center"
           style={{
             background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover}90)`,
-            backgroundColor: colors.background.tertiary
+            backgroundColor: colors.background.tertiary,
           }}
         >
           <h1
@@ -86,14 +84,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`
+                  borderLeftColor: `${colors.interactive.primary}90`,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
                     background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary
+                    color: colors.text.primary,
                   }}
                 >
                   <Phone size={20} />
@@ -122,14 +120,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`
+                  borderLeftColor: `${colors.interactive.primary}90`,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
                     background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary
+                    color: colors.text.primary,
                   }}
                 >
                   <Mail size={20} />
@@ -158,14 +156,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`
+                  borderLeftColor: `${colors.interactive.primary}90`,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
                     background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary
+                    color: colors.text.primary,
                   }}
                 >
                   <Clock size={20} />
@@ -177,8 +175,12 @@ const ContactPage: React.FC = () => {
                   >
                     Business Hours:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>Monday - Friday: 9:00-20:00</p>
-                  <p style={{ color: colors.text.secondary }}>Saturday: 11:00 - 15:00</p>
+                  <p style={{ color: colors.text.secondary }}>
+                    Monday - Friday: 9:00-20:00
+                  </p>
+                  <p style={{ color: colors.text.secondary }}>
+                    Saturday: 11:00 - 15:00
+                  </p>
                   <p style={{ color: colors.text.secondary }}>Sunday: Closed</p>
                 </div>
               </div>
@@ -188,14 +190,14 @@ const ContactPage: React.FC = () => {
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
                   backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`
+                  borderLeftColor: `${colors.interactive.primary}90`,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
                     background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary
+                    color: colors.text.primary,
                   }}
                 >
                   <MapPin size={20} />
@@ -207,8 +209,12 @@ const ContactPage: React.FC = () => {
                   >
                     Headquarters Address:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>Civil Digital Store</p>
-                  <p style={{ color: colors.text.secondary }}>Thanjavur, Tamilnadu</p>
+                  <p style={{ color: colors.text.secondary }}>
+                    Civil Digital Store
+                  </p>
+                  <p style={{ color: colors.text.secondary }}>
+                    Thanjavur, Tamilnadu
+                  </p>
                   <p style={{ color: colors.text.secondary }}>India</p>
                 </div>
               </div>
@@ -346,10 +352,10 @@ const ContactPage: React.FC = () => {
                 color: colors.text.inverse,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.transform = "translateY(0)";
               }}
             >
               {submitContactForm.isPending ? (
@@ -358,7 +364,7 @@ const ContactPage: React.FC = () => {
                     className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
                     style={{
                       borderColor: colors.text.inverse,
-                      borderTopColor: 'transparent'
+                      borderTopColor: "transparent",
                     }}
                   ></span>
                   Sending...

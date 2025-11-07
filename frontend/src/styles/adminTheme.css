@@ -2,86 +2,91 @@
 
 /* Focus ring styles for form elements */
 .admin-focus-ring:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px var(--admin-focus-color, #fbbf24);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--admin-focus-color, #fbbf24);
 }
 
 /* Hover effects for buttons */
 .admin-button-hover {
-    transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .admin-button-hover:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Card hover effects */
 .admin-card-hover {
-    transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .admin-card-hover:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Scrollbar styling for theme compatibility */
 .admin-scrollbar::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+  width: 8px;
+  height: 8px;
 }
 
 .admin-scrollbar::-webkit-scrollbar-track {
-    background: var(--admin-bg-secondary, #1f2937);
-    border-radius: 4px;
+  background: var(--admin-bg-secondary, #1f2937);
+  border-radius: 4px;
 }
 
 .admin-scrollbar::-webkit-scrollbar-thumb {
-    background: var(--admin-border-primary, #374151);
-    border-radius: 4px;
+  background: var(--admin-border-primary, #374151);
+  border-radius: 4px;
 }
 
 .admin-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--admin-text-secondary, #9ca3af);
+  background: var(--admin-text-secondary, #9ca3af);
 }
 
 /* Animation utilities */
 .admin-fade-enter {
-    opacity: 0;
-    transform: translateY(-10px);
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .admin-fade-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 200ms, transform 200ms;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 200ms,
+    transform 200ms;
 }
 
 .admin-fade-exit {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .admin-fade-exit-active {
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 200ms, transform 200ms;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition:
+    opacity 200ms,
+    transform 200ms;
 }
 
 /* Theme transition */
 .admin-theme-transition {
-    transition: background-color 200ms ease-in-out,
-        color 200ms ease-in-out,
-        border-color 200ms ease-in-out;
+  transition:
+    background-color 200ms ease-in-out,
+    color 200ms ease-in-out,
+    border-color 200ms ease-in-out;
 }
 
 /* Table row hover effects */
 .admin-table-row:hover {
-    background-color: var(--admin-bg-accent, #4b5563);
+  background-color: var(--admin-bg-accent, #4b5563);
 }
 
 /* Modal backdrop */
 .admin-modal-backdrop {
-    backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }

@@ -8,6 +8,8 @@ export interface ICoupon extends Document {
   discountValue: number;
   validFrom: Date;
   validTo: Date;
+  usageLimit: number; // Maximum number of times coupon can be used
+  usedCount: number; // Current usage count
   status: 'Active' | 'Inactive';
 }
 
@@ -19,6 +21,8 @@ const couponSchema = new Schema<ICoupon>({
   discountValue: { type: Number, required: true },
   validFrom: { type: Date, required: true },
   validTo: { type: Date, required: true },
+  usageLimit: { type: Number, required: true, default: 1, min: 1 },
+  usedCount: { type: Number, default: 0, min: 0 },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
 }, { timestamps: true });
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import FormButton from '../../components/Button/FormButton';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import FormButton from "../../components/Button/FormButton";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface CartEmptyProps {
   onContinueShopping: () => void;
@@ -24,7 +24,12 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5 6m0 0h8.5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5 6m0 0h8.5M17 13v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6"
+            />
           </svg>
         </div>
       </div>
@@ -40,8 +45,8 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
         className="text-lg mb-8 max-w-md"
         style={{ color: colors.text.secondary }}
       >
-        Looks like you haven't added any software to your cart yet.
-        Start exploring our amazing collection of premium software!
+        Looks like you haven't added any software to your cart yet. Start
+        exploring our amazing collection of premium software!
       </p>
 
       {/* Action Button */}

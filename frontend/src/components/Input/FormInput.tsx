@@ -1,5 +1,5 @@
-import React from 'react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -15,12 +15,13 @@ const FormInput: React.FC<FormInputProps> = ({ label, required, ...props }) => {
         className="block font-medium mb-1 transition-colors duration-200"
         style={{ color: colors.text.primary }}
       >
-        {label}{required && <span style={{ color: colors.status.error }}>*</span>}
+        {label}
+        {required && <span style={{ color: colors.status.error }}>*</span>}
       </label>
       <input
         {...props}
         required={required}
-        className={`w-full border p-2 rounded transition-all duration-200 focus:ring-2 focus:outline-none ${props.className || ''}`}
+        className={`w-full border p-2 rounded transition-all duration-200 focus:ring-2 focus:outline-none ${props.className || ""}`}
         style={{
           backgroundColor: colors.background.primary,
           borderColor: colors.border.primary,
@@ -33,18 +34,20 @@ const FormInput: React.FC<FormInputProps> = ({ label, required, ...props }) => {
         }}
         onBlur={(e) => {
           e.target.style.borderColor = colors.border.primary;
-          e.target.style.boxShadow = 'none';
+          e.target.style.boxShadow = "none";
           props.onBlur?.(e);
         }}
       />
-      <style dangerouslySetInnerHTML={{
-        __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
           input::placeholder {
             color: ${colors.text.accent};
             opacity: 0.7;
           }
-        `
-      }} />
+        `,
+        }}
+      />
     </div>
   );
 };

@@ -120,6 +120,7 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
       res.status(401).json({ message: 'Not authenticated' });
       return;
     }
+    console.log('👤 Current user ID:', user._id);
     res.json(user);
   } catch (error: any) {
     res.status(500).json({ message: error.message });

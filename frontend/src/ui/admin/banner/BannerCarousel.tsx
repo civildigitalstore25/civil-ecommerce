@@ -56,7 +56,9 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         console.log(`Found ${banners.length} banners for ${page}`);
 
         if (banners.length === 0) {
-          console.log(`No banners found for ${page}. Check if you have banners with position "Product Page" or "Both" in the database.`);
+          console.log(
+            `No banners found for ${page}. Check if you have banners with position "Product Page" or "Both" in the database.`,
+          );
         }
       } catch (err) {
         console.error(`Error fetching banners for ${page}:`, err);
@@ -75,7 +77,8 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
     }
   }, [banners]);
 
-  const prevSlide = () => setCurrent((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
+  const prevSlide = () =>
+    setCurrent((prev) => (prev === 0 ? banners.length - 1 : prev - 1));
   const nextSlide = () => setCurrent((prev) => (prev + 1) % banners.length);
 
   const handleClick = (link?: string) => {
@@ -92,7 +95,11 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
   const totalSlides = banners.length;
 
   return (
-    <div className="relative max-w-7xl mx-auto mb-6 px-4" role="region" aria-label="Promotional Carousel">
+    <div
+      className="relative max-w-7xl mx-auto mb-6 px-4"
+      role="region"
+      aria-label="Promotional Carousel"
+    >
       <div
         className="relative rounded-2xl overflow-hidden min-h-[220px] sm:min-h-[260px] flex items-center justify-center transition-all duration-300"
         style={{
@@ -141,7 +148,13 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
             />
           </g>
           <defs>
-            <linearGradient id="bottomCurveGradient" x1="0" y1="0" x2="1" y2="1">
+            <linearGradient
+              id="bottomCurveGradient"
+              x1="0"
+              y1="0"
+              x2="1"
+              y2="1"
+            >
               <stop offset="0%" stopColor="#0a0a0a" />
               <stop offset="100%" stopColor="#0a0a0a" stopOpacity="0.15" />
             </linearGradient>
@@ -149,37 +162,60 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         </svg>
 
         {/* Decorative floating shapes */}
-        <div className="absolute top-14 left-1/4 w-3 h-3 text-black/20 animate-float" aria-hidden="true">
+        <div
+          className="absolute top-14 left-1/4 w-3 h-3 text-black/20 animate-float"
+          aria-hidden="true"
+        >
           <svg viewBox="0 0 10 10" fill="currentColor">
             <polygon points="5,0 6,3 10,5 6,7 5,10 4,7 0,5 4,3" />
           </svg>
         </div>
-        <div className="absolute top-16 right-14 w-4 h-4 text-black/25 animate-float-delay" aria-hidden="true">
+        <div
+          className="absolute top-16 right-14 w-4 h-4 text-black/25 animate-float-delay"
+          aria-hidden="true"
+        >
           <svg viewBox="0 0 10 10" fill="currentColor">
             <path d="M5 0 L6 4 L10 5 L6 6 L5 10 L4 6 L0 5 L4 4 Z" />
           </svg>
         </div>
-        <div className="absolute bottom-16 left-1/3 w-3 h-3 text-black/15 animate-float" aria-hidden="true">
+        <div
+          className="absolute bottom-16 left-1/3 w-3 h-3 text-black/15 animate-float"
+          aria-hidden="true"
+        >
           <svg viewBox="0 0 10 10" fill="currentColor">
             <polygon points="5,0 6,3 10,5 6,7 5,10 4,7 0,5 4,3" />
           </svg>
         </div>
-        <div className="absolute bottom-12 right-16 rotate-12 w-10 h-2 bg-black/20 rounded animate-float" aria-hidden="true"></div>
+        <div
+          className="absolute bottom-12 right-16 rotate-12 w-10 h-2 bg-black/20 rounded animate-float"
+          aria-hidden="true"
+        ></div>
 
         {/* Navigation buttons */}
         {totalSlides > 1 && (
           <>
-            <button onClick={prevSlide} aria-label="Previous slide" className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block">
+            <button
+              onClick={prevSlide}
+              aria-label="Previous slide"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block"
+            >
               <ChevronLeftIcon className="h-6 w-6 text-white" />
             </button>
-            <button onClick={nextSlide} aria-label="Next slide" className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block">
+            <button
+              onClick={nextSlide}
+              aria-label="Next slide"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block"
+            >
               <ChevronRightIcon className="h-6 w-6 text-white" />
             </button>
           </>
         )}
 
         {/* Content */}
-        <div key={banner._id} className="relative z-40 w-full max-w-3xl px-4 sm:px-8 text-center flex flex-col items-center gap-3 animate-fade-in">
+        <div
+          key={banner._id}
+          className="relative z-40 w-full max-w-3xl px-4 sm:px-8 text-center flex flex-col items-center gap-3 animate-fade-in"
+        >
           <h2
             className="text-3xl sm:text-4xl md:text-5xl font-extrabold leading-snug drop-shadow-2xl text-white"
             style={{
@@ -189,7 +225,11 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
           >
             {banner.title}
           </h2>
-          {banner.description && <p className="text-base sm:text-lg md:text-xl opacity-95 max-w-xl drop-shadow-md text-white">{banner.description}</p>}
+          {banner.description && (
+            <p className="text-base sm:text-lg md:text-xl opacity-95 max-w-xl drop-shadow-md text-white">
+              {banner.description}
+            </p>
+          )}
           {/* Buttons */}
           <div className="flex flex-wrap justify-center gap-4 mt-4">
             {/* Primary CTA Button */}
@@ -214,7 +254,8 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
         md:rounded-3xl                     // desktop
       `}
                 style={{
-                  background: "linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.7) 100%)",
+                  background:
+                    "linear-gradient(135deg, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.7) 100%)",
                 }}
               >
                 {banner.ctaButtonText}
@@ -248,7 +289,6 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
               </button>
             )}
           </div>
-
         </div>
 
         {/* Indicators */}
@@ -261,13 +301,14 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
                 aria-label={`Go to slide ${index + 1}`}
                 className={`
       w-4 h-4 sm:w-3 sm:h-3 rounded-full transition-all duration-300
-      ${index === current
-                    ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
-                    : "bg-white/40 hover:bg-white/70"} // inactive: semi-transparent white
+      ${
+        index === current
+          ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
+          : "bg-white/40 hover:bg-white/70"
+      } // inactive: semi-transparent white
     `}
               />
             ))}
-
           </div>
         )}
 

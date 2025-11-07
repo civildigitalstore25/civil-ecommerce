@@ -1,15 +1,12 @@
-import React from 'react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
+import React from "react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Settings: React.FC = () => {
   const { colors } = useAdminTheme();
 
   return (
     <div className="space-y-6">
-      <h2
-        className="text-2xl font-bold"
-        style={{ color: colors.text.primary }}
-      >
+      <h2 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
         Settings
       </h2>
 
@@ -18,7 +15,7 @@ const Settings: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3
@@ -42,7 +39,7 @@ const Settings: React.FC = () => {
                 style={{
                   backgroundColor: colors.background.tertiary,
                   borderColor: colors.border.primary,
-                  color: colors.text.primary
+                  color: colors.text.primary,
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = colors.interactive.primary;
@@ -66,7 +63,7 @@ const Settings: React.FC = () => {
                 style={{
                   backgroundColor: colors.background.tertiary,
                   borderColor: colors.border.primary,
-                  color: colors.text.primary
+                  color: colors.text.primary,
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = colors.interactive.primary;
@@ -88,7 +85,7 @@ const Settings: React.FC = () => {
                 style={{
                   backgroundColor: colors.background.tertiary,
                   borderColor: colors.border.primary,
-                  color: colors.text.primary
+                  color: colors.text.primary,
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = colors.interactive.primary;
@@ -109,7 +106,7 @@ const Settings: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3
@@ -120,7 +117,9 @@ const Settings: React.FC = () => {
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span style={{ color: colors.text.primary }}>Email Notifications</span>
+              <span style={{ color: colors.text.primary }}>
+                Email Notifications
+              </span>
               <input
                 type="checkbox"
                 defaultChecked
@@ -138,7 +137,9 @@ const Settings: React.FC = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <span style={{ color: colors.text.primary }}>Low Stock Alerts</span>
+              <span style={{ color: colors.text.primary }}>
+                Low Stock Alerts
+              </span>
               <input
                 type="checkbox"
                 className="w-4 h-4"
@@ -146,7 +147,9 @@ const Settings: React.FC = () => {
               />
             </div>
             <div className="flex items-center justify-between">
-              <span style={{ color: colors.text.primary }}>User Registration</span>
+              <span style={{ color: colors.text.primary }}>
+                User Registration
+              </span>
               <input
                 type="checkbox"
                 defaultChecked
@@ -161,7 +164,7 @@ const Settings: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3
@@ -175,13 +178,15 @@ const Settings: React.FC = () => {
               className="w-full py-2 px-4 rounded-lg font-medium transition-colors duration-200"
               style={{
                 backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse
+                color: colors.text.inverse,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.primaryHover;
+                e.currentTarget.style.backgroundColor =
+                  colors.interactive.primaryHover;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.primary;
+                e.currentTarget.style.backgroundColor =
+                  colors.interactive.primary;
               }}
             >
               Change Password
@@ -190,13 +195,15 @@ const Settings: React.FC = () => {
               className="w-full py-2 px-4 rounded-lg transition-colors duration-200"
               style={{
                 backgroundColor: colors.interactive.secondary,
-                color: colors.text.primary
+                color: colors.text.primary,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.secondaryHover;
+                e.currentTarget.style.backgroundColor =
+                  colors.interactive.secondaryHover;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = colors.interactive.secondary;
+                e.currentTarget.style.backgroundColor =
+                  colors.interactive.secondary;
               }}
             >
               Two-Factor Authentication
@@ -205,13 +212,13 @@ const Settings: React.FC = () => {
               className="w-full py-2 px-4 rounded-lg transition-colors duration-200"
               style={{
                 backgroundColor: colors.status.error,
-                color: colors.text.inverse
+                color: colors.text.inverse,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '0.8';
+                e.currentTarget.style.opacity = "0.8";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '1';
+                e.currentTarget.style.opacity = "1";
               }}
             >
               Clear Cache
@@ -223,7 +230,7 @@ const Settings: React.FC = () => {
           className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
           style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary
+            borderColor: colors.border.primary,
           }}
         >
           <h3

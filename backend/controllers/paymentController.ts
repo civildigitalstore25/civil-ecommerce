@@ -1,353 +1,302 @@
 import { Request, Response } from 'express';
-import mongoose from 'mongoose';
 import Order from '../models/Order';
-import Payment from '../models/Payment';
-import phonePeService from '../services/phonePeService'; // Import the service
-import { generateTransactionId } from '../utils/crypto';
-import { phonePeConfig } from '../config/phonepe';
-import { CreateOrderRequest } from '../types/payment.types';
-import { IUser } from '../models/User';
+import razorpayService from '../services/razorpayService';
+import mongoose from 'mongoose';
 
 /**
- * Create order and initiate payment
+ * Generate unique order ID
+ */
+const generateOrderId = (): string => {
+  const timestamp = Date.now().toString(36);
+  const randomStr = Math.random().toString(36).substring(2, 8);
+  return `ORD-${timestamp}-${randomStr}`.toUpperCase();
+};
+
+/**
+ * Get next order number (auto-increment) with retry logic
+ */
+const getNextOrderNumber = async (retries = 5): Promise<number> => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    const lastOrder = await Order.findOne({ orderNumber: { $exists: true, $ne: null } })
+      .sort({ orderNumber: -1 })
+      .select('orderNumber')
+      .lean();
+
+    const nextNumber = lastOrder && lastOrder.orderNumber ? lastOrder.orderNumber + 1 : 1001;
+
+    // Check if this number is already taken (race condition check)
+    const exists = await Order.findOne({ orderNumber: nextNumber });
+    if (!exists) {
+      return nextNumber;
+    }
+
+    // If exists, wait a bit and retry
+    await new Promise(resolve => setTimeout(resolve, 50 * (attempt + 1)));
+  }
+
+  // Fallback: generate a random high number to avoid collision
+  return 1001 + Math.floor(Math.random() * 1000000);
+};
+
+/**
+ * Create order and initiate Razorpay payment
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
-  console.log('\n' + '='.repeat(60));
-  console.log('🔍 ENVIRONMENT VARIABLES CHECK:');
-  console.log('='.repeat(60));
-  console.log('PHONEPE_MERCHANT_ID:', process.env.PHONEPE_MERCHANT_ID);
-  console.log('PHONEPE_SALT_KEY:', process.env.PHONEPE_SALT_KEY?.substring(0, 10) + '...');
-  console.log('PHONEPE_SALT_KEY Length:', process.env.PHONEPE_SALT_KEY?.length);
-  console.log('PHONEPE_SALT_INDEX:', process.env.PHONEPE_SALT_INDEX);
-  console.log('PHONEPE_HOST_URL:', process.env.PHONEPE_HOST_URL);
-  console.log('='.repeat(60) + '\n');
   try {
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
-    
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
+    const user = (req as any).user;
+
+    if (!user) {
+      res.status(401).json({
+        success: false,
+        message: 'Authentication required'
+      });
       return;
     }
 
-    const orderData: CreateOrderRequest = req.body;
+    const {
+      items,
+      subtotal,
+      discount = 0,
+      shippingCharges = 0,
+      totalAmount,
+      shippingAddress,
+      couponCode,
+      notes
+    } = req.body;
 
-    // Validate order data
-    if (!orderData.items || orderData.items.length === 0) {
-      res.status(400).json({ success: false, message: 'Order must contain at least one item' });
+    // Validation
+    if (!items || items.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: 'Cart is empty'
+      });
       return;
     }
 
-    if (!orderData.shippingAddress) {
-      res.status(400).json({ success: false, message: 'Shipping address is required' });
+    if (!shippingAddress || !shippingAddress.fullName || !shippingAddress.phoneNumber) {
+      res.status(400).json({
+        success: false,
+        message: 'Shipping address is required'
+      });
       return;
     }
 
-    // Validate amount (minimum 1 rupee)
-    if (orderData.totalAmount < 1) {
-      res.status(400).json({ success: false, message: 'Order amount must be at least ₹1' });
+    // Generate order ID
+    const orderId = generateOrderId();
+
+    // Get next order number
+    const orderNumber = await getNextOrderNumber();
+
+    // Create Razorpay order
+    const customerInfo = {
+      name: shippingAddress.fullName,
+      email: user.email,
+      phone: shippingAddress.phoneNumber
+    };
+
+    const razorpayOrder = await razorpayService.createOrder(
+      totalAmount,
+      orderId,
+      customerInfo
+    );
+
+    if (!razorpayOrder.success) {
+      res.status(500).json({
+        success: false,
+        message: razorpayOrder.message || 'Failed to create payment order'
+      });
       return;
     }
 
-    // Create order
+    // Create order in database
     const order = new Order({
-      userId,
-      items: orderData.items,
-      subtotal: orderData.subtotal,
-      discount: orderData.discount || 0,
-      shippingCharges: orderData.shippingCharges || 0,
-      tax: orderData.tax || 0,
-      totalAmount: orderData.totalAmount,
-      shippingAddress: orderData.shippingAddress,
-      couponCode: orderData.couponCode,
-      notes: orderData.notes,
-      paymentStatus: 'PENDING',
-      orderStatus: 'CREATED'
+      userId: user._id,
+      orderId,
+      orderNumber,
+      items,
+      subtotal,
+      discount,
+      shippingCharges,
+      totalAmount,
+      shippingAddress,
+      couponCode: couponCode ? couponCode.toUpperCase() : null,
+      notes,
+      razorpayOrderId: razorpayOrder.orderId,
+      paymentStatus: 'pending',
+      orderStatus: 'pending'
     });
 
     await order.save();
-    console.log('✅ Order created:', order.orderNumber);
 
-    // Generate unique transaction ID
-    const merchantTransactionId = generateTransactionId('MT');
+    console.log('✅ Order created:', orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
 
-    // Create payment record
-    const payment = new Payment({
-      userId,
-      orderId: order._id,
-      merchantTransactionId,
-      amount: orderData.totalAmount,
-      status: 'PENDING'
-    });
-
-    await payment.save();
-    console.log('✅ Payment record created:', merchantTransactionId);
-
-    // 🔥 THIS IS THE UPDATED PART - Initiate PhonePe payment
-    const phonePeResponse = await phonePeService.initiatePayment({
-      merchantTransactionId,
-      merchantUserId: userId.toString(),
-      amount: orderData.totalAmount, // Amount in rupees (service converts to paise)
-      mobileNumber: orderData.shippingAddress.phoneNumber,
-      redirectUrl: `${phonePeConfig.redirectUrl}?orderId=${order._id}`,
-      redirectMode: 'POST',
-      callbackUrl: phonePeConfig.callbackUrl,
-      paymentInstrument: {
-        type: 'PAY_PAGE'
+    res.status(201).json({
+      success: true,
+      message: 'Order created successfully',
+      data: {
+        orderId: order.orderId,
+        razorpayOrderId: razorpayOrder.orderId,
+        amount: razorpayOrder.amount,
+        currency: razorpayOrder.currency,
+        keyId: process.env.RAZORPAY_KEY_ID
       }
     });
-
-    if (phonePeResponse.success) {
-      console.log('✅ PhonePe payment initiated successfully');
-      
-      res.status(200).json({
-        success: true,
-        message: 'Order created successfully',
-        data: {
-          orderId: order._id,
-          orderNumber: order.orderNumber,
-          paymentUrl: phonePeResponse.data?.instrumentResponse?.redirectInfo?.url,
-          merchantTransactionId
-        }
-      });
-    } else {
-      console.error('❌ PhonePe payment initiation failed:', phonePeResponse.message);
-      // Temporary test in paymentController.ts or index.ts
-console.log('🔍 Salt Key Check:', {
-  original: process.env.PHONEPE_SALT_KEY,
-  decoded: Buffer.from(process.env.PHONEPE_SALT_KEY || '', 'base64').toString('utf-8')
-});
-      
-      // Update order and payment status
-      order.orderStatus = 'CANCELLED';
-      await order.save();
-      
-      payment.status = 'FAILED';
-      payment.responseCode = phonePeResponse.code;
-      payment.responseMessage = phonePeResponse.message;
-      await payment.save();
-
-      res.status(400).json({
-        success: false,
-        message: 'Payment initiation failed',
-        error: phonePeResponse.message
-      });
-    }
   } catch (error: any) {
-    console.error('❌ Create order error:', error);
+    console.error(' Create order error:', error);
     res.status(500).json({
       success: false,
-      message: 'Failed to create order',
-      error: error.message
+      message: error.message || 'Internal server error'
     });
   }
 };
 
 /**
- * Handle PhonePe callback
+ * Verify payment and update order
  */
-export const handleCallback = async (req: Request, res: Response): Promise<void> => {
+export const verifyPayment = async (req: Request, res: Response): Promise<void> => {
   try {
-    console.log('📞 PhonePe Callback Received:', {
-      body: req.body,
-      headers: req.headers
-    });
+    console.log('🔔 Payment verification started');
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    } = req.body;
+    console.log('📦 Razorpay Order ID:', razorpay_order_id);
 
-    const { response } = req.body;
-    const xVerify = req.headers['x-verify'] as string;
-
-    if (!response || !xVerify) {
-      console.error('❌ Missing callback data:', { response: !!response, xVerify: !!xVerify });
-      res.status(400).json({ success: false, message: 'Invalid callback data' });
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      res.status(400).json({
+        success: false,
+        message: 'Missing payment verification data'
+      });
       return;
     }
 
-    // Verify callback authenticity
-    const isValid = phonePeService.verifyCallback(xVerify, response);
+    // Verify signature
+    const isValid = razorpayService.verifyPaymentSignature(
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature
+    );
+
     if (!isValid) {
-      console.error('❌ Callback signature verification failed');
-      res.status(400).json({ success: false, message: 'Invalid callback signature' });
+      res.status(400).json({
+        success: false,
+        message: 'Payment verification failed. Invalid signature.'
+      });
       return;
     }
 
-    // Decode response
-    let decodedResponse;
-    try {
-      const decodedString = Buffer.from(response, 'base64').toString('utf-8');
-      decodedResponse = JSON.parse(decodedString);
-      console.log('✅ Decoded callback response:', decodedResponse);
-    } catch (parseError) {
-      console.error('❌ Failed to decode callback response:', parseError);
-      res.status(400).json({ success: false, message: 'Invalid response format' });
+    // Update order in database
+    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+
+    if (!order) {
+      console.log('❌ Order not found for Razorpay Order ID:', razorpay_order_id);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
       return;
     }
 
-    const merchantTransactionId = decodedResponse.data?.merchantTransactionId;
+    console.log('✅ Order found:', order.orderId);
+    console.log('🎟️ Coupon code in order:', order.couponCode || 'None');
 
-    if (!merchantTransactionId) {
-      console.error('❌ Missing merchantTransactionId in callback');
-      res.status(400).json({ success: false, message: 'Missing transaction ID in callback' });
-      return;
-    }
+    order.razorpayPaymentId = razorpay_payment_id;
+    order.razorpaySignature = razorpay_signature;
+    order.paymentStatus = 'paid';
+    order.orderStatus = 'processing';
+    await order.save();
+    console.log('✅ Order status updated to processing');
 
-    // Find payment record
-    const payment = await Payment.findOne({ merchantTransactionId });
-    if (!payment) {
-      console.error('❌ Payment record not found:', merchantTransactionId);
-      res.status(404).json({ success: false, message: 'Payment record not found' });
-      return;
-    }
+    // Apply coupon if used
+    if (order.couponCode) {
+      try {
+        console.log(`🎫 Processing coupon: ${order.couponCode}`);
+        const Coupon = (await import('../models/Coupon')).default;
+        const coupon = await Coupon.findOne({ code: order.couponCode.toUpperCase() });
 
-    // Update payment status based on PhonePe response
-    const responseCode = decodedResponse.code;
-    const state = decodedResponse.data?.state;
+        if (!coupon) {
+          console.log(`❌ Coupon not found: ${order.couponCode}`);
+        } else if (coupon.status !== 'Active') {
+          console.log(`⚠️ Coupon ${coupon.code} is already ${coupon.status}`);
+        } else if (coupon.usedCount >= coupon.usageLimit) {
+          console.log(`⚠️ Coupon ${coupon.code} has reached usage limit (${coupon.usedCount}/${coupon.usageLimit})`);
+        } else {
+          // Increment usage count
+          coupon.usedCount += 1;
+          console.log(`✅ Coupon ${coupon.code} usage incremented: ${coupon.usedCount}/${coupon.usageLimit}`);
 
-    // Map PhonePe status to our status
-    if (responseCode === 'PAYMENT_SUCCESS' || state === 'COMPLETED') {
-      payment.status = 'SUCCESS';
-      console.log('✅ Payment successful:', merchantTransactionId);
-    } else if (responseCode === 'PAYMENT_PENDING' || state === 'PENDING') {
-      payment.status = 'PENDING';
-      console.log('⏳ Payment pending:', merchantTransactionId);
-    } else {
-      payment.status = 'FAILED';
-      console.log('❌ Payment failed:', merchantTransactionId);
-    }
+          // Auto-deactivate if usage limit reached
+          if (coupon.usedCount >= coupon.usageLimit) {
+            coupon.status = 'Inactive';
+            console.log(`🚫 Coupon ${coupon.code} auto-deactivated - limit reached!`);
+          }
 
-    payment.transactionId = decodedResponse.data?.transactionId;
-    payment.responseCode = responseCode;
-    payment.responseMessage = decodedResponse.message;
-    payment.paymentInstrument = decodedResponse.data?.paymentInstrument;
-    
-    await payment.save();
-
-    // Update order
-    const order = await Order.findById(payment.orderId);
-    if (order) {
-      order.paymentId = payment._id as any;
-      
-      if (payment.status === 'SUCCESS') {
-        order.paymentStatus = 'PAID';
-        order.orderStatus = 'CONFIRMED';
-        console.log('✅ Order confirmed:', order.orderNumber);
-      } else if (payment.status === 'FAILED') {
-        order.paymentStatus = 'FAILED';
-        order.orderStatus = 'CANCELLED';
-        console.log('❌ Order cancelled:', order.orderNumber);
+          await coupon.save();
+          console.log(`💾 Coupon ${coupon.code} saved successfully`);
+        }
+      } catch (couponError) {
+        console.error('❌ Error applying coupon:', couponError);
+        // Don't fail the payment if coupon update fails
       }
-      
-      await order.save();
+    } else {
+      console.log('ℹ️ No coupon code in order');
     }
 
-    res.status(200).json({ success: true, message: 'Callback processed successfully' });
+    console.log('✅ Payment verified for order:', order.orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Payment verified successfully',
+      data: {
+        orderId: order.orderId,
+        orderStatus: order.orderStatus,
+        paymentStatus: order.paymentStatus
+      }
+    });
   } catch (error: any) {
-    console.error('❌ Callback handling error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Callback processing failed',
-      error: error.message 
+    console.error(' Verify payment error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
     });
   }
 };
 
 /**
- * Check payment status
+ * Handle payment failure
  */
-export const checkStatus = async (req: Request, res: Response): Promise<void> => {
+export const paymentFailed = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { merchantTransactionId } = req.params;
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
+    const { razorpay_order_id, error } = req.body;
 
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
+    if (!razorpay_order_id) {
+      res.status(400).json({
+        success: false,
+        message: 'Order ID is required'
+      });
       return;
     }
 
-    // Get payment from database
-    const payment = await Payment.findOne({ merchantTransactionId, userId });
-    if (!payment) {
-      res.status(404).json({ success: false, message: 'Payment not found' });
-      return;
-    }
+    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
 
-    // Check status from PhonePe
-    const phonePeResponse = await phonePeService.checkPaymentStatus(merchantTransactionId);
+    if (order) {
+      order.paymentStatus = 'failed';
+      order.notes = `${order.notes || ''}\nPayment failed: ${error?.description || 'Unknown error'}`;
+      await order.save();
 
-    if (phonePeResponse.success && phonePeResponse.data) {
-      // Map PhonePe state to our status
-      const state = phonePeResponse.data.state;
-      const responseCode = phonePeResponse.code;
-
-      if (state === 'COMPLETED' || responseCode === 'PAYMENT_SUCCESS') {
-        payment.status = 'SUCCESS';
-      } else if (state === 'FAILED' || responseCode === 'PAYMENT_ERROR') {
-        payment.status = 'FAILED';
-      } else if (state === 'PENDING' || responseCode === 'PAYMENT_PENDING') {
-        payment.status = 'PENDING';
-      }
-
-      payment.transactionId = phonePeResponse.data.transactionId || payment.transactionId;
-      payment.responseCode = phonePeResponse.data.responseCode || phonePeResponse.code;
-      payment.paymentInstrument = phonePeResponse.data.paymentInstrument || payment.paymentInstrument;
-      await payment.save();
-
-      // Update order if payment successful
-      if (payment.status === 'SUCCESS' && payment.orderId) {
-        const order = await Order.findById(payment.orderId);
-        if (order && order.paymentStatus !== 'PAID') {
-          order.paymentStatus = 'PAID';
-          order.orderStatus = 'CONFIRMED';
-          order.paymentId = payment._id as any;
-          await order.save();
-        }
-      }
+      console.log(' Payment failed for order:', order.orderId);
     }
 
     res.status(200).json({
       success: true,
-      data: {
-        status: payment.status,
-        transactionId: payment.transactionId,
-        amount: payment.amount,
-        orderId: payment.orderId
-      }
+      message: 'Payment failure recorded'
     });
   } catch (error: any) {
-    console.error('❌ Status check error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to check status',
-      error: error.message 
-    });
-  }
-};
-
-/**
- * Get user orders
- */
-export const getUserOrders = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
-    
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
-      return;
-    }
-
-    const orders = await Order.find({ userId })
-      .sort({ createdAt: -1 })
-      .populate('paymentId')
-      .lean();
-
-    res.status(200).json({ success: true, data: orders });
-  } catch (error: any) {
-    console.error('❌ Get orders error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch orders',
-      error: error.message 
+    console.error(' Payment failed handler error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
     });
   }
 };
@@ -355,201 +304,349 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 /**
  * Get order details
  */
-export const getOrderDetails = async (req: Request, res: Response): Promise<void> => {
+export const getOrder = async (req: Request, res: Response): Promise<void> => {
   try {
+    const user = (req as any).user;
     const { orderId } = req.params;
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
 
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
-      return;
-    }
+    const order = await Order.findOne({ orderId });
 
-    // Validate orderId format
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      res.status(400).json({ success: false, message: 'Invalid order ID format' });
-      return;
-    }
-
-    const order = await Order.findOne({ _id: orderId, userId })
-      .populate('paymentId')
-      .lean();
-    
     if (!order) {
-      res.status(404).json({ success: false, message: 'Order not found' });
-      return;
-    }
-
-    res.status(200).json({ success: true, data: order });
-  } catch (error: any) {
-    console.error('❌ Get order details error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to fetch order details',
-      error: error.message 
-    });
-  }
-};
-
-/**
- * Delete order
- */
-export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { orderId } = req.params;
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
-
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
-      return;
-    }
-
-    // Validate orderId format
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      res.status(400).json({ success: false, message: 'Invalid order ID format' });
-      return;
-    }
-
-    const order = await Order.findOne({ _id: orderId, userId });
-    if (!order) {
-      res.status(404).json({ success: false, message: 'Order not found' });
-      return;
-    }
-
-    // Only allow deletion of orders that are not yet paid or are cancelled
-    if (order.paymentStatus === 'PAID' && order.orderStatus !== 'CANCELLED') {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Cannot delete paid orders. Please contact support for assistance.' 
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
       });
       return;
     }
 
-    // Delete the order
-    await Order.findByIdAndDelete(orderId);
-    
-    console.log('✅ Order deleted:', order.orderNumber);
+    // Check if user owns this order (unless admin)
+    if (user.role !== 'admin' && order.userId.toString() !== user._id.toString()) {
+      res.status(403).json({
+        success: false,
+        message: 'Access denied'
+      });
+      return;
+    }
 
     res.status(200).json({
       success: true,
-      message: 'Order deleted successfully',
-      data: {
-        orderId: order._id,
-        orderNumber: order.orderNumber
-      }
+      data: order
     });
   } catch (error: any) {
-    console.error('❌ Delete order error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to delete order',
-      error: error.message 
+    console.error(' Get order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
     });
   }
 };
 
 /**
- * Initiate refund
+ * Get all orders for a user
+ */
+export const getUserOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = (req as any).user;
+    const { page = 1, limit = 100, status } = req.query;
+
+    console.log('🔍 Fetching orders for user:', user._id);
+
+    const query: any = { userId: user._id };
+
+    if (status) {
+      query.orderStatus = status;
+    }
+
+    const orders = await Order.find(query)
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit))
+      .lean();
+
+    const total = await Order.countDocuments(query);
+
+    console.log(`📦 Found ${orders.length} orders for user ${user._id}`);
+    console.log('Orders:', orders.map(o => ({ orderId: o.orderId, orderNumber: o.orderNumber, userId: o.userId })));
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+      pagination: {
+        currentPage: Number(page),
+        totalPages: Math.ceil(total / Number(limit)),
+        totalOrders: total
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Get user orders error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Get all orders (Admin only)
+ */
+export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, limit = 10, status, paymentStatus } = req.query;
+
+    const query: any = {};
+
+    if (status) {
+      query.orderStatus = status;
+    }
+
+    if (paymentStatus) {
+      query.paymentStatus = paymentStatus;
+    }
+
+    const orders = await Order.find(query)
+      .populate('userId', 'fullName email phoneNumber')
+      .sort({ createdAt: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit));
+
+    const total = await Order.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        orders,
+        pagination: {
+          currentPage: Number(page),
+          totalPages: Math.ceil(total / Number(limit)),
+          totalOrders: total
+        }
+      }
+    });
+  } catch (error: any) {
+    console.error(' Get all orders error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Update order status (Admin only)
+ */
+export const updateOrderStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+    const { orderStatus } = req.body;
+
+    console.log('🔧 Backend - Update order status request received');
+    console.log('🔧 orderId from params:', orderId);
+    console.log('🔧 orderStatus from body:', orderStatus);
+    console.log('🔧 Full body:', req.body);
+
+    // Validate status
+    const validStatuses = ['processing', 'delivered', 'cancelled'];
+    if (!orderStatus || !validStatuses.includes(orderStatus)) {
+      console.log('❌ Backend - Invalid status:', orderStatus);
+      res.status(400).json({
+        success: false,
+        message: `Invalid order status. Must be one of: ${validStatuses.join(', ')}`
+      });
+      return;
+    }
+
+    console.log('🔧 Backend - Looking for order with orderId:', orderId);
+
+    // Try to find by orderId first, then by _id as fallback
+    let order = await Order.findOne({ orderId });
+
+    if (!order) {
+      console.log('🔧 Backend - Not found by orderId, trying _id...');
+      order = await Order.findById(orderId);
+    }
+
+    if (!order) {
+      console.log('❌ Backend - Order not found by orderId or _id:', orderId);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    console.log('✅ Backend - Order found:', order.orderId || order._id);
+
+    order.orderStatus = orderStatus;
+    await order.save();
+
+    console.log(`✅ Order ${orderId} status updated to: ${orderStatus}`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order status updated successfully',
+      data: order
+    });
+  } catch (error: any) {
+    console.error('❌ Backend - Update order status error:', error);
+    console.error('❌ Backend - Error message:', error.message);
+    console.error('❌ Backend - Error stack:', error.stack);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Initiate refund (Admin only)
  */
 export const initiateRefund = async (req: Request, res: Response): Promise<void> => {
   try {
     const { orderId } = req.params;
-    const user = (req as any).user as IUser;
-    const userId = user?._id?.toString();
+    const { amount } = req.body;
 
-    if (!userId) {
-      res.status(401).json({ success: false, message: 'User not authenticated' });
-      return;
-    }
+    const order = await Order.findOne({ orderId });
 
-    // Validate orderId format
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      res.status(400).json({ success: false, message: 'Invalid order ID format' });
-      return;
-    }
-
-    const order = await Order.findOne({ _id: orderId, userId });
     if (!order) {
-      res.status(404).json({ success: false, message: 'Order not found' });
-      return;
-    }
-
-    // Check if already refunded first
-    if (order.paymentStatus === 'REFUNDED') {
-      res.status(400).json({ success: false, message: 'Order already refunded' });
-      return;
-    }
-
-    // Then check if it's paid
-    if (order.paymentStatus !== 'PAID') {
-      res.status(400).json({ 
-        success: false, 
-        message: `Cannot refund order with payment status: ${order.paymentStatus}` 
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
       });
       return;
     }
 
-    const payment = await Payment.findById(order.paymentId);
-    if (!payment) {
-      res.status(400).json({ success: false, message: 'Payment record not found' });
-      return;
-    }
-
-    if (!payment.transactionId) {
-      res.status(400).json({ 
-        success: false, 
-        message: 'Cannot refund - original transaction ID not found' 
-      });
-      return;
-    }
-
-    const refundTransactionId = generateTransactionId('REFUND');
-
-    // Initiate refund with PhonePe
-    const refundResponse = await phonePeService.initiateRefund(
-      refundTransactionId,
-      payment.transactionId,
-      order.totalAmount
-    );
-
-    if (refundResponse.success) {
-      order.paymentStatus = 'REFUNDED';
-      order.orderStatus = 'CANCELLED';
-      await order.save();
-
-      payment.status = 'CANCELLED';
-      payment.metadata = {
-        ...payment.metadata,
-        refundTransactionId,
-        refundInitiatedAt: new Date()
-      };
-      await payment.save();
-
-      res.status(200).json({
-        success: true,
-        message: 'Refund initiated successfully',
-        data: {
-          refundTransactionId,
-          orderId: order._id,
-          orderNumber: order.orderNumber,
-          refundAmount: order.totalAmount
-        }
-      });
-    } else {
+    if (order.paymentStatus !== 'paid') {
       res.status(400).json({
         success: false,
-        message: 'Refund initiation failed',
-        error: refundResponse.message
+        message: 'Cannot refund unpaid order'
       });
+      return;
     }
+
+    if (!order.razorpayPaymentId) {
+      res.status(400).json({
+        success: false,
+        message: 'Payment ID not found'
+      });
+      return;
+    }
+
+    const refundResult = await razorpayService.initiateRefund(
+      order.razorpayPaymentId,
+      amount || order.totalAmount
+    );
+
+    if (!refundResult.success) {
+      res.status(500).json({
+        success: false,
+        message: refundResult.message || 'Failed to initiate refund'
+      });
+      return;
+    }
+
+    order.paymentStatus = 'refunded';
+    order.orderStatus = 'cancelled';
+    await order.save();
+
+    console.log(' Refund initiated for order:', order.orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Refund initiated successfully',
+      data: refundResult.refund
+    });
   } catch (error: any) {
-    console.error('❌ Refund error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Failed to initiate refund',
-      error: error.message 
+    console.error(' Initiate refund error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Delete order (only for pending/failed orders)
+ */
+export const deleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = (req as any).user;
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({ orderId, userId: user._id });
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    // Only allow deletion of pending or failed orders
+    if (order.paymentStatus === 'paid' || order.orderStatus === 'processing' || order.orderStatus === 'shipped' || order.orderStatus === 'delivered') {
+      res.status(400).json({
+        success: false,
+        message: 'Cannot delete orders that are paid or being processed'
+      });
+      return;
+    }
+
+    await Order.deleteOne({ _id: order._id });
+
+    console.log('🗑️ Order deleted:', order.orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Delete order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Delete order (Admin only - can delete any order)
+ */
+export const adminDeleteOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { orderId } = req.params;
+
+    console.log('🗑️ Admin delete order request for:', orderId);
+
+    // Try to find by orderId first, then by _id as fallback
+    let order = await Order.findOne({ orderId });
+
+    if (!order) {
+      console.log('🔧 Not found by orderId, trying _id...');
+      order = await Order.findById(orderId);
+    }
+
+    if (!order) {
+      console.log('❌ Order not found:', orderId);
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    await Order.deleteOne({ _id: order._id });
+
+    console.log('✅ Admin deleted order:', order.orderId || orderId);
+
+    res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Admin delete order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
     });
   }
 };

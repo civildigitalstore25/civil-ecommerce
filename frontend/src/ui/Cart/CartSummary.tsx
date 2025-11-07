@@ -1,8 +1,8 @@
-import React, { useRef, useEffect } from 'react';
-import type { CartSummary as CartSummaryType } from '../../types/cartTypes';
-import FormButton from '../../components/Button/FormButton';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { useCurrency } from '../../contexts/CurrencyContext';
+import React, { useRef, useEffect } from "react";
+import type { CartSummary as CartSummaryType } from "../../types/cartTypes";
+import FormButton from "../../components/Button/FormButton";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useCurrency } from "../../contexts/CurrencyContext";
 
 interface CartSummaryProps {
   summary: CartSummaryType;
@@ -15,7 +15,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   summary,
   onCheckout,
   onContinueShopping,
-  isLoading = false
+  isLoading = false,
 }) => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
@@ -23,7 +23,6 @@ const CartSummary: React.FC<CartSummaryProps> = ({
   // Refs for direct DOM updates
   const itemCountRef = useRef<HTMLSpanElement>(null);
   const subtotalRef = useRef<HTMLSpanElement>(null);
-  const taxRef = useRef<HTMLSpanElement>(null);
   const discountRef = useRef<HTMLDivElement>(null);
   const totalRef = useRef<HTMLSpanElement>(null);
 
@@ -35,16 +34,15 @@ const CartSummary: React.FC<CartSummaryProps> = ({
     if (subtotalRef.current) {
       subtotalRef.current.textContent = formatPriceWithSymbol(summary.subtotal);
     }
-    if (taxRef.current) {
-      taxRef.current.textContent = formatPriceWithSymbol(summary.tax);
-    }
     if (totalRef.current) {
       totalRef.current.textContent = formatPriceWithSymbol(summary.total);
     }
     if (discountRef.current) {
-      discountRef.current.style.display = summary.discount > 0 ? 'flex' : 'none';
+      discountRef.current.style.display =
+        summary.discount > 0 ? "flex" : "none";
       if (summary.discount > 0) {
-        const discountSpan = discountRef.current.querySelector('span:last-child');
+        const discountSpan =
+          discountRef.current.querySelector("span:last-child");
         if (discountSpan) {
           discountSpan.textContent = `-${formatPriceWithSymbol(summary.discount)}`;
         }
@@ -57,7 +55,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
       className="rounded-xl border p-6 sticky top-6 transition-colors duration-200"
       style={{
         backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       <h2
@@ -82,21 +80,10 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           </span>
         </div>
 
-        <div className="flex justify-between text-sm">
-          <span style={{ color: colors.text.secondary }}>Tax (GST)</span>
-          <span
-            ref={taxRef}
-            className="font-medium"
-            style={{ color: colors.text.primary }}
-          >
-            {formatPriceWithSymbol(summary.tax)}
-          </span>
-        </div>
-
         <div
           ref={discountRef}
           className="flex justify-between text-sm"
-          style={{ display: summary.discount > 0 ? 'flex' : 'none' }}
+          style={{ display: summary.discount > 0 ? "flex" : "none" }}
         >
           <span style={{ color: colors.status.success }}>Discount</span>
           <span
@@ -137,7 +124,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           onClick={onCheckout}
           disabled={isLoading || summary.itemCount === 0}
         >
-          {isLoading ? 'Processing...' : 'Proceed to Checkout'}
+          {isLoading ? "Processing..." : "Proceed to Checkout"}
         </FormButton>
 
         <button
@@ -146,13 +133,14 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           style={{
             color: colors.text.primary,
             borderColor: colors.border.primary,
-            backgroundColor: 'transparent'
+            backgroundColor: "transparent",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = colors.interactive.secondaryHover;
+            e.currentTarget.style.backgroundColor =
+              colors.interactive.secondaryHover;
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
+            e.currentTarget.style.backgroundColor = "transparent";
           }}
         >
           Continue Shopping
@@ -169,20 +157,50 @@ const CartSummary: React.FC<CartSummaryProps> = ({
           style={{ color: colors.text.secondary }}
         >
           <div className="flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
             </svg>
             Secure Checkout
           </div>
           <div className="flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
             </svg>
             Instant Download
           </div>
           <div className="flex items-center">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-4 h-4 mr-1"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             Genuine License
           </div>

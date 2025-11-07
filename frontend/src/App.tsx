@@ -1,69 +1,96 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { CartProvider } from './contexts/CartContext';
-import { AdminThemeProvider } from './contexts/AdminThemeContext';
-import { CurrencyProvider } from './contexts/CurrencyContext';
-import Header from './components/Header/Header';
-import Products from './ui/admin/products/Products';
-import AdminDashboard from './ui/admin/AdminDashboard';
-import SignupPage from './pages/auth/SignupPage';
-import SigninPage from './pages/auth/SigninPage';
-import AuthCallbackPage from './pages/auth/AuthCallbackPage';
-import ProfilePage from './ui/profile/ProfilePage';
-import { Orders, Settings, Categories, Companies, Dashboard } from './ui/admin';
-import BrandCategoryListing from './pages/BrandCategoryListing';
-import ProductDetail from './pages/ProductDetail';
-import CartPage from './pages/CartPage';
-import AuthGuard from './components/Auth/AuthGuard';
-import PublicRoute from './components/Auth/PublicRoute';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
-import PasswordResetPage from './pages/auth/PasswordResetPage';
-import Footer from './components/Footer/Footer';
-import HomePage from './pages/HomePage';
-import Disclaimer from './ui/policy/Disclaimer';
-import ReturnPolicy from './ui/policy/ReturnPolicy';
-import TermsAndConditions from './ui/policy/TermsAndConditions';
-import ShippingPolicy from './ui/policy/ShippingPolicy';
-import ContactPage from './pages/ContactPage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { CartProvider } from "./contexts/CartContext";
+import { AdminThemeProvider } from "./contexts/AdminThemeContext";
+import { CurrencyProvider } from "./contexts/CurrencyContext";
+import Header from "./components/Header/Header";
+import Products from "./ui/admin/products/Products";
+import AdminDashboard from "./ui/admin/AdminDashboard";
+import SignupPage from "./pages/auth/SignupPage";
+import SigninPage from "./pages/auth/SigninPage";
+import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
+import ProfilePage from "./ui/profile/ProfilePage";
+import { Orders, Settings, Categories, Companies, Dashboard } from "./ui/admin";
+import BrandCategoryListing from "./pages/BrandCategoryListing";
+import BrandSubcategoriesPage from "./pages/BrandSubcategoriesPage";
+import AllProductsPage from "./pages/AllProductsPage";
+import ProductDetail from "./pages/ProductDetail";
+import CartPage from "./pages/CartPage";
+import AuthGuard from "./components/Auth/AuthGuard";
+import PublicRoute from "./components/Auth/PublicRoute";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import PasswordResetPage from "./pages/auth/PasswordResetPage";
+import Footer from "./components/Footer/Footer";
+import HomePage from "./pages/HomePage";
+import Disclaimer from "./ui/policy/Disclaimer";
+import ReturnPolicy from "./ui/policy/ReturnPolicy";
+import TermsAndConditions from "./ui/policy/TermsAndConditions";
+import ShippingPolicy from "./ui/policy/ShippingPolicy";
+import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import PaymentCallback from './ui/payment/PaymentCallback';
-import MyOrdersPage from './pages/MyOrdersPage';
+import PaymentCallback from "./ui/payment/PaymentCallback";
+import MyOrdersPage from "./pages/MyOrdersPage";
 const queryClient = new QueryClient();
 
 function AppLayout() {
   const location = useLocation();
 
   // Define routes where you don't want the Header
-  const hideHeaderRoutes = ['/signin', '/signup', '/forgot-password', '/reset-password'];
+  const hideHeaderRoutes = [
+    "/signin",
+    "/signup",
+    "/forgot-password",
+    "/reset-password",
+  ];
 
-  const shouldHideHeader = hideHeaderRoutes.some(route =>
-    location.pathname === route || location.pathname.startsWith('/reset-password/')
+  const shouldHideHeader = hideHeaderRoutes.some(
+    (route) =>
+      location.pathname === route ||
+      location.pathname.startsWith("/reset-password/"),
   );
 
   return (
     <>
       {!shouldHideHeader && <Header />}
       <Routes>
-        <Route path="/signup" element={
-          <PublicRoute>
-            <SignupPage />
-          </PublicRoute>
-        } />
-        <Route path="/signin" element={
-          <PublicRoute>
-            <SigninPage />
-          </PublicRoute>
-        } />
-        <Route path="/forgot-password" element={
-          <PublicRoute>
-            <ForgotPasswordPage />
-          </PublicRoute>
-        } />
-        <Route path="/reset-password/:token" element={
-          <PublicRoute>
-            <PasswordResetPage />
-          </PublicRoute>
-        } />
+        <Route
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignupPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/signin"
+          element={
+            <PublicRoute>
+              <SigninPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPasswordPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password/:token"
+          element={
+            <PublicRoute>
+              <PasswordResetPage />
+            </PublicRoute>
+          }
+        />
 
         {/* Auth callback (public) */}
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
@@ -150,6 +177,14 @@ function AppLayout() {
           }
         />
         <Route
+          path="/products"
+          element={
+            <AuthGuard>
+              <AllProductsPage />
+            </AuthGuard>
+          }
+        />
+        <Route
           path="/category"
           element={
             <AuthGuard>
@@ -173,6 +208,38 @@ function AppLayout() {
             </AuthGuard>
           }
         />
+        <Route
+          path="/autodesk"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/microsoft"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/adobe"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/antivirus"
+          element={
+            <AuthGuard>
+              <BrandSubcategoriesPage />
+            </AuthGuard>
+          }
+        />
 
         <Route
           path="/checkout"
@@ -190,10 +257,7 @@ function AppLayout() {
             </AuthGuard>
           }
         />
-        <Route
-          path="/contact"
-          element={<ContactPage />}
-        />
+        <Route path="/contact" element={<ContactPage />} />
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/signin" replace />} />

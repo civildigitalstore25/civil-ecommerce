@@ -1,6 +1,6 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../../utils/auth';
+import React from "react";
+import { Navigate } from "react-router-dom";
+import { isAuthenticated } from "../../utils/auth";
 
 interface AuthGuardProps {
   children: React.ReactNode;

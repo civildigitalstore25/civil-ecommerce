@@ -1,8 +1,8 @@
-import React from 'react';
-import { Tag } from 'lucide-react';
-import { useAdminTheme } from '../../contexts/AdminThemeContext';
-import { useCurrency } from '../../contexts/CurrencyContext';
-import type { IOrder } from '../../api/types/orderTypes';
+import React from "react";
+import { Tag } from "lucide-react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useCurrency } from "../../contexts/CurrencyContext";
+import type { IOrder } from "../../api/types/orderTypes";
 
 interface OrderSummaryProps {
   order: IOrder;
@@ -17,7 +17,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
       className="p-3 sm:p-4 rounded-lg border"
       style={{
         backgroundColor: colors.background.tertiary,
-        borderColor: colors.border.primary
+        borderColor: colors.border.primary,
       }}
     >
       <div className="flex items-center gap-2 mb-3">
@@ -44,18 +44,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
           </span>
         </div>
 
-        {order.tax > 0 && (
-          <div className="flex justify-between items-center text-xs sm:text-sm">
-            <span style={{ color: colors.text.secondary }}>Tax:</span>
-            <span
-              className="font-semibold"
-              style={{ color: colors.text.primary }}
-            >
-              {formatPriceWithSymbol(order.tax)}
-            </span>
-          </div>
-        )}
-
         {order.discount > 0 && (
           <div className="flex justify-between items-center text-xs sm:text-sm">
             <span style={{ color: colors.text.secondary }}>Discount:</span>
@@ -68,7 +56,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
           </div>
         )}
 
-        <div className="border-t pt-2 mt-3" style={{ borderColor: colors.border.primary }}>
+        <div
+          className="border-t pt-2 mt-3"
+          style={{ borderColor: colors.border.primary }}
+        >
           <div className="flex justify-between items-center">
             <span
               className="font-bold text-sm sm:text-base"
@@ -89,6 +80,6 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
   );
 });
 
-OrderSummary.displayName = 'OrderSummary';
+OrderSummary.displayName = "OrderSummary";
 
 export default OrderSummary;

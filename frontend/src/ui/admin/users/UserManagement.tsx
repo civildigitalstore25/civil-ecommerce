@@ -18,7 +18,11 @@ const UserManagement: React.FC = () => {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const limit = 10;
 
-  const { data: usersData, isLoading, error } = useUsers({
+  const {
+    data: usersData,
+    isLoading,
+    error,
+  } = useUsers({
     page: currentPage,
     limit,
     search: searchTerm,
@@ -31,9 +35,15 @@ const UserManagement: React.FC = () => {
   const users = usersData?.users || [];
   const totalPages = usersData?.totalPages || 1;
 
-  const handleRoleChange = async (userId: string, newRole: "user" | "admin") => {
+  const handleRoleChange = async (
+    userId: string,
+    newRole: "user" | "admin",
+  ) => {
     try {
-      await updateUserMutation.mutateAsync({ id: userId, data: { role: newRole } });
+      await updateUserMutation.mutateAsync({
+        id: userId,
+        data: { role: newRole },
+      });
       Swal.fire("Success!", `User role updated to ${newRole}`, "success");
     } catch {
       Swal.fire("Error!", "Failed to update user role", "error");
@@ -43,7 +53,11 @@ const UserManagement: React.FC = () => {
   const handleStatusChange = async (userId: string, isActive: boolean) => {
     try {
       await updateUserMutation.mutateAsync({ id: userId, data: { isActive } });
-      Swal.fire("Success!", `User ${isActive ? "activated" : "deactivated"}`, "success");
+      Swal.fire(
+        "Success!",
+        `User ${isActive ? "activated" : "deactivated"}`,
+        "success",
+      );
     } catch {
       Swal.fire("Error!", "Failed to update user status", "error");
     }
@@ -85,21 +99,17 @@ const UserManagement: React.FC = () => {
           >
             User Management
           </h2>
-          <p
-            className="text-sm mt-1"
-            style={{ color: colors.text.secondary }}
-          >
+          <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
             Manage user accounts and permissions
           </p>
         </div>
-       <button
-              className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2"
-              style={{
-                backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse
-              }}
+        <button
+          className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2"
+          style={{
+            backgroundColor: colors.interactive.primary,
+            color: colors.text.inverse,
+          }}
           onClick={() => setIsAddUserModalOpen(true)}
-          
         >
           <Plus className="h-4 w-4" />
           Add User

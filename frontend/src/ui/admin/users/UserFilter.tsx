@@ -1,6 +1,6 @@
 import React from "react";
 import { Search, Users } from "lucide-react";
-import { useAdminTheme } from '../../../contexts/AdminThemeContext';
+import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 interface Props {
   searchTerm: string;
@@ -43,7 +43,7 @@ const UserFilters: React.FC<Props> = ({
             style={{
               backgroundColor: colors.background.secondary,
               borderColor: colors.border.primary,
-              color: colors.text.primary
+              color: colors.text.primary,
             }}
           />
         </div>
@@ -56,7 +56,7 @@ const UserFilters: React.FC<Props> = ({
           style={{
             backgroundColor: colors.background.secondary,
             borderColor: colors.border.primary,
-            color: colors.text.primary
+            color: colors.text.primary,
           }}
           onFocus={(e) => {
             e.target.style.borderColor = colors.interactive.primary;
@@ -78,7 +78,7 @@ const UserFilters: React.FC<Props> = ({
           style={{
             backgroundColor: colors.background.secondary,
             borderColor: colors.border.primary,
-            color: colors.text.primary
+            color: colors.text.primary,
           }}
           onFocus={(e) => {
             e.target.style.borderColor = colors.interactive.primary;
