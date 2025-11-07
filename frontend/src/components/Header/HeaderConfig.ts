@@ -4,7 +4,6 @@ export const headerConfig = {
     href: "/",
   },
   navigation: [
-    { label: "Home", href: "/" },
     { label: "AutoDesk", href: "/autodesk" },
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },

@@ -78,286 +78,263 @@ const Footer = () => {
 
       {/* Main Footer Content */}
       <div
-        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10 py-12 px-6 border-b transition-colors duration-200"
+        className="max-w-7xl mx-auto py-12 px-6 border-b transition-colors duration-200"
         style={{ borderColor: colors.border.primary }}
       >
-        {/* Company Description */}
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <img
-              src={logo}
-              alt="Civil Digital Store Logo"
-              className="h-10 w-auto object-contain"
-            />
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Company Description - Takes 5 columns */}
+          <div className="md:col-span-5">
+            <div className="flex items-center gap-3 mb-4">
+              <img
+                src={logo}
+                alt="Civil Digital Store Logo"
+                className="h-10 w-auto object-contain"
+              />
+            </div>
+            <p
+              className="text-sm leading-relaxed transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+            >
+              Civil DigitalStore is a user-friendly website offering a vast
+              selection of civil engineering resources, from software to
+              educational materials. A valuable platform for professionals and
+              students alike.
+            </p>
           </div>
-          <p
-            className="text-sm leading-relaxed transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            Civil DigitalStore is a user-friendly website offering a vast
-            selection of civil engineering resources, from software to
-            educational materials. A valuable platform for professionals and
-            students alike.
-          </p>
-        </div>
 
-        {/* Our Services */}
-        <div>
-          <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
-            style={{ color: colors.interactive.primary }}
-          >
-            OUR SERVICES
-          </h3>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/advertising"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
+          {/* Our Services & Policies - Takes 7 columns, split into grid */}
+          <div className="md:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+            {/* Our Services */}
+            <div>
+              <h3
+                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                style={{ color: colors.interactive.primary }}
               >
-                Advertising
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/careers"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Careers
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/permissions"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Permissions
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/shipping-policy"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Shipping & Delivery Policy
-              </Link>
-            </li>
-          </ul>
-        </div>
+                OUR SERVICES
+              </h3>
+              <ul className="space-y-2 text-xs md:text-sm">
+                <li>
+                  <Link
+                    to="/advertising"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Advertising
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/careers"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/permissions"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Permissions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/shipping-policy"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Shipping & Delivery Policy
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-        {/* Policies */}
-        <div>
-          <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
-            style={{ color: colors.interactive.primary }}
-          >
-            CUSTOMER POLICIES
-          </h3>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/terms-and-conditions"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
+            {/* Policies */}
+            <div>
+              <h3
+                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                style={{ color: colors.interactive.primary }}
               >
-                Terms and Conditions
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/return-policy"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Return and Refund Policy
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/disclaimer"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Disclaimer
-              </Link>
-            </li>
-          </ul>
-        </div>
+                CUSTOMER POLICIES
+              </h3>
+              <ul className="space-y-2 text-xs md:text-sm">
+                <li>
+                  <Link
+                    to="/terms-and-conditions"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Terms and Conditions
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/return-policy"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Return and Refund Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/disclaimer"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Disclaimer
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-        {/* Software */}
-        <div>
-          <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
-            style={{ color: colors.interactive.primary }}
-          >
-            SOFTWARE
-          </h3>
-          <ul className="space-y-2">
-            <li>
-              <Link
-                to="/software?category=CAD Software"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
+            {/* Software */}
+            <div className="col-span-2 md:col-span-1">
+              <h3
+                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                style={{ color: colors.interactive.primary }}
               >
-                AutoCAD
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/software?category=Lumion"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Lumion
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/software?category=MS Office"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                MS Office
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/software?category=SketchUp"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                SketchUp
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/software?category=Tekla"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Tekla
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/software?category=Revit"
-                className="transition-colors duration-200 hover:underline"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                Revit
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Download App */}
-        <div>
-          <h3
-            className="font-semibold mb-4 tracking-wide transition-colors duration-200"
-            style={{ color: colors.interactive.primary }}
-          >
-            DOWNLOAD APP
-          </h3>
-          <h4
-            className="space-y-2 mb-2 transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            Get it on Google Play Store
-          </h4>
-          <a
-            href="https://play.google.com/store/apps/details?id=YOUR_APP_ID"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block"
-          >
-            <img
-              src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-              alt="Get it on Google Play"
-              className="h-30 space-y-2 md:pr-6"
-            />
-          </a>
+                SOFTWARE
+              </h3>
+              <ul className="space-y-2 text-xs md:text-sm grid grid-cols-2 md:grid-cols-1 gap-x-4">
+                <li>
+                  <Link
+                    to="/software?category=CAD Software"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    AutoCAD
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/software?category=Lumion"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Lumion
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/software?category=MS Office"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    MS Office
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/software?category=SketchUp"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    SketchUp
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/software?category=Tekla"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Tekla
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/software?category=Revit"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Revit
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 

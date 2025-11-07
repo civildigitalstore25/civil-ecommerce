@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 import {
@@ -52,14 +52,24 @@ const paymentMethods = [
 
 const HeroSection: React.FC = () => {
   const { colors, theme } = useAdminTheme();
+  const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
 
   const handleExploreProducts = () => {
     window.location.href = "/products";
   };
 
+  // Auto-play carousel for mobile
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentFeatureIndex((prev) => (prev + 1) % features.length);
+    }, 3000); // Change slide every 3 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <section
-      className="py-14 px-4 sm:py-20 sm:px-6 transition-colors duration-300"
+      className="pt-0 pb-0 px-2 sm:pt-0 sm:pb-20 sm:px-6 transition-colors duration-300"
       style={{
         background:
           theme === "light"
@@ -72,9 +82,9 @@ const HeroSection: React.FC = () => {
         <BannerCarousel page="home" />
 
         {/* ===== Hero Content ===== */}
-        <div className="flex flex-col items-center mt-12">
+        <div className="flex flex-col items-center mt-6 sm:mt-12">
           <h1
-            className="text-4xl sm:text-5xl font-serif font-bold mb-6 tracking-wide leading-snug text-center"
+            className="text-2xl sm:text-5xl font-serif font-bold mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
             Genuine Civil <br />
@@ -82,16 +92,16 @@ const HeroSection: React.FC = () => {
           </h1>
 
           <p
-            className="mb-12 text-lg sm:text-xl font-serif leading-relaxed text-center max-w-2xl"
+            className="mb-4 sm:mb-12 text-sm sm:text-xl font-serif leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Get authentic AutoCAD, Revit, Lumion, Tekla and other professional
+            Get authentic AutoDesk,Microsoft, Adobe, Antivirus and other professional
             software licenses with instant delivery and lifetime support.
           </p>
 
           <button
             onClick={handleExploreProducts}
-            className="px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-16"
+            className="px-5 py-2 sm:px-8 sm:py-4 rounded-md sm:rounded-lg font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-6 sm:mb-16"
             style={{
               backgroundColor: colors.interactive.primary,
               color: colors.text.inverse,
@@ -108,8 +118,8 @@ const HeroSection: React.FC = () => {
             Explore Products
           </button>
 
-          {/* ===== Features Grid ===== */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full mb-12">
+          {/* ===== Features Grid (Desktop) ===== */}
+          <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 w-full mb-12">
             {features.map((f) => (
               <div
                 key={f.label}
@@ -138,9 +148,52 @@ const HeroSection: React.FC = () => {
             ))}
           </div>
 
+          {/* ===== Features Carousel (Mobile) ===== */}
+          <div className="sm:hidden w-full mb-6 px-2">
+            <div className="overflow-hidden">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{
+                  transform: `translateX(-${currentFeatureIndex * 100}%)`,
+                }}
+              >
+                {features.map((f) => (
+                  <div
+                    key={f.label}
+                    className="w-full flex-shrink-0 px-1"
+                  >
+                    <div
+                      className="flex flex-col items-center rounded-xl py-5 px-4 shadow-lg"
+                      style={{
+                        backgroundColor: colors.background.secondary,
+                        borderWidth: "1px",
+                        borderStyle: "solid",
+                        borderColor: colors.border.primary,
+                      }}
+                    >
+                      <div className="mb-2 scale-75">{f.icon}</div>
+                      <div
+                        className="text-2xl font-extrabold mb-1 font-sans"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {f.value}
+                      </div>
+                      <div
+                        className="text-sm font-medium font-sans text-center"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        {f.label}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           {/* ===== Payment Info ===== */}
           <div
-            className="flex flex-wrap gap-x-6 gap-y-2 justify-center text-sm font-medium font-sans"
+            className="flex flex-wrap gap-x-3 gap-y-1 sm:gap-x-6 sm:gap-y-2 justify-center text-xs sm:text-sm font-medium font-sans px-2 mb-0"
             style={{ color: colors.text.secondary }}
           >
             {paymentMethods.map((method) => (

@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
+import MobileCategoriesMenu from "./MobileCategoriesMenu";
+import MobileShopByCategory from "./MobileShopByCategory";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface MobileMenuProps {
@@ -79,6 +81,22 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           >
             <Search className="w-4 h-4" />
           </button>
+        </div>
+
+        {/* Shop by Category Section */}
+        <div
+          className="rounded-lg p-2 transition-colors duration-200"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
+          <MobileShopByCategory />
+        </div>
+
+        {/* Mobile Categories Menu */}
+        <div
+          className="rounded-lg p-2 transition-colors duration-200"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
+          <MobileCategoriesMenu />
         </div>
 
         {/* Mobile Filters Section */}

@@ -177,7 +177,7 @@ const Header: React.FC = () => {
     >
       {/* Main header content */}
       <div className="w-full">
-        <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
+        <div className="flex items-center justify-between py-3 sm:py-4 px-3 sm:px-4 lg:px-8">
           {/* Logo flush left */}
           <div className="flex items-center flex-shrink-0">
             <button
@@ -187,7 +187,7 @@ const Header: React.FC = () => {
               <img
                 src={logo}
                 alt="Logo"
-                className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
+                className="h-10 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
               />
             </button>
           </div>
@@ -246,7 +246,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-2 lg:space-x-4">
             {/* Admin Theme Toggle - Shows when user is admin */}
             {isAdmin() && <AdminThemeToggle />}
 
@@ -266,7 +266,7 @@ const Header: React.FC = () => {
                       colors.text.secondary;
                   }}
                 >
-                  <User className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <User className="w-5 h-5 lg:w-5 lg:h-5" />
                   <span className="text-sm lg:text-base whitespace-nowrap">
                     {user.fullName || user.email}
                   </span>
@@ -396,7 +396,7 @@ const Header: React.FC = () => {
                       colors.text.secondary;
                   }}
                 >
-                  <User className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <User className="w-5 h-5 lg:w-5 lg:h-5" />
                   <span className="text-sm lg:text-base whitespace-nowrap">
                     Sign In
                   </span>
@@ -439,13 +439,13 @@ const Header: React.FC = () => {
                   colors.text.secondary;
               }}
             >
-              <ShoppingCart className="w-4 h-4 lg:w-5 lg:h-5" />
+              <ShoppingCart className="w-5 h-5 lg:w-5 lg:h-5" />
               <span className="hidden sm:inline text-sm lg:text-base whitespace-nowrap">
                 My Cart
               </span>
               {getItemCount() > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-4 h-4 lg:w-5 lg:h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-5 h-5 lg:w-5 lg:h-5 flex items-center justify-center"
                   style={{
                     backgroundColor: colors.interactive.primary,
                     color: colors.text.inverse,
@@ -459,13 +459,13 @@ const Header: React.FC = () => {
             {/* Mobile menu button */}
             <button
               onClick={toggleMenu}
-              className="lg:hidden p-1.5 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-2"
+              className="lg:hidden p-2 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-2"
               style={{ color: colors.text.secondary }}
             >
               {isMenuOpen ? (
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
+                <X className="w-6 h-6 sm:w-6 sm:h-6" />
               ) : (
-                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
+                <Menu className="w-6 h-6 sm:w-6 sm:h-6" />
               )}
             </button>
           </div>
