@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
+import { useCartContext } from "../contexts/CartContext";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import BillingForm from "../ui/checkout/BillingForm";
@@ -33,6 +34,7 @@ const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
+  const { clearCart } = useCartContext();
 
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
@@ -215,8 +217,13 @@ const CheckoutPage: React.FC = () => {
             const verifyData = await verifyResponse.json();
 
             if (verifyData.success) {
-              // Clear cart
-              localStorage.removeItem("cart");
+              // Clear cart from backend and localStorage
+              try {
+                await clearCart();
+              } catch (error) {
+                console.error("Failed to clear cart:", error);
+                // Continue anyway, cart will be cleared on next refresh
+              }
 
               // Show SweetAlert success message
               await Swal.fire({
