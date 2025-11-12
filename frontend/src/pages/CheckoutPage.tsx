@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { useCartContext } from "../contexts/CartContext";
@@ -7,7 +8,6 @@ import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
-import CouponForm from "../ui/checkout/CouponForm";
 
 // Declare Razorpay on window
 declare global {
@@ -29,12 +29,33 @@ interface Summary {
   itemCount: number;
 }
 
+interface CheckoutFormData {
+  name: string;
+  whatsapp: string;
+  email: string;
+}
+
 const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const { clearCart } = useCartContext();
+
+  // React Hook Form setup
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    control,
+  } = useForm<CheckoutFormData>({
+    mode: "onBlur",
+    defaultValues: {
+      name: "",
+      whatsapp: "",
+      email: "",
+    },
+  });
 
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
@@ -55,54 +76,12 @@ const CheckoutPage: React.FC = () => {
     itemCount: Number(rawSummary.itemCount) || cartItems.length,
   };
 
-  const [formData, setFormData] = useState({
-    name: "",
-    whatsapp: "",
-    email: "",
-  });
-  const [showCoupon, setShowCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const normalizePrice = (price: any) =>
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const validateForm = () => {
-    if (!formData.name.trim()) {
-      toast.error("Please enter your name");
-      return false;
-    }
-    if (!formData.whatsapp.trim()) {
-      toast.error("Please enter your WhatsApp number");
-      return false;
-    }
-    // Updated validation to handle country code format (+CountryCode followed by phone number)
-    const phoneWithCountryCode = formData.whatsapp.replace(/\s/g, ""); // Remove spaces
-    const phoneRegex = /^\+\d{1,4}\d{7,15}$/; // Country code (1-4 digits) + phone number (7-15 digits)
-    if (!phoneRegex.test(phoneWithCountryCode)) {
-      toast.error("Please enter a valid phone number with country code");
-      return false;
-    }
-    if (!formData.email.trim()) {
-      toast.error("Please enter your email address");
-      return false;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      toast.error("Please enter a valid email address");
-      return false;
-    }
-    if (cartItems.length === 0) {
-      toast.error("Your cart is empty");
-      return false;
-    }
-    return true;
-  };
 
   const loadRazorpayScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
@@ -114,8 +93,10 @@ const CheckoutPage: React.FC = () => {
     });
   };
 
-  const handlePlaceOrder = async () => {
-    if (!validateForm()) {
+  const handlePlaceOrder = async (data: CheckoutFormData) => {
+    // Validate cart items
+    if (cartItems.length === 0) {
+      toast.error("Your cart is empty");
       return;
     }
 
@@ -157,8 +138,8 @@ const CheckoutPage: React.FC = () => {
         shippingCharges: 0,
         totalAmount: finalTotal,
         shippingAddress: {
-          fullName: formData.name,
-          phoneNumber: formData.whatsapp,
+          fullName: data.name,
+          phoneNumber: data.whatsapp,
           addressLine1: "N/A",
           city: "N/A",
           state: "N/A",
@@ -166,7 +147,7 @@ const CheckoutPage: React.FC = () => {
           country: "India",
         },
         couponCode: couponCode || null,
-        notes: `Email: ${formData.email}`,
+        notes: `Email: ${data.email}`,
       };
 
       const response = await fetch(
@@ -181,22 +162,22 @@ const CheckoutPage: React.FC = () => {
         },
       );
 
-      const data = await response.json();
+      const responseData = await response.json();
 
-      if (!data.success) {
-        toast.error(data.message || "Failed to create order");
+      if (!responseData.success) {
+        toast.error(responseData.message || "Failed to create order");
         setIsProcessing(false);
         return;
       }
 
       // Configure Razorpay options
       const options = {
-        key: data.data.keyId,
-        amount: data.data.amount,
-        currency: data.data.currency,
+        key: responseData.data.keyId,
+        amount: responseData.data.amount,
+        currency: responseData.data.currency,
         name: "Your Store Name",
-        description: `Order #${data.data.orderId}`,
-        order_id: data.data.razorpayOrderId,
+        description: `Order #${responseData.data.orderId}`,
+        order_id: responseData.data.razorpayOrderId,
         handler: async function (response: any) {
           try {
             // Verify payment on backend
@@ -237,7 +218,7 @@ const CheckoutPage: React.FC = () => {
                     <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
                       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <strong>Order ID:</strong>
-                        <span style="font-family: monospace;">${data.data.orderId}</span>
+                        <span style="font-family: monospace;">${responseData.data.orderId}</span>
                       </div>
                       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <strong>Payment ID:</strong>
@@ -278,12 +259,12 @@ const CheckoutPage: React.FC = () => {
           }
         },
         prefill: {
-          name: formData.name,
-          email: formData.email,
-          contact: formData.whatsapp,
+          name: data.name,
+          email: data.email,
+          contact: data.whatsapp,
         },
         notes: {
-          orderId: data.data.orderId,
+          orderId: responseData.data.orderId,
         },
         theme: {
           color: "#F59E0B",
@@ -303,7 +284,7 @@ const CheckoutPage: React.FC = () => {
                   Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                  razorpay_order_id: data.data.razorpayOrderId,
+                  razorpay_order_id: responseData.data.razorpayOrderId,
                   error: { description: "Payment cancelled by user" },
                 }),
               },
@@ -328,7 +309,7 @@ const CheckoutPage: React.FC = () => {
               Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({
-              razorpay_order_id: data.data.razorpayOrderId,
+              razorpay_order_id: responseData.data.razorpayOrderId,
               error: response.error,
             }),
           },
@@ -341,11 +322,6 @@ const CheckoutPage: React.FC = () => {
       toast.error("Failed to process order. Please try again.");
       setIsProcessing(false);
     }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handlePlaceOrder();
   };
 
   const applyCoupon = async () => {
@@ -545,59 +521,33 @@ const CheckoutPage: React.FC = () => {
         Checkout
       </h1>
 
-      <div className="max-w-7xl mx-auto flex flex-col space-y-8">
-        <div className="text-sm flex flex-col gap-2">
-          <div
-            className="flex items-center gap-2"
-            style={{ color: colors.text.primary }}
-          >
-            <span>Have a coupon?</span>
-            <button
-              type="button"
-              className="underline font-medium"
-              style={{ color: colors.interactive.primary }}
-              onClick={() => setShowCoupon((prev) => !prev)}
-            >
-              Click here to enter your code
-            </button>
-          </div>
-          {showCoupon && (
-            <div className="mt-2 max-w-md">
-              <CouponForm
-                colors={colors}
-                couponCode={couponCode}
-                setCouponCode={setCouponCode}
-                applyCoupon={applyCoupon}
-              />
-            </div>
-          )}
-        </div>
-
-        <form
-          className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
-          onSubmit={handleSubmit}
-        >
-          <BillingForm
-            formData={formData}
-            handleChange={handleChange}
-            colors={colors}
-          />
-          <OrderSummary
-            cartItems={cartItems}
-            summary={{
-              subtotal: summary.subtotal,
-              discount: discount,
-              total: summary.subtotal - discount,
-              itemCount: summary.itemCount,
-            }}
-            colors={colors}
-            normalizePrice={normalizePrice}
-            formatPriceWithSymbol={formatPriceWithSymbol}
-            onPlaceOrder={handlePlaceOrder}
-            isProcessing={isProcessing}
-          />
-        </form>
-      </div>
+      <form
+        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
+        onSubmit={handleSubmit(handlePlaceOrder)}
+      >
+        <BillingForm
+          register={register}
+          errors={errors}
+          control={control}
+          colors={colors}
+        />
+        <OrderSummary
+          cartItems={cartItems}
+          summary={{
+            subtotal: summary.subtotal,
+            discount: discount,
+            total: summary.subtotal - discount,
+            itemCount: summary.itemCount,
+          }}
+          colors={colors}
+          normalizePrice={normalizePrice}
+          formatPriceWithSymbol={formatPriceWithSymbol}
+          isProcessing={isProcessing}
+          couponCode={couponCode}
+          setCouponCode={setCouponCode}
+          applyCoupon={applyCoupon}
+        />
+      </form>
     </div>
   );
 };
