@@ -81,9 +81,11 @@ const CheckoutPage: React.FC = () => {
       toast.error("Please enter your WhatsApp number");
       return false;
     }
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(formData.whatsapp.replace(/[^0-9]/g, ""))) {
-      toast.error("Please enter a valid 10-digit WhatsApp number");
+    // Updated validation to handle country code format (+CountryCode followed by phone number)
+    const phoneWithCountryCode = formData.whatsapp.replace(/\s/g, ""); // Remove spaces
+    const phoneRegex = /^\+\d{1,4}\d{7,15}$/; // Country code (1-4 digits) + phone number (7-15 digits)
+    if (!phoneRegex.test(phoneWithCountryCode)) {
+      toast.error("Please enter a valid phone number with country code");
       return false;
     }
     if (!formData.email.trim()) {

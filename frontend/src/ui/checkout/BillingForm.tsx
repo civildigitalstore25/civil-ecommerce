@@ -1,5 +1,6 @@
 import React from "react";
 import FormInput from "../../components/Input/FormInput";
+import PhoneInput from "../../components/Input/PhoneInput";
 
 interface BillingFormProps {
   formData: { name: string; whatsapp: string; email: string };
@@ -35,14 +36,13 @@ const BillingForm: React.FC<BillingFormProps> = ({
       />
 
       {/* WhatsApp */}
-      <FormInput
+      <PhoneInput
         label="WhatsApp Number"
         name="whatsapp"
-        type="tel"
         required
         value={formData.whatsapp}
         onChange={handleChange}
-        placeholder="Enter 10-digit WhatsApp number"
+        placeholder="Enter WhatsApp number"
       />
 
       {/* Email */}

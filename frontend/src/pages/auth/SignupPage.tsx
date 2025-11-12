@@ -7,6 +7,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
+import PhoneInput from "../../components/Input/PhoneInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
 export default function SignupPage() {
@@ -157,7 +158,7 @@ export default function SignupPage() {
               onChange={handleChange}
               placeholder="Enter your email"
             />
-            <FormInput
+            <PhoneInput
               label="Phone (Optional)"
               name="phoneNumber"
               value={formData.phoneNumber}
