@@ -1,29 +1,24 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-import {
-  Ruler,
-  FileText,
-  Palette,
-  Shield,
-} from "lucide-react";
+import { Shield } from "lucide-react";
 
 // Category items matching the desktop header
 const categories = [
   {
-    icon: Ruler,
+    image: "/mobilelogo/autocad.png",
     label: "AutoDesk",
     brand: "autodesk",
     color: "#f59e0b", // amber
   },
   {
-    icon: FileText,
+    image: "/mobilelogo/Microsoft_Logo.png",
     label: "Microsoft",
     brand: "microsoft",
     color: "#3b82f6", // blue
   },
   {
-    icon: Palette,
+    image: "/mobilelogo/adobe.png",
     label: "Adobe",
     brand: "adobe",
     color: "#ec4899", // pink
@@ -65,7 +60,6 @@ const MobileShopByCategory: React.FC = () => {
       {/* Categories Grid */}
       <div className="grid grid-cols-4 gap-3">
         {categories.map((category) => {
-          const IconComponent = category.icon;
           return (
             <button
               key={category.label}
@@ -78,10 +72,18 @@ const MobileShopByCategory: React.FC = () => {
                 className="w-12 h-12 rounded-full flex items-center justify-center mb-2"
                 style={{ backgroundColor: `${category.color}20` }}
               >
-                <IconComponent
-                  className="w-6 h-6"
-                  style={{ color: category.color }}
-                />
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.label}
+                    className="w-6 h-6 object-contain"
+                  />
+                ) : (
+                  category.icon && React.createElement(category.icon, {
+                    className: "w-6 h-6",
+                    style: { color: category.color }
+                  })
+                )}
               </div>
               
               {/* Label */}

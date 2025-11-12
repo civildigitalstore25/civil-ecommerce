@@ -7,7 +7,7 @@ const HomeProducts: React.FC = () => {
 
   return (
     <section
-      className="w-full rounded-3xl shadow-sm py-14 px-6 md:px-20 transition-colors duration-200"
+      className="w-full py-14 px-0 md:px-20 transition-colors duration-200"
       style={{
         background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}

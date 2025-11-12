@@ -70,21 +70,21 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
   return (
     <div className="transition-colors duration-200 w-full">
-      <div className="w-full pt-0 pb-3 md:py-6 px-0 md:px-4">
+      <div className="w-full pt-0 pb-3 md:py-6 px-0">
         {showCount && (
           <p
-            className="text-sm md:text-lg mb-2 md:mb-4 transition-colors duration-200 px-1 md:px-0"
+            className="text-sm md:text-lg mb-2 md:mb-4 transition-colors duration-200"
             style={{ color: colors.text.secondary }}
           >
             {displayedProducts.length} featured product
             {displayedProducts.length !== 1 && "s"}
           </p>
         )}
-        <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-0.5 md:gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-0 md:gap-8">
           {displayedProducts.map((product: any) => (
             <div
               key={product._id}
-              className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
+              className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-3 md:p-5 flex flex-col hover:scale-[1.02]"
               style={{
                 backgroundColor: colors.background.primary,
               }}
