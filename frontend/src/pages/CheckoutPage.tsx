@@ -126,13 +126,24 @@ const CheckoutPage: React.FC = () => {
 
       // Create order on backend
       const orderData = {
-        items: cartItems.map((item) => ({
-          productId: item.id.toString(),
-          name: item.product.name,
-          quantity: item.quantity,
-          price: item.product.price,
-          image: null,
-        })),
+        items: rawCartItems.map((item) => {
+          console.log('🔍 Cart Item:', {
+            productName: item.product?.name,
+            version: item.product?.version,
+            licenseType: item.licenseType,
+            fullItem: item
+          });
+
+          return {
+            productId: (item._id || item.id || item.product?._id).toString(),
+            name: item.product?.name || "Unknown Product",
+            quantity: item.quantity,
+            price: Number(item.price || item.product?.price || item.totalPrice) || 0,
+            image: item.product?.image || null,
+            version: item.product?.version || null,
+            pricingPlan: item.licenseType || null,
+          };
+        }),
         subtotal: subtotal,
         discount: discount,
         shippingCharges: 0,
@@ -149,6 +160,8 @@ const CheckoutPage: React.FC = () => {
         couponCode: couponCode || null,
         notes: `Email: ${data.email}`,
       };
+
+      console.log('📦 Final Order Data:', orderData);
 
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/create-order`,
