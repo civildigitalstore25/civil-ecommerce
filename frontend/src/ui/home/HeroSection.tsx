@@ -84,7 +84,7 @@ const HeroSection: React.FC = () => {
         {/* ===== Hero Content ===== */}
         <div className="flex flex-col items-center mt-6 sm:mt-12">
           <h1
-            className="text-2xl sm:text-5xl font-serif font-bold mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
+            className="text-2xl sm:text-5xl font-poppins  mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
             Genuine Civil <br />
@@ -92,7 +92,7 @@ const HeroSection: React.FC = () => {
           </h1>
 
           <p
-            className="mb-4 sm:mb-12 text-sm sm:text-xl font-serif leading-relaxed text-center max-w-2xl px-4"
+            className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
             Get authentic AutoDesk,Microsoft, Adobe, Antivirus and other professional

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -9,7 +9,7 @@ interface Review {
   relative_time_description: string;
 }
 
-// Static review data
+// Static review data - Only 3 reviews
 const staticReviews: Review[] = [
   {
     author_name: "Rajesh Kumar",
@@ -29,52 +29,20 @@ const staticReviews: Review[] = [
     text: "Great collection of software products. Delivery was quick and customer support responded promptly to my queries. Will buy again!",
     relative_time_description: "3 weeks ago",
   },
-  {
-    author_name: "Sneha Reddy",
-    rating: 5,
-    text: "Trustworthy seller with genuine products. I was skeptical at first but the product key worked perfectly. Thanks for the amazing service!",
-    relative_time_description: "1 week ago",
-  },
-  {
-    author_name: "Vikram Singh",
-    rating: 5,
-    text: "Outstanding experience! Bought AutoCAD for my firm and got excellent after-sales support. Very professional and reliable.",
-    relative_time_description: "2 months ago",
-  },
-  {
-    author_name: "Ananya Iyer",
-    rating: 4,
-    text: "Good prices and genuine software licenses. The checkout process was smooth and I received my product key within minutes.",
-    relative_time_description: "3 weeks ago",
-  },
-  {
-    author_name: "Karthik Menon",
-    rating: 5,
-    text: "Impressive collection of design software! Purchased Adobe Creative Suite and the entire process was hassle-free. Definitely coming back!",
-    relative_time_description: "1 month ago",
-  },
-  {
-    author_name: "Divya Nair",
-    rating: 5,
-    text: "Excellent customer service and genuine products. They helped me choose the right antivirus for my needs. Very satisfied with the purchase!",
-    relative_time_description: "2 weeks ago",
-  },
-  {
-    author_name: "Arjun Kapoor",
-    rating: 4,
-    text: "Reliable platform for software purchases. Fast delivery and authentic licenses. The prices are competitive compared to other sellers.",
-    relative_time_description: "1 week ago",
-  },
-  {
-    author_name: "Meera Desai",
-    rating: 5,
-    text: "Fantastic service! Bought Windows 11 Pro and the installation guide provided was very helpful. Will definitely recommend to friends and family!",
-    relative_time_description: "4 weeks ago",
-  },
 ];
 
 const Reviews: React.FC = () => {
   const { colors } = useAdminTheme();
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+
+  // Auto-play carousel for mobile
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentReviewIndex((prev) => (prev + 1) % staticReviews.length);
+    }, 5000); // Change slide every 5 seconds
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Function to generate initials avatar
   const getInitialsAvatar = (name: string) => {
@@ -112,39 +80,18 @@ const Reviews: React.FC = () => {
         background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
       }}
     >
-      <div className="text-center mb-12">
+      <div className="text-center mb-8 md:mb-12 px-4">
         <h2
-          className="text-3xl md:text-4xl font-bold transition-colors duration-200"
+          className="text-2xl md:text-4xl font-bold transition-colors duration-200 mb-2"
           style={{ color: colors.text.primary }}
         >
           What Our Customers Say
         </h2>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="flex">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`h-5 w-5 ${i < Math.floor(averageRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
-              />
-            ))}
-          </div>
-          <span
-            className="text-lg font-semibold transition-colors duration-200"
-            style={{ color: colors.text.primary }}
-          >
-            {averageRating.toFixed(1)}
-          </span>
-          <span
-            className="text-sm transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            ({totalReviews} reviews)
-          </span>
-        </div>
+       
       </div>
 
-      {/* Grid Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-6 md:px-20">
+      {/* Desktop Grid Layout */}
+      <div className="hidden md:grid md:grid-cols-3 gap-8 px-6 md:px-20">
         {staticReviews.map((review, index) => (
           <div
             key={index}
@@ -198,6 +145,94 @@ const Reviews: React.FC = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Mobile Carousel */}
+      <div className="md:hidden w-full px-4">
+        <div className="overflow-hidden">
+          <div
+            className="flex transition-transform duration-500 ease-out"
+            style={{
+              transform: `translateX(-${currentReviewIndex * 100}%)`,
+            }}
+          >
+            {staticReviews.map((review, index) => (
+              <div
+                key={index}
+                className="w-full flex-shrink-0 px-2"
+              >
+                <div
+                  className="rounded-xl shadow-lg p-5 flex flex-col justify-between"
+                  style={{ backgroundColor: colors.background.primary }}
+                >
+                  {/* Stars */}
+                  <div className="flex justify-center mb-3">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-4 w-4 ${i < review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Review text */}
+                  <p
+                    className="italic mb-4 text-sm text-center transition-colors duration-200"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    "{review.text}"
+                  </p>
+
+                  {/* Profile */}
+                  <div className="flex items-center justify-center space-x-3">
+                    <div
+                      className="w-10 h-10 rounded-full border-2 transition-colors duration-200 overflow-hidden flex-shrink-0"
+                      style={{ borderColor: colors.interactive.primary }}
+                    >
+                      <img
+                        src={getInitialsAvatar(review.author_name)}
+                        alt={review.author_name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4
+                        className="font-semibold text-sm transition-colors duration-200"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {review.author_name}
+                      </h4>
+                      <p
+                        className="text-xs transition-colors duration-200"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        {review.relative_time_description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Carousel Indicators */}
+        <div className="flex justify-center gap-2 mt-4">
+          {staticReviews.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentReviewIndex(index)}
+              className="w-2 h-2 rounded-full transition-all duration-300"
+              style={{
+                backgroundColor:
+                  currentReviewIndex === index
+                    ? colors.interactive.primary
+                    : colors.border.primary,
+              }}
+              aria-label={`Go to review ${index + 1}`}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );

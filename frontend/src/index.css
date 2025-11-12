@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Set default font */
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 /* Default browser scrollbar color */
 :root {
   scrollbar-width: thin;
@@ -26,12 +31,9 @@ body::-webkit-scrollbar-thumb:hover {
 /* Hide scrollbar for webkit browsers */
 .scrollbar-hide {
   -ms-overflow-style: none;
-  /* IE and Edge */
   scrollbar-width: none;
-  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
-  /* Chrome, Safari, Opera */
 }
