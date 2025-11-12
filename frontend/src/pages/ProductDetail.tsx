@@ -1322,13 +1322,13 @@ const ProductDetail: React.FC = () => {
                     colors.interactive.primary;
                 }}
               >
-                <span>🛒</span>
+                <LucideIcons.ShoppingCart size={20} />
                 {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
               </button>
 
               <button
                 onClick={handleBuyNow}
-                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200"
+                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
                 style={{
                   borderColor: colors.interactive.primary,
                   color: colors.interactive.primary,
@@ -1344,6 +1344,7 @@ const ProductDetail: React.FC = () => {
                   e.currentTarget.style.color = colors.interactive.primary;
                 }}
               >
+                <LucideIcons.Zap size={20} />
                 Buy Now
               </button>
 
@@ -1363,7 +1364,7 @@ const ProductDetail: React.FC = () => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <span>❓</span>
+                <LucideIcons.MessageSquare size={20} />
                 Request Inquiry
               </button>
             </div>
