@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Search,
   User,
@@ -52,6 +52,20 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
   const { colors } = useAdminTheme();
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+
+    // Cleanup function
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);

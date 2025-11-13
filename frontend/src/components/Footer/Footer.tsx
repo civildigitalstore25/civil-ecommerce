@@ -61,13 +61,13 @@ const Footer = () => {
         ].map((item, i) => (
           <div key={i}>
             <p
-              className="font-semibold text-lg tracking-wide transition-colors duration-200"
+              className="font-poppins font-semibold text-xl tracking-wide transition-colors duration-200"
               style={{ color: colors.text.primary }}
             >
               {item.title}
             </p>
             <p
-              className="text-sm mt-1 transition-colors duration-200"
+              className="text-base mt-1 font-lato transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
               {item.desc}
@@ -92,7 +92,7 @@ const Footer = () => {
               />
             </div>
             <p
-              className="text-sm leading-relaxed transition-colors duration-200"
+              className="text-base leading-relaxed font-lato transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
               Civil DigitalStore is a user-friendly website offering a vast
@@ -107,12 +107,12 @@ const Footer = () => {
             {/* Our Services */}
             <div>
               <h3
-                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
                 style={{ color: colors.interactive.primary }}
               >
                 OUR SERVICES
               </h3>
-              <ul className="space-y-2 text-xs md:text-sm">
+              <ul className="space-y-2 text-sm md:text-base font-lato">
                 <li>
                   <Link
                     to="/advertising"
@@ -179,12 +179,12 @@ const Footer = () => {
             {/* Policies */}
             <div>
               <h3
-                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
                 style={{ color: colors.interactive.primary }}
               >
                 CUSTOMER POLICIES
               </h3>
-              <ul className="space-y-2 text-xs md:text-sm">
+              <ul className="space-y-2 text-sm md:text-base font-lato">
                 <li>
                   <Link
                     to="/terms-and-conditions"
@@ -236,12 +236,12 @@ const Footer = () => {
             {/* Software */}
             <div className="col-span-2 md:col-span-1">
               <h3
-                className="font-semibold mb-4 tracking-wide transition-colors duration-200 text-sm md:text-base"
+                className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
                 style={{ color: colors.interactive.primary }}
               >
                 SOFTWARE
               </h3>
-              <ul className="space-y-2 text-xs md:text-sm grid grid-cols-2 md:grid-cols-1 gap-x-4">
+              <ul className="space-y-2 text-sm md:text-base font-lato grid grid-cols-2 md:grid-cols-1 gap-x-4">
                 <li>
                   <Link
                     to="/software?category=CAD Software"
@@ -345,7 +345,7 @@ const Footer = () => {
       >
         {/* Contact Info */}
         <div
-          className="flex flex-col md:flex-row md:items-center md:gap-8 text-sm transition-colors duration-200"
+          className="flex flex-col md:flex-row md:items-center md:gap-8 text-base font-lato transition-colors duration-200"
           style={{ color: colors.text.secondary }}
         >
           <p
@@ -433,7 +433,7 @@ const Footer = () => {
         className="max-w-7xl mx-auto px-6 py-4 border-t transition-colors duration-200"
         style={{ borderColor: colors.border.secondary }}
       >
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm sm:text-base font-lato">
           {[
             { label: "Privacy Policy", href: "/privacy-policy" },
             { label: "Terms & Conditions", href: "/terms-conditions" },
@@ -469,7 +469,7 @@ const Footer = () => {
 
       {/* Copyright */}
       <div
-        className="text-center text-xs py-4 border-t transition-colors duration-200"
+        className="text-center text-sm py-4 border-t font-lato transition-colors duration-200"
         style={{
           color: colors.text.secondary,
           borderColor: colors.border.secondary,
@@ -477,7 +477,7 @@ const Footer = () => {
       >
         ©{" "}
         <span
-          className="font-semibold transition-colors duration-200"
+          className="font-poppins font-semibold transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
           Civil Digital Store

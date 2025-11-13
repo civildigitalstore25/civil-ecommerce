@@ -82,12 +82,33 @@ const Reviews: React.FC = () => {
     >
       <div className="text-center mb-8 md:mb-12 px-4">
         <h2
-          className="text-2xl md:text-4xl font-bold transition-colors duration-200 mb-2"
+          className="text-2xl md:text-4xl font-poppins font-bold transition-colors duration-200 mb-2"
           style={{ color: colors.text.primary }}
         >
           What Our Customers Say
         </h2>
-       
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`h-4 w-4 md:h-5 md:w-5 ${i < Math.floor(averageRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+              />
+            ))}
+          </div>
+          <span
+            className="text-base md:text-lg font-poppins font-semibold transition-colors duration-200"
+            style={{ color: colors.text.primary }}
+          >
+            {averageRating.toFixed(1)}
+          </span>
+          <span
+            className="text-xs md:text-sm font-lato transition-colors duration-200"
+            style={{ color: colors.text.secondary }}
+          >
+            ({totalReviews} reviews)
+          </span>
+        </div>
       </div>
 
       {/* Desktop Grid Layout */}
@@ -110,7 +131,7 @@ const Reviews: React.FC = () => {
 
             {/* Review text */}
             <p
-              className="italic mb-6 transition-colors duration-200"
+              className="italic mb-6 font-lato transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
               "{review.text}"
@@ -130,13 +151,13 @@ const Reviews: React.FC = () => {
               </div>
               <div>
                 <h4
-                  className="font-semibold transition-colors duration-200"
+                  className="font-poppins font-semibold transition-colors duration-200"
                   style={{ color: colors.text.primary }}
                 >
                   {review.author_name}
                 </h4>
                 <p
-                  className="text-sm transition-colors duration-200"
+                  className="text-sm font-lato transition-colors duration-200"
                   style={{ color: colors.text.secondary }}
                 >
                   {review.relative_time_description}
@@ -177,7 +198,7 @@ const Reviews: React.FC = () => {
 
                   {/* Review text */}
                   <p
-                    className="italic mb-4 text-sm text-center transition-colors duration-200"
+                    className="italic mb-4 text-sm text-center font-lato transition-colors duration-200"
                     style={{ color: colors.text.secondary }}
                   >
                     "{review.text}"
@@ -197,13 +218,13 @@ const Reviews: React.FC = () => {
                     </div>
                     <div>
                       <h4
-                        className="font-semibold text-sm transition-colors duration-200"
+                        className="font-poppins font-semibold text-sm transition-colors duration-200"
                         style={{ color: colors.text.primary }}
                       >
                         {review.author_name}
                       </h4>
                       <p
-                        className="text-xs transition-colors duration-200"
+                        className="text-xs font-lato transition-colors duration-200"
                         style={{ color: colors.text.secondary }}
                       >
                         {review.relative_time_description}

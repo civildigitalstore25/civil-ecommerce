@@ -42,13 +42,13 @@ const WhyChooseUs: React.FC = () => {
       {/* Heading */}
       <div className="text-center mb-4 sm:mb-14">
         <h2
-          className="text-lg sm:text-3xl md:text-4xl font-bold transition-colors duration-200"
+          className="text-lg sm:text-3xl md:text-4xl font-poppins font-bold transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
           Why Choose CivilDigitalStore?
         </h2>
         <p
-          className="mt-1 sm:mt-3 text-xs sm:text-lg transition-colors duration-200"
+          className="mt-1 sm:mt-3 text-xs sm:text-lg font-lato transition-colors duration-200"
           style={{ color: colors.text.secondary }}
         >
           Trusted by engineers worldwide for authentic software solutions
@@ -75,13 +75,13 @@ const WhyChooseUs: React.FC = () => {
                 />
               </div>
               <h3
-                className="mt-2 sm:mt-5 text-[10px] sm:text-lg font-semibold transition-colors duration-200 line-clamp-2"
+                className="mt-2 sm:mt-5 text-[10px] sm:text-lg font-poppins font-semibold transition-colors duration-200 line-clamp-2"
                 style={{ color: colors.text.primary }}
               >
                 {feature.title}
               </h3>
               <p
-                className="text-[8px] sm:text-sm mt-1 sm:mt-2 max-w-[220px] transition-colors duration-200 line-clamp-2"
+                className="text-[8px] sm:text-sm mt-1 sm:mt-2 max-w-[220px] font-lato transition-colors duration-200 line-clamp-2"
                 style={{ color: colors.text.secondary }}
               >
                 {feature.description}

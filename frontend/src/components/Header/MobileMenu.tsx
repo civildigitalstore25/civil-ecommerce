@@ -30,6 +30,7 @@ interface MobileMenuProps {
 const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   searchQuery,
+  onClose,
   onSearch,
   onSearchChange,
   onSearchKeyPress,
@@ -42,15 +43,27 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div
-      className="lg:hidden border-t shadow-lg transition-colors duration-200"
-      style={{
-        backgroundColor: colors.background.primary,
-        borderColor: colors.border.primary,
-      }}
-    >
-      <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-4">
-        {/* Mobile search */}
+    <>
+      {/* Backdrop overlay */}
+      <div
+        className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+        onClick={onClose}
+        style={{ top: "60px" }}
+      />
+      
+      {/* Mobile Menu */}
+      <div
+        className="lg:hidden fixed left-0 right-0 top-[60px] bottom-0 z-50 overflow-y-auto border-t shadow-lg transition-colors duration-200"
+        style={{
+          backgroundColor: colors.background.primary,
+          borderColor: colors.border.primary,
+          maxHeight: "calc(100vh - 60px)",
+          scrollbarWidth: "thin",
+          scrollbarColor: "rgba(156, 163, 175, 0.5) transparent",
+        }}
+      >
+        <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-4 pb-20">
+          {/* Mobile search */}
         <div className="relative">
           <input
             type="text"
@@ -315,6 +328,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         )}
       </div>
     </div>
+    </>
   );
 };
 
