@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useCurrentUser, useUpdateProfile } from "../../api/auth";
 import FormInput from "../../components/Input/FormInput";
+import PhoneInput from "../../components/Input/PhoneInput";
 import FormButton from "../../components/Button/FormButton";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
@@ -197,7 +198,7 @@ export default function ProfilePage() {
                       onChange={handleInputChange}
                       placeholder="Enter your full name"
                     />
-                    <FormInput
+                    <PhoneInput
                       label="Phone Number"
                       name="phoneNumber"
                       value={formData.phoneNumber}

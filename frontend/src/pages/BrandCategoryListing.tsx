@@ -211,25 +211,28 @@ const BrandCategoryListing: React.FC = () => {
             </p>
             <button
               onClick={() => navigate("/")}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 rounded-lg transition-colors font-medium"
+              style={{
+                backgroundColor: colors.interactive.primary,
+                color: colors.background.primary,
+              }}
             >
               Back to Home
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-0.5 md:gap-8">
             {products.map((product: any) => (
               <div
                 key={product._id}
-                className="border rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-5 flex flex-col hover:scale-[1.02]"
+                className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
                 style={{
                   backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary,
                 }}
               >
                 {/* Image */}
                 <div
-                  className="rounded-xl overflow-hidden h-52 mb-3 cursor-pointer transition-colors duration-200 relative"
+                  className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
                   style={{ backgroundColor: colors.background.secondary }}
                   onClick={() => navigate(`/product/${product._id}`)}
                 >
@@ -238,73 +241,168 @@ const BrandCategoryListing: React.FC = () => {
                     alt={product.name}
                     className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
                   />
+                  {/* Best Seller Ribbon */}
                   {product.isBestSeller && (
-                    <div className="absolute top-2 right-2 bg-yellow-400 text-gray-900 px-3 py-1 rounded-full flex items-center text-xs font-semibold">
-                      <Star className="w-3 h-3 mr-1 fill-current" />
-                      Best Seller
+                    <div className="absolute top-1 right-1 md:top-3 md:right-3 z-10 transform transition-all duration-300 hover:scale-110">
+                      <div className="relative">
+                        {/* Main ribbon */}
+                        <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-black text-[8px] md:text-xs font-bold px-1.5 py-0.5 md:px-4 md:py-2 rounded-sm md:rounded-md shadow-2xl border md:border-2 border-white/50 backdrop-blur-sm">
+                          <div className="flex items-center space-x-0.5 md:space-x-1.5">
+                            <Star className="w-2 h-2 md:w-3.5 md:h-3.5 fill-current text-yellow-100 animate-pulse" />
+                            <span className="tracking-wide hidden md:inline">BEST SELLER</span>
+                            <span className="tracking-wide md:hidden">BEST</span>
+                          </div>
+                        </div>
+                        {/* Glow effect */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 rounded-full blur-sm opacity-20 -z-10"></div>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* Product Info */}
-                <div className="flex-1 flex flex-col">
-                  <h2
-                    className="text-lg font-semibold mb-1 transition-colors duration-200 cursor-pointer hover:text-blue-600"
-                    style={{ color: colors.text.primary }}
-                    onClick={() => navigate(`/product/${product._id}`)}
+                {/* Badges */}
+                <div className="flex flex-wrap gap-1 md:gap-2 mb-1 md:mb-2">
+                  <span
+                    className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
+                    style={{
+                      backgroundColor: `${colors.interactive.primary}20`,
+                      color: colors.interactive.primary,
+                    }}
                   >
-                    {product.name}
-                  </h2>
-                  <p
-                    className="text-sm mb-2 transition-colors duration-200"
-                    style={{ color: colors.text.secondary }}
+                    {product.category}
+                  </span>
+                  <span
+                    className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
+                    style={{
+                      backgroundColor: colors.background.secondary,
+                      color: colors.text.secondary,
+                    }}
                   >
-                    Version: {product.version}
-                  </p>
-                  {product.shortDescription && (
-                    <p
-                      className="text-sm mb-3 line-clamp-2 transition-colors duration-200"
+                    {product.company}
+                  </span>
+                </div>
+
+                {/* Name */}
+                <h2
+                  className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2"
+                  style={{ color: colors.text.primary }}
+                >
+                  {product.name}
+                  {product.version && (
+                    <span
+                      className="font-normal transition-colors duration-200"
                       style={{ color: colors.text.secondary }}
                     >
-                      {product.shortDescription}
-                    </p>
+                      ({product.version})
+                    </span>
                   )}
+                </h2>
 
-                  {/* Pricing */}
-                  <div className="mt-auto">
-                    <div className="flex items-baseline gap-2 mb-3">
-                      <span
-                        className="text-2xl font-bold transition-colors duration-200"
-                        style={{ color: colors.text.primary }}
-                      >
+                {/* Description */}
+                <p
+                  className="text-[9px] md:text-sm mb-1 md:mb-2 line-clamp-2 transition-colors duration-200 hidden md:block"
+                  style={{ color: colors.text.secondary }}
+                >
+                  {product.shortDescription || product.description}
+                </p>
+
+                {/* Stars & Ratings */}
+                <div className="flex items-center text-[10px] md:text-sm mb-1 md:mb-2">
+                  <span className="text-yellow-400 mr-0.5 md:mr-1">
+                    {"★".repeat(Math.round(product.rating || 4))}{" "}
+                  </span>
+                  <span
+                    className="transition-colors duration-200"
+                    style={{ color: colors.text.accent }}
+                  >
+                    {product.ratingCount ? `(${product.ratingCount})` : ""}
+                  </span>
+                </div>
+
+                {/* Price Block */}
+                <div
+                  className="font-semibold text-sm md:text-xl mb-0.5 md:mb-1 transition-colors duration-200"
+                  style={{ color: colors.interactive.primary }}
+                >
+                  {formatPriceWithSymbol(
+                    product.price1INR || product.price1 || 0,
+                    product.price1USD ||
+                    (product.price1 ? product.price1 / 83 : 0),
+                  )}
+                  /<span className="text-[10px] md:text-sm font-normal">year</span>
+                </div>
+                <div
+                  className="text-[8px] md:text-xs mb-2 md:mb-4 transition-colors duration-200 line-clamp-1"
+                  style={{ color: colors.text.secondary }}
+                >
+                  {(product.price3 || product.price3INR || product.price3USD) && (
+                    <>
+                      3yr:{" "}
+                      <span className="hidden md:inline">
                         {formatPriceWithSymbol(
-                          product.price1INR || product.price1,
+                          product.price3INR || product.price3 || 0,
+                          product.price3USD ||
+                          (product.price3 ? product.price3 / 83 : 0),
                         )}
                       </span>
-                      <span
-                        className="text-sm transition-colors duration-200"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        / 1 Year
+                      <span className="md:hidden">
+                        {formatPriceWithSymbol(
+                          product.price3INR || product.price3 || 0,
+                          product.price3USD ||
+                          (product.price3 ? product.price3 / 83 : 0),
+                        )}
                       </span>
-                    </div>
+                      {" "}•{" "}
+                    </>
+                  )}
+                  {(product.priceLifetime ||
+                    product.lifetimePriceINR ||
+                    product.lifetimePriceUSD) && (
+                      <>
+                        <span className="hidden md:inline">Lifetime:</span>
+                        <span className="md:hidden">Life:</span>
+                        {" "}
+                        {formatPriceWithSymbol(
+                          product.lifetimePriceINR || product.priceLifetime || 0,
+                          product.lifetimePriceUSD ||
+                          (product.priceLifetime
+                            ? product.priceLifetime / 83
+                            : 0),
+                        )}
+                      </>
+                    )}
+                </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => navigate(`/product/${product._id}`)}
-                        className="flex-1 py-2.5 px-4 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                      >
-                        View Details
-                      </button>
-                      <button
-                        onClick={() => handleAddToCart(product)}
-                        className="flex-1 py-2.5 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
-                  </div>
+                {/* Actions */}
+                <div className="flex flex-col gap-1 md:gap-2 mt-auto">
+                  <button
+                    onClick={() => navigate(`/product/${product._id}`)}
+                    className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+                    style={{
+                      borderColor: colors.border.primary,
+                      color: colors.text.primary,
+                      backgroundColor: "transparent",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        colors.background.secondary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                  >
+                    BUY NOW
+                  </button>
+                  <button
+                    className="w-full rounded-md md:rounded-lg py-1 md:py-2 font-semibold text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+                    style={{
+                      background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+                      color: colors.background.primary,
+                    }}
+                    onClick={() => handleAddToCart(product)}
+                  >
+                    Add to Cart
+                  </button>
                 </div>
               </div>
             ))}

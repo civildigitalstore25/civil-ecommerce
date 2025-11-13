@@ -96,6 +96,7 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data: product, isLoading } = useProductDetail(id);
   const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
+  const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "features" | "requirements" | "reviews" | "faq"
@@ -114,6 +115,10 @@ const ProductDetail: React.FC = () => {
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
+
+  // Enquiry modal state
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+  const [enquiryMessage, setEnquiryMessage] = useState("");
 
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
@@ -466,6 +471,18 @@ const ProductDetail: React.FC = () => {
 
   // Cart functionality
   const handleAddToCart = async () => {
+    // Check if user has manually selected a pricing plan
+    if (!userHasSelectedPlan || !selectedOption) {
+      await Swal.fire({
+        title: "Select Pricing Plan",
+        text: "Please select a pricing plan before adding to cart",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: colors.interactive.primary,
+      });
+      return;
+    }
+
     if (!user) {
       // Redirect to login if user is not authenticated
       navigate("/login", { state: { returnTo: `/product/${id}` } });
@@ -652,6 +669,103 @@ const ProductDetail: React.FC = () => {
     return "1year";
   };
 
+  // Buy Now functionality
+  // Buy Now functionality
+  const handleBuyNow = async () => {
+    // Check if user has manually selected a pricing plan
+    if (!userHasSelectedPlan || !selectedOption) {
+      await Swal.fire({
+        title: "Select Pricing Plan",
+        text: "Please select a pricing plan before proceeding",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: colors.interactive.primary,
+      });
+      return;
+    }
+
+    if (!user) {
+      // Redirect to login if user is not authenticated
+      navigate("/signin", { state: { returnTo: `/product/${id}` } });
+      return;
+    }
+
+    // Create a cart item for the selected product
+    const cartItem = {
+      _id: product._id,
+      product: {
+        _id: product._id,
+        name: product.name,
+        imageUrl: product.imageUrl || product.image,
+        brand: product.brand || product.company,
+      },
+      licenseType: getCartLicenseTypeForCheck(),
+      quantity: 1,
+      price: selectedOption.priceINR,
+      priceUSD: selectedOption.priceUSD,
+      totalPrice: selectedOption.priceINR,
+      subscriptionPlanDetails: {
+        planId: selectedOption.id,
+        planLabel: selectedOption.label,
+        planType: selectedOption.type,
+      },
+    };
+
+    // Navigate to checkout with the single product
+    navigate("/checkout", {
+      state: {
+        items: [cartItem],
+        summary: {
+          subtotal: selectedOption.priceINR,
+          discount: 0,
+          total: selectedOption.priceINR,
+          itemCount: 1,
+        },
+      },
+    });
+  };
+
+  // Handle Enquiry
+  const handleEnquirySubmit = () => {
+    if (!enquiryMessage.trim()) {
+      Swal.fire({
+        title: "Message Required",
+        text: "Please enter your enquiry message",
+        icon: "warning",
+        confirmButtonText: "OK",
+        confirmButtonColor: colors.interactive.primary,
+      });
+      return;
+    }
+
+    // Format message for WhatsApp
+    const productName = product.name;
+    const productLink = window.location.href;
+    const message = `Hi, I'm interested in ${productName}.\n\nMy Enquiry:\n${enquiryMessage}\n\nProduct Link: ${productLink}`;
+
+    // WhatsApp number (without + or spaces)
+    const whatsappNumber = "917871694931";
+
+    // Create WhatsApp link
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, "_blank");
+
+    // Close modal and reset message
+    setShowEnquiryModal(false);
+    setEnquiryMessage("");
+
+    // Show success message
+    Swal.fire({
+      title: "Redirecting to WhatsApp",
+      text: "Your enquiry will be sent via WhatsApp",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  };
+
   const cartLicenseType = getCartLicenseTypeForCheck();
   const isInCart = product
     ? isItemInCart(product._id!, cartLicenseType)
@@ -722,9 +836,9 @@ const ProductDetail: React.FC = () => {
                     {currentMainImage
                       .replace("video:", "")
                       .includes("youtube.com") ||
-                    currentMainImage
-                      .replace("video:", "")
-                      .includes("youtu.be") ? (
+                      currentMainImage
+                        .replace("video:", "")
+                        .includes("youtu.be") ? (
                       <iframe
                         src={currentMainImage
                           .replace("video:", "")
@@ -873,7 +987,10 @@ const ProductDetail: React.FC = () => {
                     {licenseOptions.map((option) => (
                       <div
                         key={option.id}
-                        onClick={() => setSelectedLicense(option.id)}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[100px]"
                         style={{
                           borderColor:
@@ -935,7 +1052,10 @@ const ProductDetail: React.FC = () => {
                     {subscriptionOptions.map((option) => (
                       <div
                         key={option.id}
-                        onClick={() => setSelectedLicense(option.id)}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[90px]"
                         style={{
                           borderColor:
@@ -982,7 +1102,10 @@ const ProductDetail: React.FC = () => {
                     {lifetimeOptions.map((option) => (
                       <div
                         key={option.id}
-                        onClick={() => setSelectedLicense(option.id)}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[120px]"
                         style={{
                           borderColor:
@@ -1044,7 +1167,10 @@ const ProductDetail: React.FC = () => {
                     {membershipOptions.map((option) => (
                       <div
                         key={option.id}
-                        onClick={() => setSelectedLicense(option.id)}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
                         style={{
                           borderColor:
@@ -1101,7 +1227,10 @@ const ProductDetail: React.FC = () => {
                     {adminSubscriptionPlans.map((option) => (
                       <div
                         key={option.id}
-                        onClick={() => setSelectedLicense(option.id)}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
                         className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
                         style={{
                           borderColor:
@@ -1193,12 +1322,13 @@ const ProductDetail: React.FC = () => {
                     colors.interactive.primary;
                 }}
               >
-                <span>🛒</span>
+                <LucideIcons.ShoppingCart size={20} />
                 {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
               </button>
 
               <button
-                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200"
+                onClick={handleBuyNow}
+                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
                 style={{
                   borderColor: colors.interactive.primary,
                   color: colors.interactive.primary,
@@ -1214,10 +1344,12 @@ const ProductDetail: React.FC = () => {
                   e.currentTarget.style.color = colors.interactive.primary;
                 }}
               >
+                <LucideIcons.Zap size={20} />
                 Buy Now
               </button>
 
               <button
+                onClick={() => setShowEnquiryModal(true)}
                 className="w-full border font-medium py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
                 style={{
                   borderColor: colors.border.primary,
@@ -1232,7 +1364,7 @@ const ProductDetail: React.FC = () => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
-                <span>❓</span>
+                <LucideIcons.MessageSquare size={20} />
                 Request Inquiry
               </button>
             </div>
@@ -1261,7 +1393,7 @@ const ProductDetail: React.FC = () => {
               </p>
               <div className="aspect-video bg-black rounded-xl overflow-hidden">
                 {product.activationVideoUrl.includes("youtube.com") ||
-                product.activationVideoUrl.includes("youtu.be") ? (
+                  product.activationVideoUrl.includes("youtu.be") ? (
                   <iframe
                     src={product.activationVideoUrl.replace(
                       "watch?v=",
@@ -1576,7 +1708,7 @@ const ProductDetail: React.FC = () => {
 
                 {/* Show structured requirements if available */}
                 {product.systemRequirements &&
-                product.systemRequirements.length > 0 ? (
+                  product.systemRequirements.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {product.systemRequirements.map((requirement, index) => (
                       <div
@@ -1776,7 +1908,7 @@ const ProductDetail: React.FC = () => {
                             <span className="text-sm w-8">
                               {
                                 reviewStats.ratingDistribution[
-                                  star as keyof typeof reviewStats.ratingDistribution
+                                star as keyof typeof reviewStats.ratingDistribution
                                 ]
                               }
                             </span>
@@ -2192,6 +2324,156 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Enquiry Modal */}
+      {showEnquiryModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+          onClick={() => setShowEnquiryModal(false)}
+        >
+          <div
+            className="max-w-lg w-full rounded-2xl p-6 shadow-2xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-6">
+              <h3
+                className="text-2xl font-bold"
+                style={{ color: colors.text.primary }}
+              >
+                Send Enquiry
+              </h3>
+              <button
+                onClick={() => setShowEnquiryModal(false)}
+                className="p-2 rounded-lg transition-colors duration-200"
+                style={{
+                  color: colors.text.secondary,
+                  backgroundColor: colors.background.primary,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.accent;
+                  e.currentTarget.style.color = colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.primary;
+                  e.currentTarget.style.color = colors.text.secondary;
+                }}
+              >
+                <LucideIcons.X size={24} />
+              </button>
+            </div>
+
+            {/* Product Info */}
+            <div
+              className="mb-6 p-4 rounded-xl"
+              style={{ backgroundColor: colors.background.primary }}
+            >
+              <div className="flex items-center gap-4">
+                <img
+                  src={product.imageUrl || product.image}
+                  alt={product.name}
+                  className="w-16 h-16 object-contain rounded-lg"
+                />
+                <div>
+                  <h4
+                    className="font-bold text-lg"
+                    style={{ color: colors.text.primary }}
+                  >
+                    {product.name}
+                  </h4>
+                  {selectedOption && (
+                    <p
+                      className="text-sm"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      {selectedOption.label} -{" "}
+                      {formatPriceWithSymbol(
+                        selectedOption.priceINR,
+                        selectedOption.priceUSD,
+                      )}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Message Input */}
+            <div className="mb-6">
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: colors.text.primary }}
+              >
+                Your Message
+              </label>
+              <textarea
+                value={enquiryMessage}
+                onChange={(e) => setEnquiryMessage(e.target.value)}
+                placeholder="Type your enquiry here..."
+                rows={5}
+                className="w-full px-4 py-3 rounded-xl border-2 transition-colors duration-200 resize-none"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = colors.interactive.primary;
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = colors.border.primary;
+                }}
+              />
+              <p
+                className="text-xs mt-2"
+                style={{ color: colors.text.secondary }}
+              >
+                This message will be sent to our WhatsApp: +91 88074 23228
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowEnquiryModal(false)}
+                className="flex-1 py-3 rounded-xl font-medium transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  color: colors.text.secondary,
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.accent;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = colors.background.primary;
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEnquirySubmit}
+                className="flex-1 py-3 rounded-xl font-bold transition-colors duration-200 flex items-center justify-center gap-2"
+                style={{
+                  backgroundColor: "#25D366",
+                  color: "#ffffff",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "#20BA5A";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "#25D366";
+                }}
+              >
+                <LucideIcons.MessageCircle size={20} />
+                Send via WhatsApp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -20,7 +20,9 @@ interface OrderSummaryProps {
   colors: any;
   normalizePrice: (price: any) => number;
   formatPriceWithSymbol: (priceINR: number, priceUSD?: number) => string;
-  onPlaceOrder: () => void;
+  couponCode: string;
+  setCouponCode: (code: string) => void;
+  applyCoupon: () => void;
   isProcessing?: boolean;
 }
 
@@ -30,7 +32,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   colors,
   normalizePrice,
   formatPriceWithSymbol,
-  onPlaceOrder,
+  couponCode,
+  setCouponCode,
+  applyCoupon,
   isProcessing = false,
 }) => {
   return (
@@ -104,6 +108,47 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         </span>
       </div>
 
+      {/* Coupon Section */}
+      <div
+        className="p-4 rounded-lg mb-4"
+        style={{
+          backgroundColor: colors.background.primary,
+          border: `1px solid ${colors.border.primary}`,
+        }}
+      >
+        <label
+          className="block text-sm font-medium mb-2"
+          style={{ color: colors.text.primary }}
+        >
+          Have a Coupon Code?
+        </label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter coupon code"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+            className="flex-1 px-4 py-2 rounded-lg border transition-colors duration-200"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+              color: colors.text.primary,
+            }}
+          />
+          <button
+            type="button"
+            onClick={applyCoupon}
+            className="px-6 py-2 rounded-lg font-medium transition-colors duration-200 hover:opacity-90"
+            style={{
+              backgroundColor: colors.interactive.primary,
+              color: "#ffffff",
+            }}
+          >
+            Apply
+          </button>
+        </div>
+      </div>
+
       <div
         className="p-4 rounded-md mb-4 text-sm leading-relaxed"
         style={{
@@ -137,12 +182,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       </p>
 
       <FormButton
-        type="button"
+        type="submit"
         variant="primary"
         className={`w-full py-3 text-lg transition duration-300 ease-in-out 
                    bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
                    hover:shadow-lg ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
-        onClick={onPlaceOrder}
         disabled={isProcessing}
       >
         {isProcessing ? (

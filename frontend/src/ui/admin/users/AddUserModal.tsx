@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { X, User, Mail, Phone, Lock, Shield } from "lucide-react";
+import { X, User, Mail, Lock, Shield } from "lucide-react";
 import { useCreateUser } from "../../../api/userApi";
 import FormInput from "../../../components/Input/FormInput";
+import PhoneInput from "../../../components/Input/PhoneInput";
 import FormButton from "../../../components/Button/FormButton";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
@@ -221,22 +222,13 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
 
           {/* Phone Number */}
           <div>
-            <div className="relative">
-              <FormInput
-                label="Phone Number (Optional)"
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={(e) => handleChange("phoneNumber", e.target.value)}
-                placeholder="Enter phone number"
-                className="pl-10"
-              />
-              <div className="absolute left-3 top-9 pointer-events-none">
-                <Phone
-                  className="h-5 w-5"
-                  style={{ color: colors.text.secondary }}
-                />
-              </div>
-            </div>
+            <PhoneInput
+              label="Phone Number (Optional)"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={(e) => handleChange("phoneNumber", e.target.value)}
+              placeholder="Enter phone number"
+            />
           </div>
 
           {/* Role */}

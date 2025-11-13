@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
 import razorpayService from '../services/razorpayService';
+import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 
 /**
@@ -244,6 +245,57 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
     }
 
     console.log('✅ Payment verified for order:', order.orderId);
+
+    // Send order confirmation notifications
+    try {
+      console.log('📧 Preparing to send notifications...');
+
+      // Populate order with product details for better email/WhatsApp content
+      await order.populate('userId', 'name email');
+
+      const orderDetails = {
+        orderId: order.orderId,
+        orderNumber: order.orderNumber,
+        customerName: order.shippingAddress.fullName,
+        customerPhone: order.shippingAddress.phoneNumber,
+        customerEmail: (order as any).userId?.email || order.notes?.replace('Email: ', '') || 'N/A',
+        items: order.items.map((item: any) => {
+          console.log('📦 Order Item from DB:', {
+            name: item.name,
+            version: item.version,
+            pricingPlan: item.pricingPlan,
+            fullItem: item
+          });
+
+          return {
+            productId: item.productId || null,
+            name: item.name,
+            version: item.version || null,
+            pricingPlan: item.pricingPlan || null,
+            quantity: item.quantity,
+            price: item.price
+          };
+        }),
+        subtotal: order.subtotal,
+        discount: order.discount,
+        totalAmount: order.totalAmount,
+        paymentId: razorpay_payment_id
+      };
+
+      console.log('📧 Sending email to:', process.env.CONTACT_EMAIL);
+
+      // Send email notification to admin
+      try {
+        await emailService.sendOrderConfirmationToAdmin(orderDetails);
+        console.log('✅ Admin email notification sent successfully');
+      } catch (emailError: any) {
+        console.error('❌ Failed to send admin email:', emailError.message);
+      }
+
+    } catch (notificationError: any) {
+      console.error('❌ Error sending notifications:', notificationError.message);
+      // Don't fail the payment verification if notifications fail
+    }
 
     res.status(200).json({
       success: true,
