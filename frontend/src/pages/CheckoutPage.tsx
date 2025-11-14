@@ -60,6 +60,17 @@ const CheckoutPage: React.FC = () => {
   const rawCartItems: any[] = location.state?.items || [];
   const rawSummary: any = location.state?.summary || {};
 
+  // Debug: Log cart items structure
+  console.log('🛒 Raw Cart Items received:', rawCartItems);
+  if (rawCartItems.length > 0) {
+    console.log('🔍 First cart item structure:', {
+      fullItem: rawCartItems[0],
+      productData: rawCartItems[0].product,
+      version: rawCartItems[0].product?.version,
+      licenseType: rawCartItems[0].licenseType
+    });
+  }
+
   const cartItems: CartItem[] = rawCartItems.map((item) => ({
     id: item._id || item.id || item.product?._id,
     product: {
@@ -127,14 +138,17 @@ const CheckoutPage: React.FC = () => {
       // Create order on backend
       const orderData = {
         items: rawCartItems.map((item) => {
-          console.log('🔍 Cart Item:', {
+          console.log('🔍 Mapping Cart Item for Order:', {
             productName: item.product?.name,
-            version: item.product?.version,
+            productVersion: item.product?.version,
             licenseType: item.licenseType,
+            hasProduct: !!item.product,
+            hasVersion: !!item.product?.version,
+            fullProductObject: item.product,
             fullItem: item
           });
 
-          return {
+          const orderItem = {
             productId: (item._id || item.id || item.product?._id).toString(),
             name: item.product?.name || "Unknown Product",
             quantity: item.quantity,
@@ -143,6 +157,9 @@ const CheckoutPage: React.FC = () => {
             version: item.product?.version || null,
             pricingPlan: item.licenseType || null,
           };
+
+          console.log('✅ Created Order Item:', orderItem);
+          return orderItem;
         }),
         subtotal: subtotal,
         discount: discount,

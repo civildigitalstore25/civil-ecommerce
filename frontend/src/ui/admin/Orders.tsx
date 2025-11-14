@@ -178,6 +178,16 @@ const Orders: React.FC = () => {
   };
 
   const handleViewDetails = (order: any) => {
+    console.log('📋 Selected Order Full Data:', order);
+    console.log('📦 Order Items:', order.items);
+    if (order.items && order.items.length > 0) {
+      console.log('🔍 First Item Details:', {
+        name: order.items[0].name,
+        version: order.items[0].version,
+        pricingPlan: order.items[0].pricingPlan,
+        fullItem: order.items[0]
+      });
+    }
     setSelectedOrder(order);
     setShowDetailsModal(true);
   };
@@ -499,7 +509,7 @@ const Orders: React.FC = () => {
                       </select>
                       {editedStatuses[getOrderId(order)] &&
                         editedStatuses[getOrderId(order)] !==
-                          order.orderStatus && (
+                        order.orderStatus && (
                           <FormButton
                             onClick={() =>
                               handleStatusChange(
@@ -840,44 +850,115 @@ const Orders: React.FC = () => {
                   Ordered Products ({selectedOrder.items.length} items)
                 </h4>
                 <div className="space-y-3">
-                  {selectedOrder.items.map((item: any, index: number) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-3 rounded-lg"
-                      style={{ backgroundColor: colors.background.secondary }}
-                    >
-                      {item.image && (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-16 h-16 object-cover rounded-lg"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <p
-                          className="font-medium"
-                          style={{ color: colors.text.primary }}
-                        >
-                          {item.name}
-                        </p>
-                        <p
-                          className="text-sm mt-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Quantity: {item.quantity} × ₹
-                          {item.price.toLocaleString()}
-                        </p>
+                  {selectedOrder.items.map((item: any, index: number) => {
+                    console.log(`🔍 Rendering item ${index}:`, {
+                      name: item.name,
+                      version: item.version,
+                      pricingPlan: item.pricingPlan,
+                      hasVersion: !!item.version,
+                      hasPricingPlan: !!item.pricingPlan,
+                      fullItem: item
+                    });
+
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-start gap-4 p-4 rounded-lg"
+                        style={{ backgroundColor: colors.background.secondary }}
+                      >
+                        {item.image && (
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className="font-semibold text-base mb-2"
+                            style={{ color: colors.text.primary }}
+                          >
+                            {item.name}
+                          </p>
+
+                          <div className="mt-2 space-y-1.5">
+                            {/* Product ID - Always show */}
+                            <p
+                              className="text-xs"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              <span className="font-medium" style={{ color: colors.text.primary }}>Product ID:</span> {item.productId}
+                            </p>
+
+                            {/* Version - Show if available */}
+                            {item.version ? (
+                              <p
+                                className="text-sm flex items-center gap-2"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                <span className="font-medium" style={{ color: colors.text.primary }}>Version:</span>
+                                <span className="px-2 py-0.5 rounded text-xs font-medium" style={{
+                                  backgroundColor: colors.background.accent,
+                                  color: colors.interactive.primary
+                                }}>
+                                  {item.version}
+                                </span>
+                              </p>
+                            ) : (
+                              <p
+                                className="text-xs"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                <span className="font-medium" style={{ color: colors.text.primary }}>Version:</span> <span style={{ opacity: 0.6 }}>Not specified</span>
+                              </p>
+                            )}
+
+                            {/* Pricing Plan - Show if available */}
+                            {item.pricingPlan ? (
+                              <p
+                                className="text-sm flex items-center gap-2"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                <span className="font-medium" style={{ color: colors.text.primary }}>Plan:</span>
+                                <span className="px-2 py-0.5 rounded text-xs font-medium capitalize" style={{
+                                  backgroundColor: colors.background.accent,
+                                  color: colors.interactive.primary
+                                }}>
+                                  {item.pricingPlan}
+                                </span>
+                              </p>
+                            ) : (
+                              <p
+                                className="text-xs"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                <span className="font-medium" style={{ color: colors.text.primary }}>Plan:</span> <span style={{ opacity: 0.6 }}>Not specified</span>
+                              </p>
+                            )}
+
+                            {/* Quantity and Price */}
+                            <p
+                              className="text-sm mt-2 pt-2"
+                              style={{
+                                color: colors.text.secondary,
+                                borderTop: `1px solid ${colors.border.secondary}`
+                              }}
+                            >
+                              <span className="font-medium" style={{ color: colors.text.primary }}>Quantity:</span> {item.quantity} × ₹{item.price.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <p
+                            className="font-bold text-lg"
+                            style={{ color: colors.text.primary }}
+                          >
+                            ₹{(item.quantity * item.price).toLocaleString()}
+                          </p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p
-                          className="font-semibold"
-                          style={{ color: colors.text.primary }}
-                        >
-                          ₹{(item.quantity * item.price).toLocaleString()}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

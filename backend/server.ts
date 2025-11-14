@@ -24,7 +24,10 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:3000",
-  "https://civil-ecommerce-yiav.vercel.app"
+  "https://civil-ecommerce-yiav.vercel.app",
+  "http://147.93.106.59:5173", // Add your deployed frontend URL
+  "http://147.93.106.59:3000",
+  "http://147.93.106.59",       // Add base URL without port
 ].filter(Boolean); // Remove undefined values
 
 app.use(
@@ -32,7 +35,7 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      
+
       if (allowedOrigins.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
@@ -42,7 +45,8 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    exposedHeaders: ['Content-Range', 'X-Content-Range'],
   })
 );
 
