@@ -30,6 +30,7 @@ const allowedOrigins = [
   "http://147.93.106.59",       // Add base URL without port
 ].filter(Boolean); // Remove undefined values
 
+// Apply CORS middleware first
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -47,8 +48,13 @@ app.use(
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     exposedHeaders: ['Content-Range', 'X-Content-Range'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
+
+// Handle preflight requests explicitly
+app.options('*', cors());
 
 app.use(express.json());
 
