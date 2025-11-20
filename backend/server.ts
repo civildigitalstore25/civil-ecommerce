@@ -25,9 +25,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://civil-ecommerce-yiav.vercel.app",
-  "http://147.93.106.59:5173", // Add your deployed frontend URL
-  "http://147.93.106.59:3000",
-  "http://147.93.106.59",       // Add base URL without port
+  "https://softzcart.com/"
 ].filter(Boolean); // Remove undefined values
 
 // Apply CORS middleware first
