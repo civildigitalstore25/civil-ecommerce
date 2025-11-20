@@ -25,7 +25,10 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://civil-ecommerce-yiav.vercel.app",
-  "https://softzcart.com/"
+  "https://softzcart.com",
+  "http://softzcart.com",
+  "https://www.softzcart.com",
+  "http://www.softzcart.com"
 ].filter(Boolean); // Remove undefined values
 
 // Apply CORS middleware first
