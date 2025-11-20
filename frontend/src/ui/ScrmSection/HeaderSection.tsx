@@ -51,16 +51,24 @@ const HeaderSection: React.FC = () => {
           </div>
         </div>
 
-        <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
-          {navItems.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => handleNavClick(item.href)}
-              className="transition hover:text-white"
-            >
-              {item.label}
-            </button>
-          ))}
+      <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
+  {navItems.map((item) => (
+    <button
+      key={item.label}
+      onClick={() => handleNavClick(item.href)}
+      className="transition"
+      style={{ color: "white" }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = colors.interactive.primary;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "white";
+      }}
+    >
+      {item.label}
+    </button>
+  ))}
+
           <button 
             className="rounded-xl px-4 py-2 font-semibold text-slate-900 transition hover:-translate-y-0.5"
             style={{ backgroundColor: colors.interactive.primary }}
