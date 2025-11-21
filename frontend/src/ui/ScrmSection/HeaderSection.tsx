@@ -3,12 +3,13 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const navItems = [
-  { label: "Home", href: "#top" },
+  { label: "Home", href: "#hero" },
   { label: "Demo Video", href: "#demo" },
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
   { label: "Reviews", href: "#reviews" },
-  { label: "FAQs", href: "#faqs" },
+  { label: "FAQs", href: "#faq" },
+  
 ];
 
 const HeaderSection: React.FC = () => {
