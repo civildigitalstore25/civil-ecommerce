@@ -3,6 +3,7 @@ import HeaderSection from "../../ui/ScrmSection/HeaderSection";
 import HeroSection from "../../ui/ScrmSection/HeroSection";
 import FAQ from "../../ui/ScrmSection/FAQ";
 import Pricing from "../../ui/ScrmSection/Pricing";
+import Review from "../../ui/ScrmSection/Review";
 
 
 const SCrm: React.FC = () => (
@@ -10,6 +11,7 @@ const SCrm: React.FC = () => (
     <HeaderSection />
     <HeroSection />
      <Pricing />
+     <Review />
         <FAQ />
     
   </div>
