@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 // motion is kept for potential section entry animations, 
 // but we switch the marquee itself to CSS for smoother pause control
-import { motion } from 'framer-motion'; 
+
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Review = () => {

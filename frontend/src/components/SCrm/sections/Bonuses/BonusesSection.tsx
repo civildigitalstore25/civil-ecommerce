@@ -1,7 +1,7 @@
-import { useAdminTheme } from "../../../../contexts/AdminThemeContext";
+
 
 const BonusesSection = () => {
-  const { colors } = useAdminTheme();
+
 
   // Calculate the next Saturday date
   const getNextSaturday = () => {
