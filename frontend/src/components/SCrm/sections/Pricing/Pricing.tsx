@@ -1,6 +1,6 @@
 import React from 'react';
 import { Check } from 'lucide-react';
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useAdminTheme } from "../../../../contexts/AdminThemeContext";
 
 const Pricing = () => {
     const { colors } = useAdminTheme();
@@ -25,7 +25,7 @@ const Pricing = () => {
             ],
             buttonText: 'Get Started Now',
             badge: 'Flexible Plan',
-            badgeClass: 'bg-slate-600 text-white', // Static class for non-theme badges
+            badgeClass: 'bg-slate-600 text-white',
             popular: false
         },
         {
@@ -49,7 +49,6 @@ const Pricing = () => {
             ],
             buttonText: 'Get Started Now',
             badge: 'Best Value',
-            // No badgeClass here; we will style this dynamically with theme color
             popular: true
         },
         {
@@ -72,7 +71,7 @@ const Pricing = () => {
             ],
             buttonText: 'Get Started Now',
             badge: 'Most Popular',
-            badgeClass: 'bg-blue-500 text-white', // Static class for non-theme badges
+            badgeClass: 'bg-blue-500 text-white',
             popular: false
         }
     ];
@@ -80,7 +79,6 @@ const Pricing = () => {
     return (
         <section id="pricing" className="py-20 bg-slate-950 font-sans ">
             <div className="container mx-auto px-4">
-
                 <div className="text-center mb-16">
                     <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                         The Perfect Plan for Your Business
@@ -98,7 +96,6 @@ const Pricing = () => {
                                     ? 'bg-[#111827] border-2 scale-105 z-10 shadow-2xl shadow-black/50'
                                     : 'bg-[#111827] border border-gray-800'
                                 }`}
-                            // Apply dynamic border color only to the popular plan
                             style={{ 
                                 borderColor: plan.popular ? colors.interactive.primary : undefined 
                             }}
@@ -108,10 +105,9 @@ const Pricing = () => {
                                 <div className="flex justify-center mb-6">
                                     <span 
                                         className={`px-4 py-1.5 rounded-full text-sm font-semibold ${plan.badgeClass || ''}`}
-                                        // Apply dynamic background to the popular badge
                                         style={plan.popular ? { 
                                             backgroundColor: colors.interactive.primary,
-                                            color: '#020617' // Dark text (slate-950) for contrast against bright theme colors
+                                            color: '#020617'
                                         } : {}}
                                     >
                                         {plan.badge}
@@ -128,7 +124,6 @@ const Pricing = () => {
 
                                     <div className="text-gray-500 text-sm mb-6">{plan.period}</div>
 
-                                    {/* Dynamic Theme Color for Tagline */}
                                     <p 
                                         className="font-bold text-sm mb-2"
                                         style={{ color: colors.interactive.primary }}
@@ -142,7 +137,6 @@ const Pricing = () => {
                                 <div className="space-y-4 flex-grow mt-4 mb-8 px-4">
                                     {plan.features.map((feature, i) => (
                                         <div key={i} className="flex items-start gap-3">
-                                            {/* Keeps checks green as per standard UI practice, or change to colors.interactive.primary if preferred */}
                                             <Check className="w-5 h-5 text-emerald-500 shrink-0" strokeWidth={3} />
                                             <span className="text-gray-400 text-sm text-left leading-relaxed">{feature}</span>
                                         </div>
@@ -154,7 +148,6 @@ const Pricing = () => {
                                         className={`w-full py-3 rounded-lg font-bold transition-all duration-300 ${!plan.popular ? 'bg-slate-800 text-white border border-slate-700 hover:bg-slate-700' : 'text-slate-900 shadow-lg'}`}
                                         style={plan.popular ? {
                                             backgroundColor: colors.interactive.primary,
-                                            // Add a subtle glow using the primary color
                                             boxShadow: `0 10px 15px -3px ${colors.interactive.primary}40` 
                                         } : {}}
                                         onMouseEnter={(e) => {
@@ -181,3 +174,4 @@ const Pricing = () => {
 };
 
 export default Pricing;
+

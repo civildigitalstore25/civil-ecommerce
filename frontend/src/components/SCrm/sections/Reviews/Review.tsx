@@ -1,8 +1,5 @@
 import { Star } from 'lucide-react';
-// motion is kept for potential section entry animations, 
-// but we switch the marquee itself to CSS for smoother pause control
-import { motion } from 'framer-motion'; 
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useAdminTheme } from "../../../../contexts/AdminThemeContext";
 
 const Review = () => {
     const { colors } = useAdminTheme();
@@ -18,7 +15,7 @@ const Review = () => {
         {
             name: 'Alisha M.',
             role: 'Customer Success',
-            content: 'The automated chatbots feature is a lifesaver. We’re handling 3× more inquiries without hiring extra support.',
+            content: 'The automated chatbots feature is a lifesaver. We\'re handling 3× more inquiries without hiring extra support.',
             rating: 5,
             image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=256&q=80'
         },
@@ -43,7 +40,6 @@ const Review = () => {
 
     return (
         <section id="reviews" className="py-20 bg-slate-950 overflow-hidden border-white/10">
-            {/* CSS Animation Definitions */}
             <style>{`
                 @keyframes marquee {
                     0% { transform: translateX(0); }
@@ -52,7 +48,6 @@ const Review = () => {
                 .animate-marquee {
                     animation: marquee 40s linear infinite;
                 }
-                /* PAUSE ON HOVER & TOUCH */
                 .animate-marquee:hover,
                 .animate-marquee:active,
                 .animate-marquee:focus {
@@ -73,14 +68,10 @@ const Review = () => {
             </div>
 
             <div className="relative w-full">
-                {/* Gradient Masks */}
                 <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-slate-950 to-transparent z-10 pointer-events-none"></div>
                 <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-950 to-transparent z-10 pointer-events-none"></div>
 
                 <div className="flex overflow-hidden">
-                    {/* Replaced motion.div with standard div using the CSS class defined above.
-                        This enables the 'animation-play-state: paused' property to work reliably.
-                    */}
                     <div
                         className="flex gap-8 animate-marquee"
                         style={{ width: "max-content" }}
@@ -126,3 +117,4 @@ const Review = () => {
 };
 
 export default Review;
+
