@@ -5,7 +5,7 @@ const HeroSection: React.FC = () => {
   const { colors } = useAdminTheme();
 
   return (
-    <section id="hero" className="border-b border-white/10 bg-slate-950/95 py-20">
+    <section id="hero" className=" bg-slate-950/95 py-20">
       <div className="mx-auto max-w-4xl text-center px-4">
 
         {/* Rating Row */}
