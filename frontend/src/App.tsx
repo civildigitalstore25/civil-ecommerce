@@ -36,6 +36,7 @@ import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentCallback from "./ui/payment/PaymentCallback";
 import MyOrdersPage from "./pages/MyOrdersPage";
+import SCrm from "./components/SCrm";
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -47,6 +48,7 @@ function AppLayout() {
     "/signup",
     "/forgot-password",
     "/reset-password",
+    "/scrm",
   ];
 
   const shouldHideHeader = hideHeaderRoutes.some(
@@ -94,6 +96,9 @@ function AppLayout() {
 
         {/* Auth callback (public) */}
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
+
+        {/* SCRM Landing Page */}
+        <Route path="/scrm" element={<SCrm />} />
 
         {/* Protected routes */}
         <Route

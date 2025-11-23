@@ -8,6 +8,7 @@ export const headerConfig = {
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },
     { label: "Antivirus", href: "/antivirus" },
+    { label: "Super CRM", href: "/scrm" },
     { label: "Contact", href: "/contact" },
   ],
   contact: {
