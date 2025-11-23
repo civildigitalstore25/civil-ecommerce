@@ -4,6 +4,7 @@
 .env.production
 .env.development
 backend/.env
+frontend/.env
 # Node modules
 node_modules/
 
