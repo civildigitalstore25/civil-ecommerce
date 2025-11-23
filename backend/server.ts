@@ -56,7 +56,7 @@ app.use(
 
 // Handle preflight requests explicitly
 app.options('*', cors());
-
+app.set('trust proxy', true);
 app.use(express.json());
 
 // Add session middleware for Passport
