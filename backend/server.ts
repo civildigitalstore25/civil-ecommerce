@@ -19,7 +19,6 @@ import reviewRoutes from "./routes/reviewRoutes";
 
 const app = express();
 
-// CORS configuration - allow both production and development origins
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
