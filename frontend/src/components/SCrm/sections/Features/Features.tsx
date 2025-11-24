@@ -4,6 +4,9 @@ import FeatureCenterCard from "./FeatureCenterCard";
 import OldNewWayComparison from "../OldNewWay/OldNewWayComparison";
 import JourneySteps from "../JourneySteps/JourneySteps";
 import LimitedTimeOffer from "../LimitedTimeOffer/LimitedTimeOffer";
+import { LayoutDashboard, Clock, Bot, GitMerge, Database, Webhook, MessageSquare, Calendar, Link, Zap, PenTool, Sparkles } from "lucide-react";
+
+
 
 export default function Features() {
   const { colors } = useAdminTheme();
@@ -22,51 +25,91 @@ export default function Features() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Kanban Pipeline" 
-            description="Manage tasks, workflows, leads, and communication in a visual, drag-and-drop board." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Automated Follow-ups" 
-            description="Set up smart follow-up sequences that trigger automatically based on lead behavior." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Bulk Campaigns" 
-            description="Send personalized bulk WhatsApp messages to thousands of contacts with one click." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Chatbot & Auto Reply" 
-            description="Handle customer inquiries 24/7 with intelligent chatbots and automated responses." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Lead Management" 
-            description="Organize and track all your leads with tags, labels, and custom fields." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Analytics & Reports" 
-            description="Track message delivery, open rates, and conversion metrics in real-time." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Team Collaboration" 
-            description="Share conversations, assign leads, and collaborate seamlessly with your team." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="API Integration" 
-            description="Connect with your existing tools and workflows through powerful API endpoints." 
-          />
-          <FeatureCard 
-            image="https://via.placeholder.com/150" 
-            title="Message Templates" 
-            description="Save and reuse your best-performing message templates for consistent communication." 
-          />
+    <FeatureCard 
+  icon={LayoutDashboard}
+  title="Kanban Dashboard"
+  description="Visualize your sales pipeline with a drag-and-drop Kanban board."
+  color="#3B82F6"
+/>
+
+<FeatureCard 
+  icon={Clock}
+  title="Schedule Messages"
+  description="Plan and schedule WhatsApp messages for perfect timing."
+  color="#F59E0B"
+/>
+
+<FeatureCard 
+  icon={Bot}
+  title="Chatbot Automation"
+  description="Automate replies and qualify leads 24/7 without human intervention."
+  color="#10B981"
+/>
+
+<FeatureCard 
+  icon={GitMerge}
+  title="Follow-up Funnels"
+  description="Create automated sequences to nurture leads into customers."
+  color="#8B5CF6"
+/>
+
+<FeatureCard 
+  icon={Database}
+  title="Data Backup & Restore"
+  description="Keep your customer data safe with automatic backups."
+  color="#EC4899"
+/>
+
+<FeatureCard 
+  icon={Webhook}
+  title="Webhook & API"
+  description="Connect with Zapier, Pabbly, and more."
+  color="#6366F1"
+/>
+
+<FeatureCard 
+  icon={MessageSquare}
+  title="Bulk Messaging"
+  description="Send personalized broadcasts safely."
+  color="#EF4444"
+/>
+
+<FeatureCard 
+  icon={Calendar}
+  title="Meeting Scheduling"
+  description="Let clients book appointments directly via WhatsApp."
+  color="#14B8A6"
+/>
+
+<FeatureCard 
+  icon={Link}
+  title="Link Generator"
+  description="Create custom WhatsApp links for campaigns."
+  color="#F97316"
+/>
+
+<FeatureCard 
+  icon={Zap}
+  title="Quick Reply"
+  description="Save time with pre-saved responses."
+  color="#EAB308"
+/>
+
+<FeatureCard 
+  icon={PenTool}
+  title="Team Signature"
+  description="Add professional signatures to every message."
+  color="#06B6D4"
+/>
+
+<FeatureCard 
+  icon={Sparkles}
+  title="AI Assistant"
+  description="Leverage AI to write better messages and close deals."
+  color="#D946EF"
+/>
+
+
         </div>
       </div>
 
@@ -82,30 +125,37 @@ export default function Features() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <FeatureCenterCard 
-            image="https://via.placeholder.com/400x225" 
-            title="Live Chat + Tags" 
-            description="Real-time messaging with smart tagging system for instant lead organization and follow-up." 
-            badge="Popular"
-          />
-          <FeatureCenterCard 
-            image="https://via.placeholder.com/400x225" 
-            title="Bulk WhatsApp Messages" 
-            description="Send bulk WhatsApp messages with clickable buttons to engage and convert at scale." 
-            badge="Featured"
-          />
-          <FeatureCenterCard 
-            image="https://via.placeholder.com/400x225" 
-            title="Advanced Chatbot" 
-            description="AI-powered chatbot with auto-reply capabilities to handle customer queries automatically." 
-            badge="New"
-          />
-          <FeatureCenterCard 
-            image="https://via.placeholder.com/400x225" 
-            title="Message Reports" 
-            description="Comprehensive analytics for sent and received messages with detailed insights." 
-          />
-        </div>
+
+ <FeatureCenterCard 
+  image="https://images.moneycontrol.com/static-mcnews/2024/12/20241224123954_WhatsApp-Image-2024-11-13-at-13.42.06.jpeg?impolicy=website&width=770&height=431"
+  title="Live Chat + Tags"
+  description="Real-time messaging with smart tagging system for instant lead organization and follow-up."
+  badge="Popular"
+/>
+
+
+  <FeatureCenterCard 
+    image="https://www.tidio.com/wp-content/uploads/Best-whatsapp-chatbot-tools.jpg"
+    title="Bulk WhatsApp Messages" 
+    description="Send bulk WhatsApp messages with clickable buttons to engage and convert at scale." 
+    badge="Featured"
+  />
+
+  <FeatureCenterCard 
+    image="https://images.pexels.com/photos/8386440/pexels-photo-8386440.jpeg"
+    title="Advanced Chatbot" 
+    description="AI-powered chatbot with auto-reply capabilities to handle customer queries automatically." 
+    badge="New"
+  />
+
+  <FeatureCenterCard 
+    image="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg"
+    title="Message Reports" 
+    description="Comprehensive analytics for sent and received messages with detailed insights." 
+  />
+
+</div>
+
         <OldNewWayComparison />
         <JourneySteps />
         <LimitedTimeOffer />
