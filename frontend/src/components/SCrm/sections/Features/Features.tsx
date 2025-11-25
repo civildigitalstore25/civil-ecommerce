@@ -135,7 +135,7 @@ export default function Features() {
 
 
   <FeatureCenterCard 
-    image="https://www.tidio.com/wp-content/uploads/Best-whatsapp-chatbot-tools.jpg"
+    image="https://smsgraph.com/wp-content/uploads/2023/11/14-1024x683.jpg"
     title="Bulk WhatsApp Messages" 
     description="Send bulk WhatsApp messages with clickable buttons to engage and convert at scale." 
     badge="Featured"
