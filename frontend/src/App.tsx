@@ -100,14 +100,10 @@ function AppLayout() {
         {/* SCRM Landing Page */}
         <Route path="/scrm" element={<SCrm />} />
 
-        {/* Protected routes */}
+        {/* Home page is public */}
         <Route
           path="/"
-          element={
-            <AuthGuard>
-              <HomePage />
-            </AuthGuard>
-          }
+          element={<HomePage />}
         />
         <Route
           path="/profile"
