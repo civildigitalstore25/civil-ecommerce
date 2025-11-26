@@ -5,7 +5,6 @@ import { HeroSection } from '../components/sections/HeroSection';
 import { FeaturesSection } from '../components/sections/FeaturesSection';
 import { AllAppsSection } from '../components/sections/AllAppsSection';
 import { IncludedAppsSection } from '../components/sections/IncludedAppsSection';
-import { CreativeCloudLogoSection } from '../components/sections/CreativeCloudLogoSection';
 import { PricingSection } from '../components/sections/PricingSection';
 import { TestimonialsSection } from '../components/sections/TestimonialsSection';
 import { FAQSection } from '../components/sections/FAQSection';

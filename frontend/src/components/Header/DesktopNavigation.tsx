@@ -83,7 +83,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
       {headerConfig.navigation
         .filter((item) => item.label !== "Home" && item.label !== "Super CRM")
-        .map((item, idx, arr) => {
+        .map((item) => {
           // Special handling for AutoDesk menu item
           if (item.label === "AutoDesk") {
             return (

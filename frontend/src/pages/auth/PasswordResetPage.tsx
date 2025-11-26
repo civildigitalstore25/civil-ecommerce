@@ -334,7 +334,6 @@ export default function PasswordResetPage() {
   }
 
   const passwordValidation = validatePassword(password);
-  const isEmailValid = validateEmail(email);
 
   return (
     <div
