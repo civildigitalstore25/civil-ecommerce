@@ -189,9 +189,7 @@ function AppLayout() {
         <Route
           path="/product/:id"
           element={
-            <AuthGuard>
               <ProductDetail />
-            </AuthGuard>
           }
         />
         <Route
