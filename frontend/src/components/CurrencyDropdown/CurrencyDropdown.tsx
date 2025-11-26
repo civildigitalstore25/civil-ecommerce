@@ -52,14 +52,14 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          flex items-center gap-2 px-3 py-2 rounded-lg border transition-all duration-200
+          flex items-center gap-1 px-2 py-1 rounded-lg transition-all duration-200
           hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-opacity-50
-          ${compact ? "text-sm" : "text-base"}
+          ${compact ? "text-xs" : "text-sm"}
         `}
         style={{
           backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary,
           color: colors.text.primary,
+          border: 'none',
         }}
         onFocus={(e) => {
           e.currentTarget.style.boxShadow = `0 0 0 2px ${colors.interactive.primary}40`;
@@ -74,25 +74,11 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
           e.currentTarget.style.backgroundColor = colors.background.secondary;
         }}
       >
-        <span className={compact ? "text-lg" : "text-xl"}>
-          {currentCurrency.flag}
+        <span className={compact ? "text-base" : "text-lg"}>
+          {currentCurrency.symbol}
         </span>
-
-        {!compact && (
-          <>
-            <span className="font-medium">{currentCurrency.code}</span>
-            <span className="text-sm opacity-75">
-              ({currentCurrency.symbol})
-            </span>
-          </>
-        )}
-
-        {compact && (
-          <span className="font-medium text-sm">{currentCurrency.symbol}</span>
-        )}
-
         <ChevronDown
-          className={`w-4 h-4 transition-transform duration-200 ${
+          className={`w-3 h-3 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -111,7 +97,7 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
               key={currency.code}
               onClick={() => handleCurrencyChange(currency.code)}
               className={`
-                w-full flex items-center gap-3 px-4 py-3 transition-colors duration-150
+                w-full flex items-center gap-2 px-3 py-2 transition-colors duration-150
                 hover:bg-opacity-80 text-left
                 ${selectedCurrency === currency.code ? "font-medium" : ""}
               `}
@@ -124,8 +110,7 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
               }}
               onMouseEnter={(e) => {
                 if (selectedCurrency !== currency.code) {
-                  e.currentTarget.style.backgroundColor =
-                    colors.background.tertiary;
+                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
                 }
               }}
               onMouseLeave={(e) => {
@@ -134,18 +119,7 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
                 }
               }}
             >
-              <span className="text-xl">{currency.flag}</span>
-
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{currency.code}</span>
-                  <span className="text-sm opacity-75">
-                    ({currency.symbol})
-                  </span>
-                </div>
-                <div className="text-sm opacity-60">{currency.name}</div>
-              </div>
-
+              <span className="text-base">{currency.symbol}</span>
               {selectedCurrency === currency.code && (
                 <Check
                   className="w-4 h-4"

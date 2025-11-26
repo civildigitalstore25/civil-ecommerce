@@ -15,6 +15,7 @@ interface DesktopNavigationProps {
   onAntivirusClick?: () => void;
   allCategoriesButtonRef?: React.RefObject<HTMLButtonElement | null>;
   onAllCategoriesClick?: () => void;
+  hideHomeMenu?: boolean;
 }
 
 const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
@@ -29,27 +30,30 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   onAntivirusClick,
   allCategoriesButtonRef,
   onAllCategoriesClick,
+  hideHomeMenu,
 }) => {
   const { colors } = useAdminTheme();
 
   return (
     <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 mr-4">
-      {/* Home Nav First */}
-      <button
-        key="home-nav"
-        onClick={() => onNavigate("/")}
-        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-        style={{ color: colors.text.secondary }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color =
-            colors.interactive.primary;
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-        }}
-      >
-        Home
-      </button>
+      {/* Home Nav First (conditionally rendered) */}
+      {!hideHomeMenu && (
+        <button
+          key="home-nav"
+          onClick={() => onNavigate("/")}
+          className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+          style={{ color: colors.text.secondary }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color =
+              colors.interactive.primary;
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+          }}
+        >
+          Home
+        </button>
+      )}
 
       {/* All Categories Menu */}
       <button
