@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Controller } from "react-hook-form";
+import { useAppForm } from "../../hooks/useAppForm";
 import Swal from "sweetalert2";
 import { useSignUp, useUserInvalidate } from "../../api/userQueries";
 import { saveAuth } from "../../utils/auth";
@@ -10,49 +11,40 @@ import PasswordInput from "../../components/Input/PasswordInput";
 import PhoneInput from "../../components/Input/PhoneInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
+
+interface SignupFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  fullName: string;
+  phoneNumber: string;
+}
+
 export default function SignupPage() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    fullName: "",
-    phoneNumber: "",
-  });
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
   const signUpMutation = useSignUp();
   const { colors } = useAdminTheme();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useAppForm<SignupFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      fullName: "",
+      phoneNumber: "",
+    },
+  });
 
-  const validateForm = () => {
-    if (formData.password !== formData.confirmPassword) {
-      Swal.fire({
-        icon: "error",
-        title: "Validation Error",
-        text: "Passwords do not match",
-      });
-      return false;
-    }
-    if (formData.password.length < 6) {
-      Swal.fire({
-        icon: "error",
-        title: "Validation Error",
-        text: "Password too short",
-      });
-      return false;
-    }
-    return true;
-  };
+  const password = watch("password");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    const { confirmPassword, ...signUpData } = formData;
+  const onSubmit = (data: SignupFormData) => {
+    const { confirmPassword, ...signUpData } = data;
     signUpMutation.mutate(signUpData, {
       onSuccess: (data) => {
         saveAuth({
@@ -73,7 +65,6 @@ export default function SignupPage() {
       },
       onError: (err: any) => {
         const errorMessage = err.response?.data?.message || "Signup failed";
-        setError(errorMessage);
         Swal.fire({
           icon: "error",
           title: "Signup Failed",
@@ -126,64 +117,152 @@ export default function SignupPage() {
 
         {/* Body */}
         <div className="p-8">
-          {error && (
-            <div
-              className="px-4 py-3 rounded-lg text-sm mb-4"
-              style={{
-                backgroundColor: `${colors.status.error}20`,
-                borderColor: colors.status.error,
-                color: colors.status.error,
-                border: `1px solid ${colors.status.error}`,
-              }}
-            >
-              {error}
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+            {/* Full Name */}
+            <div>
+              <Controller
+                name="fullName"
+                control={control}
+                rules={{
+                  required: "Full name is required",
+                  minLength: {
+                    value: 2,
+                    message: "Name must be at least 2 characters",
+                  },
+                  maxLength: {
+                    value: 50,
+                    message: "Name must not exceed 50 characters",
+                  },
+                  pattern: {
+                    value: /^[a-zA-Z\s]+$/,
+                    message: "Name can only contain letters and spaces",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Full Name "
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your full name"
+                  />
+                )}
+              />
+              {errors.fullName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.fullName.message}
+                </p>
+              )}
             </div>
-          )}
 
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <FormInput
-              label="Full Name "
-              name="fullName"
-              required
-              value={formData.fullName}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-            />
-            <FormInput
-              label="Email "
-              type="email"
-              name="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-            />
-            <PhoneInput
-              label="Phone (Optional)"
-              name="phoneNumber"
-              value={formData.phoneNumber}
-              onChange={handleChange}
-              placeholder="Enter your phone number"
-            />
+            {/* Email */}
+            <div>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email address is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Email "
+                    type="email"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your email"
+                  />
+                )}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-            <PasswordInput
-              label="Password "
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
+            {/* Phone Number */}
+            <div>
+              <Controller
+                name="phoneNumber"
+                control={control}
+                render={({ field }) => (
+                  <PhoneInput
+                    label="Phone (Optional)"
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your phone number"
+                  />
+                )}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                  pattern: {
+                    value:
+                      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                    message:
+                      "Password must contain uppercase, lowercase, number, and special character",
+                  },
+                }}
+                render={({ field }) => (
+                  <PasswordInput
+                    label="Password "
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your password"
+                  />
+                )}
+              />
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
             {/* Confirm Password */}
-            <PasswordInput
-              label="Confirm Password "
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm password"
-              required
-            />
+            <div>
+              <Controller
+                name="confirmPassword"
+                control={control}
+                rules={{
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                }}
+                render={({ field }) => (
+                  <PasswordInput
+                    label="Confirm Password "
+                    name={field.name}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Confirm password"
+                  />
+                )}
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
 
             <FormButton
               type="submit"

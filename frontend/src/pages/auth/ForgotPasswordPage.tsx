@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { useAppForm } from "../../hooks/useAppForm";
 import Swal from "sweetalert2";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
@@ -9,22 +11,35 @@ import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { forgotPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
+interface ForgotPasswordFormData {
+  email: string;
+}
+
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
-  const [error, setError] = useState("");
+  const [sentEmail, setSentEmail] = useState("");
   const { colors } = useAdminTheme();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useAppForm<ForgotPasswordFormData>({
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const onSubmit = async (data: ForgotPasswordFormData) => {
     setIsLoading(true);
 
     try {
       // API call to send password reset email
-      await forgotPasswordAPI({ email });
+      await forgotPasswordAPI({ email: data.email });
 
+      setSentEmail(data.email);
       setIsEmailSent(true);
 
       Swal.fire({
@@ -38,7 +53,6 @@ export default function ForgotPasswordPage() {
     } catch (err: any) {
       const errorMessage =
         err.message || "Failed to send reset email. Please try again.";
-      setError(errorMessage);
 
       Swal.fire({
         icon: "error",
@@ -55,7 +69,8 @@ export default function ForgotPasswordPage() {
 
   const handleResendEmail = () => {
     setIsEmailSent(false);
-    setEmail("");
+    setSentEmail("");
+    reset();
   };
 
   if (isEmailSent) {
@@ -105,7 +120,7 @@ export default function ForgotPasswordPage() {
               className="font-medium text-sm mt-1"
               style={{ color: colors.interactive.primary }}
             >
-              {email}
+              {sentEmail}
             </p>
           </div>
 
@@ -228,34 +243,39 @@ export default function ForgotPasswordPage() {
             </Link>
           </div>
 
-          {error && (
-            <div
-              className="px-4 py-3 rounded-lg text-sm mb-6"
-              style={{
-                backgroundColor: `${colors.status.error}20`,
-                borderColor: colors.status.error,
-                color: colors.status.error,
-                border: `1px solid ${colors.status.error}`,
-              }}
-            >
-              {error}
-            </div>
-          )}
-
           {/* Form */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <FormInput
-              label="Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              required
-            />
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <div>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email address is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Email Address"
+                    type="email"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your email address"
+                  />
+                )}
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
             <FormButton
               type="submit"
-              disabled={isLoading || !email.trim()}
+              disabled={isLoading}
               className="w-full"
             >
               {isLoading ? (

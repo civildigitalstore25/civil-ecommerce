@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { Controller } from "react-hook-form";
+import { useAppForm } from "../../hooks/useAppForm";
 import Swal from "sweetalert2";
 import { useSignIn, useUserInvalidate } from "../../api/userQueries";
 import { saveAuth } from "../../utils/auth";
@@ -11,21 +12,31 @@ import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
 
+interface SigninFormData {
+  email: string;
+  password: string;
+}
+
 export default function SigninPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
   const signInMutation = useSignIn();
   const { colors } = useAdminTheme();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useAppForm<SigninFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
+  const onSubmit = (data: SigninFormData) => {
     signInMutation.mutate(
-      { email, password },
+      { email: data.email, password: data.password },
       {
         onSuccess: (data) => {
           saveAuth({
@@ -51,7 +62,6 @@ export default function SigninPage() {
         onError: (err: any) => {
           const errorMessage =
             err.response?.data?.message || "Something went wrong";
-          setError(errorMessage);
 
           Swal.fire({
             icon: "error",
@@ -109,27 +119,12 @@ export default function SigninPage() {
 
         {/* Body */}
         <div className="p-8">
-          {error && (
-            <div
-              className="px-4 py-3 rounded-lg text-sm mb-4"
-              style={{
-                backgroundColor: `${colors.status.error}20`,
-                borderColor: colors.status.error,
-                color: colors.status.error,
-                border: `1px solid ${colors.status.error}`,
-              }}
-            >
-              {error}
-            </div>
-          )}
-
           {/* Google Login */}
           <GoogleButton
             text="Continue with Google"
             onClick={() => {
-              window.location.href = `${
-                import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-              }/api/auth/google`;
+              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
+                }/api/auth/google`;
             }}
           />
 
@@ -152,25 +147,65 @@ export default function SigninPage() {
           </div>
 
           {/* Form */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <FormInput
-              label="Email "
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              required
-            />
-
-            <div className="space-y-2">
-              <PasswordInput
-                label="Password "
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {/* Email */}
+            <div>
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email address is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Email "
+                    type="email"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="you@example.com"
+                  />
+                )}
               />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
+
+            {/* Password */}
+            <div className="space-y-2">
+              <div>
+                <Controller
+                  name="password"
+                  control={control}
+                  rules={{
+                    required: "Password is required",
+                    minLength: {
+                      value: 6,
+                      message: "Password must be at least 6 characters",
+                    },
+                  }}
+                  render={({ field }) => (
+                    <PasswordInput
+                      label="Password "
+                      name={field.name}
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Enter your password"
+                    />
+                  )}
+                />
+                {errors.password && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
+              </div>
 
               {/* Forgot Password Link */}
               <div className="text-right">
