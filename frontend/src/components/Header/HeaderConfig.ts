@@ -7,9 +7,14 @@ export const headerConfig = {
     { label: "AutoDesk", href: "/autodesk" },
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },
+    { label: "Adobe Cloud", href: "/adobe-cloud" },
     { label: "Antivirus", href: "/antivirus" },
-    { label: "Super CRM", href: "/scrm" },
+    // Super CRM moved to Offers dropdown
     { label: "Contact", href: "/contact" },
+  ],
+  offers: [
+    { label: "Super CRM", href: "/scrm" },
+    { label: "Adobe Cloud", href: "/adobe-cloud" },
   ],
   contact: {
     phone: "790-355-4767",

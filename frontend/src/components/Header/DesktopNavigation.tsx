@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronDown } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
+import { useState, useRef } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface DesktopNavigationProps {
@@ -33,6 +34,8 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   hideHomeMenu,
 }) => {
   const { colors } = useAdminTheme();
+  const [offersOpen, setOffersOpen] = useState(false);
+  const offersButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 mr-4">
@@ -79,8 +82,8 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
       </button>
 
       {headerConfig.navigation
-        .filter((item) => item.label !== "Home")
-        .map((item) => {
+        .filter((item) => item.label !== "Home" && item.label !== "Super CRM")
+        .map((item, idx, arr) => {
           // Special handling for AutoDesk menu item
           if (item.label === "AutoDesk") {
             return (
@@ -214,23 +217,65 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           }
 
           // Regular navigation items
+          const isContact = item.label === "Contact";
           return (
-            <button
-              key={item.href}
-              onClick={() => onNavigate(item.href)}
-              className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.interactive.primary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.text.secondary;
-              }}
-            >
-              {item.label}
-            </button>
+            <React.Fragment key={item.href}>
+              <button
+                onClick={() => onNavigate(item.href)}
+                className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                }}
+              >
+                {item.label}
+              </button>
+              {/* Render Offers dropdown right after Contact */}
+              {isContact && (
+                <div className="relative" key="offers-dropdown">
+                  <button
+                    ref={offersButtonRef}
+                    onClick={() => setOffersOpen((v) => !v)}
+                    className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                    }}
+                    type="button"
+                  >
+                    <span>Offers</span>
+                    <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+                  </button>
+                  {offersOpen && (
+                    <div
+                      className="absolute left-0 mt-2 w-48 rounded-lg shadow-lg z-50 border"
+                      style={{ background: colors.background.primary, borderColor: colors.border.primary }}
+                      onMouseLeave={() => setOffersOpen(false)}
+                    >
+                      {headerConfig.offers.map((offer) => (
+                        <button
+                          key={offer.href}
+                          onClick={() => { setOffersOpen(false); onNavigate(offer.href); }}
+                          className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          style={{ color: colors.text.primary }}
+                          type="button"
+                        >
+                          {offer.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </React.Fragment>
           );
         })}
     </nav>
