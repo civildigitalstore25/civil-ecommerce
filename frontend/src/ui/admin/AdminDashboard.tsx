@@ -6,7 +6,6 @@ import {
   Tag,
   Building2,
   ShoppingCart,
-  Settings as SettingsIcon,
   Users,
   Image,
   TicketPercent,
@@ -17,7 +16,7 @@ import Products from "./products/Products";
 import Categories from "./Categories";
 import Companies from "./Companies";
 import Orders from "./Orders";
-import Settings from "./Settings";
+
 import UserManagement from "./users/UserManagement";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Banner from "./Banner";
@@ -49,7 +48,6 @@ const AdminDashboardContent: React.FC = () => {
     { id: "reviews", label: "Reviews", icon: MessageSquare },
     { id: "banner", label: "Banner", icon: Image },
     { id: "coupons", label: "Coupons", icon: TicketPercent },
-    { id: "settings", label: "Settings", icon: SettingsIcon },
   ];
 
   const renderContent = () => {
@@ -72,8 +70,6 @@ const AdminDashboardContent: React.FC = () => {
         return <Banner />;
       case "coupons":
         return <Coupons />;
-      case "settings":
-        return <Settings />;
       default:
         return <Dashboard />;
     }

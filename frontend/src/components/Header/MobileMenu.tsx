@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Search,
   Phone,
   UserCheck,
   Shield,
@@ -17,11 +16,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface MobileMenuProps {
   isOpen: boolean;
-  searchQuery: string;
   onClose: () => void;
-  onSearch: () => void;
-  onSearchChange: (query: string) => void;
-  onSearchKeyPress: (e: React.KeyboardEvent) => void;
   onNavigate: (href: string) => void;
   user: any;
   onLogout: () => void;
@@ -29,11 +24,7 @@ interface MobileMenuProps {
 
 const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
-  searchQuery,
   onClose,
-  onSearch,
-  onSearchChange,
-  onSearchKeyPress,
   onNavigate,
   user,
   onLogout,
@@ -63,38 +54,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
         }}
       >
         <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-4 pb-20">
-          {/* Mobile search */}
-        <div className="relative">
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            onKeyPress={onSearchKeyPress}
-            placeholder={headerConfig.search.placeholder}
-            className="w-full pl-4 pr-12 py-2 sm:py-3 text-sm border rounded-lg focus:ring-2 transition-colors duration-200"
-            style={{
-              backgroundColor: colors.background.primary,
-              borderColor: colors.border.primary,
-              color: colors.text.primary,
-            }}
-            onFocus={(e) => {
-              e.target.style.borderColor = colors.interactive.primary;
-            }}
-            onBlur={(e) => {
-              e.target.style.borderColor = colors.border.primary;
-            }}
-          />
-          <button
-            onClick={onSearch}
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-md hover:opacity-80 transition-all duration-200"
-            style={{
-              backgroundColor: colors.interactive.primary,
-              color: colors.text.inverse,
-            }}
-          >
-            <Search className="w-4 h-4" />
-          </button>
-        </div>
+
 
         {/* Shop by Category Section */}
         <div

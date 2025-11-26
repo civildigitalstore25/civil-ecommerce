@@ -30,25 +30,14 @@ const HeaderSection: React.FC = () => {
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <div className="flex items-center gap-3">
-          <div 
-            className="flex h-12 w-12 items-center justify-center rounded-2xl text-slate-950 text-2xl font-black"
-            style={{
-              background: `linear-gradient(to bottom right, ${colors.interactive.primary}, ${colors.interactive.primaryHover || colors.interactive.primary})`
-            }}
-          >
-            ⚡
-          </div>
-          <div>
-            <p 
-              className="text-xs uppercase tracking-[0.35em]"
-              style={{ color: colors.interactive.primary }}
-            >
-              Super CRM
-            </p>
-            <p className="text-xl font-semibold text-white">
-              WhatsApp Growth Suite
-            </p>
-          </div>
+          <a href="/" onClick={(e) => { e.preventDefault(); window.location.href = "/"; }} className="flex items-center">
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              className="h-12 w-auto object-contain" 
+              style={{ cursor: 'pointer' }}
+            />
+          </a>
         </div>
 
         <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
