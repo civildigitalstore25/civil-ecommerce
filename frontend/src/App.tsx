@@ -16,7 +16,7 @@ import SignupPage from "./pages/auth/SignupPage";
 import SigninPage from "./pages/auth/SigninPage";
 import AuthCallbackPage from "./pages/auth/AuthCallbackPage";
 import ProfilePage from "./ui/profile/ProfilePage";
-import { Orders, Settings, Categories, Companies, Dashboard } from "./ui/admin";
+import { Orders,Categories, Companies, Dashboard } from "./ui/admin";
 import BrandCategoryListing from "./pages/BrandCategoryListing";
 import BrandSubcategoriesPage from "./pages/BrandSubcategoriesPage";
 import AllProductsPage from "./pages/AllProductsPage";
@@ -145,14 +145,7 @@ function AppLayout() {
             </AuthGuard>
           }
         />
-        <Route
-          path="/admin/settings"
-          element={
-            <AuthGuard>
-              <Settings />
-            </AuthGuard>
-          }
-        />
+        
         <Route
           path="/admin/categories"
           element={

@@ -119,7 +119,8 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
                 }
               }}
             >
-              <span className="text-base">{currency.symbol}</span>
+              <span className="text-base">{currency.flag}</span>
+              <span className="ml-2 text-sm">{currency.name}</span>
               {selectedCurrency === currency.code && (
                 <Check
                   className="w-4 h-4"
@@ -129,17 +130,7 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
             </button>
           ))}
 
-          {/* Exchange Rate Info */}
-          <div
-            className="px-4 py-2 border-t text-xs"
-            style={{
-              borderColor: colors.border.secondary,
-              backgroundColor: colors.background.tertiary,
-              color: colors.text.secondary,
-            }}
-          >
-            Exchange Rate: 1 USD ≈ ₹{currencies.INR.exchangeRate}
-          </div>
+          {/* Exchange Rate Info removed as per request */}
         </div>
       )}
     </div>

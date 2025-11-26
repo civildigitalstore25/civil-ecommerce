@@ -4,4 +4,4 @@ export { default as Products } from "./products/Products";
 export { default as Categories } from "./Categories";
 export { default as Companies } from "./Companies";
 export { default as Orders } from "./Orders";
-export { default as Settings } from "./Settings";
+
