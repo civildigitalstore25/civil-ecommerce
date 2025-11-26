@@ -37,6 +37,8 @@ import CheckoutPage from "./pages/CheckoutPage";
 import PaymentCallback from "./ui/payment/PaymentCallback";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import SCrm from "./components/SCrm";
+import AdobeCloudPage from "./pages/adobecloudpage";
+
 const queryClient = new QueryClient();
 
 function AppLayout() {
@@ -49,6 +51,7 @@ function AppLayout() {
     "/forgot-password",
     "/reset-password",
     "/scrm",
+    "/adobe-cloud",
   ];
 
   const shouldHideHeader = hideHeaderRoutes.some(
@@ -99,6 +102,7 @@ function AppLayout() {
 
         {/* SCRM Landing Page */}
         <Route path="/scrm" element={<SCrm />} />
+        <Route path="/adobe-cloud" element={<AdobeCloudPage />} />
 
         {/* Home page is public */}
         <Route
