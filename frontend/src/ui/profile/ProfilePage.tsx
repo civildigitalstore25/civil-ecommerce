@@ -1,5 +1,6 @@
 // EnhancedProfilePage.tsx
-import { useEffect, useState } from "react";
+import React from "react";
+import { useAppForm } from "../../hooks/useAppForm";
 import { useCurrentUser, useUpdateProfile } from "../../api/auth";
 import FormInput from "../../components/Input/FormInput";
 import PhoneInput from "../../components/Input/PhoneInput";
@@ -10,33 +11,35 @@ import Swal from "sweetalert2";
 export default function ProfilePage() {
   const { data: user, isLoading, error, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    phoneNumber: "",
-  });
+  const [isEditing, setIsEditing] = React.useState(false);
   const { colors } = useAdminTheme();
 
-  // Update form data when user data changes or when editing mode changes
-  useEffect(() => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+  } = useAppForm({
+    defaultValues: {
+      fullName: user?.fullName || "",
+      phoneNumber: user?.phoneNumber || "",
+    },
+  });
+
+  React.useEffect(() => {
     if (user) {
-      setFormData({
+      reset({
         fullName: user.fullName || "",
         phoneNumber: user.phoneNumber || "",
       });
     }
-  }, [user, isEditing]); // Added isEditing to dependencies
+  }, [user, reset]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSave = async () => {
-    // Check if there are any changes
+  const onSubmit = async (data: { fullName: string; phoneNumber: string }) => {
     if (
-      formData.fullName === user?.fullName &&
-      formData.phoneNumber === user?.phoneNumber
+      data.fullName === user?.fullName &&
+      data.phoneNumber === user?.phoneNumber
     ) {
       Swal.fire({
         title: "No Changes",
@@ -47,12 +50,10 @@ export default function ProfilePage() {
       });
       return;
     }
-
     try {
-      await updateProfileMutation.mutateAsync(formData);
-      await refetch(); // Refresh user data
+      await updateProfileMutation.mutateAsync(data);
+      await refetch();
       setIsEditing(false);
-
       Swal.fire({
         title: "Success!",
         text: "Your profile has been updated successfully.",
@@ -67,9 +68,8 @@ export default function ProfilePage() {
   };
 
   const handleCancel = () => {
-    // Reset form data to original values
     if (user) {
-      setFormData({
+      reset({
         fullName: user.fullName || "",
         phoneNumber: user.phoneNumber || "",
       });
@@ -190,22 +190,26 @@ export default function ProfilePage() {
                 </h2>
 
                 {isEditing ? (
-                  <div className="space-y-4">
+                  <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
                     <FormInput
                       label="Full Name"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
+                      {...register("fullName", { required: "Full name is required" })}
                       placeholder="Enter your full name"
                     />
+                    {errors.fullName && (
+                      <p className="text-red-500 text-xs mt-1">{errors.fullName.message}</p>
+                    )}
                     <PhoneInput
                       label="Phone Number"
                       name="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={handleInputChange}
+                      value={watch("phoneNumber")}
+                      onChange={register("phoneNumber", { required: "Phone number is required" }).onChange}
                       placeholder="Enter your phone number"
                     />
-                  </div>
+                    {errors.phoneNumber && (
+                      <p className="text-red-500 text-xs mt-1">{errors.phoneNumber.message}</p>
+                    )}
+                  </form>
                 ) : (
                   <div className="space-y-3">
                     <div>
@@ -349,9 +353,10 @@ export default function ProfilePage() {
                   Cancel
                 </FormButton>
                 <FormButton
-                  onClick={handleSave}
+                  onClick={handleSubmit(onSubmit)}
                   className="w-full sm:w-auto"
                   disabled={updateProfileMutation.isPending}
+                  type="submit"
                 >
                   {updateProfileMutation.isPending ? (
                     <span className="flex items-center">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useUser } from "../api/userQueries";
+import { useAppForm } from "../hooks/useAppForm";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { useCartContext } from "../contexts/CartContext";
@@ -38,9 +39,11 @@ interface CheckoutFormData {
 const CheckoutPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const { clearCart } = useCartContext();
+  const { data: user } = useUser();
 
   // React Hook Form setup
   const {
@@ -48,12 +51,11 @@ const CheckoutPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
     control,
-  } = useForm<CheckoutFormData>({
-    mode: "onBlur",
+  } = useAppForm<CheckoutFormData>({
     defaultValues: {
-      name: "",
+      name: user?.fullName || "",
       whatsapp: "",
-      email: "",
+      email: user?.email || "",
     },
   });
 

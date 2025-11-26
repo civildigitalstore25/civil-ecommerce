@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import { Controller } from "react-hook-form";
+import { useAppForm } from "../hooks/useAppForm";
 import { useSubmitContactForm } from "../api/contactApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
@@ -11,28 +13,27 @@ interface ContactFormData {
 }
 
 const ContactPage: React.FC = () => {
-  const [formData, setFormData] = useState<ContactFormData>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
-
   const submitContactForm = useSubmitContactForm();
   const { colors } = useAdminTheme();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useAppForm<ContactFormData>({
+    defaultValues: {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    submitContactForm.mutate(formData, {
+  const onSubmit = (data: ContactFormData) => {
+    submitContactForm.mutate(data, {
       onSuccess: () => {
-        setFormData({ name: "", email: "", subject: "", message: "" });
+        reset();
       },
     });
   };
@@ -222,8 +223,9 @@ const ContactPage: React.FC = () => {
           </div>
 
           {/* Right side - Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Name Field */}
               <div className="flex flex-col gap-2">
                 <label
                   className="text-sm font-semibold"
@@ -231,28 +233,52 @@ const ContactPage: React.FC = () => {
                 >
                   Your Name *
                 </label>
-                <input
-                  type="text"
+                <Controller
                   name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  disabled={submitContactForm.isPending}
-                  placeholder="Enter your full name"
-                  className="rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70"
-                  style={{
-                    backgroundColor: colors.background.primary,
-                    borderColor: colors.border.primary,
-                    color: colors.text.primary,
+                  control={control}
+                  rules={{
+                    required: "Name is required",
+                    minLength: {
+                      value: 2,
+                      message: "Name must be at least 2 characters",
+                    },
+                    maxLength: {
+                      value: 50,
+                      message: "Name must not exceed 50 characters",
+                    },
+                    pattern: {
+                      value: /^[a-zA-Z\s]+$/,
+                      message: "Name can only contain letters and spaces",
+                    },
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = colors.interactive.primary;
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = colors.border.primary;
-                  }}
+                  render={({ field }) => (
+                    <input
+                      type="text"
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={submitContactForm.isPending}
+                      placeholder="Enter your full name"
+                      className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.name ? "border-red-500" : ""}`}
+                      style={{
+                        backgroundColor: colors.background.primary,
+                        borderColor: errors.name ? "#ef4444" : colors.border.primary,
+                        color: colors.text.primary,
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = errors.name ? "#ef4444" : colors.interactive.primary;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = errors.name ? "#ef4444" : colors.border.primary;
+                      }}
+                    />
+                  )}
                 />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
+                )}
               </div>
+
+              {/* Email Field */}
               <div className="flex flex-col gap-2">
                 <label
                   className="text-sm font-semibold"
@@ -260,30 +286,45 @@ const ContactPage: React.FC = () => {
                 >
                   Your Email *
                 </label>
-                <input
-                  type="email"
+                <Controller
                   name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  disabled={submitContactForm.isPending}
-                  placeholder="Enter your email address"
-                  className="rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70"
-                  style={{
-                    backgroundColor: colors.background.primary,
-                    borderColor: colors.border.primary,
-                    color: colors.text.primary,
+                  control={control}
+                  rules={{
+                    required: "Email is required",
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: "Please enter a valid email address",
+                    },
                   }}
-                  onFocus={(e) => {
-                    e.target.style.borderColor = colors.interactive.primary;
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = colors.border.primary;
-                  }}
+                  render={({ field }) => (
+                    <input
+                      type="email"
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={submitContactForm.isPending}
+                      placeholder="Enter your email address"
+                      className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.email ? "border-red-500" : ""}`}
+                      style={{
+                        backgroundColor: colors.background.primary,
+                        borderColor: errors.email ? "#ef4444" : colors.border.primary,
+                        color: colors.text.primary,
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = errors.email ? "#ef4444" : colors.interactive.primary;
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = errors.email ? "#ef4444" : colors.border.primary;
+                      }}
+                    />
+                  )}
                 />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
               </div>
             </div>
 
+            {/* Subject Field */}
             <div className="flex flex-col gap-2">
               <label
                 className="text-sm font-semibold"
@@ -291,29 +332,48 @@ const ContactPage: React.FC = () => {
               >
                 Subject *
               </label>
-              <input
-                type="text"
+              <Controller
                 name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                required
-                disabled={submitContactForm.isPending}
-                placeholder="What is this regarding?"
-                className="rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70"
-                style={{
-                  backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary,
-                  color: colors.text.primary,
+                control={control}
+                rules={{
+                  required: "Subject is required",
+                  minLength: {
+                    value: 5,
+                    message: "Subject must be at least 5 characters",
+                  },
+                  maxLength: {
+                    value: 100,
+                    message: "Subject must not exceed 100 characters",
+                  },
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = colors.interactive.primary;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = colors.border.primary;
-                }}
+                render={({ field }) => (
+                  <input
+                    type="text"
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={submitContactForm.isPending}
+                    placeholder="What is this regarding?"
+                    className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.subject ? "border-red-500" : ""}`}
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      borderColor: errors.subject ? "#ef4444" : colors.border.primary,
+                      color: colors.text.primary,
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = errors.subject ? "#ef4444" : colors.interactive.primary;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = errors.subject ? "#ef4444" : colors.border.primary;
+                    }}
+                  />
+                )}
               />
+              {errors.subject && (
+                <p className="text-red-500 text-sm">{errors.subject.message}</p>
+              )}
             </div>
 
+            {/* Message Field */}
             <div className="flex flex-col gap-2">
               <label
                 className="text-sm font-semibold"
@@ -321,26 +381,40 @@ const ContactPage: React.FC = () => {
               >
                 Your Message (Optional)
               </label>
-              <textarea
+              <Controller
                 name="message"
-                value={formData.message}
-                onChange={handleChange}
-                rows={5}
-                disabled={submitContactForm.isPending}
-                placeholder="Tell us more about your inquiry..."
-                className="rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70"
-                style={{
-                  backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary,
-                  color: colors.text.primary,
+                control={control}
+                rules={{
+                  maxLength: {
+                    value: 1000,
+                    message: "Message must not exceed 1000 characters",
+                  },
                 }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = colors.interactive.primary;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = colors.border.primary;
-                }}
+                render={({ field }) => (
+                  <textarea
+                    value={field.value}
+                    onChange={field.onChange}
+                    rows={5}
+                    disabled={submitContactForm.isPending}
+                    placeholder="Tell us more about your inquiry..."
+                    className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.message ? "border-red-500" : ""}`}
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      borderColor: errors.message ? "#ef4444" : colors.border.primary,
+                      color: colors.text.primary,
+                    }}
+                    onFocus={(e) => {
+                      e.target.style.borderColor = errors.message ? "#ef4444" : colors.interactive.primary;
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = errors.message ? "#ef4444" : colors.border.primary;
+                    }}
+                  />
+                )}
               />
+              {errors.message && (
+                <p className="text-red-500 text-sm">{errors.message.message}</p>
+              )}
             </div>
 
             <button

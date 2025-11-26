@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { Lock, ArrowLeft, CheckCircle, Eye, EyeOff, Mail } from "lucide-react";
+import { Controller } from "react-hook-form";
+import { useAppForm } from "../../hooks/useAppForm";
 import Swal from "sweetalert2";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
@@ -9,21 +11,40 @@ import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { validateResetTokenAPI, resetPasswordAPI } from "../../services/api";
 import logo from "../../assets/logo.png";
 
+interface PasswordResetFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export default function PasswordResetPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isPasswordReset, setIsPasswordReset] = useState(false);
-  const [error, setError] = useState("");
   const [isValidToken, setIsValidToken] = useState(true);
   const [tokenValidating, setTokenValidating] = useState(true);
 
   const { token } = useParams();
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
+
+  const {
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+  } = useAppForm<PasswordResetFormData>({
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const email = watch("email");
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
   // Validate token on component mount
   useEffect(() => {
@@ -48,11 +69,6 @@ export default function PasswordResetPage() {
     validateToken();
   }, [token]);
 
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   const validatePassword = (pwd: string) => {
     const minLength = pwd.length >= 8;
     const hasUpper = /[A-Z]/.test(pwd);
@@ -70,43 +86,23 @@ export default function PasswordResetPage() {
     };
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
+  const onSubmit = async (data: PasswordResetFormData) => {
     if (!token) {
-      setError("Invalid reset token");
-      return;
-    }
-
-    // Validate email
-    if (!email.trim()) {
-      setError("Email is required");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    // Validate password strength
-    const validation = validatePassword(password);
-    if (!validation.isValid) {
-      setError("Password does not meet security requirements");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Invalid reset token",
+        timer: 3000,
+        showConfirmButton: false,
+        timerProgressBar: true,
+      });
       return;
     }
 
     setIsLoading(true);
 
     try {
-      await resetPasswordAPI({ token, email, password });
+      await resetPasswordAPI({ token, email: data.email, password: data.password });
 
       setIsPasswordReset(true);
 
@@ -126,7 +122,6 @@ export default function PasswordResetPage() {
     } catch (err: any) {
       const errorMessage =
         err.message || "Failed to reset password. Please try again.";
-      setError(errorMessage);
 
       Swal.fire({
         icon: "error",
@@ -403,86 +398,90 @@ export default function PasswordResetPage() {
             </Link>
           </div>
 
-          {error && (
-            <div
-              className="px-4 py-3 rounded-lg text-sm mb-6"
-              style={{
-                backgroundColor: `${colors.status.error}20`,
-                borderColor: colors.status.error,
-                color: colors.status.error,
-                border: `1px solid ${colors.status.error}`,
-              }}
-            >
-              {error}
-            </div>
-          )}
-
           {/* Form */}
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             {/* Email Input */}
             <div className="relative">
-              <FormInput
-                label="Email Address"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                required
-                className={`pl-10 ${
-                  email && !isEmailValid
-                    ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                    : email && isEmailValid
-                      ? "border-green-300 focus:border-green-500 focus:ring-green-500"
-                      : ""
-                }`}
+              <Controller
+                name="email"
+                control={control}
+                rules={{
+                  required: "Email address is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email address",
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Email Address"
+                    type="email"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your email address"
+                    className={`pl-10 ${errors.email
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : email && !errors.email
+                          ? "border-green-300 focus:border-green-500 focus:ring-green-500"
+                          : ""
+                      }`}
+                  />
+                )}
               />
               <div className="absolute left-3 top-10 pointer-events-none">
                 <Mail
                   className="h-5 w-5"
                   style={{
-                    color:
-                      email && !isEmailValid
-                        ? colors.status.error
-                        : email && isEmailValid
-                          ? colors.status.success
-                          : colors.text.secondary,
+                    color: errors.email
+                      ? colors.status.error
+                      : email && !errors.email
+                        ? colors.status.success
+                        : colors.text.secondary,
                   }}
                 />
               </div>
-              {email && (
+              {email && !errors.email && (
                 <div className="absolute right-3 top-9 pointer-events-none">
-                  {isEmailValid ? (
-                    <CheckCircle
-                      className="h-5 w-5"
-                      style={{ color: colors.status.success }}
-                    />
-                  ) : (
-                    <div
-                      className="h-5 w-5 rounded-full border-2"
-                      style={{ borderColor: colors.status.error }}
-                    ></div>
-                  )}
+                  <CheckCircle
+                    className="h-5 w-5"
+                    style={{ color: colors.status.success }}
+                  />
                 </div>
+              )}
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
               )}
             </div>
 
-            {/* Email validation message */}
-            {email && !isEmailValid && (
-              <div className="text-sm text-red-600 -mt-4">
-                Please enter a valid email address
-              </div>
-            )}
-
             {/* Password Input */}
             <div className="relative">
-              <FormInput
-                label="New Password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your new password"
-                required
-                className="pr-10"
+              <Controller
+                name="password"
+                control={control}
+                rules={{
+                  required: "Password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                  validate: (value) => {
+                    const validation = validatePassword(value);
+                    if (!validation.isValid) {
+                      return "Password does not meet security requirements";
+                    }
+                    return true;
+                  },
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="New Password"
+                    type={showPassword ? "text" : "password"}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Enter your new password"
+                    className="pr-10"
+                  />
+                )}
               />
               <button
                 type="button"
@@ -495,26 +494,38 @@ export default function PasswordResetPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             {/* Confirm Password Input */}
             <div className="relative">
-              <FormInput
-                label="Confirm New Password"
-                type={showConfirmPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm your new password"
-                required
-                className={`pr-10 ${
-                  confirmPassword && password !== confirmPassword
-                    ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                    : confirmPassword &&
-                        password === confirmPassword &&
-                        password
-                      ? "border-green-300 focus:border-green-500 focus:ring-green-500"
-                      : ""
-                }`}
+              <Controller
+                name="confirmPassword"
+                control={control}
+                rules={{
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === password || "Passwords do not match",
+                }}
+                render={({ field }) => (
+                  <FormInput
+                    label="Confirm New Password"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Confirm your new password"
+                    className={`pr-10 ${errors.confirmPassword
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : confirmPassword &&
+                          password === confirmPassword &&
+                          password
+                          ? "border-green-300 focus:border-green-500 focus:ring-green-500"
+                          : ""
+                      }`}
+                  />
+                )}
               />
               <button
                 type="button"
@@ -527,6 +538,9 @@ export default function PasswordResetPage() {
                   <Eye className="h-5 w-5" />
                 )}
               </button>
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+              )}
             </div>
 
             {/* Password Requirements */}
@@ -614,15 +628,7 @@ export default function PasswordResetPage() {
 
             <FormButton
               type="submit"
-              disabled={
-                isLoading ||
-                !email.trim() ||
-                !isEmailValid ||
-                !password.trim() ||
-                !confirmPassword.trim() ||
-                password !== confirmPassword ||
-                !passwordValidation.isValid
-              }
+              disabled={isLoading}
               className="w-full disabled:cursor-not-allowed transition-colors"
               style={{
                 backgroundColor: colors.interactive.primary,

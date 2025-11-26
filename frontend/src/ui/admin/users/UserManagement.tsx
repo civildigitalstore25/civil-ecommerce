@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useUsers, useUpdateUser, useDeleteUser } from "../../../api/userApi";
+import { useUsers, useUpdateUser, useDeleteUser, userApi } from "../../../api/userApi";
 import type { User } from "../../../api/types/userTypes";
 import Swal from "sweetalert2";
-import { Plus } from "lucide-react";
+import { Plus, ChevronDown } from "lucide-react";
 import UserFilters from "./UserFilter";
 import UserTable from "./UserTable";
 import Pagination from "./Pagination";
@@ -17,6 +17,7 @@ const UserManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const limit = 10;
+  const [exportOpen, setExportOpen] = useState(false);
 
   const {
     data: usersData,
@@ -88,6 +89,52 @@ const UserManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
+  // Export handlers
+  const fetchAllUsers = async () => {
+    const resp = await userApi.getUsers({ page: 1, limit: 100000 });
+    return (resp.users || []).map((u) => ({
+      id: u._id,
+      fullName: u.fullName || "",
+      email: u.email,
+      phoneNumber: u.phoneNumber || "",
+      role: u.role,
+      isActive: u.isActive ? "Active" : "Inactive",
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
+    }));
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const data = await fetchAllUsers();
+      const XLSX = (await import("xlsx")) as any;
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Users");
+      XLSX.writeFile(wb, `users_export_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.xlsx`);
+    } catch (err) {
+      Swal.fire("Error", "Failed to export users", "error");
+    }
+  };
+
+  const handleExportJSON = async () => {
+    try {
+      const data = await fetchAllUsers();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `users_export_${new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      Swal.fire("Error", "Failed to export users", "error");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header with Add User Button */}
@@ -114,6 +161,50 @@ const UserManagement: React.FC = () => {
           <Plus className="h-4 w-4" />
           Add User
         </button>
+        <div className="relative ml-3">
+          <button
+            className="px-4 py-2 rounded-lg flex items-center font-medium transition-colors duration-200 gap-2 border"
+            style={{
+              backgroundColor: colors.background.secondary,
+              color: colors.text.primary,
+              border: `1px solid ${colors.interactive.primary}`,
+              minWidth: 110,
+            }}
+            onClick={() => setExportOpen((v) => !v)}
+            type="button"
+          >
+            Export <ChevronDown className="h-4 w-4" />
+          </button>
+          {exportOpen && (
+            <div
+              className="absolute right-0 mt-2 w-44 rounded-lg shadow-lg z-10"
+              style={{ background: colors.background.secondary, border: `1px solid ${colors.border.primary}` }}
+            >
+              <button
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                style={{ color: colors.text.primary }}
+                onClick={async () => {
+                  await handleExportExcel();
+                  setExportOpen(false);
+                }}
+                type="button"
+              >
+                Export to Excel
+              </button>
+              <button
+                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                style={{ color: colors.text.primary }}
+                onClick={async () => {
+                  await handleExportJSON();
+                  setExportOpen(false);
+                }}
+                type="button"
+              >
+                Export to JSON
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       <UserFilters
