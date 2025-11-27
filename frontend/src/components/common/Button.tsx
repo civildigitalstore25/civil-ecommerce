@@ -5,13 +5,15 @@ interface ButtonProps {
   children: React.ReactNode;
   className?: string;
   onClick?: () => void;
+  style?: React.CSSProperties;
 }
 
 export const Button: React.FC<ButtonProps> = ({ 
   variant = 'primary', 
   children, 
   className = '',
-  onClick 
+  onClick,
+  style
 }) => {
   const baseStyles = "px-8 py-3.5 rounded-full font-medium transition-colors shadow-lg";
   const variants = {
@@ -23,6 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
     <button 
       className={`${baseStyles} ${variants[variant]} ${className}`}
       onClick={onClick}
+      style={style}
     >
       {children}
     </button>

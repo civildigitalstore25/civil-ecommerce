@@ -5,6 +5,7 @@ import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
+import RelatedProducts from "../components/RelatedProducts";
 import {
   getProductReviews,
   getProductReviewStats,
@@ -2263,66 +2264,18 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
-        {/* Related Products */}
-        <div className="mt-8 lg:mt-16">
-          <div className="flex items-center justify-between mb-6 lg:mb-8">
-            <h2 className="text-xl lg:text-3xl font-bold">Related Products</h2>
-            <button className="text-orange-400 hover:text-orange-300 font-medium">
-              View All
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Sample Related Products */}
-            {[
-              {
-                name: "Inventor Professional 2025",
-                price: "$2,300",
-                image: "/api/placeholder/300/200",
-              },
-              {
-                name: "3ds Max 2025",
-                price: "$1,950",
-                image: "/api/placeholder/300/200",
-              },
-              {
-                name: "Maya 2025",
-                price: "$2,100",
-                image: "/api/placeholder/300/200",
-              },
-              {
-                name: "Revit Architecture 2025",
-                price: "$2,650",
-                image: "/api/placeholder/300/200",
-              },
-            ].map((relatedProduct, index) => (
-              <div
-                key={index}
-                className="bg-gray-800 rounded-2xl overflow-hidden hover:bg-gray-700 transition-colors duration-200 cursor-pointer"
-              >
-                <div className="aspect-video bg-gray-700 flex items-center justify-center">
-                  <img
-                    src={relatedProduct.image}
-                    alt={relatedProduct.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <h4 className="font-bold text-lg mb-2">
-                    {relatedProduct.name}
-                  </h4>
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-orange-400">
-                      {relatedProduct.price}
-                    </span>
-                    <button className="bg-orange-400 hover:bg-orange-500 text-black font-bold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
-                      Add
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+       {/* Related Products */}
+<div className="mt-8 lg:mt-16">
+  <div className="flex items-center justify-between mb-6 lg:mb-8">
+    <h2 
+      className="text-xl lg:text-3xl font-bold"
+      style={{ color: colors.text.primary }}
+    >
+      Related Products
+    </h2>
+  </div>
+  <RelatedProducts currentProduct={product} limit={4} />
+</div>
       </div>
 
       {/* Enquiry Modal */}
