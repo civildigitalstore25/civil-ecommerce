@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import type { CartItem as CartItemType } from "../../types/cartTypes";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
@@ -17,6 +18,8 @@ const CartItem: React.FC<CartItemProps> = ({
 }) => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
+
+  const navigate = useNavigate();
 
   // Refs for direct DOM manipulation
   const quantityDisplayRef = useRef<HTMLSpanElement>(null);
@@ -212,7 +215,18 @@ const CartItem: React.FC<CartItemProps> = ({
             <div className="flex-1 min-w-0">
               <h3
                 className="text-sm sm:text-lg font-semibold truncate transition-colors duration-200"
-                style={{ color: colors.text.primary }}
+                style={{ color: colors.text.primary, cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => {
+                  if (item.product._id) {
+                    navigate(`/product/${item.product._id}`);
+                  }
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.color = colors.interactive.primary;
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.color = colors.text.primary;
+                }}
               >
                 {item.product.name}
               </h3>
