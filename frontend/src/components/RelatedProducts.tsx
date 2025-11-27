@@ -41,8 +41,11 @@ const getBrandKey = (product: Product): string | null => {
 
 
 const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit = 4 }) => {
+  // All hooks must be called unconditionally and at the top
+  const { colors } = useAdminTheme();
+  const navigate = useNavigate();
+  const { addItem } = useCartContext();
   const brandKey = getBrandKey(currentProduct);
-  // Fetch products for the same brand/company (for submenu logic)
   const { data, isLoading } = useProducts({
     company: brandKey ? brandKey : undefined,
     limit: 50 // fetch more for better filtering
@@ -84,9 +87,6 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
 
   if (related.length === 0) return <div>No related products found.</div>;
 
-  const { colors } = useAdminTheme();
-  const navigate = useNavigate();
-  const { addItem } = useCartContext();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {related.slice(0, limit).map((product) => (
