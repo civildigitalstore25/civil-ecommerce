@@ -28,6 +28,69 @@ import Swal from "sweetalert2";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const Products: React.FC = () => {
+      const [exportOpen, setExportOpen] = useState(false);
+    // Export handlers
+    const getExportData = () => {
+      // Only export visible/filtered products with key fields
+      return products.map((p) => ({
+        Name: p.name,
+        Version: p.version,
+        Category: p.category,
+        Company: p.company,
+        Brand: p.brand || "",
+        Status: p.status || "active",
+        "Best Seller": p.isBestSeller ? "Yes" : "No",
+        Price:
+          p.subscriptionDurations && p.subscriptionDurations.length > 0
+            ? p.subscriptionDurations[0].price
+            : p.price1,
+        Tags: p.tags ? p.tags.join(", ") : "",
+        Rating: p.rating || "",
+        "Rating Count": p.ratingCount || "",
+        "Created At": p.createdAt || "",
+        "Updated At": p.updatedAt || "",
+      }));
+    };
+
+    const handleExportExcel = async () => {
+      try {
+        const data = getExportData();
+        const XLSX = (await import("xlsx")) as any;
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Products");
+        XLSX.writeFile(
+          wb,
+          `products_export_${new Date()
+            .toISOString()
+            .slice(0, 19)
+            .replace(/[:T]/g, "-")}.xlsx`
+        );
+      } catch (err) {
+        Swal.fire("Error", "Failed to export products", "error");
+      }
+    };
+
+    const handleExportJSON = async () => {
+      try {
+        const data = getExportData();
+        const json = JSON.stringify(data, null, 2);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `products_export_${new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace(/[:T]/g, "-")}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        Swal.fire("Error", "Failed to export products", "error");
+      }
+    };
   const { colors } = useAdminTheme();
   const [viewMode, setViewMode] = useState("list");
   const [modalOpen, setModalOpen] = useState(false);
@@ -256,7 +319,7 @@ const Products: React.FC = () => {
     >
       <div className="p-6 space-y-6">
         {/* Dashboard Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 relative">
           {/* Total Products Card */}
           <div
             className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
@@ -352,10 +415,61 @@ const Products: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Export Dropdown Button - move to right end of row */}
+          <div className="hidden lg:block absolute right-0 top-0">
+            <div className="relative">
+              <button
+                className="px-3 py-2 rounded-lg text-sm font-medium border flex items-center space-x-2 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                onClick={() => setExportOpen((v) => !v)}
+                onBlur={() => setTimeout(() => setExportOpen(false), 150)}
+              >
+                <span>Export</span>
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {exportOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-44 rounded-lg shadow-lg z-10"
+                  style={{ background: colors.background.secondary, border: `1px solid ${colors.border.primary}` }}
+                >
+                  <button
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                    style={{ color: colors.text.primary }}
+                    onClick={async () => {
+                      await handleExportExcel();
+                      setExportOpen(false);
+                    }}
+                    type="button"
+                  >
+                    Export to Excel
+                  </button>
+                  <button
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                    style={{ color: colors.text.primary }}
+                    onClick={async () => {
+                      await handleExportJSON();
+                      setExportOpen(false);
+                    }}
+                    type="button"
+                  >
+                    Export to JSON
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        {/* Export Dropdown Button moved above */}
             <div className="relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"

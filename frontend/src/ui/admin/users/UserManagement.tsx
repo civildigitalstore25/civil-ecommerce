@@ -89,10 +89,25 @@ const UserManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
+
   // Export handlers
   const fetchAllUsers = async () => {
-    const resp = await userApi.getUsers({ page: 1, limit: 100000 });
-    return (resp.users || []).map((u) => ({
+    // Use current filters for export
+    // Fetch with search and role filters only
+    const resp = await userApi.getUsers({
+      page: 1,
+      limit: 100000,
+      search: searchTerm,
+      role: roleFilter,
+    });
+    let users = resp.users || [];
+    // Filter by status on frontend if needed
+    if (statusFilter === "Active") {
+      users = users.filter((u) => u.isActive);
+    } else if (statusFilter === "Inactive") {
+      users = users.filter((u) => !u.isActive);
+    }
+    return users.map((u) => ({
       id: u._id,
       fullName: u.fullName || "",
       email: u.email,
