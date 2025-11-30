@@ -21,6 +21,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, fullName, phoneNumber, role } = req.body;
 
+    // Validate phone number presence
+    if (!phoneNumber) {
+      res.status(400).json({ message: 'Phone number is required' });
+      return;
+    }
+
+    // Basic phone number format validation (allows +, digits, spaces, dashes)
+    const phoneRegex = /^[+\d][0-9\s-\-]{6,20}$/;
+    if (!phoneRegex.test(String(phoneNumber))) {
+      res.status(400).json({ message: 'Invalid phone number format' });
+      return;
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       res.status(400).json({ message: 'User already exists' });

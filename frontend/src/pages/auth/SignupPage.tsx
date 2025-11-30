@@ -145,6 +145,7 @@ export default function SignupPage() {
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Enter your full name"
+                    required
                   />
                 )}
               />
@@ -175,6 +176,7 @@ export default function SignupPage() {
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Enter your email"
+                    required
                   />
                 )}
               />
@@ -190,16 +192,29 @@ export default function SignupPage() {
               <Controller
                 name="phoneNumber"
                 control={control}
+                rules={{
+                  required: "Phone number is required",
+                  pattern: {
+                    value: /^[+\d][0-9\s-]{6,20}$/, // allows +, digits, spaces, dashes
+                    message: "Please enter a valid phone number",
+                  },
+                }}
                 render={({ field }) => (
                   <PhoneInput
-                    label="Phone (Optional)"
+                    label="Whatsapp Number"
                     name={field.name}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Enter your phone number"
+                    required
                   />
                 )}
               />
+              {errors.phoneNumber && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.phoneNumber.message}
+                </p>
+              )}
             </div>
 
             {/* Password */}
@@ -227,6 +242,7 @@ export default function SignupPage() {
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Enter your password"
+                    required
                   />
                 )}
               />
@@ -254,6 +270,7 @@ export default function SignupPage() {
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Confirm password"
+                    required
                   />
                 )}
               />

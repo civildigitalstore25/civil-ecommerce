@@ -166,6 +166,7 @@ export default function SigninPage() {
                     type="email"
                     value={field.value}
                     onChange={field.onChange}
+                    required
                     placeholder="you@example.com"
                   />
                 )}
@@ -197,6 +198,7 @@ export default function SigninPage() {
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Enter your password"
+                      required
                     />
                   )}
                 />
