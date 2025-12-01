@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -91,19 +91,8 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
   buttonRef,
 }) => {
   const { colors } = useAdminTheme();
-  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [activeProduct, setActiveProduct] = useState<string | null>(null);
   const closeTimeoutRef = useRef<number | null>(null);
-
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setButtonPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-      });
-    }
-  }, [isOpen, buttonRef]);
 
   if (!isOpen) return null;
 
@@ -136,14 +125,13 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
     onClose();
   };
 
+  // Always position absolutely under the nav/menu
   return (
     <div
-      className="fixed z-50 rounded-xl shadow-2xl border transition-all duration-200 backdrop-blur-sm"
+      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl border z-50 backdrop-blur-sm"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
-        top: `${buttonPosition.top}px`,
-        left: `${buttonPosition.left}px`,
         minWidth: "900px",
         maxWidth: "1200px",
         maxHeight: "85vh",

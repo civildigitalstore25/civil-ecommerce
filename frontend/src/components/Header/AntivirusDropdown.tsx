@@ -159,7 +159,20 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { colors } = useAdminTheme();
 
+  // Helper to update dropdown position
+  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
+  const updatePosition = () => {
+    if (isOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setButtonPosition({
+        top: rect.bottom + window.scrollY + 4,
+        left: rect.left + window.scrollX,
+      });
+    }
+  };
+
   useEffect(() => {
+    updatePosition();
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -170,14 +183,17 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
         onClose();
       }
     };
-
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
+      window.addEventListener("scroll", updatePosition, true);
+      window.addEventListener("resize", updatePosition);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
     };
+    // eslint-disable-next-line
   }, [isOpen, onClose, buttonRef]);
 
   if (!isOpen) return null;
@@ -187,10 +203,11 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
     onClose();
   };
 
+  // Always position absolutely under the nav/menu
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border"
+      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border"
       style={{
         minWidth: "1000px",
         backgroundColor: colors.background.secondary,

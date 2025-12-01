@@ -64,18 +64,26 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
   buttonRef,
 }) => {
   const { colors } = useAdminTheme();
-  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const [activeProduct, setActiveProduct] = useState<string | null>(null);
   const closeTimeoutRef = useRef<number | null>(null);
 
-  useEffect(() => {
+  // Helper to update dropdown position
+  const updatePosition = () => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
-      setButtonPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-      });
     }
+  };
+
+  useEffect(() => {
+    updatePosition();
+    if (!isOpen) return;
+    window.addEventListener("scroll", updatePosition, true);
+    window.addEventListener("resize", updatePosition);
+    return () => {
+      window.removeEventListener("scroll", updatePosition, true);
+      window.removeEventListener("resize", updatePosition);
+    };
+    // eslint-disable-next-line
   }, [isOpen, buttonRef]);
 
   if (!isOpen) return null;
@@ -111,12 +119,10 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
 
   return (
     <div
-      className="fixed z-50 rounded-xl shadow-2xl border transition-all duration-200 backdrop-blur-sm"
+      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl border z-50 backdrop-blur-sm"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
-        top: `${buttonPosition.top}px`,
-        left: `${buttonPosition.left}px`,
         minWidth: "900px",
         maxWidth: "1200px",
         maxHeight: "85vh",

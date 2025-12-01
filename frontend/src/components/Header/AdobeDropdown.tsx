@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -72,37 +72,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
   buttonRef,
 }) => {
   const { colors } = useAdminTheme();
-  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setButtonPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-      });
-    }
-  }, [isOpen, buttonRef]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose, buttonRef]);
 
   if (!isOpen) return null;
 
@@ -111,15 +81,14 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
     onClose();
   };
 
+  // Render absolutely positioned dropdown under the parent menu button
   return (
     <div
       ref={dropdownRef}
-      className="fixed z-50 rounded-xl shadow-2xl border transition-all duration-200 backdrop-blur-sm"
+      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl border z-50 backdrop-blur-sm"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
-        top: `${buttonPosition.top}px`,
-        left: `${buttonPosition.left}px`,
         minWidth: "900px",
         maxWidth: "1200px",
         maxHeight: "85vh",
