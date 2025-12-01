@@ -1,4 +1,9 @@
 import React from "react";
+import AllCategoriesDropdown from "./AllCategoriesDropdown";
+import AutodeskDropdown from "./AutodeskDropdown";
+import MicrosoftDropdown from "./MicrosoftDropdown";
+import AdobeDropdown from "./AdobeDropdown";
+import AntivirusDropdown from "./AntivirusDropdown";
 import { ChevronDown } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import { useState, useRef } from "react";
@@ -7,35 +12,28 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 interface DesktopNavigationProps {
   onNavigate: (href: string) => void;
   autodeskButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onAutodeskClick?: () => void;
   microsoftButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onMicrosoftClick?: () => void;
   adobeButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onAdobeClick?: () => void;
   antivirusButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onAntivirusClick?: () => void;
   allCategoriesButtonRef?: React.RefObject<HTMLButtonElement | null>;
-  onAllCategoriesClick?: () => void;
   hideHomeMenu?: boolean;
 }
 
 const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   onNavigate,
   autodeskButtonRef,
-  onAutodeskClick,
   microsoftButtonRef,
-  onMicrosoftClick,
   adobeButtonRef,
-  onAdobeClick,
   antivirusButtonRef,
-  onAntivirusClick,
   allCategoriesButtonRef,
-  onAllCategoriesClick,
   hideHomeMenu,
 }) => {
   const { colors } = useAdminTheme();
   const [offersOpen, setOffersOpen] = useState(false);
   const offersButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Track which dropdown is hovered
+  const [hovered, setHovered] = useState<string | null>(null);
 
   return (
     <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 mr-4">
@@ -59,27 +57,25 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
       )}
 
       {/* All Categories Menu */}
-      <button
-        ref={allCategoriesButtonRef}
-        onClick={(e) => {
-          e.preventDefault();
-          if (onAllCategoriesClick) {
-            onAllCategoriesClick();
-          }
-        }}
-        className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-        style={{ color: colors.text.secondary }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLElement).style.color =
-            colors.interactive.primary;
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-        }}
+      <div
+        className="desktop-nav-dropdown-group"
+        onMouseEnter={() => setHovered('allCategories')}
+        onMouseLeave={() => setHovered(null)}
       >
-        <span>All Categories</span>
-        <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
-      </button>
+        <button
+          ref={allCategoriesButtonRef}
+          className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+          style={{ color: colors.text.secondary }}
+        >
+          <span>All Categories</span>
+          <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+        </button>
+        {hovered === 'allCategories' && (
+          <div className="desktop-nav-dropdown-panel">
+            <AllCategoriesDropdown />
+          </div>
+        )}
+      </div>
 
       {headerConfig.navigation
         .filter((item) => item.label !== "Home" && item.label !== "Super CRM")
@@ -87,132 +83,124 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           // Special handling for AutoDesk menu item
           if (item.label === "AutoDesk") {
             return (
-              <button
+              <div
+                className="desktop-nav-dropdown-group"
                 key={item.href}
-                ref={autodeskButtonRef}
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("AutoDesk button clicked");
-                  if (onAutodeskClick) {
-                    onAutodeskClick();
-                  }
-                }}
-                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.text.secondary;
-                }}
+                onMouseEnter={() => setHovered('autodesk')}
+                onMouseLeave={() => setHovered(null)}
               >
-                <span>{item.label}</span>
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ display: "inline-block" }}
-                />
-              </button>
+                <button
+                  ref={autodeskButtonRef}
+                  className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <span>{item.label}</span>
+                  <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+                </button>
+                {hovered === 'autodesk' && autodeskButtonRef && (
+                  <div className="desktop-nav-dropdown-panel">
+                    <AutodeskDropdown
+                      isOpen={true}
+                      onClose={() => { }}
+                      onNavigate={onNavigate}
+                      buttonRef={autodeskButtonRef}
+                    />
+                  </div>
+                )}
+              </div>
             );
           }
 
           // Special handling for Microsoft menu item
           if (item.label === "Microsoft") {
             return (
-              <button
+              <div
+                className="desktop-nav-dropdown-group"
                 key={item.href}
-                ref={microsoftButtonRef}
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("Microsoft button clicked");
-                  if (onMicrosoftClick) {
-                    onMicrosoftClick();
-                  }
-                }}
-                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.text.secondary;
-                }}
+                onMouseEnter={() => setHovered('microsoft')}
+                onMouseLeave={() => setHovered(null)}
               >
-                <span>{item.label}</span>
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ display: "inline-block" }}
-                />
-              </button>
+                <button
+                  ref={microsoftButtonRef}
+                  className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <span>{item.label}</span>
+                  <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+                </button>
+                {hovered === 'microsoft' && microsoftButtonRef && (
+                  <div className="desktop-nav-dropdown-panel">
+                    <MicrosoftDropdown
+                      isOpen={true}
+                      onClose={() => { }}
+                      onNavigate={onNavigate}
+                      buttonRef={microsoftButtonRef}
+                    />
+                  </div>
+                )}
+              </div>
             );
           }
 
           // Special handling for Adobe menu item
           if (item.label === "Adobe") {
             return (
-              <button
+              <div
+                className="desktop-nav-dropdown-group"
                 key={item.href}
-                ref={adobeButtonRef}
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("Adobe button clicked");
-                  if (onAdobeClick) {
-                    onAdobeClick();
-                  }
-                }}
-                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.text.secondary;
-                }}
+                onMouseEnter={() => setHovered('adobe')}
+                onMouseLeave={() => setHovered(null)}
               >
-                <span>{item.label}</span>
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ display: "inline-block" }}
-                />
-              </button>
+                <button
+                  ref={adobeButtonRef}
+                  className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <span>{item.label}</span>
+                  <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+                </button>
+                {hovered === 'adobe' && adobeButtonRef && (
+                  <div className="desktop-nav-dropdown-panel">
+                    <AdobeDropdown
+                      isOpen={true}
+                      onClose={() => { }}
+                      onNavigate={onNavigate}
+                      buttonRef={adobeButtonRef}
+                    />
+                  </div>
+                )}
+              </div>
             );
           }
 
           // Special handling for Antivirus menu item
           if (item.label === "Antivirus") {
             return (
-              <button
+              <div
+                className="desktop-nav-dropdown-group"
                 key={item.href}
-                ref={antivirusButtonRef}
-                onClick={(e) => {
-                  e.preventDefault();
-                  console.log("Antivirus button clicked");
-                  if (onAntivirusClick) {
-                    onAntivirusClick();
-                  }
-                }}
-                className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.color =
-                    colors.text.secondary;
-                }}
+                onMouseEnter={() => setHovered('antivirus')}
+                onMouseLeave={() => setHovered(null)}
               >
-                <span>{item.label}</span>
-                <ChevronDown
-                  className="w-4 h-4"
-                  style={{ display: "inline-block" }}
-                />
-              </button>
+                <button
+                  ref={antivirusButtonRef}
+                  className="flex items-center space-x-1 font-medium hover:opacity-80 transition-all duration-200 whitespace-nowrap"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <span>{item.label}</span>
+                  <ChevronDown className="w-4 h-4" style={{ display: "inline-block" }} />
+                </button>
+                {hovered === 'antivirus' && antivirusButtonRef && (
+                  <div className="desktop-nav-dropdown-panel">
+                    <AntivirusDropdown
+                      isOpen={true}
+                      onClose={() => { }}
+                      onNavigate={onNavigate}
+                      buttonRef={antivirusButtonRef}
+                    />
+                  </div>
+                )}
+              </div>
             );
           }
 

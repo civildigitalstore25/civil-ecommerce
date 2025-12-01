@@ -94,58 +94,22 @@ const brandCategories: Record<
   },
 };
 
-interface AllCategoriesDropdownProps {
-  isOpen: boolean;
-  onClose: () => void;
-  buttonRef: React.RefObject<HTMLButtonElement | null>;
-}
 
-const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
-  isOpen,
-  onClose,
-  buttonRef,
-}) => {
+const AllCategoriesDropdown: React.FC = () => {
   const [hoveredBrand, setHoveredBrand] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isOpen, onClose, buttonRef]);
-
-  if (!isOpen) return null;
-
   const handleCategoryClick = (brand: string, category: string) => {
     navigate(`/category?brand=${brand}&category=${category}`);
-    onClose();
   };
 
   const handleBrandClick = (brand: string) => {
     navigate(`/category?brand=${brand}`);
-    onClose();
   };
 
   return (
     <div
-      ref={dropdownRef}
       className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         minWidth: "1100px",
@@ -242,8 +206,8 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
           style={{ backgroundColor: colors.background.primary }}
         >
           {hoveredBrand &&
-          brandCategories[hoveredBrand] &&
-          brandCategories[hoveredBrand].categories.length > 0 ? (
+            brandCategories[hoveredBrand] &&
+            brandCategories[hoveredBrand].categories.length > 0 ? (
             <div
               className="p-6 category-dropdown-section"
               style={{ maxHeight: "600px", overflowY: "auto" }}

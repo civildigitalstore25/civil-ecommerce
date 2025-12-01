@@ -14,11 +14,7 @@ import DesktopNavigation from "./DesktopNavigation";
 import AuthDropdown from "./AuthDropdown";
 import MobileMenu from "./MobileMenu";
 import AdminDashboard from "../../ui/admin/AdminDashboard";
-import AutodeskDropdown from "./AutodeskDropdown";
-import MicrosoftDropdown from "./MicrosoftDropdown";
-import AdobeDropdown from "./AdobeDropdown";
-import AntivirusDropdown from "./AntivirusDropdown";
-import AllCategoriesDropdown from "./AllCategoriesDropdown";
+// Dropdowns now imported only in DesktopNavigation
 import { useNavigate } from "react-router-dom";
 import { clearAuth, isAdmin } from "../../utils/auth";
 import { useUser, useUserInvalidate, useLogout } from "../../api/userQueries";
@@ -30,14 +26,8 @@ import logo from "../../assets/logo.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isAuthDropdownOpen, setIsAuthDropdownOpen] = useState(false);
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [isAutodeskDropdownOpen, setIsAutodeskDropdownOpen] = useState(false);
-  const [isMicrosoftDropdownOpen, setIsMicrosoftDropdownOpen] = useState(false);
-  const [isAdobeDropdownOpen, setIsAdobeDropdownOpen] = useState(false);
-  const [isAntivirusDropdownOpen, setIsAntivirusDropdownOpen] = useState(false);
-  const [isAllCategoriesDropdownOpen, setIsAllCategoriesDropdownOpen] =
-    useState(false);
+  // Only keep dropdown state for user/auth (not desktop nav)
+  const [openDropdown, setOpenDropdown] = useState<null | 'auth' | 'user'>(null);
   // const [searchQuery, setSearchQuery] = useState("");
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
@@ -68,23 +58,9 @@ const Header: React.FC = () => {
   }, [isMenuOpen]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  const toggleAuthDropdown = () => setIsAuthDropdownOpen(!isAuthDropdownOpen);
-  const toggleUserDropdown = () => setIsUserDropdownOpen(!isUserDropdownOpen);
-  const toggleAutodeskDropdown = () => {
-    setIsAutodeskDropdownOpen(!isAutodeskDropdownOpen);
-  };
-  const toggleMicrosoftDropdown = () => {
-    setIsMicrosoftDropdownOpen(!isMicrosoftDropdownOpen);
-  };
-  const toggleAdobeDropdown = () => {
-    setIsAdobeDropdownOpen(!isAdobeDropdownOpen);
-  };
-  const toggleAntivirusDropdown = () => {
-    setIsAntivirusDropdownOpen(!isAntivirusDropdownOpen);
-  };
-  const toggleAllCategoriesDropdown = () => {
-    setIsAllCategoriesDropdownOpen(!isAllCategoriesDropdownOpen);
-  };
+  // Only for user/auth dropdowns
+  const handleDropdownOpen = (key: typeof openDropdown) => setOpenDropdown(key);
+  const handleDropdownClose = () => setOpenDropdown(null);
 
   // const handleSearch = () => {
   //   if (searchQuery.trim()) {
@@ -110,13 +86,7 @@ const Header: React.FC = () => {
       navigate(href);
     }
     setIsMenuOpen(false);
-    setIsAuthDropdownOpen(false);
-    setIsUserDropdownOpen(false);
-    setIsAutodeskDropdownOpen(false);
-    setIsMicrosoftDropdownOpen(false);
-    setIsAdobeDropdownOpen(false);
-    setIsAntivirusDropdownOpen(false);
-    setIsAllCategoriesDropdownOpen(false);
+    // No longer needed: all dropdowns handled by CSS except user/auth
   };
 
   const logoutMutation = useLogout();
@@ -212,15 +182,10 @@ const Header: React.FC = () => {
             <DesktopNavigation
               onNavigate={handleNavigation}
               allCategoriesButtonRef={allCategoriesButtonRef}
-              onAllCategoriesClick={toggleAllCategoriesDropdown}
               autodeskButtonRef={autodeskButtonRef}
-              onAutodeskClick={toggleAutodeskDropdown}
               microsoftButtonRef={microsoftButtonRef}
-              onMicrosoftClick={toggleMicrosoftDropdown}
               adobeButtonRef={adobeButtonRef}
-              onAdobeClick={toggleAdobeDropdown}
               antivirusButtonRef={antivirusButtonRef}
-              onAntivirusClick={toggleAntivirusDropdown}
               hideHomeMenu
             />
 
@@ -228,19 +193,12 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right side actions */}
-
-          <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-5 pr-3 lg:pr-6">
+          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 pr-2 lg:pr-4 min-h-[56px]">
             {/* Cart */}
             <button
               onClick={() => handleNavigation("/cart")}
-              className="relative flex items-center hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+              className="relative flex items-center hover:opacity-80 px-1 lg:px-2"
               style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-              }}
             >
               <ShoppingCart className="w-5 h-5 lg:w-5 lg:h-5" />
               {getItemCount() > 0 && (
@@ -258,117 +216,65 @@ const Header: React.FC = () => {
 
             {/* User dropdown or Auth dropdown */}
             {user ? (
-              <div className="hidden sm:block relative">
+              <div className="hidden sm:block relative user-dropdown-group group">
                 <button
-                  onClick={toggleUserDropdown}
-                  className="flex items-center hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+                  className="flex items-center hover:opacity-80 px-1 lg:px-2"
                   style={{ color: colors.text.secondary }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                  }}
                 >
                   <User className="w-5 h-5 lg:w-5 lg:h-5" />
                   <ChevronDown className="w-3 h-3 ml-1" />
                 </button>
-                {/* User Dropdown */}
-                {isUserDropdownOpen && (
-                  <div
-                    className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
-                    style={{
-                      backgroundColor: colors.background.primary,
-                      borderColor: colors.border.primary,
-                    }}
+                <div className="user-dropdown-panel absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hidden group-hover:block">
+                  {isAdmin(user) && (
+                    <button
+                      onClick={() => handleNavigation("/admin-dashboard")}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Admin Dashboard</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleNavigation("/profile")}
+                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80"
+                    style={{ color: colors.text.secondary }}
                   >
-                    {isAdmin(user) && (
-                      <button
-                        onClick={() => handleNavigation("/admin-dashboard")}
-                        className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
-                        style={{ color: colors.text.secondary }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                        }}
-                      >
-                        <Settings className="w-4 h-4" />
-                        <span>Admin Dashboard</span>
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleNavigation("/profile")}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                      }}
-                    >
-                      <User className="w-4 h-4" />
-                      <span>Profile</span>
-                    </button>
-                    <button
-                      onClick={() => handleNavigation("/my-orders")}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                      }}
-                    >
-                      <Package className="w-4 h-4" />
-                      <span>My Orders</span>
-                    </button>
-                    <button
-                      onClick={() => handleNavigation("/logout")}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80 transition-all duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.secondary;
-                        (e.currentTarget as HTMLElement).style.color = colors.status.error;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                      }}
-                    >
-                      <LogOut className="w-4 h-4" />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                )}
+                    <User className="w-4 h-4" />
+                    <span>Profile</span>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/my-orders")}
+                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    <Package className="w-4 h-4" />
+                    <span>My Orders</span>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/logout")}
+                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm hover:opacity-80"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               </div>
             ) : (
-              <div className="hidden sm:block relative">
+              <div className="hidden sm:block relative auth-dropdown-group"
+                onMouseEnter={() => handleDropdownOpen('auth')}
+                onMouseLeave={handleDropdownClose}
+              >
                 <button
-                  onClick={toggleAuthDropdown}
-                  className="flex items-center hover:opacity-80 transition-all duration-200 px-1 lg:px-2"
+                  className="flex items-center hover:opacity-80 px-1 lg:px-2"
                   style={{ color: colors.text.secondary }}
-                  onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
-                  }}
-                  onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
-                  }}
                 >
                   <User className="w-5 h-5 lg:w-5 lg:h-5" />
                 </button>
                 <AuthDropdown
-                  isOpen={isAuthDropdownOpen}
-                  onClose={() => setIsAuthDropdownOpen(false)}
+                  isOpen={openDropdown === 'auth'}
+                  onClose={handleDropdownClose}
                   onNavigate={handleNavigation}
                 />
               </div>
@@ -381,101 +287,34 @@ const Header: React.FC = () => {
             <span className="flex items-center" style={{ fontSize: 18, padding: '0 2px' }}>
               <AdminThemeToggle iconSize={18} />
             </span>
-          {/* Mobile menu button */}
-          <button
-            onClick={toggleMenu}
-            className="lg:hidden p-2 sm:p-2 rounded-md hover:opacity-80 transition-colors duration-200 ml-1"
-            style={{ color: colors.text.secondary }}
-          >
-            {isMenuOpen ? (
-              <X className="w-6 h-6 sm:w-6 sm:h-6" />
-            ) : (
-              <Menu className="w-6 h-6 sm:w-6 sm:h-6" />
-            )}
-          </button>
+
+            {/* Mobile menu button */}
+            <button
+              onClick={toggleMenu}
+              className="lg:hidden p-2 sm:p-2 rounded-md hover:opacity-80 ml-1"
+              style={{ color: colors.text.secondary }}
+            >
+              {isMenuOpen ? (
+                <X className="w-6 h-6 sm:w-6 sm:h-6" />
+              ) : (
+                <Menu className="w-6 h-6 sm:w-6 sm:h-6" />
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        <MobileMenu
+          isOpen={isMenuOpen}
+          onClose={() => setIsMenuOpen(false)}
+          onNavigate={handleNavigation}
+          user={user}
+          onLogout={handleLogout}
+        />
       </div>
 
-      {/* Mobile Menu */}
-      <MobileMenu
-        isOpen={isMenuOpen}
-        onClose={() => setIsMenuOpen(false)}
-        onNavigate={handleNavigation}
-        user={user}
-        onLogout={handleLogout}
-      />
-    </div>
-
       {/* Overlay to close dropdowns */}
-      {(isAuthDropdownOpen ||
-        isUserDropdownOpen ||
-        isAutodeskDropdownOpen ||
-        isMicrosoftDropdownOpen ||
-        isAdobeDropdownOpen ||
-        isAntivirusDropdownOpen ||
-        isAllCategoriesDropdownOpen) && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => {
-            setIsAuthDropdownOpen(false);
-            setIsUserDropdownOpen(false);
-            setIsAutodeskDropdownOpen(false);
-            setIsMicrosoftDropdownOpen(false);
-            setIsAdobeDropdownOpen(false);
-            setIsAntivirusDropdownOpen(false);
-            setIsAllCategoriesDropdownOpen(false);
-          }}
-        />
-      )}
-
-      {/* All Categories Dropdown */}
-      {isAllCategoriesDropdownOpen && (
-        <AllCategoriesDropdown
-          isOpen={isAllCategoriesDropdownOpen}
-          onClose={() => setIsAllCategoriesDropdownOpen(false)}
-          buttonRef={allCategoriesButtonRef}
-        />
-      )}
-
-      {/* Autodesk Dropdown */}
-      {isAutodeskDropdownOpen && (
-        <AutodeskDropdown
-          isOpen={isAutodeskDropdownOpen}
-          onClose={() => setIsAutodeskDropdownOpen(false)}
-          onNavigate={handleNavigation}
-          buttonRef={autodeskButtonRef}
-        />
-      )}
-
-      {/* Microsoft Dropdown */}
-      {isMicrosoftDropdownOpen && (
-        <MicrosoftDropdown
-          isOpen={isMicrosoftDropdownOpen}
-          onClose={() => setIsMicrosoftDropdownOpen(false)}
-          onNavigate={handleNavigation}
-          buttonRef={microsoftButtonRef}
-        />
-      )}
-
-      {/* Adobe Dropdown */}
-      {isAdobeDropdownOpen && (
-        <AdobeDropdown
-          isOpen={isAdobeDropdownOpen}
-          onClose={() => setIsAdobeDropdownOpen(false)}
-          onNavigate={handleNavigation}
-          buttonRef={adobeButtonRef}
-        />
-      )}
-
-      {/* Antivirus Dropdown */}
-      {isAntivirusDropdownOpen && (
-        <AntivirusDropdown
-          isOpen={isAntivirusDropdownOpen}
-          onClose={() => setIsAntivirusDropdownOpen(false)}
-          onNavigate={handleNavigation}
-          buttonRef={antivirusButtonRef}
-        />
-      )}
+      {/* No overlay for CSS hover dropdowns */}
     </header>
   );
 };

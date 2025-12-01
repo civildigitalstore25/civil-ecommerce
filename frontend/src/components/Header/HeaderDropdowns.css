@@ -1,0 +1,34 @@
+/* CSS for flicker-free desktop dropdowns */
+.desktop-nav-dropdown-group {
+    position: relative;
+    display: inline-block;
+}
+
+.desktop-nav-dropdown-panel {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    z-index: 50;
+}
+
+.desktop-nav-dropdown-group:hover .desktop-nav-dropdown-panel,
+.desktop-nav-dropdown-group:focus-within .desktop-nav-dropdown-panel {
+    display: block;
+}
+
+/* User dropdown */
+.user-dropdown-group {
+    position: relative;
+    display: inline-block;
+}
+
+.user-dropdown-panel {
+    display: none;
+}
+
+.user-dropdown-group:hover .user-dropdown-panel,
+.user-dropdown-group:focus-within .user-dropdown-panel,
+.user-dropdown-group.group:hover .user-dropdown-panel {
+    display: block;
+}
