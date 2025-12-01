@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-import { log } from "console";
 
 interface MicrosoftSubProduct {
   name: string;

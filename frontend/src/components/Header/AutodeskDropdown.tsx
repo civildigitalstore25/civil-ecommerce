@@ -88,7 +88,6 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  buttonRef,
 }) => {
   const { colors } = useAdminTheme();
   const [activeProduct, setActiveProduct] = useState<string | null>(null);
