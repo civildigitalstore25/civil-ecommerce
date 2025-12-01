@@ -48,13 +48,19 @@ const UserTable: React.FC<Props> = ({
                 User
               </th>
               <th
-                className="text-left py-3 pl-18 px-4"
+                className="text-left py-3 px-4"
                 style={{ color: colors.text.primary }}
               >
                 Email
               </th>
               <th
-                className="text-left py-3 pl-8 px-4"
+                className="text-left py-3 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                Phone Number
+              </th>
+              <th
+                className="text-left py-3 px-4"
                 style={{ color: colors.text.primary }}
               >
                 Role
@@ -83,13 +89,13 @@ const UserTable: React.FC<Props> = ({
                 className="transition-colors duration-200"
                 style={{ backgroundColor: "transparent" }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.background.accent;
+                  e.currentTarget.style.backgroundColor = colors.background.accent;
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
+                {/* User Name */}
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-3">
                     <div
@@ -105,21 +111,18 @@ const UserTable: React.FC<Props> = ({
                       >
                         {user.fullName || "No name"}
                       </div>
-                      <div
-                        className="text-sm"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        {user.phoneNumber || "No phone"}
-                      </div>
                     </div>
                   </div>
                 </td>
 
-                <td
-                  className="py-4 px-4"
-                  style={{ color: colors.text.primary }}
-                >
+                {/* Email */}
+                <td className="py-4 px-4" style={{ color: colors.text.primary }}>
                   {user.email}
+                </td>
+
+                {/* Phone Number */}
+                <td className="py-4 px-4" style={{ color: colors.text.primary }}>
+                  {user.phoneNumber ? user.phoneNumber : "N/A"}
                 </td>
 
                 {/* Role Select + Update Button */}
