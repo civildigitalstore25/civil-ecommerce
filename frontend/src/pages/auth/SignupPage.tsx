@@ -8,9 +8,12 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
-import PhoneInput from "../../components/Input/PhoneInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
+import "./PhoneInputStyles.css";
+import flags from "react-phone-number-input/flags";
 
 interface SignupFormData {
   email: string;
@@ -187,27 +190,44 @@ export default function SignupPage() {
               )}
             </div>
 
-            {/* Phone Number */}
+            {/* Phone Number with Country Code */}
             <div>
+              <label
+                className="block text-sm font-medium mb-2"
+                style={{ color: colors.text.primary }}
+              >
+                WhatsApp Number <span className="text-red-500">*</span>
+              </label>
               <Controller
                 name="phoneNumber"
                 control={control}
                 rules={{
                   required: "Phone number is required",
-                  pattern: {
-                    value: /^[+\d][0-9\s-]{6,20}$/, // allows +, digits, spaces, dashes
-                    message: "Please enter a valid phone number",
+                  validate: (value) => {
+                    if (!value) return "Phone number is required";
+                    if (value.length < 8) return "Please enter a valid phone number";
+                    return true;
                   },
                 }}
                 render={({ field }) => (
-                  <PhoneInput
-                    label="Whatsapp Number"
-                    name={field.name}
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Enter your phone number"
-                    required
-                  />
+                  <div className="relative">
+                    <PhoneInput
+                      flags={flags}
+                      international
+                      countryCallingCodeEditable={false}
+                      defaultCountry="IN"
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Enter phone number"
+                      className="custom-phone-input"
+                      addInternationalOption={false}
+                      style={{
+                        backgroundColor: colors.background.primary,
+                        borderColor: colors.border?.primary || '#e5e7eb',
+                        color: colors.text.primary,
+                      }}
+                    />
+                  </div>
                 )}
               />
               {errors.phoneNumber && (

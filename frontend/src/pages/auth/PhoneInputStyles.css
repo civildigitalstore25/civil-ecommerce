@@ -1,0 +1,235 @@
+/* PhoneInputStyles.css - Place this in the same directory as your SignupPage */
+
+/* Main phone input container */
+.custom-phone-input {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-width: 1px;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Input field */
+.custom-phone-input .PhoneInputInput {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.custom-phone-input .PhoneInputInput::placeholder {
+  opacity: 0.6;
+}
+
+/* Country selector */
+.custom-phone-input .PhoneInputCountry {
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+/* Flag icon - Fixed size and visibility */
+.custom-phone-input .PhoneInputCountryIcon {
+  width: 1.75rem !important;
+  height: 1.25rem !important;
+  border-radius: 0.125rem;
+  overflow: hidden;
+  flex-shrink: 0;
+  display: block !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+.custom-phone-input .PhoneInputCountryIcon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  display: block !important;
+}
+
+/* Dropdown arrow */
+.custom-phone-input .PhoneInputCountrySelectArrow {
+  opacity: 0.5;
+  margin-left: 0.25rem;
+  display: inline-block;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+  border: solid currentColor;
+  border-width: 0 1.5px 1.5px 0;
+  padding: 2.5px;
+  transform: rotate(45deg);
+}
+
+/* Focus state */
+.custom-phone-input:focus-within {
+  outline-width: 2px;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+/* Country select dropdown (invisible overlay) */
+.PhoneInputCountrySelect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 10;
+  width: 4rem;
+  height: 100%;
+}
+
+/* Dropdown menu styling */
+.PhoneInputCountrySelectDropdown {
+  border-radius: 0.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  max-height: 16rem;
+  overflow-y: auto;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  background-color: white;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Individual country option */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 1rem;
+  cursor: pointer;
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  gap: 0.75rem;
+}
+
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Flag in dropdown - CRITICAL STYLES FOR VISIBILITY */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryIcon {
+  width: 1.75rem !important;
+  height: 1.25rem !important;
+  min-width: 1.75rem !important;
+  min-height: 1.25rem !important;
+  margin-right: 0 !important;
+  border-radius: 0.125rem;
+  overflow: visible !important;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  display: inline-block !important;
+  position: relative;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  vertical-align: middle;
+}
+
+/* Ensure flag images are visible in dropdown */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryIcon img,
+.PhoneInputCountrySelectDropdown .PhoneInputCountryIconImg,
+.PhoneInputCountrySelectDropdown .PhoneInputCountryIcon svg {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Force flag visibility with higher specificity */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption .PhoneInputCountryIcon {
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption .PhoneInputCountryIcon * {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Selected option in dropdown */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption--selected {
+  background-color: rgba(59, 130, 246, 0.15);
+  font-weight: 500;
+}
+
+/* Country name in dropdown */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryName {
+  flex: 1 1 0%;
+  font-size: 0.875rem;
+  color: #1f2937;
+}
+
+/* Calling code in dropdown */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryCallingCode {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* Divider between country name and code */
+.PhoneInputCountrySelectDropdown .PhoneInputCountryOption > * {
+  pointer-events: none;
+}
+
+/* Scrollbar styling for dropdown */
+.PhoneInputCountrySelectDropdown::-webkit-scrollbar {
+  width: 8px;
+}
+
+.PhoneInputCountrySelectDropdown::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.PhoneInputCountrySelectDropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.PhoneInputCountrySelectDropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode support for dropdown */
+@media (prefers-color-scheme: dark) {
+  .PhoneInputCountrySelectDropdown {
+    background-color: #1f2937;
+    border-color: #374151;
+  }
+
+  .PhoneInputCountrySelectDropdown .PhoneInputCountryName {
+    color: #f3f4f6;
+  }
+
+  .PhoneInputCountrySelectDropdown .PhoneInputCountryCallingCode {
+    color: #9ca3af;
+  }
+
+  .PhoneInputCountrySelectDropdown .PhoneInputCountryOption:hover {
+    background-color: rgba(59, 130, 246, 0.2);
+  }
+
+  .PhoneInputCountrySelectDropdown .PhoneInputCountryOption--selected {
+    background-color: rgba(59, 130, 246, 0.25);
+  }
+}
