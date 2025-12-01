@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { ChevronRight } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { log } from "console";
 
 interface MicrosoftSubProduct {
   name: string;
@@ -71,6 +72,7 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
   const updatePosition = () => {
     if (isOpen && buttonRef.current) {
       const rect = buttonRef.current.getBoundingClientRect();
+      console.log("Button position:", rect);
     }
   };
 

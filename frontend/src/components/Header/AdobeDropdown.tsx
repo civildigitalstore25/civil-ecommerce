@@ -69,7 +69,6 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  buttonRef,
 }) => {
   const { colors } = useAdminTheme();
   const dropdownRef = useRef<HTMLDivElement>(null);

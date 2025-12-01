@@ -160,15 +160,8 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
   const { colors } = useAdminTheme();
 
   // Helper to update dropdown position
-  const [buttonPosition, setButtonPosition] = useState({ top: 0, left: 0 });
   const updatePosition = () => {
-    if (isOpen && buttonRef.current) {
-      const rect = buttonRef.current.getBoundingClientRect();
-      setButtonPosition({
-        top: rect.bottom + window.scrollY + 4,
-        left: rect.left + window.scrollX,
-      });
-    }
+    // Position is handled by CSS (absolute positioning relative to parent)
   };
 
   useEffect(() => {
