@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import "./AllCategoriesDropdown.css";
 import { useEffect } from "react";
-import { useRef } from "react";
 
 // Brand-Category structure (same as AddProductModal)
 const brandCategories: Record<
