@@ -234,7 +234,10 @@ const BrandCategoryListing: React.FC = () => {
                 <div
                   className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
                   style={{ backgroundColor: colors.background.secondary }}
-                  onClick={() => navigate(`/product/${product._id}`)}
+                  onClick={() => {
+                    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+                    navigate(`/product/${slug}`);
+                  }}
                 >
                   <img
                     src={product.image}
@@ -376,7 +379,10 @@ const BrandCategoryListing: React.FC = () => {
                 {/* Actions */}
                 <div className="flex flex-col gap-1 md:gap-2 mt-auto">
                   <button
-                    onClick={() => navigate(`/product/${product._id}`)}
+                    onClick={() => {
+                      const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+                      navigate(`/product/${slug}`);
+                    }}
                     className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                     style={{
                       borderColor: colors.border.primary,

@@ -64,14 +64,19 @@ export const useProducts = (params?: {
   });
 };
 
+// If id is provided, fetch single product. If not, fetch all products (for slug-based lookup)
 export const useProductDetail = (id?: string) => {
-  return useQuery<Product | null>({
+  return useQuery<any>({
     queryKey: ["product", id],
-    enabled: !!id, // Only run if id is present
     queryFn: async () => {
-      if (!id) return null;
-      const { data } = await apiClient.get(`/${id}`);
-      return data;
+      if (id) {
+        const { data } = await apiClient.get(`/${id}`);
+        return data;
+      } else {
+        // Fetch all products for slug-based lookup
+        const { data } = await apiClient.get(`/`);
+        return Array.isArray(data.products) ? data.products : data;
+      }
     },
   });
 };

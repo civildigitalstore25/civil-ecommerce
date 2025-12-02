@@ -94,8 +94,29 @@ const FAQItem: React.FC<FAQItemProps> = ({
 };
 
 const ProductDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data: product, isLoading } = useProductDetail(id);
+  const { slug } = useParams<{ slug: string }>();
+  // Parse slug to get product name and version
+  let productName = "";
+  let productVersion = "";
+  if (slug) {
+    // Split by last hyphen for version (assuming version does not contain hyphens)
+    const lastHyphen = slug.lastIndexOf("-");
+    if (lastHyphen !== -1) {
+      productName = slug.substring(0, lastHyphen).replace(/-/g, " ");
+      productVersion = slug.substring(lastHyphen + 1);
+    } else {
+      productName = slug.replace(/-/g, " ");
+    }
+  }
+
+  // You may need to update useProductDetail to support fetching by name+version, or filter after fetching all products
+  // For now, try to fetch all products and filter (replace with API call if available)
+  const { data: productList, isLoading } = useProductDetail(); // Assume this returns all products if no param
+  const product = productList?.find(
+    (p: any) =>
+      p.name?.toLowerCase().replace(/\s+/g, " ") === productName.toLowerCase() &&
+      (productVersion ? p.version?.toString().toLowerCase() === productVersion.toLowerCase() : true)
+  );
   const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -133,19 +154,18 @@ const ProductDetail: React.FC = () => {
 
   // Load reviews when component mounts or product changes
   useEffect(() => {
-    console.log("useEffect triggered with id:", id);
-    if (id) {
-      loadReviews();
-      loadReviewStats();
+    if (product?._id) {
+      loadReviews(product._id);
+      loadReviewStats(product._id);
     }
-  }, [id]);
+  }, [product?._id]);
 
   // Load reviews for the product
-  const loadReviews = async () => {
-    if (!id) return;
+  const loadReviews = async (productId: string) => {
+    if (!productId) return;
     try {
       setReviewsLoading(true);
-      const response = await getProductReviews(id);
+      const response = await getProductReviews(productId);
       setReviews(response.reviews);
     } catch (error) {
       console.error("Error loading reviews:", error);
@@ -155,16 +175,10 @@ const ProductDetail: React.FC = () => {
   };
 
   // Load review statistics
-  const loadReviewStats = async () => {
-    console.log("loadReviewStats called with id:", id);
-    if (!id) {
-      console.log("No id provided, returning");
-      return;
-    }
+  const loadReviewStats = async (productId: string) => {
+    if (!productId) return;
     try {
-      console.log("Calling getProductReviewStats with id:", id);
-      const stats = await getProductReviewStats(id);
-      console.log("Review stats loaded:", stats);
+      const stats = await getProductReviewStats(productId);
       setReviewStats(stats);
     } catch (error) {
       console.error("Error loading review stats:", error);
@@ -200,15 +214,15 @@ const ProductDetail: React.FC = () => {
         await updateReview(editingReview._id, reviewForm);
         Swal.fire("Success", "Review updated successfully", "success");
       } else {
-        await createReview(id!, reviewForm);
+        await createReview(product._id!, reviewForm);
         Swal.fire("Success", "Review posted successfully", "success");
       }
 
       setReviewForm({ rating: 5, comment: "" });
       setShowReviewForm(false);
       setEditingReview(null);
-      loadReviews();
-      loadReviewStats();
+      loadReviews(product._id);
+      loadReviewStats(product._id);
     } catch (error: any) {
       Swal.fire(
         "Error",
@@ -260,8 +274,8 @@ const ProductDetail: React.FC = () => {
     try {
       await deleteReview(reviewId);
       Swal.fire("Success", "Review deleted successfully", "success");
-      loadReviews();
-      loadReviewStats();
+      loadReviews(product._id);
+      loadReviewStats(product._id);
     } catch (error: any) {
       Swal.fire(
         "Error",
@@ -282,7 +296,7 @@ const ProductDetail: React.FC = () => {
       product.subscriptionDurations &&
       product.subscriptionDurations.length > 0
     ) {
-      product.subscriptionDurations.forEach((sub, index) => {
+      product.subscriptionDurations.forEach((sub: any, index: number) => {
         if (
           (sub.price && sub.price > 0) ||
           (sub.priceINR && sub.priceINR > 0) ||
@@ -388,12 +402,12 @@ const ProductDetail: React.FC = () => {
 
     return product.subscriptions
       .filter(
-        (sub) =>
+        (sub: any) =>
           (sub.price && sub.price > 0) ||
           (sub.priceINR && sub.priceINR > 0) ||
           (sub.priceUSD && sub.priceUSD > 0),
       )
-      .map((sub, index) => ({
+      .map((sub: any, index: number) => ({
         id: `admin-subscription-${index}`,
         label: sub.duration,
         priceINR: sub.priceINR || sub.price || 0,
@@ -459,7 +473,7 @@ const ProductDetail: React.FC = () => {
   // Images - prioritize imageUrl over image field, and handle additional images
   const mainImageUrl = product.imageUrl || product.image;
   const additionalImages =
-    product.additionalImages?.filter((img) => img && img.trim() !== "") || [];
+    product.additionalImages?.filter((img: string) => img && img.trim() !== "") || [];
   const images = [mainImageUrl, ...additionalImages].filter((img) => img);
 
   // Include demo video as part of media gallery
@@ -486,7 +500,7 @@ const ProductDetail: React.FC = () => {
 
     if (!user) {
       // Redirect to login if user is not authenticated
-      navigate("/login", { state: { returnTo: `/product/${id}` } });
+      navigate("/login", { state: { returnTo: `/product/${slug}` } });
       return;
     }
 
@@ -687,7 +701,7 @@ const ProductDetail: React.FC = () => {
 
     if (!user) {
       // Redirect to login if user is not authenticated
-      navigate("/signin", { state: { returnTo: `/product/${id}` } });
+      navigate("/signin", { state: { returnTo: `/product/${slug}` } });
       return;
     }
 
@@ -1225,7 +1239,7 @@ const ProductDetail: React.FC = () => {
                     Subscription Plans
                   </h4>
                   <div className="flex gap-2">
-                    {adminSubscriptionPlans.map((option) => (
+                    {adminSubscriptionPlans.map((option: any) => (
                       <div
                         key={option.id}
                         onClick={() => {
@@ -1487,7 +1501,7 @@ const ProductDetail: React.FC = () => {
                 {/* Show structured features if available */}
                 {product.keyFeatures && product.keyFeatures.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
-                    {product.keyFeatures.map((feature, index) => (
+                    {product.keyFeatures.map((feature: any, index: number) => (
                       <div
                         key={index}
                         className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200"
@@ -1711,7 +1725,7 @@ const ProductDetail: React.FC = () => {
                 {product.systemRequirements &&
                   product.systemRequirements.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {product.systemRequirements.map((requirement, index) => (
+                    {product.systemRequirements.map((requirement: any, index: number) => (
                       <div
                         key={index}
                         className="rounded-2xl p-6 border transition-colors duration-200"
@@ -2209,7 +2223,7 @@ const ProductDetail: React.FC = () => {
 
                 <div className="space-y-4">
                   {product.faqs && product.faqs.length > 0 ? (
-                    product.faqs.map((faq, index) => (
+                    product.faqs.map((faq: any, index: number) => (
                       <FAQItem
                         key={index}
                         question={faq.question}
@@ -2264,18 +2278,18 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
 
-       {/* Related Products */}
-<div className="mt-8 lg:mt-16">
-  <div className="flex items-center justify-between mb-6 lg:mb-8">
-    <h2 
-      className="text-xl lg:text-3xl font-bold"
-      style={{ color: colors.text.primary }}
-    >
-      Related Products
-    </h2>
-  </div>
-  <RelatedProducts currentProduct={product} limit={4} />
-</div>
+        {/* Related Products */}
+        <div className="mt-8 lg:mt-16">
+          <div className="flex items-center justify-between mb-6 lg:mb-8">
+            <h2
+              className="text-xl lg:text-3xl font-bold"
+              style={{ color: colors.text.primary }}
+            >
+              Related Products
+            </h2>
+          </div>
+          <RelatedProducts currentProduct={product} limit={4} />
+        </div>
       </div>
 
       {/* Enquiry Modal */}

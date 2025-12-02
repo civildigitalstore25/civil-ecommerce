@@ -157,47 +157,47 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           brand: productBrand,
           subscriptionDurations:
             product.subscriptionDurations &&
-            product.subscriptionDurations.length > 0
+              product.subscriptionDurations.length > 0
               ? product.subscriptionDurations.map((sub) => ({
-                  duration: sub.duration,
-                  price: sub.price?.toString() || "",
-                  priceINR: sub.priceINR?.toString() || "",
-                  priceUSD: sub.priceUSD?.toString() || "",
-                }))
+                duration: sub.duration,
+                price: sub.price?.toString() || "",
+                priceINR: sub.priceINR?.toString() || "",
+                priceUSD: sub.priceUSD?.toString() || "",
+              }))
               : [
-                  {
-                    duration: "1 Year",
-                    price: product.price1?.toString() || "",
-                    priceINR: product.price1INR?.toString() || "",
-                    priceUSD: product.price1USD?.toString() || "",
-                  },
-                  ...(product.price3
-                    ? [
-                        {
-                          duration: "3 Year",
-                          price: product.price3.toString(),
-                          priceINR: product.price3INR?.toString() || "",
-                          priceUSD: product.price3USD?.toString() || "",
-                        },
-                      ]
-                    : []),
-                ],
+                {
+                  duration: "1 Year",
+                  price: product.price1?.toString() || "",
+                  priceINR: product.price1INR?.toString() || "",
+                  priceUSD: product.price1USD?.toString() || "",
+                },
+                ...(product.price3
+                  ? [
+                    {
+                      duration: "3 Year",
+                      price: product.price3.toString(),
+                      priceINR: product.price3INR?.toString() || "",
+                      priceUSD: product.price3USD?.toString() || "",
+                    },
+                  ]
+                  : []),
+              ],
           subscriptions:
             product.subscriptions && product.subscriptions.length > 0
               ? product.subscriptions.map((sub) => ({
-                  duration: sub.duration,
-                  price: sub.price?.toString() || "",
-                  priceINR: sub.priceINR?.toString() || "",
-                  priceUSD: sub.priceUSD?.toString() || "",
-                }))
+                duration: sub.duration,
+                price: sub.price?.toString() || "",
+                priceINR: sub.priceINR?.toString() || "",
+                priceUSD: sub.priceUSD?.toString() || "",
+              }))
               : [
-                  {
-                    duration: "Monthly",
-                    price: "",
-                    priceINR: "",
-                    priceUSD: "",
-                  },
-                ],
+                {
+                  duration: "Monthly",
+                  price: "",
+                  priceINR: "",
+                  priceUSD: "",
+                },
+              ],
           hasLifetime:
             product.hasLifetime ||
             !!product.priceLifetime ||
@@ -487,11 +487,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     });
 
     if (result.isConfirmed) {
+      // Generate slug from name and version
+      const slug = `${newProduct.name.replace(/\s+/g, "-").toLowerCase()}${newProduct.version ? `-${newProduct.version.toString().toLowerCase()}` : ""}`;
+
       // Transform new product structure to match current backend expectations
       const productData = {
         // Basic Information
         name: newProduct.name,
         version: newProduct.version,
+        slug,
         shortDescription: newProduct.shortDescription,
         description: newProduct.shortDescription, // Map shortDescription to description for backend compatibility
         category: newProduct.category,

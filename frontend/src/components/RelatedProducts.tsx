@@ -97,7 +97,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
             background: colors.background.secondary,
             border: `1.5px solid ${colors.border.primary}`,
           }}
-          onClick={() => navigate(`/product/${product._id}`)}
+          onClick={() => {
+            const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+            navigate(`/product/${slug}`);
+          }}
         >
           <div
             className="aspect-video flex items-center justify-center"
