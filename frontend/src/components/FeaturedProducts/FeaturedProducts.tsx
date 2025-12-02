@@ -87,6 +87,10 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
               className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-3 md:p-5 flex flex-col hover:scale-[1.02]"
               style={{
                 backgroundColor: colors.background.primary,
+                aspectRatio: '1 / 1', // Make card square
+                width: '100%', // Full width in grid cell
+                maxWidth: '400px', // Optional: limit max width for large screens
+                margin: '0 auto', // Center in grid cell
               }}
             >
               {/* Image */}
@@ -186,7 +190,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 {formatPriceWithSymbol(
                   product.price1INR || product.price1 || 0,
                   product.price1USD ||
-                    (product.price1 ? product.price1 / 83 : 0),
+                  (product.price1 ? product.price1 / 83 : 0),
                 )}
                 /<span className="text-[10px] md:text-sm font-normal">year</span>
               </div>
@@ -198,18 +202,18 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                   <>
                     3yr:{" "}
                     <span className="hidden md:inline">
-                    {formatPriceWithSymbol(
-                      product.price3INR || product.price3 || 0,
-                      product.price3USD ||
+                      {formatPriceWithSymbol(
+                        product.price3INR || product.price3 || 0,
+                        product.price3USD ||
                         (product.price3 ? product.price3 / 83 : 0),
-                    )}
+                      )}
                     </span>
                     <span className="md:hidden">
-                    {formatPriceWithSymbol(
-                      product.price3INR || product.price3 || 0,
-                      product.price3USD ||
+                      {formatPriceWithSymbol(
+                        product.price3INR || product.price3 || 0,
+                        product.price3USD ||
                         (product.price3 ? product.price3 / 83 : 0),
-                    )}
+                      )}
                     </span>
                     {" "}•{" "}
                   </>
@@ -217,19 +221,19 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 {(product.priceLifetime ||
                   product.priceLifetimeINR ||
                   product.priceLifetimeUSD) && (
-                  <>
-                    <span className="hidden md:inline">Lifetime:</span>
-                    <span className="md:hidden">Life:</span>
-                    {" "}
-                    {formatPriceWithSymbol(
-                      product.priceLifetimeINR || product.priceLifetime || 0,
-                      product.priceLifetimeUSD ||
+                    <>
+                      <span className="hidden md:inline">Lifetime:</span>
+                      <span className="md:hidden">Life:</span>
+                      {" "}
+                      {formatPriceWithSymbol(
+                        product.priceLifetimeINR || product.priceLifetime || 0,
+                        product.priceLifetimeUSD ||
                         (product.priceLifetime
                           ? product.priceLifetime / 83
                           : 0),
-                    )}
-                  </>
-                )}
+                      )}
+                    </>
+                  )}
               </div>
 
               {/* Actions */}
