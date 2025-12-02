@@ -200,7 +200,7 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border"
+      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         minWidth: "1000px",
         backgroundColor: colors.background.secondary,

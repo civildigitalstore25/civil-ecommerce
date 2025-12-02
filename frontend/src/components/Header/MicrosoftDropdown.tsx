@@ -120,7 +120,7 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
 
   return (
     <div
-      className="absolute left-0 top-full mt-2 rounded-xl shadow-2xl border z-50 backdrop-blur-sm"
+      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
