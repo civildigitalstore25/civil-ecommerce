@@ -129,7 +129,7 @@ const AllCategoriesDropdown: React.FC = () => {
           className="text-2xl font-bold mb-1"
           style={{ color: colors.text.primary }}
         >
-          Software Product Category
+          Software Product Categories
         </h3>
         <p className="text-sm" style={{ color: colors.text.secondary }}>
           Explore professional software tools designed for every industry
