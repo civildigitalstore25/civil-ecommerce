@@ -121,15 +121,15 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
               {product.name}
             </h4>
             <div className="flex items-center justify-between">
-              <span
+              {/* <span
                 className="text-2xl font-bold"
                 style={{ color: colors.interactive.primary }}
               >
                 {product.price1INR ? `₹${product.price1INR}` : product.price1USD ? `$${product.price1USD}` : ""}
-              </span>
+              </span> */}
               <Button
                 variant="primary"
-                className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none"
+                className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none ml-13"
                 style={{
                   background: colors.interactive.primary,
                   color: colors.text.inverse,
