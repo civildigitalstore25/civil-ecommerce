@@ -10,10 +10,11 @@ import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
-import "./PhoneInputStyles.css";
-import flags from "react-phone-number-input/flags";
+import { useState } from "react";
+import type { CountryData, PhoneInputProps } from "react-phone-input-2";
+// @ts-ignore
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 
 interface SignupFormData {
   email: string;
@@ -21,6 +22,7 @@ interface SignupFormData {
   confirmPassword: string;
   fullName: string;
   phoneNumber: string;
+  countryCode: string;
 }
 
 export default function SignupPage() {
@@ -28,11 +30,13 @@ export default function SignupPage() {
   const invalidateUser = useUserInvalidate();
   const signUpMutation = useSignUp();
   const { colors } = useAdminTheme();
+  const [countryCode, setCountryCode] = useState<string>("91");
 
   const {
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useAppForm<SignupFormData>({
     defaultValues: {
@@ -41,6 +45,7 @@ export default function SignupPage() {
       confirmPassword: "",
       fullName: "",
       phoneNumber: "",
+      countryCode: "+91",
     },
   });
 
@@ -48,7 +53,26 @@ export default function SignupPage() {
 
   const onSubmit = (data: SignupFormData) => {
     const { confirmPassword, ...signUpData } = data;
-    signUpMutation.mutate(signUpData, {
+    
+    // Extract phone number without country code
+    let phone = data.phoneNumber;
+    let cc = countryCode;
+    
+    if (phone.startsWith("+")) {
+      const match = phone.match(/^\+(\d{1,4})/);
+      if (match) {
+        cc = match[1];
+        phone = phone.replace(/^\+\d{1,4}/, "");
+      }
+    }
+    
+    const submitData = {
+      ...signUpData,
+      phoneNumber: phone.trim(),
+      countryCode: `+${cc}`,
+    };
+    
+    signUpMutation.mutate(submitData, {
       onSuccess: (data) => {
         saveAuth({
           token: data.token,
@@ -205,27 +229,143 @@ export default function SignupPage() {
                   required: "Phone number is required",
                   validate: (value) => {
                     if (!value) return "Phone number is required";
-                    if (value.length < 8) return "Please enter a valid phone number";
+                    const digits = value.replace(/\D/g, "");
+                    if (digits.length < 8 || digits.length > 15) {
+                      return "Phone number must be 8-15 digits";
+                    }
                     return true;
                   },
                 }}
                 render={({ field }) => (
-                  <div className="relative">
+                  <div className="phone-input-wrapper">
+                    <style>{`
+                      .phone-input-wrapper .react-tel-input .form-control {
+                        width: 100% !important;
+                        padding-left: 60px !important;
+                        padding-right: 16px !important;
+                        padding-top: 10px !important;
+                        padding-bottom: 10px !important;
+                        border-radius: 0.5rem !important;
+                        background-color: ${colors.background.primary} !important;
+                        border: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
+                        color: ${colors.text.primary} !important;
+                        font-size: 0.875rem !important;
+                        outline: none !important;
+                        transition: all 0.2s !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .form-control:focus {
+                        border-color: ${colors.interactive.primary} !important;
+                        box-shadow: 0 0 0 2px ${colors.interactive.primary}33 !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .flag-dropdown {
+                        background-color: ${colors.background.primary} !important;
+                        border: none !important;
+                        border-radius: 0.5rem !important;
+                        padding-left: 8px !important;
+                        padding-right: 8px !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .flag-dropdown:hover,
+                      .phone-input-wrapper .react-tel-input .flag-dropdown.open {
+                        background-color: ${colors.background.primary} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .selected-flag {
+                        background-color: transparent !important;
+                        padding: 0 8px !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .selected-flag:hover,
+                      .phone-input-wrapper .react-tel-input .selected-flag.open {
+                        background-color: ${colors.background.secondary || 'rgba(0,0,0,0.1)'} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list {
+                        background-color: ${colors.background.primary} !important;
+                        border: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
+                        border-radius: 0.5rem !important;
+                        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+                        margin-top: 4px !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .country {
+                        background-color: ${colors.background.primary} !important;
+                        color: ${colors.text.primary} !important;
+                        padding: 8px 12px !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .country:hover,
+                      .phone-input-wrapper .react-tel-input .country-list .country.highlight {
+                        background-color: ${colors.background.secondary || 'rgba(0,0,0,0.1)'} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .country.preferred {
+                        background-color: ${colors.background.secondary || 'rgba(0,0,0,0.05)'} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .search {
+                        background-color: ${colors.background.primary} !important;
+                        padding: 8px !important;
+                        position: sticky !important;
+                        top: 0 !important;
+                        z-index: 1 !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .search-box {
+                        width: 100% !important;
+                        padding: 8px 12px !important;
+                        border-radius: 0.375rem !important;
+                        background-color: ${colors.background.secondary || 'rgba(0,0,0,0.1)'} !important;
+                        border: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
+                        color: ${colors.text.primary} !important;
+                        font-size: 0.875rem !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .search-box::placeholder {
+                        color: ${colors.text.secondary || '#9ca3af'} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .search-box:focus {
+                        outline: none !important;
+                        border-color: ${colors.interactive.primary} !important;
+                        box-shadow: 0 0 0 2px ${colors.interactive.primary}33 !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .divider {
+                        border-bottom: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
+                      }
+                      
+                      .phone-input-wrapper .react-tel-input .country-list .country-name,
+                      .phone-input-wrapper .react-tel-input .country-list .dial-code {
+                        color: ${colors.text.primary} !important;
+                      }
+                    `}</style>
                     <PhoneInput
-                      flags={flags}
-                      international
-                      countryCallingCodeEditable={false}
-                      defaultCountry="IN"
+                      country={"in"}
                       value={field.value}
-                      onChange={field.onChange}
-                      placeholder="Enter phone number"
-                      className="custom-phone-input"
-                      addInternationalOption={false}
-                      style={{
-                        backgroundColor: colors.background.primary,
-                        borderColor: colors.border?.primary || '#e5e7eb',
-                        color: colors.text.primary,
+                      onChange={(value: string, data: CountryData) => {
+                        field.onChange(value);
+                        setValue("phoneNumber", value);
+                        if (data && typeof data === "object" && "dialCode" in data && data.dialCode) {
+                          setCountryCode(data.dialCode);
+                          setValue("countryCode", `+${data.dialCode}`);
+                        }
                       }}
+                      inputProps={{
+                        name: "phone",
+                        required: true,
+                        autoFocus: false,
+                      }}
+                      containerClass="w-full"
+                      enableSearch
+                      disableSearchIcon={false}
+                      searchPlaceholder="Search country"
+                      specialLabel=""
+                      countryCodeEditable={false}
+                      enableAreaCodes={true}
+                      masks={{ in: "+.. ........." }}
                     />
                   </div>
                 )}
