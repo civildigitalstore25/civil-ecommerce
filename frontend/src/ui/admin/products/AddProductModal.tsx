@@ -105,7 +105,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   const [newProduct, setNewProduct] = useState({
     name: "",
     version: "",
-    shortDescription: "",
+    longDescription: "",
     category: "",
     brand: brands[0].value,
     subscriptionDurations: [
@@ -148,7 +148,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         setNewProduct({
           name: product.name || "",
           version: product.version || "",
-          shortDescription: product.shortDescription || "",
+          longDescription: product.description || product.shortDescription || "",
           category:
             product.category ||
             (availableCategories.length > 0
@@ -238,7 +238,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         setNewProduct({
           name: "",
           version: "",
-          shortDescription: "",
+          longDescription: "",
           category:
             availableCategories.length > 0 ? availableCategories[0].value : "",
           brand: defaultBrand,
@@ -489,6 +489,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     if (result.isConfirmed) {
       // Generate slug from name and version
       const slug = `${newProduct.name.replace(/\s+/g, "-").toLowerCase()}${newProduct.version ? `-${newProduct.version.toString().toLowerCase()}` : ""}`;
+      // If the brand has no categories (e.g., 'ebook'), use the brand as category
+      const brandHasCategories = (brandCategories[newProduct.brand] || []).length > 0;
+      const categoryValue = brandHasCategories ? newProduct.category : newProduct.brand;
 
       // Transform new product structure to match current backend expectations
       const productData = {
@@ -496,9 +499,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         name: newProduct.name,
         version: newProduct.version,
         slug,
-        shortDescription: newProduct.shortDescription,
-        description: newProduct.shortDescription, // Map shortDescription to description for backend compatibility
-        category: newProduct.category,
+        shortDescription: newProduct.longDescription,
+        description: newProduct.longDescription, // Map longDescription to description for backend compatibility
+        category: categoryValue,
 
         // Brand/Company (backward compatibility)
         company: newProduct.brand, // For backward compatibility
@@ -660,7 +663,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         return;
       }
 
-      if (!productData.category || productData.category.trim() === "") {
+      // Only require category if the brand actually provides categories
+      if (brandHasCategories && (!productData.category || productData.category.trim() === "")) {
         Swal.fire({
           title: "Validation Error",
           text: "Product Category is required",
@@ -813,15 +817,15 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 className="block text-sm font-medium"
                 style={{ color: colors.text.secondary }}
               >
-                Short Description
+                Long Description
               </label>
               <textarea
-                value={newProduct.shortDescription}
+                value={newProduct.longDescription}
                 onChange={(e) =>
-                  handleInputChange("shortDescription", e.target.value)
+                  handleInputChange("longDescription", e.target.value)
                 }
-                placeholder="Brief product summary (1-2 sentences)..."
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 min-h-[80px] transition-colors duration-200"
+                placeholder="Detailed product description, features, installation and activation instructions..."
+                className="w-full px-3 py-2 border rounded-lg focus:ring-2 min-h-[140px] transition-colors duration-200"
                 style={{
                   backgroundColor: colors.background.primary,
                   borderColor: colors.border.primary,
@@ -1329,10 +1333,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                           type="button"
                           onClick={() => removeSubscriptionDuration(index)}
-                          disabled={
-                            newProduct.subscriptionDurations.length === 1
-                          }
-                          className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                          title="Remove pricing duration"
+                          className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
                           style={{
                             color: colors.status.error,
                             borderColor: colors.status.error,
@@ -1724,8 +1726,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <button
                           type="button"
                           onClick={() => removeSubscription(index)}
-                          disabled={newProduct.subscriptions.length === 1}
-                          className="px-3 py-2 border rounded-lg hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                          title="Remove subscription plan"
+                          className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
                           style={{
                             color: colors.status.error,
                             borderColor: colors.status.error,
