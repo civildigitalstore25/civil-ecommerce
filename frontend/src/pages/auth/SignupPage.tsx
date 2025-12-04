@@ -11,7 +11,7 @@ import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
 import { useState } from "react";
-import type { CountryData, PhoneInputProps } from "react-phone-input-2";
+import type { CountryData } from "react-phone-input-2";
 // @ts-ignore
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
