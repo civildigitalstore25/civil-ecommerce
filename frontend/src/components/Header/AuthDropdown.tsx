@@ -16,7 +16,7 @@ const AuthDropdown: React.FC<AuthDropdownProps> = ({ isOpen, onNavigate }) => {
 
   return (
     <div
-      className="absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
+      className="absolute right-0 mt-[-1px] w-48 rounded-md shadow-lg border py-2 z-50 transition-colors duration-200"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,

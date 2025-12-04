@@ -224,7 +224,7 @@ const Header: React.FC = () => {
                   <User className="w-5 h-5 lg:w-5 lg:h-5" />
                   <ChevronDown className="w-3 h-3 ml-1" />
                 </button>
-                <div className="user-dropdown-panel absolute right-0 mt-2 w-48 rounded-md shadow-lg border py-2 z-50 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hidden group-hover:block">
+                <div className="user-dropdown-panel absolute right-0 mt-0 w-48 rounded-md shadow-lg border py-2 z-50 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hidden group-hover:block">
                   {isAdmin(user) && (
                     <button
                       onClick={() => handleNavigation("/admin-dashboard")}

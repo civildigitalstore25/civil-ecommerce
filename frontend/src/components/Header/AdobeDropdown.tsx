@@ -84,7 +84,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-0 mt-[-1pxa] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,

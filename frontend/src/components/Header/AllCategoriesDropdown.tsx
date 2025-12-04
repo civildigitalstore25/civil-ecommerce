@@ -110,7 +110,7 @@ const AllCategoriesDropdown: React.FC = () => {
 
   return (
     <div
-      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-0 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         minWidth: "1100px",
         backgroundColor: colors.background.secondary,
