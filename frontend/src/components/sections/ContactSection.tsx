@@ -97,8 +97,8 @@ export const ContactSection: React.FC = () => {
               <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-gray-900 text-sm sm:text-base">Call Us 24/7</p>
-                <a href="tel:+918807423228" className="text-blue-600 hover:text-blue-700 text-sm sm:text-base">
-                  +91 88074 23228
+                <a href="tel:+919042993986" className="text-blue-600 hover:text-blue-700 text-sm sm:text-base">
+                  +91 9042993986
                 </a>
               </div>
             </div>
@@ -128,7 +128,7 @@ export const ContactSection: React.FC = () => {
               <p className="text-gray-900 font-medium text-sm sm:text-base">Thanjavur, Tamil Nadu, India</p>
             </div>
 
-           
+
           </div>
         </div>
       </div>

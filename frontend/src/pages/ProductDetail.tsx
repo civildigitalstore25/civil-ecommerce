@@ -758,8 +758,8 @@ const ProductDetail: React.FC = () => {
     const productLink = window.location.href;
     const message = `Hi, I'm interested in ${productName}.\n\nMy Enquiry:\n${enquiryMessage}\n\nProduct Link: ${productLink}`;
 
-    // WhatsApp number (without + or spaces)
-    const whatsappNumber = "917871694931";
+    // WhatsApp number (country code +91 prefixed, no plus)
+    const whatsappNumber = "919042993986";
 
     // Create WhatsApp link
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -2398,7 +2398,7 @@ const ProductDetail: React.FC = () => {
                 className="text-xs mt-2"
                 style={{ color: colors.text.secondary }}
               >
-                This message will be sent to our WhatsApp: +91 88074 23228
+                This message will be sent to our WhatsApp: +91 9042993986
               </p>
             </div>
 

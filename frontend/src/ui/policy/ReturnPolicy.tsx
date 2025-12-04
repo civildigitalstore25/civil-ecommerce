@@ -94,12 +94,13 @@ const sections = [
           </li>
           <li>
             Phone:{" "}
-            <span
+            <a
+              href="tel:+919042993986"
               className="font-medium"
               style={{ color: colors.interactive.primary }}
             >
-              8807423228
-            </span>
+              +91 9042993986
+            </a>
           </li>
         </ul>
         <p
@@ -187,12 +188,13 @@ const sections = [
           </li>
           <li>
             Phone:{" "}
-            <span
+            <a
+              href="tel:+919042993986"
               className="font-medium"
               style={{ color: colors.interactive.primary }}
             >
-              8807423228
-            </span>
+              +91 9042993986
+            </a>
           </li>
         </ul>
       </>

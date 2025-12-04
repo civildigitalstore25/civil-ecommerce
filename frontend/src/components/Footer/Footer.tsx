@@ -352,8 +352,10 @@ const Footer = () => {
             className="flex items-center gap-2 border-b md:border-b-0 md:border-r pb-2 md:pb-0 md:pr-6 transition-colors duration-200"
             style={{ borderColor: colors.border.secondary }}
           >
-            <FaPhoneAlt style={{ color: colors.interactive.primary }} /> +91
-            88074 23228
+            <FaPhoneAlt style={{ color: colors.interactive.primary }} />
+            <a href="tel:+919042993986" className="text-white hover:text-gray-200 mr-4">
+              +91 9042993986
+            </a>
           </p>
           <p
             className="flex items-center gap-2 border-b md:border-b-0 md:border-r pb-2 md:pb-0 md:pr-6 transition-colors duration-200"

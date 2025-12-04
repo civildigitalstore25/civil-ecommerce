@@ -222,7 +222,7 @@ const ShippingPolicy: React.FC = () => {
                 className="w-4 h-4"
                 style={{ color: colors.interactive.primary }}
               />{" "}
-              +91 8807423228, 9042993986
+              +91 9042993986
             </li>
             <li
               className="flex items-center gap-2"

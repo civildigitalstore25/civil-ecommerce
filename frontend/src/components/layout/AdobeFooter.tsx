@@ -39,8 +39,8 @@ const AdobeFooter: React.FC = () => {
             <ul className="space-y-3 text-sm">
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-blue-400" />
-                <a href="tel:+918807423228" className="hover:text-white transition-colors">
-                  +91 88074 23228
+                <a href="tel:+919042993986" className="hover:text-white transition-colors">
+                  +91 9042993986
                 </a>
               </li>
               <li className="flex items-center gap-2">

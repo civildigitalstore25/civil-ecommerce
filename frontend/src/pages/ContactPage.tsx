@@ -111,7 +111,9 @@ const ContactPage: React.FC = () => {
                     className="font-semibold"
                     style={{ color: colors.interactive.primary }}
                   >
-                    +918807423228
+                    <a href="tel:+919042993986" className="hover:underline">
+                      +91 9042993986
+                    </a>
                   </p>
                 </div>
               </div>
