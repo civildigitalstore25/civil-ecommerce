@@ -5,7 +5,6 @@ import { useProducts } from "../api/productApi";
 import { useUser } from "../api/userQueries";
 import { useCartContext } from "../contexts/CartContext";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { useCurrency } from "../contexts/CurrencyContext";
 import Swal from "sweetalert2";
 
 // Brand-Category mapping for display names
@@ -86,7 +85,6 @@ const BrandCategoryListing: React.FC = () => {
   const { addItem } = useCartContext();
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
-  const { formatPriceWithSymbol } = useCurrency();
 
   const handleAddToCart = async (
     product: any,
@@ -301,14 +299,6 @@ const BrandCategoryListing: React.FC = () => {
                   )}
                 </h2>
 
-                {/* Description */}
-                <p
-                  className="text-[9px] md:text-sm mb-1 md:mb-2 line-clamp-2 transition-colors duration-200 hidden md:block"
-                  style={{ color: colors.text.secondary }}
-                >
-                  {product.shortDescription || product.description}
-                </p>
-
                 {/* Stars & Ratings */}
                 <div className="flex items-center text-[10px] md:text-sm mb-1 md:mb-2">
                   <span className="text-yellow-400 mr-0.5 md:mr-1">
@@ -322,59 +312,7 @@ const BrandCategoryListing: React.FC = () => {
                   </span>
                 </div>
 
-                {/* Price Block */}
-                <div
-                  className="font-semibold text-sm md:text-xl mb-0.5 md:mb-1 transition-colors duration-200"
-                  style={{ color: colors.interactive.primary }}
-                >
-                  {formatPriceWithSymbol(
-                    product.price1INR || product.price1 || 0,
-                    product.price1USD ||
-                    (product.price1 ? product.price1 / 83 : 0),
-                  )}
-                  /<span className="text-[10px] md:text-sm font-normal">year</span>
-                </div>
-                <div
-                  className="text-[8px] md:text-xs mb-2 md:mb-4 transition-colors duration-200 line-clamp-1"
-                  style={{ color: colors.text.secondary }}
-                >
-                  {(product.price3 || product.price3INR || product.price3USD) && (
-                    <>
-                      3yr:{" "}
-                      <span className="hidden md:inline">
-                        {formatPriceWithSymbol(
-                          product.price3INR || product.price3 || 0,
-                          product.price3USD ||
-                          (product.price3 ? product.price3 / 83 : 0),
-                        )}
-                      </span>
-                      <span className="md:hidden">
-                        {formatPriceWithSymbol(
-                          product.price3INR || product.price3 || 0,
-                          product.price3USD ||
-                          (product.price3 ? product.price3 / 83 : 0),
-                        )}
-                      </span>
-                      {" "}•{" "}
-                    </>
-                  )}
-                  {(product.priceLifetime ||
-                    product.lifetimePriceINR ||
-                    product.lifetimePriceUSD) && (
-                      <>
-                        <span className="hidden md:inline">Lifetime:</span>
-                        <span className="md:hidden">Life:</span>
-                        {" "}
-                        {formatPriceWithSymbol(
-                          product.lifetimePriceINR || product.priceLifetime || 0,
-                          product.lifetimePriceUSD ||
-                          (product.priceLifetime
-                            ? product.priceLifetime / 83
-                            : 0),
-                        )}
-                      </>
-                    )}
-                </div>
+                {/* Price and short description hidden in listing view */}
 
                 {/* Actions */}
                 <div className="flex flex-col gap-1 md:gap-2 mt-auto">
