@@ -31,6 +31,7 @@ import HomePage from "./pages/HomePage";
 import Disclaimer from "./ui/policy/Disclaimer";
 import ReturnPolicy from "./ui/policy/ReturnPolicy";
 import TermsAndConditions from "./ui/policy/TermsAndConditions";
+import PrivacyPolicy from "./ui/policy/PrivacyPolicy";
 import ShippingPolicy from "./ui/policy/ShippingPolicy";
 import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -38,6 +39,7 @@ import PaymentCallback from "./ui/payment/PaymentCallback";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
+import AboutPage from "./pages/AboutPage";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +105,7 @@ function AppLayout() {
         {/* SCRM Landing Page */}
         <Route path="/scrm" element={<SCrm />} />
         <Route path="/adobe-cloud" element={<AdobeCloudPage />} />
+        <Route path="/about-us" element={<AboutPage />} />
 
         {/* Home page is public */}
         <Route
@@ -258,6 +261,7 @@ function AppLayout() {
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/signin" replace />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />

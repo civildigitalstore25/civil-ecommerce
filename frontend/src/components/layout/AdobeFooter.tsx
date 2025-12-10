@@ -11,12 +11,12 @@ const AdobeFooter: React.FC = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="/softlogo.png"
-                alt="Civil Digital Store Logo"
+                alt="Softzcart Logo"
                 className="h-10 w-auto object-contain brightness-110"
               />
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Civil DigitalStore is a user-friendly website offering a vast selection of civil engineering resources, from software to educational materials. A valuable platform for professionals and students alike.
+              Softzcart is a user-friendly website offering a vast selection of civil engineering resources, from software to educational materials. A valuable platform for professionals and students alike.
             </p>
           </div>
 
@@ -45,8 +45,8 @@ const AdobeFooter: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-blue-400" />
-                <a href="mailto:admin@civildigitalstore.com" className="hover:text-white transition-colors break-all">
-                  civildigitalstore25@gmail.com
+                <a href="mailto:softzcart@gmail.com" className="hover:text-white transition-colors break-all">
+                  softzcart@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -112,7 +112,7 @@ const AdobeFooter: React.FC = () => {
         {/* Bottom */}
         <div className="border-t border-gray-800 pt-8 space-y-3 text-center">
           <p className="text-gray-400 text-sm">
-            © 2025 <span className="text-white font-semibold">Civil Digital Store</span> — All Rights Reserved
+            © 2025 <span className="text-white font-semibold">Softzcart</span> — All Rights Reserved
           </p>
           <p className="text-gray-500 text-xs">
             This is not an official Adobe website. We are an independent reseller of Adobe products.

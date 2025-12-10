@@ -55,13 +55,20 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         About Us
       </button>
       <button
+        onClick={() => onNavigate("/category?brand=ebook")}
+        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+        style={{ color: colors.text.secondary }}
+      >
+        Ebook
+      </button>
+      <button
         onClick={() => onNavigate("/contact")}
         className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
       >
         Contact Us
       </button>
-     
+
     </nav>
   );
 };

@@ -11,12 +11,12 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="/softlogo.png"
-                alt="Civil Digital Store Logo"
+                alt="Softzcart Logo"
                 className="h-10 w-auto object-contain brightness-110"
               />
             </div>
             <p className="text-[#0A2A6B] text-sm leading-relaxed">
-              Civil DigitalStore is a user-friendly website offering a vast selection of civil engineering resources, from software to educational materials. A valuable platform for professionals and students alike.
+              Softzcart is a user-friendly website offering a vast selection of civil engineering resources, from software to educational materials. A valuable platform for professionals and students alike.
             </p>
           </div>
 
@@ -45,8 +45,8 @@ export const Footer: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#00C8FF]" />
-                <a href="mailto:admin@civildigitalstore.com" className="hover:text-[#00C8FF] transition-colors break-all">
-                  admin@civildigitalstore.com
+                <a href="mailto:softzcart@gmail.com" className="hover:text-[#00C8FF] transition-colors break-all">
+                  softzcart@gmail.com
                 </a>
               </li>
               <li className="flex items-center gap-2">
@@ -157,7 +157,7 @@ export const Footer: React.FC = () => {
         {/* Bottom */}
         <div className="border-t pt-8 space-y-3 text-center" style={{ borderColor: '#E2E8F0' }}>
           <p className="text-sm" style={{ color: '#0A2A6B' }}>
-            © 2025 <span style={{ color: '#00C8FF', fontWeight: 'bold' }}>Civil Digital Store</span> — All Rights Reserved
+            © 2025 <span style={{ color: '#00C8FF', fontWeight: 'bold' }}>Softzcart</span> — All Rights Reserved
           </p>
           <p className="text-xs" style={{ color: '#0A2A6B' }}>
             This is not an official Adobe website. We are an independent reseller of Adobe products.

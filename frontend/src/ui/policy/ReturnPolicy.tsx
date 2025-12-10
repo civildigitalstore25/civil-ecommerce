@@ -24,7 +24,7 @@ const sections = [
           className="font-medium"
           style={{ color: colors.interactive.primary }}
         >
-          Civil DigitalStore
+          Softzcart
         </span>
         . If you are dissatisfied with your purchase, this policy explains how
         returns and refunds work. By placing an order, you agree to these terms.
@@ -40,7 +40,7 @@ const sections = [
         style={{ color: colors.text.secondary }}
       >
         <li>
-          <b>Company:</b> Civil Engineering DigitalStore.
+          <b>Company:</b> Softzcart DigitalStore.
         </li>
         <li>
           <b>Goods:</b> The products available for sale.
@@ -51,11 +51,11 @@ const sections = [
         <li>
           <b>Website:</b>{" "}
           <a
-            href="https://civildigitalstore.com/"
+            href="https://softzcart.com/"
             className="underline"
             style={{ color: colors.interactive.primary }}
           >
-            civildigitalstore.com
+            softzcart.com
           </a>
         </li>
         <li>
@@ -89,7 +89,7 @@ const sections = [
               className="font-medium"
               style={{ color: colors.interactive.primary }}
             >
-              civildigitalstore@gmail.com
+              softzcart@gmail.com
             </span>
           </li>
           <li>
@@ -183,7 +183,7 @@ const sections = [
               className="font-medium"
               style={{ color: colors.interactive.primary }}
             >
-              civildigitalstore@gmail.com
+              softzcart@gmail.com
             </span>
           </li>
           <li>
@@ -236,7 +236,7 @@ export default function ReturnPolicy() {
               className="font-semibold"
               style={{ color: colors.interactive.primary }}
             >
-              Civil DigitalStore
+              Softzcart
             </span>
             . Your rights as a customer matter to us.
           </p>

@@ -161,10 +161,10 @@ class EmailService {
     async sendContactFormEmail(name, email, subject, message) {
         const mailOptions = {
             from: {
-                name: process.env.FROM_NAME || 'Civil Digital Store',
-                address: process.env.FROM_EMAIL || 'noreply@civildigitalstore.com'
+                name: process.env.FROM_NAME || 'Softzcart',
+                address: process.env.FROM_EMAIL || 'noreply@softzcart.com'
             },
-            to: process.env.CONTACT_EMAIL || 'ujuj2451@gmail.com',
+            to: process.env.CONTACT_EMAIL || 'softzcart@gmail.com',
             subject: `New Contact Form: ${subject}`,
             replyTo: email,
             html: `
@@ -213,7 +213,7 @@ class EmailService {
             </div>
           </div>
           <div class="footer">
-            <p>This email was sent from the contact form on ${process.env.FROM_NAME || 'Civil Digital Store'}.</p>
+            <p>This email was sent from the contact form on ${process.env.FROM_NAME || 'Softzcart'}.</p>
             <p>You can reply directly to this email to contact ${name}.</p>
           </div>
         </div>

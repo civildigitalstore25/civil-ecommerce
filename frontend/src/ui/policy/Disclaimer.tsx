@@ -35,7 +35,7 @@ const Disclaimer: React.FC = () => {
           >
             Please read this page carefully to understand the limitations, scope, and
             responsibilities regarding the information provided on{" "}
-            <strong>Civil DigitalStore</strong>.
+            <strong>Softzcart</strong>.
           </p>
         </div>
 
@@ -56,7 +56,7 @@ const Disclaimer: React.FC = () => {
             viewport={{ once: true }}
           >
             <p>
-              The information provided by <strong>Civil DigitalStore</strong> (“we,”
+              The information provided by <strong>Softzcart</strong> (“we,”
               “us,” or “our”) on this website is for general informational purposes
               only. All information is provided in good faith; however, we make no
               representation or warranty of any kind regarding accuracy, adequacy,

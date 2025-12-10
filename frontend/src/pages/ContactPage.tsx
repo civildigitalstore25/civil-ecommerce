@@ -153,7 +153,7 @@ const ContactPage: React.FC = () => {
                     className="font-semibold"
                     style={{ color: "#00C8FF" }}
                   >
-                    Civildigitalstore@gmail.com
+                    softzcart@gmail.com
                   </p>
                 </div>
               </div>
@@ -214,7 +214,7 @@ const ContactPage: React.FC = () => {
                   >
                     Headquarters Address:
                   </h3>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Civil Digital Store</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Softzcart</p>
                   <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Thanjavur, Tamilnadu</p>
                   <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>India</p>
                 </div>
@@ -466,7 +466,7 @@ const ContactPage: React.FC = () => {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Civil Digital Store Location"
+              title="Softzcart Location"
               className="rounded-lg"
             />
           </div>

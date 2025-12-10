@@ -25,7 +25,7 @@ export const ContactSection: React.FC = () => {
     <section id="contact" className="bg-white px-4 py-12 sm:py-16 lg:py-24 lg:px-8">
       <div className="max-w-6xl mx-auto">
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 text-center mb-8 sm:mb-12 lg:mb-16">
-          Contact Civil Digital Store
+          Contact Softzcart
         </h2>
 
         <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-12">
@@ -107,8 +107,8 @@ export const ContactSection: React.FC = () => {
               <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-gray-900 text-sm sm:text-base">Email Us</p>
-                <a href="mailto:admin@civildigitalstore.com" className="text-blue-600 hover:text-blue-700 break-all text-sm sm:text-base">
-                  civildigitalstore25@gmail.com
+                <a href="mailto:softzcart@gmail.com" className="text-blue-600 hover:text-blue-700 break-all text-sm sm:text-base">
+                  softzcart@gmail.com
                 </a>
               </div>
             </div>
@@ -117,8 +117,8 @@ export const ContactSection: React.FC = () => {
               <Send className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="font-semibold text-gray-900 text-sm sm:text-base">Alternative Email</p>
-                <a href="mailto:civildigitalstore@gmail.com" className="text-blue-600 hover:text-blue-700 break-all text-sm sm:text-base">
-                  civildigitalstore25@gmail.com
+                <a href="mailto:softzcart@gmail.com" className="text-blue-600 hover:text-blue-700 break-all text-sm sm:text-base">
+                  softzcart@gmail.com
                 </a>
               </div>
             </div>

@@ -23,7 +23,7 @@ const AdobeHeader: React.FC = () => {
                     <a href="/" aria-label="Home">
                         <img
                             src="/softlogo.png"
-                            alt="Civil Digital Store Logo"
+                            alt="Softzcart Logo"
                             className="h-10 sm:h-12 w-auto object-contain"
                         />
                     </a>

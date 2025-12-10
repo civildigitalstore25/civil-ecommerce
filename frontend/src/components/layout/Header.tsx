@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
                 <div className="flex items-center -ml-2">
                     <img
                         src="/logo1.png"
-                        alt="Civil Digital Store Logo"
+                        alt="Softzcart Logo"
                         className="h-10 sm:h-12 w-auto object-contain"
                     />
                 </div>

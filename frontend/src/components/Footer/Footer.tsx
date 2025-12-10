@@ -87,7 +87,7 @@ const Footer = () => {
             <div className="flex items-center gap-3 mb-4">
               <img
                 src="/softlogo.png"
-                alt="Civil Digital Store Logo"
+                alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
             </div>
@@ -95,7 +95,7 @@ const Footer = () => {
               className="text-base leading-relaxed font-lato transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
-              Civil DigitalStore is a user-friendly website offering a vast
+              Softzcart is a user-friendly website offering a vast
               selection of civil engineering resources, from software to
               educational materials. A valuable platform for professionals and
               students alike.
@@ -171,6 +171,21 @@ const Footer = () => {
                     }}
                   >
                     Shipping & Delivery Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/privacy-policy"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    Privacy Policy
                   </Link>
                 </li>
               </ul>
@@ -362,7 +377,7 @@ const Footer = () => {
             style={{ borderColor: colors.border.secondary }}
           >
             <FaEnvelope style={{ color: colors.interactive.primary }} />{" "}
-            admin@civildigitalstore.com
+            softzcart@gmail.com
           </p>
           <p className="flex items-center gap-2">
             <FaClock style={{ color: colors.interactive.primary }} /> 24x7
@@ -430,44 +445,6 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Legal Links Section */}
-      <div
-        className="max-w-7xl mx-auto px-6 py-4 border-t transition-colors duration-200"
-        style={{ borderColor: colors.border.secondary }}
-      >
-        <div className="flex flex-wrap justify-center gap-2 sm:gap-4 text-sm sm:text-base font-lato">
-          {[
-            { label: "Privacy Policy", href: "/privacy-policy" },
-            { label: "Terms & Conditions", href: "/terms-conditions" },
-            { label: "Disclaimer", href: "/disclaimer" },
-            { label: "Contact Us", href: "/contact" },
-          ].map((link, index) => (
-            <React.Fragment key={link.href}>
-              <Link
-                to={link.href}
-                className="hover:underline transition-colors duration-200"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = colors.interactive.primary;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                {link.label}
-              </Link>
-              {index < 3 && (
-                <span
-                  className="hidden sm:inline"
-                  style={{ color: colors.text.secondary }}
-                >
-                  |
-                </span>
-              )}
-            </React.Fragment>
-          ))}
-        </div>
-      </div>
 
       {/* Copyright */}
       <div
@@ -482,7 +459,7 @@ const Footer = () => {
           className="font-poppins font-semibold transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
-          Civil Digital Store
+          Softzcart
         </span>
         . All rights reserved.
       </div>

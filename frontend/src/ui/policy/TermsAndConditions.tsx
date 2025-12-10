@@ -38,18 +38,18 @@ const TermsAndConditions: React.FC = () => {
         >
           Welcome to{" "}
           <strong style={{ color: colors.interactive.primary }}>
-            Civil DigitalStore
+            Softzcart
           </strong>
           ! Please read these Terms & Conditions carefully before using our
           website{" "}
           <a
-            href="https://civildigitalstore.com/"
+            href="https://softzcart.com/"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: colors.interactive.primary }}
             className="font-semibold hover:underline"
           >
-            https://civildigitalstore.com/
+            https://softzcart.com/
           </a>
           .
         </p>
@@ -130,7 +130,7 @@ const TermsAndConditions: React.FC = () => {
           >
             Unless otherwise stated,{" "}
             <strong style={{ color: colors.interactive.primary }}>
-              Civil DigitalStore
+              Softzcart
             </strong>{" "}
             owns the intellectual property rights for all material on this site.
             You may use it for personal purposes only under these restrictions:

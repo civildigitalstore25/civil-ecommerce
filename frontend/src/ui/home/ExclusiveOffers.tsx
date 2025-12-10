@@ -48,7 +48,7 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
             className="text-xl md:text-3xl lg:text-4xl font-bold transition-colors duration-200"
             style={{ color: colors.text.primary }}
           >
-            Exclusive Offers 🎉
+            Exclusive Offers 
           </h2>
           <p
             className="mt-1 md:mt-3 text-xs md:text-lg transition-colors duration-200"

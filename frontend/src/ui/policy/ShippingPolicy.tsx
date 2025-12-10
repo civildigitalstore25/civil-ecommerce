@@ -41,7 +41,7 @@ const ShippingPolicy: React.FC = () => {
         >
           This Shipping & Delivery Policy is part of our{" "}
           <a
-            href="https://www.civildigitalstore.com/terms-and-conditions/"
+            href="https://www.softzcart.com/terms-and-conditions/"
             target="_blank"
             rel="noopener noreferrer"
             style={{ color: colors.interactive.primary }}
@@ -89,7 +89,7 @@ const ShippingPolicy: React.FC = () => {
             <strong>Free Shipping:</strong> We offer free Instant Download
             shipping on all orders placed through{" "}
             <strong style={{ color: colors.interactive.primary }}>
-              Civil DigitalStore
+              Softzcart
             </strong>
             .
           </p>
@@ -164,7 +164,7 @@ const ShippingPolicy: React.FC = () => {
           <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
             If you have questions about returns, please review our{" "}
             <a
-              href="https://www.civildigitalstore.com/return-and-refund-policy"
+              href="https://www.softzcart.com/return-and-refund-policy"
               target="_blank"
               rel="noopener noreferrer"
               style={{ color: colors.interactive.primary }}
@@ -232,7 +232,7 @@ const ShippingPolicy: React.FC = () => {
                 className="w-4 h-4"
                 style={{ color: colors.interactive.primary }}
               />{" "}
-              civildigitalstore@gmail.com
+              softzcart@gmail.com
             </li>
             <li
               className="flex items-center gap-2"
@@ -243,7 +243,7 @@ const ShippingPolicy: React.FC = () => {
                 style={{ color: colors.interactive.primary }}
               />
               <a
-                href="https://civildigitalstore.com/contact-us/"
+                href="https://softzcart.com/contact-us/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: colors.interactive.primary }}

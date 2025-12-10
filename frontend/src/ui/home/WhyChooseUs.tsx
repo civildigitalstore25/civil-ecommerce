@@ -44,7 +44,7 @@ const WhyChooseUs: React.FC = () => {
             textShadow: `0 2px 8px ${colors.background.primary}80`,
           }}
         >
-          Why Choose CivilDigitalStore?
+          Why Choose Softzcart?
         </h2>
         <p
           className="mt-1 sm:mt-3 text-xs sm:text-lg font-lato transition-colors duration-200"
