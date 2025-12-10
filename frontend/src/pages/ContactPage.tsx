@@ -88,7 +88,7 @@ const ContactPage: React.FC = () => {
                 style={{
                   backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
                   borderLeft: `4px solid #00C8FF`,
-                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
               >
                 <div
@@ -103,18 +103,18 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}
                   >
                     Call to Us:
                   </h3>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>
                     We're available 24/7, 7 days a week.
                   </p>
                   <p
                     className="font-semibold"
-                    style={{ color: "#00C8FF" }}
+                    style={{ color: theme === "light" ? "#00C8FF" : colors.text.inverse }}
                   >
-                    <a href="tel:+919042993986" className="hover:underline">
+                    <a href="tel:+919042993986" className="hover:underline" style={{ color: theme === "light" ? "#00C8FF" : colors.text.inverse }}>
                       +91 9042993986
                     </a>
                   </p>
@@ -127,7 +127,7 @@ const ContactPage: React.FC = () => {
                 style={{
                   backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
                   borderLeft: `4px solid #00C8FF`,
-                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
               >
                 <div
@@ -142,16 +142,16 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}
                   >
                     Write to Us:
                   </h3>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>
                     Fill out our form and we will contact you within 24 hours.
                   </p>
                   <p
                     className="font-semibold"
-                    style={{ color: "#00C8FF" }}
+                    style={{ color: theme === "light" ? "#00C8FF" : colors.text.inverse }}
                   >
                     softzcart@gmail.com
                   </p>
@@ -164,7 +164,7 @@ const ContactPage: React.FC = () => {
                 style={{
                   backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
                   borderLeft: `4px solid #00C8FF`,
-                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
               >
                 <div
@@ -179,13 +179,13 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}
                   >
                     Business Hours:
                   </h3>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Monday - Friday: 9:00-20:00</p>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Saturday: 11:00 - 15:00</p>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Sunday: Closed</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Monday - Friday: 9:00-20:00</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Saturday: 11:00 - 15:00</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Sunday: Closed</p>
                 </div>
               </div>
 
@@ -195,7 +195,7 @@ const ContactPage: React.FC = () => {
                 style={{
                   backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
                   borderLeft: `4px solid #00C8FF`,
-                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
               >
                 <div
@@ -210,13 +210,13 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}
                   >
                     Headquarters Address:
                   </h3>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Softzcart</p>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Thanjavur, Tamilnadu</p>
-                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>India</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Softzcart</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Thanjavur, Tamilnadu</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>India</p>
                 </div>
               </div>
             </div>
@@ -454,7 +454,7 @@ const ContactPage: React.FC = () => {
         <div
           className="mx-auto my-6 w-11/12 rounded-lg p-5 shadow-md"
           style={{
-            backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+            backgroundColor: theme === "light" ? colors.background.primary : colors.background.secondary,
           }}
         >
           <div className="overflow-hidden rounded-lg shadow">
@@ -462,7 +462,7 @@ const ContactPage: React.FC = () => {
               src={googleMapsEmbedUrl}
               width="100%"
               height="300"
-              style={{ border: 0 }}
+              style={{ border: 0, background: theme === "light" ? colors.background.secondary : colors.background.primary }}
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
@@ -477,8 +477,8 @@ const ContactPage: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-block rounded-md px-5 py-2 font-medium transition"
               style={{
-                background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
-                color: "#fff",
+                background: colors.interactive.primary,
+                color: colors.text.inverse,
               }}
             >
               Open in Google Maps
