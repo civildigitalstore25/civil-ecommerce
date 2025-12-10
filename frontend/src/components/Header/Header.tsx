@@ -22,7 +22,8 @@ import { useCartContext } from "../../contexts/CartContext";
 import AdminThemeToggle from "../ThemeToggle/AdminThemeToggle";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
-import logo from "../../assets/logo.png";
+// Use PNG logo from public folder
+const logo = "/softlogo.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

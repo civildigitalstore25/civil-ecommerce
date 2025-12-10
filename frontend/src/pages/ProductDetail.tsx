@@ -1006,16 +1006,17 @@ const ProductDetail: React.FC = () => {
                           setSelectedLicense(option.id);
                           setUserHasSelectedPlan(true);
                         }}
-                        className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[100px]"
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[100px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                           borderColor:
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          backgroundColor:
-                            selectedLicense === option.id
-                              ? colors.interactive.primary + "20"
-                              : "transparent",
+                          background: selectedLicense === option.id
+                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
+                            : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
                       >
                         <div
@@ -1071,16 +1072,17 @@ const ProductDetail: React.FC = () => {
                           setSelectedLicense(option.id);
                           setUserHasSelectedPlan(true);
                         }}
-                        className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[90px]"
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[90px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                           borderColor:
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          backgroundColor:
-                            selectedLicense === option.id
-                              ? colors.interactive.primary + "20"
-                              : "transparent",
+                          background: selectedLicense === option.id
+                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
+                            : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
                       >
                         <div
@@ -1121,16 +1123,17 @@ const ProductDetail: React.FC = () => {
                           setSelectedLicense(option.id);
                           setUserHasSelectedPlan(true);
                         }}
-                        className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[120px]"
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[120px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                           borderColor:
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          backgroundColor:
-                            selectedLicense === option.id
-                              ? colors.interactive.primary + "20"
-                              : "transparent",
+                          background: selectedLicense === option.id
+                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
+                            : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
                       >
                         <div
@@ -1186,16 +1189,17 @@ const ProductDetail: React.FC = () => {
                           setSelectedLicense(option.id);
                           setUserHasSelectedPlan(true);
                         }}
-                        className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                           borderColor:
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          backgroundColor:
-                            selectedLicense === option.id
-                              ? colors.interactive.primary + "20"
-                              : "transparent",
+                          background: selectedLicense === option.id
+                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
+                            : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
                       >
                         <div
@@ -1246,16 +1250,17 @@ const ProductDetail: React.FC = () => {
                           setSelectedLicense(option.id);
                           setUserHasSelectedPlan(true);
                         }}
-                        className="flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px]"
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
                         style={{
                           borderColor:
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          backgroundColor:
-                            selectedLicense === option.id
-                              ? colors.interactive.primary + "20"
-                              : "transparent",
+                          background: selectedLicense === option.id
+                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
+                            : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
                       >
                         <div
@@ -1323,18 +1328,20 @@ const ProductDetail: React.FC = () => {
             <div className="space-y-2">
               <button
                 onClick={handleAddToCart}
-                className="w-full font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2"
+                className="w-full font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                 style={{
-                  backgroundColor: colors.interactive.primary,
-                  color: colors.background.primary,
+                  background: colors.interactive.primary,
+                  color: '#fff',
+                  border: `1.5px solid ${colors.interactive.primary}`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.interactive.primaryHover;
+                  e.currentTarget.style.background = colors.interactive.primaryHover;
+                  e.currentTarget.style.color = '#fff';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.interactive.primary;
+                  e.currentTarget.style.background = colors.interactive.primary;
+                  e.currentTarget.style.color = '#fff';
                 }}
               >
                 <LucideIcons.ShoppingCart size={20} />
@@ -1343,20 +1350,20 @@ const ProductDetail: React.FC = () => {
 
               <button
                 onClick={handleBuyNow}
-                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
+                className="w-full border font-bold py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                 style={{
-                  borderColor: colors.interactive.primary,
-                  color: colors.interactive.primary,
-                  backgroundColor: "transparent",
+                  border: `1.5px solid ${colors.interactive.primary}`,
+                  color: '#fff',
+                  background: colors.interactive.primary,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.interactive.primary;
-                  e.currentTarget.style.color = colors.background.primary;
+                  e.currentTarget.style.background = colors.interactive.primaryHover;
+                  e.currentTarget.style.color = '#fff';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
-                  e.currentTarget.style.color = colors.interactive.primary;
+                  e.currentTarget.style.background = colors.interactive.primary;
+                  e.currentTarget.style.color = '#fff';
                 }}
               >
                 <LucideIcons.Zap size={20} />
@@ -1365,18 +1372,20 @@ const ProductDetail: React.FC = () => {
 
               <button
                 onClick={() => setShowEnquiryModal(true)}
-                className="w-full border font-medium py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2"
+                className="w-full border font-medium py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                 style={{
-                  borderColor: colors.border.primary,
-                  color: colors.text.secondary,
-                  backgroundColor: "transparent",
+                  border: `1.5px solid ${colors.interactive.primary}`,
+                  color: '#fff',
+                  background: colors.interactive.primary,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    colors.background.secondary;
+                  e.currentTarget.style.background = colors.interactive.primaryHover;
+                  e.currentTarget.style.color = '#fff';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.background = colors.interactive.primary;
+                  e.currentTarget.style.color = '#fff';
                 }}
               >
                 <LucideIcons.MessageSquare size={20} />
@@ -1504,7 +1513,7 @@ const ProductDetail: React.FC = () => {
                     {product.keyFeatures.map((feature: any, index: number) => (
                       <div
                         key={index}
-                        className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200"
+                        className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200 shadow"
                         style={{
                           backgroundColor: colors.background.secondary,
                           borderColor: colors.border.primary,
@@ -1534,7 +1543,7 @@ const ProductDetail: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Default features if no structured or rich text features data */}
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
@@ -1551,7 +1560,7 @@ const ProductDetail: React.FC = () => {
                       </p>
                     </div>
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
@@ -1568,7 +1577,7 @@ const ProductDetail: React.FC = () => {
                       </p>
                     </div>
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
@@ -1585,7 +1594,7 @@ const ProductDetail: React.FC = () => {
                       </p>
                     </div>
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
@@ -1603,7 +1612,7 @@ const ProductDetail: React.FC = () => {
                       </p>
                     </div>
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">
@@ -1620,7 +1629,7 @@ const ProductDetail: React.FC = () => {
                       </p>
                     </div>
                     <div
-                      className="rounded-2xl p-6 transition-colors duration-200"
+                      className="rounded-2xl p-6 transition-colors duration-200 shadow"
                       style={{ backgroundColor: colors.background.secondary }}
                     >
                       <div className="flex items-center gap-3 mb-4">

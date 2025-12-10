@@ -73,8 +73,8 @@ const HeroSection: React.FC = () => {
       style={{
         background:
           theme === "light"
-            ? "linear-gradient(to bottom right, #f9fafb, #ffffff)"
-            : "linear-gradient(to bottom right, #111827, #1f2937)",
+            ? colors.background.primary
+            : colors.background.primary,
       }}
     >
       <div className="max-w-7xl mx-auto">
@@ -84,7 +84,7 @@ const HeroSection: React.FC = () => {
         {/* ===== Hero Content ===== */}
         <div className="flex flex-col items-center mt-6 sm:mt-12">
           <h1
-            className="text-2xl sm:text-5xl font-poppins  mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
+            className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
             Genuine Civil <br />
@@ -103,16 +103,15 @@ const HeroSection: React.FC = () => {
             onClick={handleExploreProducts}
             className="px-5 py-2 sm:px-8 sm:py-4 rounded-md sm:rounded-lg font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-6 sm:mb-16"
             style={{
-              backgroundColor: colors.interactive.primary,
+              background: colors.interactive.primary,
               color: colors.text.inverse,
+              border: 'none',
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor =
-                colors.interactive.primaryHover;
+              e.currentTarget.style.background = colors.interactive.primaryHover;
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor =
-                colors.interactive.primary;
+              e.currentTarget.style.background = colors.interactive.primary;
             }}
           >
             Explore Products
@@ -125,7 +124,7 @@ const HeroSection: React.FC = () => {
                 key={f.label}
                 className="flex flex-col items-center rounded-2xl py-7 px-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
                 style={{
-                  backgroundColor: colors.background.secondary,
+                  background: colors.background.secondary,
                   borderWidth: "1px",
                   borderStyle: "solid",
                   borderColor: colors.border.primary,
@@ -165,7 +164,7 @@ const HeroSection: React.FC = () => {
                     <div
                       className="flex flex-col items-center rounded-xl py-5 px-4 shadow-lg"
                       style={{
-                        backgroundColor: colors.background.secondary,
+                        background: colors.background.secondary,
                         borderWidth: "1px",
                         borderStyle: "solid",
                         borderColor: colors.border.primary,

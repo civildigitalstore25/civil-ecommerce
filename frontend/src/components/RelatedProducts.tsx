@@ -88,7 +88,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
   if (related.length === 0) return <div>No related products found.</div>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
       {related.slice(0, limit).map((product) => (
         <div
           key={product._id}
@@ -113,36 +113,31 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
               style={{ borderRadius: 8 }}
             />
           </div>
-          <div className="p-4">
+          <div className="p-4 flex flex-col items-center">
             <h4
-              className="font-bold text-lg mb-2"
+              className="font-bold text-lg mb-2 text-center"
               style={{ color: colors.text.primary }}
             >
               {product.name}
             </h4>
-            <div className="flex items-center justify-between">
-              {/* <span
-                className="text-2xl font-bold"
-                style={{ color: colors.interactive.primary }}
-              >
-                {product.price1INR ? `₹${product.price1INR}` : product.price1USD ? `$${product.price1USD}` : ""}
-              </span> */}
-              <Button
-                variant="primary"
-                className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none ml-13"
-                style={{
-                  background: colors.interactive.primary,
-                  color: colors.text.inverse,
-                  border: `1px solid ${colors.border.accent}`,
-                }}
-                onClick={(event?: React.MouseEvent) => {
-                  if (event) event.stopPropagation();
-                  addItem(product, "1year", 1);
-                }}
-              >
-                Add to Cart
-              </Button>
-            </div>
+            <Button
+              variant="primary"
+              className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none mt-2 mx-auto"
+              style={{
+                background: colors.interactive.primary,
+                color: colors.text.inverse,
+                border: `1px solid ${colors.border.accent}`,
+                display: 'block',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+              onClick={(event?: React.MouseEvent) => {
+                if (event) event.stopPropagation();
+                addItem(product, "1year", 1);
+              }}
+            >
+              Add to Cart
+            </Button>
           </div>
         </div>
       ))}

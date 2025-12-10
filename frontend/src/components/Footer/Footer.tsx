@@ -86,7 +86,7 @@ const Footer = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={logo}
+                src="/softlogo.png"
                 alt="Civil Digital Store Logo"
                 className="h-10 w-auto object-contain"
               />

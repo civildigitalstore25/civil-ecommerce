@@ -16,7 +16,8 @@ export const Header: React.FC = () => {
     ];
 
     return (
-        <header className="fixed top-0 left-0 right-0 z-50 bg-pink-50 px-3 sm:px-4 lg:px-8 border-b border-pink-100 h-16 sm:h-20">
+        <header className="fixed top-0 left-0 right-0 z-50 px-3 sm:px-4 lg:px-8 border-b h-16 sm:h-20"
+            style={{ background: '#0A2A6B', borderColor: '#0A2A6B' }}>
             <nav className="max-w-7xl mx-auto flex items-center justify-between h-full">
                 {/* Logo */}
                 <div className="flex items-center -ml-2">
@@ -33,7 +34,18 @@ export const Header: React.FC = () => {
                         <a
                             key={link.label}
                             href={link.href}
-                            className="text-gray-700 hover:text-red-600 transition-colors"
+                            className="transition-colors px-2 py-1 rounded-md"
+                            style={{
+                                color: '#fff',
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.background = 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)';
+                                e.currentTarget.style.color = '#fff';
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.background = 'none';
+                                e.currentTarget.style.color = '#fff';
+                            }}
                             onClick={(e) => {
                                 e.preventDefault();
                                 const element = document.querySelector(link.href);
@@ -48,6 +60,11 @@ export const Header: React.FC = () => {
                 {/* CTA Button */}
                 <div className="hidden lg:block">
                     <Button
+                        style={{
+                            background: 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)',
+                            color: '#fff',
+                            border: 'none',
+                        }}
                         onClick={() => window.open('https://imjo.in/fJQM46', '_blank')}
                     >
                         Buy Now Instantly
@@ -56,7 +73,8 @@ export const Header: React.FC = () => {
 
                 {/* Mobile Menu Button */}
                 <button
-                    className="lg:hidden text-gray-700 p-2"
+                    className="lg:hidden p-2"
+                    style={{ color: '#fff' }}
                     onClick={() => setIsMenuOpen(!isMenuOpen)}
                     aria-label="Toggle menu"
                 >
@@ -66,13 +84,23 @@ export const Header: React.FC = () => {
 
             {/* Mobile Menu (renders below header) */}
             {isMenuOpen && (
-                <div className="lg:hidden absolute top-full left-0 right-0 bg-pink-50 border-b border-pink-100 shadow-lg">
+                <div className="lg:hidden absolute top-full left-0 right-0 shadow-lg"
+                    style={{ background: '#0A2A6B', borderBottom: '2px solid #00C8FF' }}>
                     <div className="flex flex-col gap-3 p-4 max-h-[calc(100vh-4rem)] overflow-y-auto">
                         {navLinks.map((link) => (
                             <a
                                 key={link.label}
                                 href={link.href}
-                                className="text-gray-700 hover:text-red-600 transition-colors py-2 px-3 rounded-lg hover:bg-pink-100 text-sm sm:text-base"
+                                className="transition-colors py-2 px-3 rounded-lg text-sm sm:text-base"
+                                style={{ color: '#fff' }}
+                                onMouseEnter={e => {
+                                    e.currentTarget.style.background = 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
+                                onMouseLeave={e => {
+                                    e.currentTarget.style.background = 'none';
+                                    e.currentTarget.style.color = '#fff';
+                                }}
                                 onClick={(e) => {
                                     e.preventDefault();
                                     const element = document.querySelector(link.href);
@@ -83,7 +111,14 @@ export const Header: React.FC = () => {
                                 {link.label}
                             </a>
                         ))}
-                        <Button className="w-full mt-2">Buy Now Instantly</Button>
+                        <Button
+                            className="w-full mt-2"
+                            style={{
+                                background: 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)',
+                                color: '#fff',
+                                border: 'none',
+                            }}
+                        >Buy Now Instantly</Button>
                     </div>
                 </div>
             )}

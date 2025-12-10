@@ -8,13 +8,13 @@ const MarqueeBanner: React.FC = () => {
     <section
       className="w-full overflow-hidden shadow-md transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+        background: colors.interactive.primary,
       }}
     >
       <div className="relative flex overflow-hidden">
         <div
           className="animate-marquee flex items-center space-x-12 py-2 text-base font-medium transition-colors duration-200"
-          style={{ color: colors.background.primary }}
+          style={{ color: colors.text.inverse }}
         >
           <span>
             🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it
@@ -30,7 +30,7 @@ const MarqueeBanner: React.FC = () => {
         <div
           className="animate-marquee flex items-center space-x-12 py-2 text-base font-medium transition-colors duration-200"
           aria-hidden="true"
-          style={{ color: colors.background.primary }}
+          style={{ color: colors.text.inverse }}
         >
           <span>
             🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it

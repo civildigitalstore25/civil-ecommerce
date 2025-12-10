@@ -38,7 +38,7 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
     <section
       className="w-full rounded-2xl md:rounded-3xl shadow-sm py-6 md:py-14 px-2 md:px-6 lg:px-20 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
+        background: colors.background.primary,
       }}
     >
       <div className="max-w-7xl mx-auto px-2 md:px-6">
@@ -63,10 +63,9 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
           {offers.map((o) => (
             <div
               key={o.id}
-              className="group relative backdrop-blur-sm rounded-lg md:rounded-2xl p-2 md:p-6 flex flex-col justify-between overflow-hidden
-                         border transition-all duration-500 hover:scale-[1.02]"
+              className="group relative backdrop-blur-sm rounded-lg md:rounded-2xl p-2 md:p-6 flex flex-col justify-between overflow-hidden border transition-all duration-500 hover:scale-[1.02]"
               style={{
-                backgroundColor: colors.background.primary,
+                background: colors.background.secondary,
                 borderColor: colors.border.primary,
                 boxShadow: `0 0 25px ${colors.interactive.primary}20`,
               }}
@@ -75,9 +74,8 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
               <div className="relative z-10 flex flex-col md:flex-row items-start gap-2 md:gap-4">
                 {/* image (optional) */}
                 <div
-                  className="w-10 h-10 md:w-16 md:h-16 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0
-                             transition-transform duration-300 group-hover:scale-105"
-                  style={{ backgroundColor: colors.background.secondary }}
+                  className="w-10 h-10 md:w-16 md:h-16 rounded-lg md:rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-300 group-hover:scale-105"
+                  style={{ background: colors.background.primary }}
                 >
                   <svg
                     className="w-6 h-6 md:w-10 md:h-10 transition-colors duration-200"
@@ -125,22 +123,25 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
               <div className="relative z-10 mt-2 md:mt-6">
                 <FormButton
                   onClick={() => navigate(o.to || "/products")}
-                  className="w-full relative overflow-hidden font-medium py-1 md:py-2 rounded-md md:rounded-lg text-[10px] md:text-base
-                             transition-all duration-300 hover:scale-105"
+                  className="w-full relative overflow-hidden font-medium py-1 md:py-2 rounded-md md:rounded-lg text-[10px] md:text-base transition-all duration-300 hover:scale-105"
                   style={{
-                    background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-                    color: colors.background.primary,
+                    background: colors.interactive.primary,
+                    color: colors.text.inverse,
                     boxShadow: `0 0 20px ${colors.interactive.primary}60`,
+                    border: 'none',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.background = colors.interactive.primaryHover;
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.background = colors.interactive.primary;
                   }}
                 >
                   <span className="relative z-10">View Offer</span>
                   {/* shine effect */}
                   <span
-                    className="absolute left-[-40%] top-0 w-1/2 h-full transform skew-x-[-20deg]
-                               opacity-0 group-hover:opacity-80 transition-all duration-500"
-                    style={{
-                      backgroundColor: `${colors.background.primary}20`,
-                    }}
+                    className="absolute left-[-40%] top-0 w-1/2 h-full transform skew-x-[-20deg] opacity-0 group-hover:opacity-80 transition-all duration-500"
+                    style={{ backgroundColor: `${colors.background.primary}20` }}
                   />
                 </FormButton>
               </div>

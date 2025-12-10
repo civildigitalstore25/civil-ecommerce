@@ -21,9 +21,10 @@ const FormButton: React.FC<FormButtonProps> = ({
   const getButtonStyles = () => {
     if (variant === "primary") {
       return {
-        background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-        color: colors.background.primary,
+        background: colors.interactive.primary,
+        color: colors.text.inverse,
         border: "none",
+        boxShadow: `0 2px 8px ${colors.interactive.primary}22`,
       };
     } else {
       return {
@@ -43,13 +44,17 @@ const FormButton: React.FC<FormButtonProps> = ({
         ...props.style,
       }}
       onMouseEnter={(e) => {
-        if (variant === "secondary") {
+        if (variant === "primary") {
+          e.currentTarget.style.background = colors.interactive.primaryHover;
+        } else if (variant === "secondary") {
           e.currentTarget.style.backgroundColor = colors.background.secondary;
         }
         props.onMouseEnter?.(e);
       }}
       onMouseLeave={(e) => {
-        if (variant === "secondary") {
+        if (variant === "primary") {
+          e.currentTarget.style.background = colors.interactive.primary;
+        } else if (variant === "secondary") {
           e.currentTarget.style.backgroundColor = "transparent";
         }
         props.onMouseLeave?.(e);

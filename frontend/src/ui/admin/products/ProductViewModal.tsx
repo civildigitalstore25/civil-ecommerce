@@ -692,7 +692,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   Product ID
                 </span>
                 <p
-                  className="font-mono text-sm"
+                  className="font-mono text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800"
                   style={{ color: colors.text.primary }}
                 >
                   {product._id || "N/A"}

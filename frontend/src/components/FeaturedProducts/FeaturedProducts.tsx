@@ -84,11 +84,12 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
               key={product._id}
               className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-3 md:p-5 flex flex-col hover:scale-[1.02]"
               style={{
-                backgroundColor: colors.background.primary,
-                aspectRatio: '1 / 1', // Make card square
-                width: '100%', // Full width in grid cell
-                maxWidth: '400px', // Optional: limit max width for large screens
-                margin: '0 auto', // Center in grid cell
+                background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+                aspectRatio: '1 / 1',
+                width: '100%',
+                maxWidth: '400px',
+                margin: '0 auto',
+                border: `1.5px solid ${colors.border.primary}`,
               }}
             >
               {/* Image */}
@@ -184,27 +185,37 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                     const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
                     navigate(`/product/${slug}`);
                   }}
-                  className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full font-bold rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
-                    borderColor: colors.border.primary,
-                    color: colors.text.primary,
-                    backgroundColor: "transparent",
+                    border: `1.5px solid ${colors.interactive.primary}`,
+                    color: '#fff',
+                    background: colors.interactive.primary,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      colors.background.secondary;
+                    e.currentTarget.style.background = colors.interactive.primaryHover;
+                    e.currentTarget.style.color = '#fff';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
+                    e.currentTarget.style.background = colors.interactive.primary;
+                    e.currentTarget.style.color = '#fff';
                   }}
                 >
                   BUY NOW
                 </button>
                 <button
-                  className="w-full rounded-md md:rounded-lg py-1 md:py-2 font-semibold text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+                  className="w-full font-bold rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
-                    background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-                    color: colors.background.primary,
+                    background: `linear-gradient(90deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`,
+                    color: '#fff',
+                    border: `1.5px solid ${colors.interactive.primary}`,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = colors.interactive.primaryHover;
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = `linear-gradient(90deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`;
+                    e.currentTarget.style.color = '#fff';
                   }}
                   onClick={() => handleAddToCart(product)}
                 >

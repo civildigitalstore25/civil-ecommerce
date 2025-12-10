@@ -9,7 +9,7 @@ import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
-import logo from "../../assets/logo.png";
+const logo = "/softlogo.png";
 import { useState } from "react";
 import type { CountryData } from "react-phone-input-2";
 // @ts-ignore
@@ -113,7 +113,7 @@ export default function SignupPage() {
 
       <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
-        style={{ backgroundColor: colors.background.secondary }}
+        style={{ backgroundColor: colors.background.secondary, border: `1px solid ${colors.border?.primary || '#e5e7eb'}` }}
       >
         {/* Header */}
         <div
@@ -253,12 +253,10 @@ export default function SignupPage() {
                         outline: none !important;
                         transition: all 0.2s !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .form-control:focus {
                         border-color: ${colors.interactive.primary} !important;
                         box-shadow: 0 0 0 2px ${colors.interactive.primary}33 !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .flag-dropdown {
                         background-color: ${colors.background.primary} !important;
                         border: none !important;
@@ -266,22 +264,18 @@ export default function SignupPage() {
                         padding-left: 8px !important;
                         padding-right: 8px !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .flag-dropdown:hover,
                       .phone-input-wrapper .react-tel-input .flag-dropdown.open {
                         background-color: ${colors.background.primary} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .selected-flag {
                         background-color: transparent !important;
                         padding: 0 8px !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .selected-flag:hover,
                       .phone-input-wrapper .react-tel-input .selected-flag.open {
                         background-color: ${colors.background.secondary || 'rgba(0,0,0,0.1)'} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list {
                         background-color: ${colors.background.primary} !important;
                         border: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
@@ -289,22 +283,18 @@ export default function SignupPage() {
                         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
                         margin-top: 4px !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .country {
                         background-color: ${colors.background.primary} !important;
                         color: ${colors.text.primary} !important;
                         padding: 8px 12px !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .country:hover,
                       .phone-input-wrapper .react-tel-input .country-list .country.highlight {
                         background-color: ${colors.background.secondary || 'rgba(0,0,0,0.1)'} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .country.preferred {
                         background-color: ${colors.background.secondary || 'rgba(0,0,0,0.05)'} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .search {
                         background-color: ${colors.background.primary} !important;
                         padding: 8px !important;
@@ -312,7 +302,6 @@ export default function SignupPage() {
                         top: 0 !important;
                         z-index: 1 !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .search-box {
                         width: 100% !important;
                         padding: 8px 12px !important;
@@ -322,21 +311,17 @@ export default function SignupPage() {
                         color: ${colors.text.primary} !important;
                         font-size: 0.875rem !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .search-box::placeholder {
                         color: ${colors.text.secondary || '#9ca3af'} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .search-box:focus {
                         outline: none !important;
                         border-color: ${colors.interactive.primary} !important;
                         box-shadow: 0 0 0 2px ${colors.interactive.primary}33 !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .divider {
                         border-bottom: 1px solid ${colors.border?.primary || '#e5e7eb'} !important;
                       }
-                      
                       .phone-input-wrapper .react-tel-input .country-list .country-name,
                       .phone-input-wrapper .react-tel-input .country-list .dial-code {
                         color: ${colors.text.primary} !important;

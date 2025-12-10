@@ -14,7 +14,7 @@ interface ContactFormData {
 
 const ContactPage: React.FC = () => {
   const submitContactForm = useSubmitContactForm();
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
 
   const {
     handleSubmit,
@@ -45,30 +45,32 @@ const ContactPage: React.FC = () => {
     <div
       className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
       style={{
-        background: `linear-gradient(135deg, ${colors.background.primary}, ${colors.background.secondary})`,
+        backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.primary,
       }}
     >
       <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
-        style={{ backgroundColor: colors.background.secondary }}
+        style={{
+          backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
+          border: `1px solid ${theme === "light" ? "#E2E8F0" : colors.border.primary}`,
+        }}
       >
         {/* Header */}
         <div
           className="p-10 text-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover}90)`,
-            backgroundColor: colors.background.tertiary,
+            background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
           }}
         >
           <h1
             className="mb-2 text-3xl md:text-4xl font-bold"
-            style={{ color: colors.text.primary }}
+            style={{ color: "#fff" }}
           >
             Contact Us
           </h1>
           <p
             className="mx-auto max-w-xl opacity-90"
-            style={{ color: colors.text.secondary }}
+            style={{ color: "#fff" }}
           >
             We'd love to hear from you. Please fill out the form below or visit
             our headquarters.
@@ -84,15 +86,16 @@ const ContactPage: React.FC = () => {
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`,
+                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  borderLeft: `4px solid #00C8FF`,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary,
+                    background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                    color: "#fff",
                   }}
                 >
                   <Phone size={20} />
@@ -100,16 +103,16 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
                   >
                     Call to Us:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>
                     We're available 24/7, 7 days a week.
                   </p>
                   <p
                     className="font-semibold"
-                    style={{ color: colors.interactive.primary }}
+                    style={{ color: "#00C8FF" }}
                   >
                     <a href="tel:+919042993986" className="hover:underline">
                       +91 9042993986
@@ -122,15 +125,16 @@ const ContactPage: React.FC = () => {
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`,
+                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  borderLeft: `4px solid #00C8FF`,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary,
+                    background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                    color: "#fff",
                   }}
                 >
                   <Mail size={20} />
@@ -138,16 +142,16 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
                   >
                     Write to Us:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>
                     Fill out our form and we will contact you within 24 hours.
                   </p>
                   <p
                     className="font-semibold"
-                    style={{ color: colors.interactive.primary }}
+                    style={{ color: "#00C8FF" }}
                   >
                     Civildigitalstore@gmail.com
                   </p>
@@ -158,15 +162,16 @@ const ContactPage: React.FC = () => {
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`,
+                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  borderLeft: `4px solid #00C8FF`,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary,
+                    background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                    color: "#fff",
                   }}
                 >
                   <Clock size={20} />
@@ -174,17 +179,13 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
                   >
                     Business Hours:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>
-                    Monday - Friday: 9:00-20:00
-                  </p>
-                  <p style={{ color: colors.text.secondary }}>
-                    Saturday: 11:00 - 15:00
-                  </p>
-                  <p style={{ color: colors.text.secondary }}>Sunday: Closed</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Monday - Friday: 9:00-20:00</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Saturday: 11:00 - 15:00</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Sunday: Closed</p>
                 </div>
               </div>
 
@@ -192,15 +193,16 @@ const ContactPage: React.FC = () => {
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderLeftColor: `${colors.interactive.primary}90`,
+                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  borderLeft: `4px solid #00C8FF`,
+                  color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                 }}
               >
                 <div
                   className="flex h-12 w-12 items-center justify-center rounded-lg"
                   style={{
-                    background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                    color: colors.text.primary,
+                    background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                    color: "#fff",
                   }}
                 >
                   <MapPin size={20} />
@@ -208,17 +210,13 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h3
                     className="text-lg font-semibold"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: theme === "light" ? "#0A2A6B" : colors.text.primary }}
                   >
                     Headquarters Address:
                   </h3>
-                  <p style={{ color: colors.text.secondary }}>
-                    Civil Digital Store
-                  </p>
-                  <p style={{ color: colors.text.secondary }}>
-                    Thanjavur, Tamilnadu
-                  </p>
-                  <p style={{ color: colors.text.secondary }}>India</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Civil Digital Store</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>Thanjavur, Tamilnadu</p>
+                  <p className="opacity-70" style={{ color: theme === "light" ? "#0A2A6B" : colors.text.secondary }}>India</p>
                 </div>
               </div>
             </div>
@@ -231,7 +229,7 @@ const ContactPage: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <label
                   className="text-sm font-semibold"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
                 >
                   Your Name *
                 </label>
@@ -284,7 +282,7 @@ const ContactPage: React.FC = () => {
               <div className="flex flex-col gap-2">
                 <label
                   className="text-sm font-semibold"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
                 >
                   Your Email *
                 </label>
@@ -330,7 +328,7 @@ const ContactPage: React.FC = () => {
             <div className="flex flex-col gap-2">
               <label
                 className="text-sm font-semibold"
-                style={{ color: colors.text.primary }}
+                style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
               >
                 Subject *
               </label>
@@ -379,7 +377,7 @@ const ContactPage: React.FC = () => {
             <div className="flex flex-col gap-2">
               <label
                 className="text-sm font-semibold"
-                style={{ color: colors.text.primary }}
+                style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
               >
                 Your Message (Optional)
               </label>
@@ -424,8 +422,8 @@ const ContactPage: React.FC = () => {
               disabled={submitContactForm.isPending}
               className="flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
               style={{
-                background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                color: colors.text.inverse,
+                background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                color: "#fff",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
@@ -439,7 +437,7 @@ const ContactPage: React.FC = () => {
                   <span
                     className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
                     style={{
-                      borderColor: colors.text.inverse,
+                      borderColor: "#fff",
                       borderTopColor: "transparent",
                     }}
                   ></span>
@@ -456,7 +454,7 @@ const ContactPage: React.FC = () => {
         <div
           className="mx-auto my-6 w-11/12 rounded-lg p-5 shadow-md"
           style={{
-            background: `linear-gradient(135deg, ${colors.background.tertiary}, ${colors.background.secondary})`,
+            backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
           }}
         >
           <div className="overflow-hidden rounded-lg shadow">
@@ -479,15 +477,8 @@ const ContactPage: React.FC = () => {
               rel="noopener noreferrer"
               className="inline-block rounded-md px-5 py-2 font-medium transition"
               style={{
-                background: `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`,
-                backgroundColor: colors.background.tertiary,
-                color: colors.text.primary,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover}90)`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = `linear-gradient(135deg, ${colors.interactive.primary}90, ${colors.interactive.primaryHover})`;
+                background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
+                color: "#fff",
               }}
             >
               Open in Google Maps

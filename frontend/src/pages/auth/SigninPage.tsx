@@ -11,6 +11,7 @@ import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import logo from "../../assets/logo.png";
+const softLogo = "/softlogo.png";
 
 interface SigninFormData {
   email: string;
@@ -79,7 +80,7 @@ export default function SigninPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
-      style={{ backgroundColor: colors.background.primary }}
+      style={{ background: colors.background.primary }}
     >
       {/* Theme Toggle - positioned in top right */}
       <div className="absolute top-4 right-4">
@@ -88,20 +89,20 @@ export default function SigninPage() {
 
       <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
-        style={{ backgroundColor: colors.background.secondary }}
+        style={{ background: colors.background.secondary }}
       >
         {/* Header */}
         <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
           style={{
-            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
+            background: colors.interactive.primary,
           }}
         >
           <div
             className="p-3 rounded-2xl shadow-md"
-            style={{ backgroundColor: colors.background.primary }}
+            style={{ background: colors.background.primary }}
           >
-            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
+            <img src={softLogo} alt="Logo" className="h-12 w-12 object-contain" />
           </div>
           <h1
             className="text-2xl font-bold mt-4"
@@ -123,8 +124,7 @@ export default function SigninPage() {
           <GoogleButton
             text="Continue with Google"
             onClick={() => {
-              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
-                }/api/auth/google`;
+              window.location.href = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/auth/google`;
             }}
           />
 
@@ -218,8 +218,7 @@ export default function SigninPage() {
                     color: colors.interactive.primary,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color =
-                      colors.interactive.primaryHover;
+                    e.currentTarget.style.color = colors.interactive.primaryHover;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.color = colors.interactive.primary;
@@ -234,6 +233,17 @@ export default function SigninPage() {
               type="submit"
               disabled={signInMutation.isPending}
               className="w-full"
+              style={{
+                background: colors.interactive.primary,
+                color: colors.text.inverse,
+                border: 'none',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = colors.interactive.primaryHover;
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = colors.interactive.primary;
+              }}
             >
               {signInMutation.isPending ? "Signing in..." : "Sign In"}
             </FormButton>

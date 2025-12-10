@@ -22,7 +22,7 @@ const AdobeHeader: React.FC = () => {
                 <div className="flex items-center -ml-2">
                     <a href="/" aria-label="Home">
                         <img
-                            src="/logo1.png"
+                            src="/softlogo.png"
                             alt="Civil Digital Store Logo"
                             className="h-10 sm:h-12 w-auto object-contain"
                         />

@@ -44,31 +44,31 @@ export interface ThemeColors {
 
 export const lightTheme: ThemeColors = {
   background: {
-    primary: "#ffffffff", // Pure white main background
-    secondary: "#f9fafb", // Very light gray for cards
-    tertiary: "#f3f4f6", // Light gray for headers
-    accent: "#e5e7eb", // Gray for accents/hover states
+    primary: "#F5F7FA", // Main background
+    secondary: "#FFFFFF", // Cards
+    tertiary: "#0A2A6B", // Navbar, headings
+    accent: "#E2E8F0", // Card border
   },
   text: {
-    primary: "#111827", // Much darker for better readability
-    secondary: "#374151", // Darker secondary text
-    accent: "#000000", // Pure black for high contrast
-    inverse: "#ffffff",
+    primary: "#0A2A6B", // Headings
+    secondary: "#4A5568", // Paragraph
+    accent: "#00C8FF", // Highlighted text
+    inverse: "#FFFFFF", // Contrast text
   },
   border: {
-    primary: "#d1d5db", // More visible borders
-    secondary: "#e5e7eb", // Subtle borders
-    accent: "#3b82f6",
+    primary: "#E2E8F0", // Card border
+    secondary: "#E2E8F0", // Subtle borders
+    accent: "#00C8FF", // Active/highlighted borders
   },
   status: {
-    success: "#047857", // Darker green for better visibility
-    warning: "#b45309", // Darker orange
-    error: "#b91c1c", // Darker red
-    info: "#1d4ed8", // Darker blue
+    success: "#047857",
+    warning: "#b45309",
+    error: "#b91c1c",
+    info: "#1d4ed8",
   },
   interactive: {
-    primary: "#fbbf24",
-    primaryHover: "#f59e0b",
+    primary: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)", // Button gradient
+    primaryHover: "linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)", // Button hover gradient
     secondary: "#6b7280",
     secondaryHover: "#9ca3af",
   },
@@ -76,21 +76,21 @@ export const lightTheme: ThemeColors = {
 
 export const darkTheme: ThemeColors = {
   background: {
-    primary: "#111827",
-    secondary: "#1f2937",
-    tertiary: "#374151",
-    accent: "#4b5563",
+    primary: "#0B1120", // Main background
+    secondary: "#1E293B", // Cards
+    tertiary: "#00C8FF", // Headings, navbar highlight
+    accent: "#334155", // Card border
   },
   text: {
-    primary: "#f9fafb",
-    secondary: "#d1d5db",
-    accent: "#ffffff",
-    inverse: "#111827",
+    primary: "#E6F4FF", // Headings
+    secondary: "#CBD5E1", // Paragraph
+    accent: "#00C8FF", // Highlighted text
+    inverse: "#0A2A6B", // Contrast text
   },
   border: {
-    primary: "#374151",
-    secondary: "#4b5563",
-    accent: "#fbbf24",
+    primary: "#334155", // Card border
+    secondary: "#334155", // Subtle borders
+    accent: "#00C8FF", // Active/highlighted borders
   },
   status: {
     success: "#10b981",
@@ -99,8 +99,8 @@ export const darkTheme: ThemeColors = {
     info: "#3b82f6",
   },
   interactive: {
-    primary: "#fbbf24",
-    primaryHover: "#f59e0b",
+    primary: "linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)", // Button gradient
+    primaryHover: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)", // Button hover gradient
     secondary: "#6b7280",
     secondaryHover: "#9ca3af",
   },
