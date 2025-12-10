@@ -205,7 +205,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 <button
                   className="w-full font-bold rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
-                    background: `linear-gradient(90deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`,
+                    background: colors.interactive.primary,
                     color: '#fff',
                     border: `1.5px solid ${colors.interactive.primary}`,
                   }}
@@ -214,7 +214,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                     e.currentTarget.style.color = '#fff';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = `linear-gradient(90deg, ${colors.interactive.primary}, ${colors.interactive.primaryHover})`;
+                    e.currentTarget.style.background = colors.interactive.primary;
                     e.currentTarget.style.color = '#fff';
                   }}
                   onClick={() => handleAddToCart(product)}

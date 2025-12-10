@@ -1,7 +1,9 @@
 import React from 'react';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 import { TestimonialCard } from '../common/TestimonialCard';
 
 export const TestimonialsSection: React.FC = () => {
+    const { colors } = useAdminTheme();
   const testimonials = [
     {
       name: 'Ravi Sharma',
@@ -27,9 +29,16 @@ export const TestimonialsSection: React.FC = () => {
   ];
 
   return (
-    <section id="reviews" className="bg-white px-4 py-16 lg:py-24 lg:px-8">
+    <section
+      id="reviews"
+      className="px-4 py-16 lg:py-24 lg:px-8 transition-colors duration-200"
+      style={{ background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)` }}
+    >
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 text-center mb-12 lg:mb-16">
+        <h2
+          className="text-3xl lg:text-4xl font-bold text-center mb-12 lg:mb-16 transition-colors duration-200"
+          style={{ color: colors.text.primary }}
+        >
           What Our Customers Say
         </h2>
 

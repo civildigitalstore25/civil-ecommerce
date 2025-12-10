@@ -126,7 +126,7 @@ export default function SignupPage() {
             className="p-3 rounded-2xl shadow-md"
             style={{ backgroundColor: colors.background.primary }}
           >
-            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
+            <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>
           <h1
             className="text-2xl font-bold mt-4"

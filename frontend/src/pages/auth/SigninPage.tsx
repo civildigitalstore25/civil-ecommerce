@@ -10,8 +10,7 @@ import FormInput from "../../components/Input/FormInput";
 import GoogleButton from "../../components/Button/GoogleButton";
 import PasswordInput from "../../components/Input/PasswordInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
-import logo from "../../assets/logo.png";
-const softLogo = "/softlogo.png";
+const logo = "/softlogo.png";
 
 interface SigninFormData {
   email: string;
@@ -80,7 +79,7 @@ export default function SigninPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-4 py-8 relative"
-      style={{ background: colors.background.primary }}
+      style={{ backgroundColor: colors.background.primary }}
     >
       {/* Theme Toggle - positioned in top right */}
       <div className="absolute top-4 right-4">
@@ -89,20 +88,20 @@ export default function SigninPage() {
 
       <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
-        style={{ background: colors.background.secondary }}
+        style={{ backgroundColor: colors.background.secondary, border: `1px solid ${colors.border?.primary || '#e5e7eb'}` }}
       >
         {/* Header */}
         <div
           className="py-6 px-6 rounded-t-2xl flex flex-col items-center"
           style={{
-            background: colors.interactive.primary,
+            background: `linear-gradient(135deg, ${colors.interactive.primary}20, ${colors.interactive.primary}40)`,
           }}
         >
           <div
             className="p-3 rounded-2xl shadow-md"
-            style={{ background: colors.background.primary }}
+            style={{ backgroundColor: colors.background.primary }}
           >
-            <img src={softLogo} alt="Logo" className="h-12 w-12 object-contain" />
+            <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>
           <h1
             className="text-2xl font-bold mt-4"

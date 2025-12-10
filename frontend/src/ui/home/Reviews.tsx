@@ -77,13 +77,16 @@ const Reviews: React.FC = () => {
       id="reviews-section"
       className="w-full py-16 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
+        background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
       }}
     >
       <div className="text-center mb-8 md:mb-12 px-4">
         <h2
           className="text-2xl md:text-4xl font-poppins font-bold transition-colors duration-200 mb-2"
-          style={{ color: colors.text.primary }}
+          style={{
+            color: colors.text.primary,
+            textShadow: `0 2px 8px ${colors.background.primary}80`,
+          }}
         >
           What Our Customers Say
         </h2>

@@ -7,25 +7,21 @@ const features = [
     icon: CheckCircle,
     title: "100% Genuine",
     description: "Authentic licenses from authorized vendors",
-    color: "text-green-700",
   },
   {
     icon: Shield,
     title: "Secure Checkout",
     description: "SSL encrypted with UPI & card payments",
-    color: "text-blue-700",
   },
   {
     icon: Zap,
     title: "Instant Delivery",
     description: "License keys within minutes of purchase",
-    color: "text-purple-700",
   },
   {
     icon: Users,
     title: "24/7 Support",
     description: "Dedicated installation & licensing help",
-    color: "text-orange-700",
   },
 ];
 
@@ -36,14 +32,17 @@ const WhyChooseUs: React.FC = () => {
     <section
       className="w-full rounded-2xl sm:rounded-3xl shadow-sm py-6 sm:py-14 px-2 sm:px-6 md:px-20 transition-colors duration-200"
       style={{
-        background: `linear-gradient(to right, ${colors.background.secondary}, ${colors.background.primary})`,
+        background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
       }}
     >
       {/* Heading */}
       <div className="text-center mb-4 sm:mb-14">
         <h2
           className="text-lg sm:text-3xl md:text-4xl font-poppins font-bold transition-colors duration-200"
-          style={{ color: colors.text.primary }}
+          style={{
+            color: colors.text.primary,
+            textShadow: `0 2px 8px ${colors.background.primary}80`,
+          }}
         >
           Why Choose CivilDigitalStore?
         </h2>
@@ -63,7 +62,7 @@ const WhyChooseUs: React.FC = () => {
             <div
               key={index}
               className="flex flex-col items-center transition-all duration-300 hover:scale-105 hover:shadow-md rounded-lg sm:rounded-2xl p-2 sm:p-6"
-              style={{ backgroundColor: colors.background.primary }}
+              style={{ backgroundColor: colors.background.primary, border: `1.5px solid ${colors.border.primary}` }}
             >
               <div
                 className="flex items-center justify-center w-10 h-10 sm:w-16 sm:h-16 rounded-lg sm:rounded-xl shadow-sm transition-colors duration-200"
