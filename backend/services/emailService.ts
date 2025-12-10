@@ -61,31 +61,31 @@ class EmailService {
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header">
-              <h1>Password Reset Request</h1>
-            </div>
-            <div class="content">
-              <p>Hello,</p>
-              <p>We received a request to reset your password. If you didn't make this request, you can safely ignore this email.</p>
-              <p>To reset your password, click the button below:</p>
-              <div style="text-align: center;">
-                <a href="${resetUrl}" class="button">Reset Password</a>
+              <div class="container">
+                <div class="header">
+                  <h1>Password Reset Request</h1>
+                </div>
+                <div class="content">
+                  <p>Dear Customer,</p>
+                  <p>We received a request to reset the password for the account associated with this email address. If you did not request a password reset, no further action is required. Your account remains secure.</p>
+                  <p>To reset your password, please click the link below:</p>
+                  <div style="text-align: center;">
+                    <a href="${resetUrl}" class="button">Reset Password</a>
+                  </div>
+                  <p>If the button above does not work, copy and paste the following link into your browser:</p>
+                  <p style="word-break: break-all; background: #f1f1f1; padding: 10px; border-radius: 3px;">
+                    ${resetUrl}
+                  </p>
+                  <div class="warning">
+                    <strong>Important:</strong> For security reasons, this link will expire in 10 minutes.
+                  </div>
+                  <p>If you require assistance, please contact our support team at <a href="mailto:${process.env.CONTACT_EMAIL}">${process.env.CONTACT_EMAIL}</a>.</p>
+                </div>
+                <div class="footer">
+                  <p>Regards,<br/>${process.env.FROM_NAME || 'Support Team'}</p>
+                  <p>Please do not reply to this automated message.</p>
+                </div>
               </div>
-              <p>Or copy and paste this link into your browser:</p>
-              <p style="word-break: break-all; background: #f1f1f1; padding: 10px; border-radius: 3px;">
-                ${resetUrl}
-              </p>
-              <div class="warning">
-                <strong>⚠️ Important:</strong> This link will expire in 10 minutes for security reasons.
-              </div>
-              <p>If you're having trouble clicking the button, copy and paste the URL above into your web browser.</p>
-            </div>
-            <div class="footer">
-              <p>This email was sent from ${process.env.FROM_NAME || 'Your App'}. Please do not reply to this email.</p>
-              <p>If you continue to have problems, please contact our support team.</p>
-            </div>
-          </div>
         </body>
         </html>
       `
@@ -127,23 +127,24 @@ class EmailService {
         <body>
           <div class="container">
             <div class="header">
-              <h1>✅ Password Changed Successfully</h1>
+              <h1>Password Changed Successfully</h1>
             </div>
             <div class="content">
-              <p>Hello,</p>
+              <p>Dear Customer,</p>
               <div class="success">
-                <p><strong>Your password has been successfully changed.</strong></p>
+                <p><strong>Your password has been changed successfully.</strong></p>
               </div>
-              <p>If you didn't make this change, please contact our support team immediately.</p>
-              <p>For your security:</p>
+              <p>If you did not authorize this change, please contact our support team immediately at <a href="mailto:${process.env.CONTACT_EMAIL}">${process.env.CONTACT_EMAIL}</a>.</p>
+              <p>For your account security, we recommend the following:</p>
               <ul>
-                <li>Make sure you're the only one who knows your new password</li>
-                <li>Don't share your password with anyone</li>
-                <li>Use a strong, unique password for your account</li>
+                <li>Use a strong, unique password that you do not share with others.</li>
+                <li>Enable multi-factor authentication if available.</li>
+                <li>Contact support if you notice any suspicious activity on your account.</li>
               </ul>
             </div>
             <div class="footer">
-              <p>This email was sent from ${process.env.FROM_NAME || 'Your App'}. Please do not reply to this email.</p>
+              <p>Regards,<br/>${process.env.FROM_NAME || 'Support Team'}</p>
+              <p>Please do not reply to this automated message.</p>
             </div>
           </div>
         </body>
@@ -189,33 +190,33 @@ class EmailService {
       <body>
         <div class="container">
           <div class="header">
-            <h1>📧 New Contact Form Submission</h1>
+            <h1>New Contact Form Submission</h1>
           </div>
           <div class="content">
             <div class="field">
-              <div class="field-label">From:</div>
-              <div class="field-value">${name} </div>
+              <div class="field-label">From</div>
+              <div class="field-value">${name}</div>
             </div>
             <div class="field">
-              <div class="field-label">Email:</div>
+              <div class="field-label">Email</div>
               <div class="field-value">${email}</div>
             </div>
             <div class="field">
-              <div class="field-label">Subject:</div>
+              <div class="field-label">Subject</div>
               <div class="field-value">${subject}</div>
             </div>
             <div class="field">
-              <div class="field-label">Message:</div>
+              <div class="field-label">Message</div>
               <div class="field-value">${message}</div>
             </div>
             <div class="field">
-              <div class="field-label">Submitted At:</div>
+              <div class="field-label">Submitted At</div>
               <div class="field-value">${new Date().toLocaleString()}</div>
             </div>
           </div>
           <div class="footer">
-            <p>This email was sent from the contact form on ${process.env.FROM_NAME || 'Softzcart'}.</p>
-            <p>You can reply directly to this email to contact ${name}.</p>
+            <p>This message was submitted via the contact form on ${process.env.FROM_NAME || 'Softzcart'}.</p>
+            <p>To respond to the sender, reply to this message or use the Reply-To address provided.</p>
           </div>
         </div>
       </body>
@@ -268,7 +269,7 @@ class EmailService {
         address: process.env.FROM_EMAIL || 'noreply@yourstore.com'
       },
       to: process.env.CONTACT_EMAIL || 'softzcart@gmail.com',
-      subject: `🎉 New Order Received - #${orderNumber}`,
+      subject: `New Order Received - #${orderNumber}`,
       html: `
         <!DOCTYPE html>
         <html>
@@ -300,7 +301,7 @@ class EmailService {
         <body>
           <div class="container">
             <div class="header">
-              <h1>🎉 New Order Received!</h1>
+              <h1>New Order Received</h1>
               <p style="margin: 10px 0 0 0; font-size: 16px;">Order #${orderNumber}</p>
             </div>
             
@@ -388,13 +389,13 @@ class EmailService {
               <!-- Action Required -->
               <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; border-radius: 5px; margin-top: 20px;">
                 <p style="margin: 0; color: #92400e;">
-                  <strong>⚡ Action Required:</strong> Please process this order and contact the customer for delivery arrangements.
+                  <strong>Action Required:</strong> Please process this order and contact the customer to arrange delivery.
                 </p>
               </div>
             </div>
 
             <div class="footer">
-              <p>This is an automated notification from ${process.env.FROM_NAME || 'Your Store'}</p>
+              <p>Regards,<br/>${process.env.FROM_NAME || 'Order Notifications'}</p>
               <p>Order received at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
             </div>
           </div>
