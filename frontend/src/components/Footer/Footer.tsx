@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import  { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -13,7 +13,6 @@ import {
 } from "react-icons/fa";
 import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-import logo from "../../assets/logo.png";
 
 const Footer = () => {
   const { colors } = useAdminTheme();
