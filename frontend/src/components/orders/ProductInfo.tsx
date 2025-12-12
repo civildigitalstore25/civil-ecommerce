@@ -12,7 +12,7 @@ interface ProductInfoProps {
 
 const ProductInfo: React.FC<ProductInfoProps> = React.memo(
   ({ order, onBuyAgain, onViewDetails }) => {
-    const { colors } = useAdminTheme();
+    const { colors, theme } = useAdminTheme();
     const { formatPriceWithSymbol } = useCurrency();
     const product = order.items[0];
 
@@ -30,7 +30,10 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
         <div className="relative flex-shrink-0">
           <div
             className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center"
-            style={{ backgroundColor: colors.background.tertiary }}
+            style={{
+              backgroundColor: theme === 'dark' ? colors.background.tertiary : '#f3f4f6',
+              border: `1.5px solid ${colors.border.primary}`
+            }}
           >
             {product?.image &&
             product.image !== "null" &&
@@ -43,7 +46,7 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
             ) : (
               <Package
                 className="w-8 h-8"
-                style={{ color: colors.text.secondary }}
+                style={{ color: theme === 'dark' ? '#fff' : colors.interactive.primary, opacity: 0.85 }}
               />
             )}
           </div>
@@ -94,10 +97,11 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <button
               onClick={onBuyAgain}
-              className="px-4 py-2 rounded text-xs sm:text-sm font-semibold transition-colors duration-200 w-full sm:w-auto"
+              className="px-4 py-2 rounded text-xs sm:text-sm font-semibold border transition-colors duration-200 w-full sm:w-auto"
               style={{
-                backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse,
+                backgroundColor: colors.background.secondary,
+                color: colors.text.primary,
+                borderColor: colors.border.primary,
               }}
             >
               BUY IT AGAIN

@@ -78,6 +78,9 @@ const Reviews: React.FC = () => {
       className="w-full py-16 transition-colors duration-200"
       style={{
         background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+        border: 'none',
+        boxShadow: 'none',
+        borderRadius: 0,
       }}
     >
       <div className="text-center mb-8 md:mb-12 px-4">

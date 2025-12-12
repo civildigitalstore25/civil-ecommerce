@@ -30,9 +30,12 @@ const WhyChooseUs: React.FC = () => {
 
   return (
     <section
-      className="w-full rounded-2xl sm:rounded-3xl shadow-sm py-6 sm:py-14 px-2 sm:px-6 md:px-20 transition-colors duration-200"
+      className="w-full py-6 sm:py-14 transition-colors duration-200"
       style={{
         background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+        border: 'none',
+        boxShadow: 'none',
+        borderRadius: 0,
       }}
     >
       {/* Heading */}

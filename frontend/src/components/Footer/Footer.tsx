@@ -368,7 +368,13 @@ const Footer = () => {
             style={{ borderColor: colors.border.secondary }}
           >
             <FaPhoneAlt style={{ color: colors.interactive.primary }} />
-            <a href="tel:+919042993986" className="text-white hover:text-gray-200 mr-4">
+            <a
+              href="tel:+919042993986"
+              className="mr-4 transition-colors duration-200"
+              style={{ color: colors.text.primary }}
+              onMouseEnter={e => { e.currentTarget.style.color = colors.interactive.primary; }}
+              onMouseLeave={e => { e.currentTarget.style.color = colors.text.primary; }}
+            >
               +91 9042993986
             </a>
           </p>
