@@ -23,7 +23,8 @@ import AdminThemeToggle from "../ThemeToggle/AdminThemeToggle";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
 // Use PNG logo from public folder
-const logo = "/softlogo.png";
+const lightLogo = "/softlogo.png";
+const darkLogo = "/whitelogo.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,7 +43,7 @@ const Header: React.FC = () => {
   const invalidateUser = useUserInvalidate();
   const navigate = useNavigate();
   const { getItemCount } = useCartContext();
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -123,7 +124,7 @@ const Header: React.FC = () => {
                   className="flex items-center"
                 >
                   <img
-                    src={logo}
+                    src={theme === "dark" ? darkLogo : lightLogo}
                     alt="Logo"
                     className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
                   />
@@ -172,7 +173,7 @@ const Header: React.FC = () => {
               className="flex items-center"
             >
               <img
-                src={logo}
+                src={theme === "dark" ? darkLogo : lightLogo}
                 alt="Logo"
                 className="h-10 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
               />
