@@ -450,12 +450,14 @@ const ContactPage: React.FC = () => {
           </form>
         </div>
 
-        {/* Map Section */}
+        {/* Map Section (hidden) */}
         <div
           className="mx-auto my-6 w-11/12 rounded-lg p-5 shadow-md"
           style={{
+            display: "none", // Hidden for now — enable later by removing this style
             backgroundColor: theme === "light" ? colors.background.primary : colors.background.secondary,
           }}
+          aria-hidden="true"
         >
           <div className="overflow-hidden rounded-lg shadow">
             <iframe
@@ -470,20 +472,7 @@ const ContactPage: React.FC = () => {
               className="rounded-lg"
             />
           </div>
-          {/* <div className="mt-4 text-center">
-            <a
-              href="https://maps.app.goo.gl/UsepnwEqHCPHX3JY7"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block rounded-md px-5 py-2 font-medium transition"
-              style={{
-                background: colors.interactive.primary,
-                color: colors.text.inverse,
-              }}
-            >
-              Open in Google Maps
-            </a>
-          </div> */}
+          {/* Map preserved but hidden. To re-enable, remove `display: "none"` above. */}
         </div>
       </div>
     </div>
