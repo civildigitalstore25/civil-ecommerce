@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Cookie, FileText, Link, Layout, Shield, AlertCircle } from "lucide-react";
+import {  FileText, Link, Shield,  } from "lucide-react";
 import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
 
 const cardVariants = {

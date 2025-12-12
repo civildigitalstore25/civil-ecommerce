@@ -24,6 +24,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://civil-ecommerce-yiav.vercel.app",
+  "https://softzcart.vercel.app",
   "https://softzcart.com",
   "http://softzcart.com",
   "https://www.softzcart.com",
