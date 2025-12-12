@@ -43,9 +43,9 @@ const HomePage: React.FC = () => {
           <HomeProducts />
         </section>
 
-        <section className="px-4 sm:px-6 lg:px-8">
+        {/* <section className="px-4 sm:px-6 lg:px-8">
           <ExclusiveOffers />
-        </section>
+        </section> */}
 
         <section className="px-4 sm:px-6 lg:px-8">
           <WhyChooseUs />
