@@ -9,9 +9,9 @@ import {
   Package,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
-import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
-import MobileCategoriesMenu from "./MobileCategoriesMenu";
-import MobileShopByCategory from "./MobileShopByCategory";
+// import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
+// import MobileCategoriesMenu from "./MobileCategoriesMenu";
+// import MobileShopByCategory from "./MobileShopByCategory";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface MobileMenuProps {
