@@ -185,9 +185,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         type="submit"
         variant="primary"
         className={`w-full py-3 text-lg transition duration-300 ease-in-out 
-                   bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
-                   hover:shadow-lg ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
-        disabled={isProcessing}
+                   bg-yellow-500 text-white rounded-lg shadow-md 
+                   opacity-70 cursor-not-allowed`}
+        disabled={true}
+        title="Place order is currently disabled"
       >
         {isProcessing ? (
           <span className="flex items-center justify-center gap-2">
