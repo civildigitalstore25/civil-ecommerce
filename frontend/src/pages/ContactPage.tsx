@@ -470,7 +470,7 @@ const ContactPage: React.FC = () => {
               className="rounded-lg"
             />
           </div>
-          <div className="mt-4 text-center">
+          {/* <div className="mt-4 text-center">
             <a
               href="https://maps.app.goo.gl/UsepnwEqHCPHX3JY7"
               target="_blank"
@@ -483,7 +483,7 @@ const ContactPage: React.FC = () => {
             >
               Open in Google Maps
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
