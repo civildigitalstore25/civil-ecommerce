@@ -124,6 +124,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Advertising
                   </Link>
@@ -139,6 +140,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Careers
                   </Link>
@@ -154,6 +156,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Permissions
                   </Link>
@@ -169,6 +172,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Shipping & Delivery Policy
                   </Link>
@@ -184,6 +188,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Privacy Policy
                   </Link>
@@ -211,6 +216,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Terms and Conditions
                   </Link>
@@ -226,6 +232,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Return and Refund Policy
                   </Link>
@@ -241,6 +248,7 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Disclaimer
                   </Link>
@@ -249,7 +257,7 @@ const Footer = () => {
             </div>
 
             {/* Software */}
-            <div className="col-span-2 md:col-span-1">
+            {/* <div className="col-span-2 md:col-span-1">
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
                 style={{ color: colors.interactive.primary }}
@@ -348,7 +356,7 @@ const Footer = () => {
                   </Link>
                 </li>
               </ul>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

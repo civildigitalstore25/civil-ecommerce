@@ -21,7 +21,7 @@ const TermsAndConditions: React.FC = () => {
 
   return (
     <div
-      className="py-14 px-4 sm:py-20 sm:px-6"
+      className="py-14 px-4 sm:py-20 sm:px-6 mt-7"
       style={{ backgroundColor: colors.background.secondary }}
     >
       {/* Header */}

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Controller } from "react-hook-form";
@@ -16,6 +17,7 @@ interface ForgotPasswordFormData {
 }
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
@@ -204,8 +206,10 @@ export default function ForgotPasswordPage() {
           }}
         >
           <div
-            className="p-3 rounded-2xl shadow-md"
+            className="p-3 rounded-2xl shadow-md cursor-pointer"
             style={{ backgroundColor: colors.background.primary }}
+            onClick={() => navigate("/")}
+            title="Go to Home"
           >
             <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>

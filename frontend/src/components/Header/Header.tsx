@@ -81,10 +81,12 @@ const Header: React.FC = () => {
     } else if (href === "/") {
       setShowAdminDashboard(false);
       navigate("/");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else if (href === "/logout") {
       handleLogout();
     } else {
       navigate(href);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     setIsMenuOpen(false);
     // No longer needed: all dropdowns handled by CSS except user/auth
