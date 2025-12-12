@@ -136,7 +136,7 @@ export const AdminThemeProvider: React.FC<AdminThemeProviderProps> = ({
 }) => {
   const [theme, setTheme] = useState<ThemeMode>(() => {
     const savedTheme = localStorage.getItem("admin-theme");
-    return (savedTheme as ThemeMode) || "dark";
+    return (savedTheme as ThemeMode) || "light";
   });
 
   const colors = theme === "light" ? lightTheme : darkTheme;
