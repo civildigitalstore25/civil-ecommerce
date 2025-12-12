@@ -54,9 +54,7 @@ const HeroSection: React.FC = () => {
   const { colors, theme } = useAdminTheme();
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
 
-  const handleExploreProducts = () => {
-    window.location.href = "/products";
-  };
+
 
   // Auto-play carousel for mobile
   useEffect(() => {
@@ -87,25 +85,25 @@ const HeroSection: React.FC = () => {
             className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
-            Genuine Civil <br />
-            Engineering Software
+            SoftzCart — Ebooks for Civil Engineers
           </h1>
 
           <p
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Get authentic AutoDesk,Microsoft, Adobe, Antivirus and other professional
-            software licenses with instant delivery and lifetime support.
+            Find curated ebooks, software manuals, and technical guides for civil
+            engineering. SoftzCart offers authentic ebook content with instant
+            delivery and lifetime support — only ebooks are shown here.
           </p>
 
           <button
-            onClick={handleExploreProducts}
+            onClick={() => (window.location.href = "/category?brand=ebook")}
             className="px-5 py-2 sm:px-8 sm:py-4 rounded-md sm:rounded-lg font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-6 sm:mb-16"
             style={{
               background: colors.interactive.primary,
               color: colors.text.inverse,
-              border: 'none',
+              border: "none",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = colors.interactive.primaryHover;
@@ -114,7 +112,7 @@ const HeroSection: React.FC = () => {
               e.currentTarget.style.background = colors.interactive.primary;
             }}
           >
-            Explore Products
+            Explore Ebooks
           </button>
 
           {/* ===== Features Grid (Desktop) ===== */}

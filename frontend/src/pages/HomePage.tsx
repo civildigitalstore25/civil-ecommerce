@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
           <HeroSection />
         </section>
 
-        {/* Shop by Category - Mobile Only */}
+        {/* Shop by Category - Mobile Only (commented out for now, will be used later)
         <section className="px-2 sm:px-6 lg:hidden">
           <div
             className="rounded-lg transition-colors duration-200"
@@ -37,6 +37,7 @@ const HomePage: React.FC = () => {
             <MobileShopByCategory />
           </div>
         </section>
+        */}
 
         <section className="px-4 sm:px-6 lg:px-8">
           <HomeProducts />
