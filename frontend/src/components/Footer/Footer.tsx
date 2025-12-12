@@ -2,7 +2,7 @@ import  { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
-  FaPinterestP,
+
   FaInstagram,
   FaLinkedinIn,
   FaYoutube,
@@ -15,7 +15,7 @@ import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Footer = () => {
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const [showScrollTop, setShowScrollTop] = useState(false);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ const Footer = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src="/softlogo.png"
+                src={theme === "dark" ? "/whitelogo.png" : "/softlogo.png"}
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
