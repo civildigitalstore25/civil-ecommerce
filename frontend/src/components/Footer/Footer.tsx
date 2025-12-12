@@ -416,11 +416,11 @@ const Footer = () => {
               icon: FaInstagram,
               hoverColor: "#ec4899",
             },
-            // {
-            //   href: "https://www.linkedin.com/in/civil-digitalstore-907769287/",
-            //   icon: FaLinkedinIn,
-            //   hoverColor: "#60a5fa",
-            // },
+            {
+              href: "https://www.linkedin.com/in/softzcart/",
+              icon: FaLinkedinIn,
+              hoverColor: "#60a5fa",
+            },
             {
               href: "https://www.youtube.com/@SoftZcart",
               icon: FaYoutube,
@@ -474,7 +474,7 @@ const Footer = () => {
         >
           Softzcart
         </span>
-        . All rights reserved.
+        . All rights reserved 2025.
       </div>
 
       {/* Scroll to Top Button */}
