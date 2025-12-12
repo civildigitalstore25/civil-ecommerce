@@ -403,35 +403,35 @@ const Footer = () => {
         <div className="flex space-x-3">
           {[
             {
-              href: "https://www.facebook.com/civildigitalstore",
+              href: "https://www.facebook.com/SoftzCart/",
               icon: FaFacebookF,
               hoverColor: "#3b82f6",
             },
+            // {
+            //   href: "https://in.pinterest.com/civildigitalstore/",
+            //   icon: FaPinterestP,
+            //   hoverColor: "#ef4444",
+            // },
             {
-              href: "https://in.pinterest.com/civildigitalstore/",
-              icon: FaPinterestP,
-              hoverColor: "#ef4444",
-            },
-            {
-              href: "https://www.instagram.com/civildigitalstore/",
+              href: "https://www.instagram.com/softzcart/",
               icon: FaInstagram,
               hoverColor: "#ec4899",
             },
+            // {
+            //   href: "https://www.linkedin.com/in/civil-digitalstore-907769287/",
+            //   icon: FaLinkedinIn,
+            //   hoverColor: "#60a5fa",
+            // },
             {
-              href: "https://www.linkedin.com/in/civil-digitalstore-907769287/",
-              icon: FaLinkedinIn,
-              hoverColor: "#60a5fa",
-            },
-            {
-              href: "https://www.youtube.com/@CivilDigitalStore",
+              href: "https://www.youtube.com/@SoftZcart",
               icon: FaYoutube,
               hoverColor: "#dc2626",
             },
-            {
-              href: "https://x.com/cDigitalstore",
-              icon: FaTwitter,
-              hoverColor: "#0ea5e9",
-            },
+            // {
+            //   href: "https://x.com/cDigitalstore",
+            //   icon: FaTwitter,
+            //   hoverColor: "#0ea5e9",
+            // },
           ].map(({ href, icon: Icon, hoverColor }, i) => (
             <a
               key={i}
