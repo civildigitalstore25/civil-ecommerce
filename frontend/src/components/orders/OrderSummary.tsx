@@ -16,8 +16,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = React.memo(({ order }) => {
     <div
       className="p-3 sm:p-4 rounded-lg border"
       style={{
-        backgroundColor: colors.background.tertiary,
+        backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
+        color: colors.text.primary,
       }}
     >
       <div className="flex items-center gap-2 mb-3">

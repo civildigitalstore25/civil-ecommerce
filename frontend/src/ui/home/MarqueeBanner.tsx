@@ -17,11 +17,11 @@ const MarqueeBanner: React.FC = () => {
           style={{ color: colors.text.inverse }}
         >
           <span>
-            🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it
+            🔥 Genuine Ebooks at <strong>90% OFF</strong> – grab it
             now!
           </span>
           <span>
-            🎉 Limited time offer – <strong>Hurry, stocks running out!</strong>
+            🎉 Limited time offer – <strong>Hurry, up!</strong>
           </span>
           <span>⭐ Trusted by 10,000+ users – Don't miss your chance!..</span>
           <span className="inline-block w-1"></span>
@@ -33,11 +33,11 @@ const MarqueeBanner: React.FC = () => {
           style={{ color: colors.text.inverse }}
         >
           <span>
-            🔥 Genuine software licenses at <strong>90% OFF</strong> – grab it
+            🔥 Genuine Ebooks at <strong>90% OFF</strong> – grab it
             now!
           </span>
           <span>
-            🎉 Limited time offer – <strong>Hurry, stocks running out!</strong>
+            🎉 Limited time offer – <strong>Hurry, up!</strong>
           </span>
           <span>⭐ Trusted by 10,000+ users – Don't miss your chance!</span>
         </div>

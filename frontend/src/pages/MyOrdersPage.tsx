@@ -80,17 +80,21 @@ const MyOrdersPage: React.FC = () => {
   if (orders.length === 0) {
     return (
       <div
-        className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200"
-        style={{ backgroundColor: colors.background.primary }}
+        className="min-h-screen transition-colors duration-200 pt-20"
+        style={{ backgroundColor: colors.background.secondary }}
       >
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-6 sm:mb-8">
-            <h1
-              className="text-2xl sm:text-3xl font-bold"
-              style={{ color: colors.text.primary }}
-            >
-              My Orders
-            </h1>
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+          <div className="mb-4 sm:mb-8">
+            <div className="flex items-center justify-between flex-wrap gap-2">
+              <div>
+                <h1
+                  className="text-2xl sm:text-3xl font-bold transition-colors duration-200"
+                  style={{ color: colors.text.primary }}
+                >
+                  My Orders
+                </h1>
+              </div>
+            </div>
           </div>
           <EmptyState />
         </div>
@@ -101,31 +105,42 @@ const MyOrdersPage: React.FC = () => {
   // Main content
   return (
     <div
-      className="min-h-screen py-8 px-4 sm:px-6 lg:px-8 transition-colors duration-200 pt-20"
-      style={{ backgroundColor: colors.background.primary }}
+      className="min-h-screen transition-colors duration-200 pt-20"
+      style={{ backgroundColor: colors.background.secondary }}
     >
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
-          <h1
-            className="text-2xl sm:text-3xl font-bold"
-            style={{ color: colors.text.primary }}
-          >
-            My Orders
-          </h1>
-
-          <SortDropdown value={sortBy} onChange={handleSortChange} />
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+        {/* Page Header */}
+        <div className="mb-4 sm:mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h1
+                className="text-2xl sm:text-3xl font-bold transition-colors duration-200"
+                style={{ color: colors.text.primary }}
+              >
+                My Orders
+              </h1>
+            </div>
+            <SortDropdown value={sortBy} onChange={handleSortChange} />
+          </div>
         </div>
 
         {/* Orders List */}
         <div className="space-y-4">
           {orders.map((order: IOrder) => (
-            <OrderCard
+            <div
               key={order._id}
-              order={order}
-              onToggleExpansion={handleToggleExpansion}
-              onBuyAgain={() => handleBuyAgain(order)}
-            />
+              className="rounded-lg sm:rounded-xl border p-3 sm:p-6 transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.primary,
+                borderColor: colors.border.primary,
+              }}
+            >
+              <OrderCard
+                order={order}
+                onToggleExpansion={handleToggleExpansion}
+                onBuyAgain={() => handleBuyAgain(order)}
+              />
+            </div>
           ))}
         </div>
       </div>

@@ -207,7 +207,7 @@ export default function ReturnPolicy() {
 
   return (
     <div
-      className="min-h-screen font-sans antialiased"
+      className="min-h-screen font-sans antialiased mt-10"
       style={{
         background: `linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 50%, ${colors.background.tertiary} 100%)`,
         color: colors.text.primary,

@@ -13,11 +13,11 @@ const PrivacyPolicy: React.FC = () => {
 
     return (
         <div
-            className="py-14 px-4 sm:py-20 sm:px-6"
+            className="py-14 px-4 sm:py-20 sm:px-6 mt-7"
             style={{ backgroundColor: colors.background.secondary }}
         >
             {/* Header */}
-            <div className="max-w-5xl mx-auto text-center mb-14">
+            <div className="max-w-5xl mx-auto text-center mb-10">
                 <h1
                     className="text-5xl font-serif font-bold"
                     style={{ color: colors.text.primary }}

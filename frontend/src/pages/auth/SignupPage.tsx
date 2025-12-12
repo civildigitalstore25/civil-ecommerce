@@ -123,8 +123,10 @@ export default function SignupPage() {
           }}
         >
           <div
-            className="p-3 rounded-2xl shadow-md"
+            className="p-3 rounded-2xl shadow-md cursor-pointer"
             style={{ backgroundColor: colors.background.primary }}
+            onClick={() => navigate("/")}
+            title="Go to Home"
           >
             <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>

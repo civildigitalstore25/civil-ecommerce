@@ -180,17 +180,13 @@ function AppLayout() {
         <Route
           path="/products"
           element={
-            <AuthGuard>
               <AllProductsPage />
-            </AuthGuard>
           }
         />
         <Route
           path="/category"
           element={
-            <AuthGuard>
               <BrandCategoryListing />
-            </AuthGuard>
           }
         />
         <Route
@@ -210,33 +206,25 @@ function AppLayout() {
         <Route
           path="/autodesk"
           element={
-            <AuthGuard>
               <BrandSubcategoriesPage />
-            </AuthGuard>
           }
         />
         <Route
           path="/microsoft"
           element={
-            <AuthGuard>
               <BrandSubcategoriesPage />
-            </AuthGuard>
           }
         />
         <Route
           path="/adobe"
           element={
-            <AuthGuard>
               <BrandSubcategoriesPage />
-            </AuthGuard>
           }
         />
         <Route
           path="/antivirus"
           element={
-            <AuthGuard>
               <BrandSubcategoriesPage />
-            </AuthGuard>
           }
         />
 

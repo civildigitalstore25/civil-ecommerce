@@ -201,7 +201,7 @@ const CartPage: React.FC = () => {
                     e.currentTarget.style.color = colors.interactive.primary;
                   }}
                 >
-                  Browse more software →
+                  Browse more ebooks →
                 </button>
               </div>
             </div>

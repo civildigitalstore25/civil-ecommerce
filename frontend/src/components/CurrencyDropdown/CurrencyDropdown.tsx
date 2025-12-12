@@ -110,16 +110,18 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
               }}
               onMouseEnter={(e) => {
                 if (selectedCurrency !== currency.code) {
-                  e.currentTarget.style.backgroundColor = colors.background.tertiary;
+                  e.currentTarget.style.backgroundColor = colors.background.accent;
+                  e.currentTarget.style.color = colors.text.primary;
                 }
               }}
               onMouseLeave={(e) => {
                 if (selectedCurrency !== currency.code) {
                   e.currentTarget.style.backgroundColor = "transparent";
+                  e.currentTarget.style.color = colors.text.primary;
                 }
               }}
             >
-              <span className="text-base">{currency.flag}</span>
+              <span className="text-base" style={{ color: 'inherit', filter: 'none' }}>{currency.flag}</span>
               <span className="ml-2 text-sm">{currency.name}</span>
               {selectedCurrency === currency.code && (
                 <Check

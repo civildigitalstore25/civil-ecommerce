@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import { Controller } from "react-hook-form";
@@ -9,13 +10,14 @@ import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { forgotPasswordAPI } from "../../services/api";
-import logo from "../../assets/logo.png";
+const logo = "/softlogo.png";
 
 interface ForgotPasswordFormData {
   email: string;
 }
 
 export default function ForgotPasswordPage() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [sentEmail, setSentEmail] = useState("");
@@ -194,7 +196,7 @@ export default function ForgotPasswordPage() {
 
       <div
         className="w-full max-w-md rounded-2xl shadow-lg overflow-hidden"
-        style={{ backgroundColor: colors.background.secondary }}
+        style={{ backgroundColor: colors.background.secondary, border: `1px solid ${colors.border?.primary || '#e5e7eb'}` }}
       >
         {/* Header */}
         <div
@@ -204,10 +206,12 @@ export default function ForgotPasswordPage() {
           }}
         >
           <div
-            className="p-3 rounded-2xl shadow-md"
+            className="p-3 rounded-2xl shadow-md cursor-pointer"
             style={{ backgroundColor: colors.background.primary }}
+            onClick={() => navigate("/")}
+            title="Go to Home"
           >
-            <img src={logo} alt="Logo" className="h-12 w-12 object-contain" />
+            <img src={logo} alt="Logo" className="h-16 w-16 object-contain" />
           </div>
           <h1
             className="text-2xl font-bold mt-4"
@@ -263,6 +267,11 @@ export default function ForgotPasswordPage() {
                     value={field.value}
                     onChange={field.onChange}
                     placeholder="Enter your email address"
+                    style={{
+                      background: colors.background.primary,
+                      color: colors.text.primary,
+                      borderColor: colors.border.primary,
+                    }}
                   />
                 )}
               />
@@ -314,7 +323,7 @@ export default function ForgotPasswordPage() {
           {/* Additional Info */}
           <div
             className="mt-8 p-4 rounded-lg"
-            style={{ backgroundColor: colors.background.tertiary }}
+           
           >
             <h3
               className="text-sm font-medium mb-2"

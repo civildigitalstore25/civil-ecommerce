@@ -36,19 +36,19 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
 
   return (
     <section
-      className="w-full rounded-2xl md:rounded-3xl shadow-sm py-6 md:py-14 px-2 md:px-6 lg:px-20 transition-colors duration-200"
+      className="w-full py-6 md:py-14 transition-colors duration-200"
       style={{
         background: colors.background.primary,
       }}
     >
-      <div className="max-w-7xl mx-auto px-2 md:px-6">
+      <div className="w-full">
         {/* Heading */}
         <div className="text-center mb-4 md:mb-10">
           <h2
             className="text-xl md:text-3xl lg:text-4xl font-bold transition-colors duration-200"
             style={{ color: colors.text.primary }}
           >
-            Exclusive Offers 
+            Exclusive Offers
           </h2>
           <p
             className="mt-1 md:mt-3 text-xs md:text-lg transition-colors duration-200"
@@ -63,11 +63,11 @@ const MinimalOffers: React.FC<{ offers?: Offer[] }> = ({
           {offers.map((o) => (
             <div
               key={o.id}
-              className="group relative backdrop-blur-sm rounded-lg md:rounded-2xl p-2 md:p-6 flex flex-col justify-between overflow-hidden border transition-all duration-500 hover:scale-[1.02]"
+              className="group relative backdrop-blur-sm rounded-lg md:rounded-2xl p-2 md:p-6 flex flex-col justify-between overflow-hidden transition-all duration-500 hover:scale-[1.02]"
               style={{
                 background: colors.background.secondary,
-                borderColor: colors.border.primary,
                 boxShadow: `0 0 25px ${colors.interactive.primary}20`,
+                border: 'none',
               }}
             >
               {/* content */}
