@@ -6,11 +6,11 @@ import {
   FaInstagram,
   FaLinkedinIn,
   FaYoutube,
-  FaTwitter,
   FaPhoneAlt,
   FaClock,
   FaEnvelope,
 } from "react-icons/fa";
+import { SiX } from "react-icons/si";
 import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -426,11 +426,11 @@ const Footer = () => {
               icon: FaYoutube,
               hoverColor: "#dc2626",
             },
-            // {
-            //   href: "https://x.com/cDigitalstore",
-            //   icon: FaTwitter,
-            //   hoverColor: "#0ea5e9",
-            // },
+            {
+              href: "https://x.com/SoftZcart",
+              icon: SiX,
+              hoverColor: "#0ea5e9",
+            },
           ].map(({ href, icon: Icon, hoverColor }, i) => (
             <a
               key={i}

@@ -85,14 +85,14 @@ const HeroSection: React.FC = () => {
             className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
-            SoftzCart — Ebooks for Civil Engineers
+            SoftzCart — Ebooks for  Engineers
           </h1>
 
           <p
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Find curated ebooks, software manuals, and technical guides for civil
+            Find curated ebooks, software manuals, and technical guides for 
             engineering. SoftzCart offers authentic ebook content with instant
             delivery and lifetime support — only ebooks are shown here.
           </p>
