@@ -369,7 +369,7 @@ const ProductDetail: React.FC = () => {
 
       options.push({
         id: "lifetime",
-        label: "Lifetime License",
+        label: "Lifetime Access",
         priceINR: lifetimePrice,
         priceUSD: product.lifetimePriceUSD || lifetimePrice / 83,
         type: "lifetime",
@@ -974,7 +974,7 @@ const ProductDetail: React.FC = () => {
                   className="text-base lg:text-lg font-bold"
                   style={{ color: colors.text.primary }}
                 >
-                  Choose Your License
+                  Choose Your Access
                 </h3>
                 {selectedOption?.badge && (
                   <span

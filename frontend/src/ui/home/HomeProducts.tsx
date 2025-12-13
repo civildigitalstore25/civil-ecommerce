@@ -4,7 +4,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const HomeProducts: React.FC = () => {
   const { colors } = useAdminTheme();
-  
+
   return (
     <section
       // className="w-full py-6 md:py-14 transition-colors duration-200"
@@ -34,7 +34,7 @@ const HomeProducts: React.FC = () => {
               textShadow: `0 2px 8px ${colors.background.primary}80`,
             }}
           >
-            Featured Software
+            Top Ebooks
           </h2>
         </div>
 

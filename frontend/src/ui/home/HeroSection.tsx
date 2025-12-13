@@ -21,7 +21,7 @@ const features = [
   {
     icon: <CloudArrowDownIcon className="h-12 w-14 text-blue-600/80" />,
     value: "12,500+",
-    label: "Software Delivered",
+    label: "Downloads",
   },
   {
     icon: <ShieldCheckIcon className="h-12 w-14 text-emerald-600/80" />,
