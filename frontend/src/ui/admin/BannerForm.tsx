@@ -83,7 +83,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         style={{
           backgroundColor: colors.background.primary,
           color: colors.text.primary,
-          border: `2px solid ${isDark ? "#555" : "#FFD700"}`,
+          border: `2px solid ${isDark ? "#555" : "#49D6FE"}`,
           padding: "2rem",
         }}
       >
@@ -91,10 +91,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold relative pb-2">
             {banner ? "Edit Banner" : "Create Banner"}
-            <span
-              className="absolute left-0 bottom-0 w-12 h-1 rounded"
-              style={{ backgroundColor: "#FACC15" }}
-            ></span>
+            
           </h2>
           <button
             type="button"
