@@ -151,11 +151,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       <div
         className="p-4 rounded-md mb-4 text-sm leading-relaxed"
-        style={{
-          backgroundColor: colors.background.tertiary,
-          color: colors.text.secondary,
-          border: `1px solid ${colors.border.primary}`,
-        }}
+        
       >
         <strong style={{ color: colors.text.primary }}>
           Razorpay Payment Gateway
