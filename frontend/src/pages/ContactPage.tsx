@@ -214,9 +214,10 @@ const ContactPage: React.FC = () => {
                   >
                     Headquarters Address:
                   </h3>
-                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Softzcart</p>
-                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Thanjavur, Tamilnadu</p>
-                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>India</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Civil DigitalStore</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>D.No.2/308, Main Road</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Ellammal Colony, Pillaiyarpatti</p>
+                  <p style={{ color: theme === "light" ? "#0A2A6B" : colors.text.inverse }}>Thanjavur-613403</p>
                 </div>
               </div>
             </div>
