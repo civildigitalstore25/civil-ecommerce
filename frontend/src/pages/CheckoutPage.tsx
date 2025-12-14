@@ -547,7 +547,7 @@ const CheckoutPage: React.FC = () => {
       style={{ backgroundColor: colors.background.primary }}
     >
       <h1
-        className="text-3xl font-bold mb-8 text-center"
+        className="text-3xl font-bold mb-8 text-center mt-5"
         style={{ color: colors.text.primary }}
       >
         Checkout
