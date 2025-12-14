@@ -281,7 +281,13 @@ const BannerForm: React.FC<BannerFormProps> = ({
             <button
               type="submit"
               className="px-6 py-2 rounded-lg font-semibold transition"
-              style={{ backgroundColor: "#FACC15", color: "#111827" }}
+              style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
             >
               {banner ? "Update" : "Create"}
             </button>

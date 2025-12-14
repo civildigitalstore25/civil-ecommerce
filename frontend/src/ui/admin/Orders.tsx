@@ -350,10 +350,7 @@ const Orders: React.FC = () => {
           <table className="w-full">
             <thead
               className="border-b transition-colors duration-200"
-              style={{
-                backgroundColor: colors.background.tertiary,
-                borderBottomColor: colors.border.primary,
-              }}
+              
             >
               <tr>
                 <th
@@ -408,7 +405,7 @@ const Orders: React.FC = () => {
             </thead>
             <tbody
               className="divide-y transition-colors duration-200"
-              style={{ borderColor: colors.border.secondary }}
+               
             >
               {orders.length === 0 ? (
                 <tr>
@@ -498,7 +495,7 @@ const Orders: React.FC = () => {
                         }
                         className="border rounded px-2 py-1 text-sm transition-colors duration-200"
                         style={{
-                          backgroundColor: colors.background.tertiary,
+                          backgroundColor: 'transparent',
                           borderColor: colors.border.primary,
                           color: colors.text.primary,
                         }}
@@ -604,7 +601,7 @@ const Orders: React.FC = () => {
         >
           <div
             className="rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: colors.background.secondary }}
+            style={{ backgroundColor: '#fff' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -644,10 +641,7 @@ const Orders: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                   className="p-4 rounded-lg border"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                  }}
+                  
                 >
                   <p
                     className="text-sm mb-1"
@@ -671,10 +665,7 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                  }}
+                 
                 >
                   <p
                     className="text-sm mb-1"
@@ -696,10 +687,7 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                  }}
+                  
                 >
                   <p
                     className="text-sm mb-1"
@@ -726,10 +714,7 @@ const Orders: React.FC = () => {
               {/* Customer Information */}
               <div
                 className="p-5 rounded-lg border"
-                style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderColor: colors.border.primary,
-                }}
+                
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
@@ -837,10 +822,7 @@ const Orders: React.FC = () => {
               {/* Ordered Products */}
               <div
                 className="p-5 rounded-lg border"
-                style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderColor: colors.border.primary,
-                }}
+               
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
@@ -965,10 +947,7 @@ const Orders: React.FC = () => {
               {/* Order Summary */}
               <div
                 className="p-5 rounded-lg border"
-                style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderColor: colors.border.primary,
-                }}
+              
               >
                 <h4
                   className="text-lg font-semibold mb-4"
@@ -1023,10 +1002,7 @@ const Orders: React.FC = () => {
               {selectedOrder.notes && (
                 <div
                   className="p-5 rounded-lg border"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                  }}
+                 
                 >
                   <h4
                     className="text-lg font-semibold mb-2"
@@ -1044,10 +1020,7 @@ const Orders: React.FC = () => {
               {selectedOrder.razorpayPaymentId && (
                 <div
                   className="p-5 rounded-lg border"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                  }}
+                 
                 >
                   <h4
                     className="text-lg font-semibold mb-3"

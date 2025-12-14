@@ -22,6 +22,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Banner from "./Banner";
 import Coupons from "../admin/coupons/Coupons";
 import Reviews from "./Reviews";
+
 type MenuType =
   | "dashboard"
   | "users"
@@ -36,7 +37,7 @@ type MenuType =
 
 const AdminDashboardContent: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>("dashboard");
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
@@ -83,23 +84,19 @@ const AdminDashboardContent: React.FC = () => {
       {/* Header */}
       <div
         className="shadow-xl transition-colors duration-200"
-        style={{
-          backgroundColor: colors.background.tertiary,
-          borderBottomColor: colors.border.primary,
-          borderBottomWidth: "1px",
-        }}
+       
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
               <h1
-                className="text-2xl font-bold transition-colors duration-200"
+                className="text-2xl font-bold font-poppins transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
                 Admin Dashboard
               </h1>
               <p
-                className="transition-colors duration-200"
+                className="transition-colors duration-200 font-lato"
                 style={{ color: colors.text.secondary }}
               >
                 Manage your e-commerce platform
@@ -118,13 +115,13 @@ const AdminDashboardContent: React.FC = () => {
                 <button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id as MenuType)}
-                  className="flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap"
+                  className="flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap font-medium"
                   style={{
-                    borderBottomColor: isActive
-                      ? colors.interactive.primary
-                      : "transparent",
+                    borderBottom: isActive
+                      ? `2px solid ${colors.text.primary}`
+                      : `2px solid transparent`,
                     color: isActive
-                      ? colors.interactive.primary
+                      ? colors.text.primary
                       : colors.text.secondary,
                   }}
                   onMouseEnter={(e) => {
@@ -139,7 +136,7 @@ const AdminDashboardContent: React.FC = () => {
                   }}
                 >
                   <IconComponent className="w-5 h-5" />
-                  <span className="font-medium">{item.label}</span>
+                  <span>{item.label}</span>
                 </button>
               );
             })}
@@ -148,7 +145,19 @@ const AdminDashboardContent: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="px-6 py-8">{renderContent()}</div>
+      <div className="px-6 py-8">
+        <div
+          className="p-4 md:p-8 transition-colors duration-200 w-full"
+          style={{
+            background: colors.background.secondary,
+            border: 'none',
+            borderRadius: 0,
+            boxShadow: 'none',
+          }}
+        >
+          {renderContent()}
+        </div>
+      </div>
     </div>
   );
 };

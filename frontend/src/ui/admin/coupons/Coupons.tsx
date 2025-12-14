@@ -202,10 +202,12 @@ const Coupons: React.FC = () => {
           <button
             onClick={fetchCoupons}
             className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
-            style={{
-              backgroundColor: colors.background.tertiary,
-              color: colors.text.primary,
-              border: `1px solid ${colors.border.primary}`,
+           style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
             }}
             title="Refresh coupons"
           >
@@ -217,10 +219,13 @@ const Coupons: React.FC = () => {
               setEditingCoupon(null);
               setShowForm(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
-            style={{
-              backgroundColor: colors.interactive.primary,
+            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition border-2"
+           style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
               color: colors.text.inverse,
+              border: 'none',
             }}
           >
             <Plus size={16} />
@@ -329,7 +334,13 @@ const Coupons: React.FC = () => {
               >
                 <div
                   className="mb-3 md:mb-4 p-3 md:p-4 rounded-full"
-                  style={{ backgroundColor: colors.background.tertiary }}
+                  style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
                 >
                   <Plus
                     size={24}
@@ -351,24 +362,22 @@ const Coupons: React.FC = () => {
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
-                  className="flex items-center gap-2 px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md text-xs md:text-sm lg:text-base"
-                  style={{
-                    backgroundColor: colors.interactive.primary, // Using same color as Add Coupon button
-                    color: colors.text.inverse,
-                  }}
+                  className="flex items-center gap-2 px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md text-xs md:text-sm lg:text-base border-2"
+                 style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      colors.interactive.primaryHover ||
-                      colors.interactive.primary;
                     e.currentTarget.style.transform = "scale(1.05)";
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      colors.interactive.primary;
                     e.currentTarget.style.transform = "scale(1)";
                   }}
                 >
-                  <Plus size={14} className="md:w-4 md:h-4" />
+                  <Plus size={14} className="md:w-4 md:h-4" color={colors.interactive.primary} />
                   Create Coupon
                 </button>
               </div>

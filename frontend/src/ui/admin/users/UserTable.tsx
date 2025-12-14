@@ -16,7 +16,7 @@ const UserTable: React.FC<Props> = ({
   handleRoleChange,
   handleDeleteUser,
 }) => {
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const [editedRoles, setEditedRoles] = useState<Record<string, string>>({});
 
   const handleRoleSelect = (userId: string, newRole: string) => {
@@ -25,20 +25,18 @@ const UserTable: React.FC<Props> = ({
 
   return (
     <div
-      className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
+      className="overflow-hidden transition-colors duration-200"
       style={{
-        backgroundColor: colors.background.secondary,
-        borderColor: colors.border.primary,
+        backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
+        border: 'none',
+        boxShadow: 'none',
       }}
     >
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead
             className="border-b transition-colors duration-200"
-            style={{
-              backgroundColor: colors.background.tertiary,
-              borderBottomColor: colors.border.primary,
-            }}
+            
           >
             <tr>
               <th
@@ -100,7 +98,7 @@ const UserTable: React.FC<Props> = ({
                   <div className="flex items-center space-x-3">
                     <div
                       className="w-10 h-10 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: colors.background.tertiary }}
+                      
                     >
                       <span className="text-lg">👤</span>
                     </div>
@@ -130,15 +128,16 @@ const UserTable: React.FC<Props> = ({
                   <select
                     value={editedRoles[user._id] || user.role}
                     onChange={(e) => handleRoleSelect(user._id, e.target.value)}
-                    className="border rounded px-2 py-1 text-sm transition-colors duration-200"
+                    className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
                     style={{
-                      backgroundColor: colors.background.tertiary,
-                      borderColor: colors.border.primary,
-                      color: colors.text.primary,
+                      background: theme === "dark" ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)' : '#fff',
+                      color: theme === "dark" ? colors.text.inverse : colors.text.primary,
+                      border: theme === "dark" ? 'none' : `1px solid ${colors.border.primary}`,
+                      minWidth: 80,
                     }}
                   >
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
+                    <option value="user" style={{ color: theme === "dark" ? colors.text.inverse : colors.text.primary }}>User</option>
+                    <option value="admin" style={{ color: theme === "dark" ? colors.text.inverse : colors.text.primary }}>Admin</option>
                   </select>
                   {editedRoles[user._id] &&
                     editedRoles[user._id] !== user.role && (
@@ -149,11 +148,13 @@ const UserTable: React.FC<Props> = ({
                             editedRoles[user._id] as "user" | "admin",
                           )
                         }
-                        className="text-sm transition-colors duration-200"
+                        className="text-sm transition-colors duration-200 border rounded px-2 py-1 ml-1"
                         style={{
-                          color: colors.interactive.primary,
-                          backgroundColor: "transparent",
-                          border: "none",
+                          color: theme === "light" ? "#fff" : colors.text.primary,
+                          background: theme === "light"
+                            ? 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)'
+                            : colors.background.tertiary,
+                          borderColor: colors.interactive.primary,
                         }}
                       >
                         Update

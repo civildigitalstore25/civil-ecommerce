@@ -16,7 +16,7 @@ const BannerManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
 
   useEffect(() => {
     fetchBanners();
@@ -81,7 +81,10 @@ const BannerManagement: React.FC = () => {
   };
 
   return (
-    <div className="p-6 sm:p-8 min-h-screen bg-admin-bg-primary">
+    <div
+      className="p-6 sm:p-8 min-h-screen"
+      style={{ backgroundColor: colors.background.primary }}
+    >
       {showForm && (
         <BannerForm
           banner={editingBanner}
@@ -102,7 +105,10 @@ const BannerManagement: React.FC = () => {
           >
             Banner Management
           </h1>
-          <div className="w-20 h-1 bg-yellow-400 rounded-full"></div>
+          <div
+            className="w-20 h-1 rounded-full"
+            style={{ backgroundColor: colors.interactive.primary }}
+          ></div>
           <p
             className="mt-1 text-sm sm:text-base"
             style={{ color: colors.text.secondary }}
@@ -115,10 +121,16 @@ const BannerManagement: React.FC = () => {
             setEditingBanner(null);
             setShowForm(true);
           }}
-          className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center border-2 border-yellow-400"
-          style={buttonStyle("primary")}
+          className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center border-2"
+         style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
         >
-          <Plus size={20} /> Add Banner
+          <Plus size={20}  /> Add Banner
         </button>
       </div>
 
@@ -143,12 +155,18 @@ const BannerManagement: React.FC = () => {
             >
               <div
                 className="mb-3 md:mb-4 p-3 md:p-4 rounded-full"
-                style={{ backgroundColor: colors.background.tertiary }}
+                style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
               >
                 <Plus
                   size={24}
                   className="md:w-8 md:h-8"
-                  style={{ color: colors.text.secondary }}
+                  
                 />
               </div>
               <h2
@@ -157,7 +175,7 @@ const BannerManagement: React.FC = () => {
               >
                 No banners found
               </h2>
-              <p className="text-sm sm:text-base mb-4 max-w-md">
+              <p className="text-sm sm:text-base mb-4 max-w-md" style={{ color: colors.text.secondary }}>
                 Create your first banner to promote offers and updates to your
                 customers.
               </p>
@@ -166,8 +184,14 @@ const BannerManagement: React.FC = () => {
                   setEditingBanner(null);
                   setShowForm(true);
                 }}
-                style={buttonStyle("primary")}
-                className="rounded-lg px-4 py-2 font-medium hover:shadow-md transition border-2 border-yellow-400"
+               style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
+                className="rounded-lg px-4 py-2 font-medium hover:shadow-md transition border-2"
               >
                 Create Your First Banner
               </button>
@@ -181,7 +205,8 @@ const BannerManagement: React.FC = () => {
                 className="relative rounded-xl p-4 sm:p-6 flex flex-col justify-between gap-4 hover:shadow-2xl transition-transform transform hover:-translate-y-1"
                 style={{
                   ...cardStyle("secondary"),
-                  border: `1px solid ${colors.interactive.primary}`, // use primary color from theme
+                  border: `1px solid ${colors.interactive.primary}`,
+                  backgroundColor: colors.background.secondary,
                   transitionDelay: `${idx * 50}ms`,
                 }}
               >
@@ -201,9 +226,9 @@ const BannerManagement: React.FC = () => {
                   <span
                     className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
                     style={{
-                      backgroundColor: "#f4d96eff", // yellow
-                      color: "#000", // black text for visibility
-                      borderColor: "#fcd34d", // slightly darker yellow for border
+                      backgroundColor: colors.background.tertiary,
+                      color: colors.text.primary,
+                      borderColor: colors.border.primary,
                     }}
                   >
                     {b.status}
@@ -212,8 +237,8 @@ const BannerManagement: React.FC = () => {
 
                 {/* === Main Content === */}
                 <div className="flex flex-col gap-2 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-bold">{b.title}</h3>
-                  <p className="text-sm sm:text-base">
+                  <h3 className="text-lg sm:text-xl font-bold" style={{ color: colors.text.primary }}>{b.title}</h3>
+                  <p className="text-sm sm:text-base" style={{ color: colors.text.secondary }}>
                     {truncate(b.description, 100)}
                   </p>
 
@@ -222,19 +247,19 @@ const BannerManagement: React.FC = () => {
                     <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
                       <div className="flex items-center gap-1 sm:gap-2">
                         <Calendar size={14} />
-                        <span>
+                        <span style={{ color: colors.text.secondary }}>
                           {new Date(b.startDate).toLocaleDateString()} —{" "}
                           {new Date(b.endDate).toLocaleDateString()}
                         </span>
                       </div>
-                      <span className="hidden sm:inline">|</span>
+                      <span className="hidden sm:inline" style={{ color: colors.border.primary }}>|</span>
                       <div className="flex items-center gap-1 sm:gap-2">
                         <ExternalLink size={14} />
-                        <span className="font-semibold">
+                        <span className="font-semibold" style={{ color: colors.text.secondary }}>
                           Priority: {b.priority}/10
                         </span>
                       </div>
-                      <span className="hidden sm:inline">|</span>
+                      <span className="hidden sm:inline" style={{ color: colors.border.primary }}>|</span>
                       <div className="flex items-center gap-1 sm:gap-2">
                         <span
                           className="font-medium"
