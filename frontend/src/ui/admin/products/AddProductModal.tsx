@@ -101,7 +101,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   onSave,
   product,
 }) => {
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const [newProduct, setNewProduct] = useState({
     name: "",
     version: "",
@@ -1216,10 +1216,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   <div
                     key={index}
                     className="p-4 border rounded-lg transition-colors duration-200"
-                    style={{
-                      borderColor: colors.border.primary,
-                      backgroundColor: colors.background.tertiary,
-                    }}
+                   
                   >
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
@@ -1616,7 +1613,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   <div
                     key={index}
                     className="p-4 rounded-lg transition-colors duration-200"
-                    style={{ backgroundColor: colors.background.tertiary }}
+                   
                   >
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                       <div>
@@ -1783,11 +1780,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   }
                   placeholder="https://example.com/image.jpg"
                   className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                  style={{
-                    backgroundColor: colors.background.tertiary,
-                    borderColor: colors.border.primary,
-                    color: colors.text.primary,
-                  }}
+                 
                   onFocus={(e) => {
                     e.target.style.borderColor = colors.interactive.primary;
                   }}
@@ -1823,11 +1816,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         }
                         placeholder={`Image ${index + 1} URL - https://example.com/image${index + 1}.jpg`}
                         className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.tertiary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
+                       
                         onFocus={(e) => {
                           e.target.style.borderColor =
                             colors.interactive.primary;
@@ -2088,9 +2077,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               type="submit"
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
               style={{
-                backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse,
-              }}
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
             >
               <Save className="h-4 w-4" />
               {product ? "Update Product" : "Add Product"}
@@ -2100,9 +2092,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               onClick={onClose}
               className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
               style={{
-                color: colors.text.secondary,
-                borderColor: colors.border.primary,
-                backgroundColor: "transparent",
+                background: theme === "dark"
+                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
               }}
             >
               Cancel

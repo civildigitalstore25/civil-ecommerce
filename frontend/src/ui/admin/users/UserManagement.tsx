@@ -10,7 +10,7 @@ import AddUserModal from "./AddUserModal";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const UserManagement: React.FC = () => {
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -151,74 +151,86 @@ const UserManagement: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div
+      className="space-y-6 w-full transition-colors duration-200"
+      style={{
+        background: colors.background.secondary,
+        boxShadow: 'none',
+        padding: 0,
+      }}
+    >
       {/* Header with Add User Button */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h2
-            className="text-2xl font-bold"
+            className="text-2xl font-bold font-poppins"
             style={{ color: colors.text.primary }}
           >
             User Management
           </h2>
-          <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
+          <p className="text-sm mt-1 font-lato" style={{ color: colors.text.secondary }}>
             Manage user accounts and permissions
           </p>
         </div>
-        <button
-          className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2"
-          style={{
-            backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse,
-          }}
-          onClick={() => setIsAddUserModalOpen(true)}
-        >
-          <Plus className="h-4 w-4" />
-          Add User
-        </button>
-        <div className="relative ml-3">
+        <div className="flex gap-2 items-center">
           <button
-            className="px-4 py-2 rounded-lg flex items-center font-medium transition-colors duration-200 gap-2 border"
+            className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
             style={{
-              backgroundColor: colors.background.secondary,
-              color: colors.text.primary,
-              border: `1px solid ${colors.interactive.primary}`,
-              minWidth: 110,
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
             }}
-            onClick={() => setExportOpen((v) => !v)}
-            type="button"
+            onClick={() => setIsAddUserModalOpen(true)}
           >
-            Export <ChevronDown className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
+            Add User
           </button>
-          {exportOpen && (
-            <div
-              className="absolute right-0 mt-2 w-44 rounded-lg shadow-lg z-10"
-              style={{ background: colors.background.secondary, border: `1px solid ${colors.border.primary}` }}
+          <div className="relative">
+            <button
+              className="px-4 py-2 rounded-lg flex items-center font-medium transition-colors duration-200 gap-2 border"
+              style={{
+                background: colors.background.primary,
+                color: colors.text.primary,
+                border: `1px solid ${colors.interactive.primary}`,
+                minWidth: 110,
+              }}
+              onClick={() => setExportOpen((v) => !v)}
+              type="button"
             >
-              <button
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
-                style={{ color: colors.text.primary }}
-                onClick={async () => {
-                  await handleExportExcel();
-                  setExportOpen(false);
-                }}
-                type="button"
+              Export <ChevronDown className="h-4 w-4" />
+            </button>
+            {exportOpen && (
+              <div
+                className="absolute right-0 mt-2 w-44 rounded-lg shadow-lg z-10"
+                style={{ background: colors.background.secondary, border: `1px solid ${colors.border.primary}` }}
               >
-                Export to Excel
-              </button>
-              <button
-                className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
-                style={{ color: colors.text.primary }}
-                onClick={async () => {
-                  await handleExportJSON();
-                  setExportOpen(false);
-                }}
-                type="button"
-              >
-                Export to JSON
-              </button>
-            </div>
-          )}
+                <button
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-t-lg"
+                  style={{ color: colors.text.primary }}
+                  onClick={async () => {
+                    await handleExportExcel();
+                    setExportOpen(false);
+                  }}
+                  type="button"
+                >
+                  Export to Excel
+                </button>
+                <button
+                  className="block w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-b-lg"
+                  style={{ color: colors.text.primary }}
+                  onClick={async () => {
+                    await handleExportJSON();
+                    setExportOpen(false);
+                  }}
+                  type="button"
+                >
+                  Export to JSON
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

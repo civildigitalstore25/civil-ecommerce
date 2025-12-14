@@ -83,7 +83,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         style={{
           backgroundColor: colors.background.primary,
           color: colors.text.primary,
-          border: `2px solid ${isDark ? "#555" : "#FFD700"}`,
+          border: `2px solid ${isDark ? "#555" : "#49D6FE"}`,
           padding: "2rem",
         }}
       >
@@ -91,10 +91,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold relative pb-2">
             {banner ? "Edit Banner" : "Create Banner"}
-            <span
-              className="absolute left-0 bottom-0 w-12 h-1 rounded"
-              style={{ backgroundColor: "#FACC15" }}
-            ></span>
+            
           </h2>
           <button
             type="button"
@@ -281,7 +278,13 @@ const BannerForm: React.FC<BannerFormProps> = ({
             <button
               type="submit"
               className="px-6 py-2 rounded-lg font-semibold transition"
-              style={{ backgroundColor: "#FACC15", color: "#111827" }}
+              style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
             >
               {banner ? "Update" : "Create"}
             </button>

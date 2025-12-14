@@ -91,7 +91,7 @@ const Products: React.FC = () => {
         Swal.fire("Error", "Failed to export products", "error");
       }
     };
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const [viewMode, setViewMode] = useState("list");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -632,9 +632,12 @@ const Products: React.FC = () => {
             <button
               className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
               style={{
-                backgroundColor: colors.interactive.primary,
-                color: colors.text.inverse,
-              }}
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor =
                   colors.interactive.primaryHover)
@@ -670,10 +673,9 @@ const Products: React.FC = () => {
 
         {!isLoading && !error && (
           <div
-            className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
+            className="overflow-hidden transition-colors duration-200"
             style={{
               backgroundColor: colors.background.secondary,
-              borderColor: colors.border.primary,
             }}
           >
             <div className="overflow-x-auto">
@@ -681,7 +683,6 @@ const Products: React.FC = () => {
                 <thead
                   className="border-b transition-colors duration-200"
                   style={{
-                    backgroundColor: colors.background.tertiary,
                     borderBottomColor: colors.border.primary,
                   }}
                 >
@@ -824,10 +825,7 @@ const Products: React.FC = () => {
                       <td className="py-4 px-4">
                         <span
                           className="inline-block text-xs px-2 py-1 rounded-full font-medium"
-                          style={{
-                            backgroundColor: colors.interactive.primary,
-                            color: colors.text.inverse,
-                          }}
+                         
                         >
                           {product.category}
                         </span>

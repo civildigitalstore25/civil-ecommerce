@@ -233,10 +233,7 @@ const Reviews: React.FC = () => {
           <table className="w-full">
             <thead
               className="border-b transition-colors duration-200"
-              style={{
-                backgroundColor: colors.background.tertiary,
-                borderBottomColor: colors.border.primary,
-              }}
+              
             >
               <tr>
                 <th
@@ -308,9 +305,7 @@ const Reviews: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{
-                            backgroundColor: colors.background.tertiary,
-                          }}
+                         
                         >
                           <span className="text-lg">👤</span>
                         </div>
