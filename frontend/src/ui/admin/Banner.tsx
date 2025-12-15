@@ -11,7 +11,7 @@ const truncate = (s: string, n = 120) =>
   s && s.length > n ? s.slice(0, n).trim() + "..." : s;
 
 const BannerManagement: React.FC = () => {
-  const { cardStyle, buttonStyle } = useAdminThemeStyles();
+  const { cardStyle} = useAdminThemeStyles();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);

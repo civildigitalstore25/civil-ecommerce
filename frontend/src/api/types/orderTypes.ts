@@ -15,6 +15,7 @@ export interface IOrderItem {
   quantity: number;
   price: number;
   image?: string;
+  driveLink?: string; // Google Drive download link
 }
 
 export interface IOrder {

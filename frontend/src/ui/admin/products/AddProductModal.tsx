@@ -126,6 +126,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     additionalImages: [""] as string[],
     videoUrl: "",
     activationVideoUrl: "",
+    driveLink: "",
     status: "active",
     isBestSeller: false,
     faqs: [] as FAQ[],
@@ -225,6 +226,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               : [""],
           videoUrl: product.videoUrl || "",
           activationVideoUrl: product.activationVideoUrl || "",
+          driveLink: product.driveLink || "",
           status: product.status || "active",
           isBestSeller: product.isBestSeller || false,
           faqs: product.faqs || [],
@@ -260,6 +262,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           additionalImages: [""],
           videoUrl: "",
           activationVideoUrl: "",
+          driveLink: "",
           status: "active",
           isBestSeller: false,
           faqs: [],
@@ -610,6 +613,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         // Videos
         videoUrl: newProduct.videoUrl,
         activationVideoUrl: newProduct.activationVideoUrl,
+
+        // Drive Link for downloadable product
+        driveLink: newProduct.driveLink,
 
         // Status and flags
         status: newProduct.status,
@@ -1927,6 +1933,41 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     demonstration
                   </p>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Google Drive Download Link (Optional)
+                </label>
+                <input
+                  type="url"
+                  value={newProduct.driveLink}
+                  onChange={(e) =>
+                    handleInputChange("driveLink", e.target.value)
+                  }
+                  placeholder="https://drive.google.com/file/d/..."
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = colors.interactive.primary;
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = colors.border.primary;
+                  }}
+                />
+                <p
+                  className="text-sm"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Google Drive shareable link for the downloadable product file. Users will see a download button after purchase.
+                </p>
               </div>
             </div>
           </div>

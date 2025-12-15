@@ -16,6 +16,7 @@ import bannerRoutes from "./routes/bannerRoutes";
 import couponRoutes from './routes/couponRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import reviewRoutes from "./routes/reviewRoutes";
+import downloadRoutes from './routes/downloadRoutes';
 
 const app = express();
 
@@ -54,8 +55,8 @@ app.use(
   })
 );
 
-// Handle preflight requests explicitly
-app.options(/.*/, cors());
+// Handle preflight requests - this is already handled by the cors middleware
+// app.options(/.*/, cors()); // Removed - causing route parsing error
 app.set('trust proxy', true);
 
 app.use(express.json());
@@ -84,6 +85,7 @@ app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/download', downloadRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 

@@ -158,6 +158,7 @@ const CheckoutPage: React.FC = () => {
             image: item.product?.image || null,
             version: item.product?.version || null,
             pricingPlan: item.licenseType || null,
+            driveLink: item.product?.driveLink || null, // Include download link
           };
 
           console.log('✅ Created Order Item:', orderItem);

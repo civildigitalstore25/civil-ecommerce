@@ -100,6 +100,20 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
             {/* Order Summary Card */}
             <OrderSummary order={order} />
           </div>
+
+          {/* Debug: Show order items data */}
+          {/* {process.env.NODE_ENV === 'development' && (
+            <div className="mt-4 p-2 text-xs" style={{
+                background: 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
+              }}>
+              Debug: Order has {order.items.length} item(s) | 
+              First item driveLink: {order.items[0]?.driveLink ? '✓ Present' : '✗ Missing'} | 
+              Payment: {order.paymentStatus} | 
+              Status: {order.orderStatus}
+            </div>
+          )} */}
         </div>
       </div>
     );

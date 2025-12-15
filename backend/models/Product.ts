@@ -61,6 +61,7 @@ export interface IProduct extends Document {
   additionalImages?: string[];
   videoUrl?: string;
   activationVideoUrl?: string;
+  driveLink?: string; // Google Drive link for downloadable product
   status?: 'active' | 'inactive' | 'draft';
   isBestSeller?: boolean;
   faqs?: FAQ[];
@@ -130,6 +131,7 @@ const productSchema: Schema = new Schema(
     additionalImages: [{ type: String }],
     videoUrl: { type: String },
     activationVideoUrl: { type: String },
+    driveLink: { type: String }, // Google Drive link for downloadable product
     status: {
       type: String,
       enum: ['active', 'inactive', 'draft'],

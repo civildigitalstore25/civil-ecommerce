@@ -66,6 +66,7 @@ export interface Product {
   additionalImages?: string[];
   videoUrl?: string;
   activationVideoUrl?: string;
+  driveLink?: string; // Google Drive download link
   status?: "active" | "inactive" | "draft";
   isBestSeller?: boolean;
   faqs?: FAQ[];

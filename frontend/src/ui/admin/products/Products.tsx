@@ -166,6 +166,8 @@ const Products: React.FC = () => {
   });
 
   const handleSaveProduct = (productData: any) => {
+    console.log('💾 Frontend - Saving product with driveLink:', productData.driveLink || 'NOT PROVIDED');
+    
     if (editingProduct && editingProduct._id) {
       updateProductMutation.mutate(
         {

@@ -6,6 +6,11 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
   try {
     const productData = { ...req.body };
 
+    console.log('🆕 Creating product with data:', {
+      name: productData.name,
+      driveLink: productData.driveLink || 'NOT PROVIDED'
+    });
+
     if (productData.brand && !productData.company) {
       productData.company = productData.brand;
     }
@@ -26,6 +31,9 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 
     const product = new Product(productData);
     const savedProduct = await product.save();
+    
+    console.log('✅ Product saved with driveLink:', savedProduct.driveLink || 'NONE');
+    
     res.status(201).json(savedProduct);
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -337,8 +345,21 @@ export const getProductById = async (req: Request, res: Response): Promise<void>
 
 // Update product by id
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
+  console.log('🚀🚀🚀 UPDATE PRODUCT CALLED 🚀🚀🚀');
+  console.log('Product ID:', req.params.id);
+  console.log('Request body keys:', Object.keys(req.body));
+  console.log('Has driveLink in body:', 'driveLink' in req.body);
+  console.log('DriveLink value:', req.body.driveLink);
+  
   try {
     const productData = { ...req.body };
+
+    console.log('📝 Updating product with data:', {
+      id: req.params.id,
+      name: productData.name,
+      driveLink: productData.driveLink || 'NOT PROVIDED',
+      hasOwnProperty: Object.prototype.hasOwnProperty.call(productData, 'driveLink')
+    });
 
     if (productData.brand && !productData.company) {
       productData.company = productData.brand;
@@ -358,16 +379,34 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
       productData.priceLifetime = Number(productData.lifetimePrice);
     }
 
-    const updatedProduct = await Product.findByIdAndUpdate(req.params.id, productData, {
-      new: true,
-      runValidators: true,
-    });
+    // Explicitly ensure driveLink is included
+    if (productData.driveLink !== undefined) {
+      console.log('✅ driveLink is present in productData:', productData.driveLink);
+    } else {
+      console.log('⚠️ driveLink is undefined in productData');
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id, 
+      productData, 
+      {
+        new: true,
+        runValidators: true,
+        strict: false // Allow fields not in schema (in case of schema sync issues)
+      }
+    );
+    
     if (!updatedProduct) {
       res.status(404).json({ message: 'Product not found' });
       return;
     }
+    
+    console.log('✅ Product updated with driveLink:', updatedProduct.driveLink || 'NONE');
+    console.log('📦 Full updated product:', JSON.stringify(updatedProduct.toObject(), null, 2));
+    
     res.json(updatedProduct);
   } catch (error: any) {
+    console.error('❌ Update product error:', error);
     res.status(400).json({ message: error.message });
   }
 };

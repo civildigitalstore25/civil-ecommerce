@@ -134,9 +134,15 @@ export const useUpdateProduct = () => {
       id: string;
       updatedProduct: Product;
     }) => {
-      console.log("Updating product:", id, updatedProduct);
+      console.log("🔍 API - Updating product with ID:", id);
+      console.log("🔍 API - driveLink in payload:", updatedProduct.driveLink || 'NOT PROVIDED');
+      console.log("🔍 API - Full product payload:", JSON.stringify(updatedProduct, null, 2));
+      
       const { data } = await apiClient.put(`/${id}`, updatedProduct);
-      console.log("Product updated successfully:", data);
+      
+      console.log("✅ API - Product updated, response:", data);
+      console.log("✅ API - driveLink in response:", data.driveLink || 'NOT IN RESPONSE');
+      
       return data;
     },
     onSuccess: () => {

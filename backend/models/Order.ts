@@ -8,6 +8,7 @@ export interface IOrderItem {
   image?: string;
   version?: string;
   pricingPlan?: string;
+  driveLink?: string; // Google Drive download link
 }
 
 export interface IShippingAddress {
@@ -65,7 +66,8 @@ const OrderSchema = new Schema<IOrder>({
     price: { type: Number, required: true, min: 0 },
     image: { type: String },
     version: { type: String },
-    pricingPlan: { type: String }
+    pricingPlan: { type: String },
+    driveLink: { type: String } // Google Drive download link
   }],
   subtotal: {
     type: Number,

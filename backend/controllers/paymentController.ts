@@ -82,6 +82,30 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    // Fetch products to get driveLinks
+    const Product = (await import('../models/Product')).default;
+    const productIds = items.map((item: any) => item.productId);
+    console.log('🔍 Creating order - Fetching products for IDs:', productIds);
+    const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
+    console.log('📦 Products found with driveLinks:', products.map(p => ({ 
+      id: p._id, 
+      name: (p as any).name, 
+      driveLink: p.driveLink ? 'present' : 'missing' 
+    })));
+    
+    // Create a map for quick lookup
+    const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
+    
+    // Add driveLink to each item
+    const itemsWithDriveLink = items.map((item: any) => {
+      const driveLink = productMap.get(item.productId) || null;
+      console.log(`📎 Adding driveLink to order item: ${item.name} - ${driveLink ? 'has driveLink' : 'NO driveLink'}`);
+      return {
+        ...item,
+        driveLink
+      };
+    });
+
     // Generate order ID
     const orderId = generateOrderId();
 
@@ -114,7 +138,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       userId: user._id,
       orderId,
       orderNumber,
-      items,
+      items: itemsWithDriveLink,
       subtotal,
       discount,
       shippingCharges,
@@ -417,12 +441,47 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
     const total = await Order.countDocuments(query);
 
-    console.log(`📦 Found ${orders.length} orders for user ${user._id}`);
-    console.log('Orders:', orders.map(o => ({ orderId: o.orderId, orderNumber: o.orderNumber, userId: o.userId })));
+    // Populate driveLinks for orders that don't have them
+    const Product = (await import('../models/Product')).default;
+    const ordersWithDriveLinks = await Promise.all(
+      orders.map(async (order) => {
+        const itemsWithDriveLinks = await Promise.all(
+          order.items.map(async (item: any) => {
+            console.log(`🔍 Checking item: ${item.name}, productId: ${item.productId}, existing driveLink: ${item.driveLink}`);
+            
+            // If item already has driveLink, keep it
+            if (item.driveLink) {
+              console.log(`✓ Item already has driveLink: ${item.driveLink}`);
+              return item;
+            }
+            
+            // Otherwise, fetch from Product
+            const product = await Product.findById(item.productId).select('driveLink').lean();
+            console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
+            
+            return {
+              ...item,
+              driveLink: product?.driveLink || null
+            };
+          })
+        );
+        return {
+          ...order,
+          items: itemsWithDriveLinks
+        };
+      })
+    );
+
+    console.log(`📦 Found ${ordersWithDriveLinks.length} orders for user ${user._id}`);
+    console.log('First order items:', ordersWithDriveLinks[0]?.items?.map((i: any) => ({ 
+      name: i.name, 
+      driveLink: i.driveLink ? 'present' : 'missing',
+      fullDriveLink: i.driveLink
+    })));
 
     res.status(200).json({
       success: true,
-      data: orders,
+      data: ordersWithDriveLinks,
       pagination: {
         currentPage: Number(page),
         totalPages: Math.ceil(total / Number(limit)),
