@@ -3,8 +3,6 @@ import {
   Info,
   FileText,
   RefreshCcw,
-  Package,
-  Gift,
   Mail,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -40,9 +38,15 @@ const sections = [
         style={{ color: colors.text.secondary }}
       >
         <li>
-          <b>Company:</b> Softzcart DigitalStore.
+          <b>Company:</b> Softzcart.
         </li>
         <li>
+          <p
+            className="leading-relaxed mt-2"
+            style={{ color: colors.text.secondary }}
+          >
+            If approved, refunds will be credited to your source account within <b>7-10 business days</b>.
+          </p>
           <b>Goods:</b> The products available for sale.
         </li>
         <li>
@@ -113,61 +117,8 @@ const sections = [
       </>
     ),
   },
-  {
-    icon: Package,
-    title: "Conditions for Returns",
-    content: (colors: any) => (
-      <>
-        <p style={{ color: colors.text.secondary }}>
-          For goods to be eligible for a return:
-        </p>
-        <ul
-          className="list-disc pl-6 space-y-1 mt-2"
-          style={{ color: colors.text.secondary }}
-        >
-          <li>They were purchased within the last 7 days.</li>
-          <li>They are in the original packaging.</li>
-        </ul>
-        <p
-          className="mt-3 font-semibold"
-          style={{ color: colors.text.secondary }}
-        >
-          The following items cannot be returned:
-        </p>
-        <ul
-          className="list-disc pl-6 space-y-1 mt-1"
-          style={{ color: colors.text.secondary }}
-        >
-          <li>Customized goods or made-to-order products.</li>
-          <li>Digital items once downloaded.</li>
-          <li>
-            Goods not suitable for return due to hygiene reasons and unsealed
-            after delivery.
-          </li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    icon: Gift,
-    title: "Gifts",
-    content: (colors: any) => (
-      <>
-        <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
-          If the goods were marked as a gift and shipped directly to you, you
-          will receive a gift credit for the value of your return. Once the
-          returned item is received, a gift certificate will be sent.
-        </p>
-        <p
-          className="leading-relaxed mt-2"
-          style={{ color: colors.text.secondary }}
-        >
-          If the goods were not marked as a gift, or shipped to the gift giver,
-          the refund will be issued to the original purchaser.
-        </p>
-      </>
-    ),
-  },
+
+
   {
     icon: Mail,
     title: "Contact Us",

@@ -152,6 +152,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div
         className="p-4 rounded-md mb-4 text-sm leading-relaxed"
        
+
       >
         <strong style={{ color: colors.text.primary }}>
           Razorpay Payment Gateway
@@ -183,6 +184,9 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         className={`w-full py-3 text-lg transition duration-300 ease-in-out 
                    bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
                    hover:shadow-lg ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
+        disabled={isProcessing}
+                   bg-yellow-500 text-white rounded-lg shadow-md 
+                   hover:bg-yellow-600`}
         disabled={isProcessing}
       >
         {isProcessing ? (
