@@ -43,7 +43,6 @@ import AboutPage from "./pages/AboutPage";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import SuperAdminAdminsPage from "./pages/SuperAdminAdminsPage";
 
-import AdminMenu from "./components/AdminMenu";
 import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
 
 const queryClient = new QueryClient();
