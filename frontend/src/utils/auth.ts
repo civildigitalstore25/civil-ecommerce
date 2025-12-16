@@ -51,11 +51,12 @@ export const isAuthenticated = (): boolean => {
 };
 
 export const isAdmin = (user?: any): boolean => {
-  // Check if user object is provided and has admin role
-  if (user && user.role === "admin") {
+  // Check if user object is provided and has admin or superadmin role
+  if (user && (user.role === "admin" || user.role === "superadmin")) {
     return true;
   }
 
   // Fallback to localStorage check
-  return localStorage.getItem("role") === "admin";
+  const role = localStorage.getItem("role");
+  return role === "admin" || role === "superadmin";
 };

@@ -75,13 +75,17 @@ export const authenticate = async (
  * Admin authorization middleware
  * Must be used after authenticate middleware
  */
+
+/**
+ * Admin or Superadmin authorization middleware
+ * Must be used after authenticate middleware
+ */
 export const requireAdmin = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
   const user = (req as any).user as IUser;
-  
   if (!user) {
     res.status(401).json({ 
       success: false,
@@ -89,15 +93,40 @@ export const requireAdmin = (
     });
     return;
   }
-
-  if (user.role !== 'admin') {
+  if (user.role !== 'admin' && user.role !== 'superadmin') {
     res.status(403).json({ 
       success: false,
       message: 'Admin access required. Insufficient permissions.' 
     });
     return;
   }
-  
+  next();
+};
+
+/**
+ * Superadmin-only authorization middleware
+ * Must be used after authenticate middleware
+ */
+export const requireSuperadmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  const user = (req as any).user as IUser;
+  if (!user) {
+    res.status(401).json({ 
+      success: false,
+      message: 'Authentication required' 
+    });
+    return;
+  }
+  if (user.role !== 'superadmin') {
+    res.status(403).json({ 
+      success: false,
+      message: 'Superadmin access required. Insufficient permissions.' 
+    });
+    return;
+  }
   next();
 };
 

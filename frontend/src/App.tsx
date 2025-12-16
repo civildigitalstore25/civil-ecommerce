@@ -40,6 +40,11 @@ import MyOrdersPage from "./pages/MyOrdersPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
 import AboutPage from "./pages/AboutPage";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import SuperAdminAdminsPage from "./pages/SuperAdminAdminsPage";
+
+import AdminMenu from "./components/AdminMenu";
+import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
 
 const queryClient = new QueryClient();
 
@@ -65,7 +70,12 @@ function AppLayout() {
   return (
     <>
       {!shouldHideHeader && <Header />}
+      {/* Removed AdminMenu component as per request - no create admin menu needed below header */}
       <Routes>
+          {/* Superadmin routes */}
+          <Route path="/superadmin" element={<SuperAdminDashboard />} />
+          <Route path="/superadmin/admins" element={<SuperAdminAdminsPage />} />
+          <Route path="/superadmin/create-admin" element={<SuperAdminCreateAdminPage />} />
         <Route
           path="/signup"
           element={

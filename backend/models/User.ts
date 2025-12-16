@@ -5,7 +5,7 @@ export interface IUser extends Document {
   password?: string;
   fullName: string;
   phoneNumber?: string;
-  role: 'admin' | 'user';
+  role: 'superadmin' | 'admin' | 'user';
   googleId?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
@@ -36,7 +36,7 @@ const UserSchema = new Schema<IUser>({
   },
   role: {
     type: String,
-    enum: ['admin', 'user'],
+    enum: ['superadmin', 'admin', 'user'],
     default: 'user',
   },
   googleId: {

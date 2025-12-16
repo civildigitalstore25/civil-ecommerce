@@ -22,7 +22,7 @@ export interface User {
   email: string;
   fullName?: string;
   phoneNumber?: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "superadmin";
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -17,6 +17,7 @@ import couponRoutes from './routes/couponRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import reviewRoutes from "./routes/reviewRoutes";
 import downloadRoutes from './routes/downloadRoutes';
+import superadminRoutes from './routes/superadminRoutes';
 
 const app = express();
 
@@ -85,7 +86,9 @@ app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use('/api/payments', paymentRoutes);
+
 app.use('/api/download', downloadRoutes);
+app.use('/api/superadmin', superadminRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 

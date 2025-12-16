@@ -18,10 +18,13 @@ import Companies from "./Companies";
 import Orders from "./Orders";
 
 import UserManagement from "./users/UserManagement";
+
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Banner from "./Banner";
 import Coupons from "../admin/coupons/Coupons";
 import Reviews from "./Reviews";
+import SuperAdminAdminManagement from "./SuperAdminAdminManagement";
+import { useAuth } from "../../api/auth";
 
 type MenuType =
   | "dashboard"
@@ -33,12 +36,19 @@ type MenuType =
   | "settings"
   | "banner"
   | "coupons"
-  | "reviews";
+  | "reviews"
+  | "admin-management";
+
 
 const AdminDashboardContent: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>("dashboard");
   const { colors } = useAdminTheme();
+  const { user, isLoading } = useAuth();
 
+  // Show nothing until user is loaded
+  if (isLoading) return null;
+
+  // Build menu items, add admin-management only for superadmin
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
     { id: "users", label: "Users", icon: Users },
@@ -49,6 +59,10 @@ const AdminDashboardContent: React.FC = () => {
     { id: "reviews", label: "Reviews", icon: MessageSquare },
     { id: "banner", label: "Banner", icon: Image },
     { id: "coupons", label: "Coupons", icon: TicketPercent },
+    // Only superadmin sees Admin Management menu
+    ...(user?.role === "superadmin"
+      ? [{ id: "admin-management", label: "Admin Management", icon: Users }]
+      : []),
   ];
 
   const renderContent = () => {
@@ -71,6 +85,8 @@ const AdminDashboardContent: React.FC = () => {
         return <Banner />;
       case "coupons":
         return <Coupons />;
+      case "admin-management":
+        return user?.role === "superadmin" ? <SuperAdminAdminManagement /> : null;
       default:
         return <Dashboard />;
     }
