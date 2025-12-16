@@ -481,10 +481,13 @@ const Footer = () => {
         <button
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
-          style={{
-            backgroundColor: colors.interactive.primary,
-            color: colors.background.primary,
-          }}
+         style={{
+              background: theme === "dark"
+                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              color: colors.text.inverse,
+              border: 'none',
+            }}
           aria-label="Scroll to top"
         >
           <ArrowUp className="w-6 h-6" />
