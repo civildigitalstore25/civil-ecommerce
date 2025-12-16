@@ -37,7 +37,7 @@ type MenuType =
 
 const AdminDashboardContent: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<MenuType>("dashboard");
-  const { colors, theme } = useAdminTheme();
+  const { colors } = useAdminTheme();
 
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
