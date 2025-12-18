@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
@@ -141,6 +141,32 @@ const ProductDetail: React.FC = () => {
   // Enquiry modal state
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [enquiryMessage, setEnquiryMessage] = useState("");
+  const [isCustomMessage, setIsCustomMessage] = useState(false);
+  const enquiryTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // Open enquiry modal with default product message
+  const openEnquiryModal = () => {
+    const productName = product?.name || "this product";
+    const productPrice = selectedOption
+      ? formatPriceWithSymbol(selectedOption.priceINR, selectedOption.priceUSD)
+      : "";
+    const defaultMsg = `Hi, I'm interested in ${productName}${productPrice ? ` (${productPrice})` : ""}.\n\nI would like to know more about the product and pricing.\n\n`;
+    setEnquiryMessage(defaultMsg);
+    setIsCustomMessage(false);
+    setShowEnquiryModal(true);
+  };
+  const closeEnquiryModal = () => {
+    setShowEnquiryModal(false);
+    setIsCustomMessage(false);
+    setEnquiryMessage("");
+  };
+
+  useEffect(() => {
+    if (isCustomMessage) {
+      // focus textarea when custom message mode is enabled
+      setTimeout(() => enquiryTextareaRef.current?.focus(), 0);
+    }
+  }, [isCustomMessage]);
 
   // Helper function to render Lucide icons dynamically
   const renderIcon = (iconName: string, className?: string) => {
@@ -759,7 +785,7 @@ const ProductDetail: React.FC = () => {
     const message = `Hi, I'm interested in ${productName}.\n\nMy Enquiry:\n${enquiryMessage}\n\nProduct Link: ${productLink}`;
 
     // WhatsApp number (country code +91 prefixed, no plus)
-    const whatsappNumber = "919042993986";
+    const whatsappNumber = "918807423228";
 
     // Create WhatsApp link
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -768,8 +794,7 @@ const ProductDetail: React.FC = () => {
     window.open(whatsappUrl, "_blank");
 
     // Close modal and reset message
-    setShowEnquiryModal(false);
-    setEnquiryMessage("");
+    closeEnquiryModal();
 
     // Show success message
     Swal.fire({
@@ -1371,7 +1396,7 @@ const ProductDetail: React.FC = () => {
               </button>
 
               <button
-                onClick={() => setShowEnquiryModal(true)}
+                onClick={openEnquiryModal}
                 className="w-full border font-medium py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                 style={{
                   border: `1.5px solid ${colors.interactive.primary}`,
@@ -2306,7 +2331,7 @@ const ProductDetail: React.FC = () => {
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
-          onClick={() => setShowEnquiryModal(false)}
+          onClick={closeEnquiryModal}
         >
           <div
             className="max-w-lg w-full rounded-2xl p-6 shadow-2xl"
@@ -2324,7 +2349,7 @@ const ProductDetail: React.FC = () => {
                 Send Enquiry
               </h3>
               <button
-                onClick={() => setShowEnquiryModal(false)}
+                onClick={closeEnquiryModal}
                 className="p-2 rounded-lg transition-colors duration-200"
                 style={{
                   color: colors.text.secondary,
@@ -2386,11 +2411,13 @@ const ProductDetail: React.FC = () => {
                 Your Message
               </label>
               <textarea
+                ref={enquiryTextareaRef}
                 value={enquiryMessage}
                 onChange={(e) => setEnquiryMessage(e.target.value)}
                 placeholder="Type your enquiry here..."
                 rows={5}
-                className="w-full px-4 py-3 rounded-xl border-2 transition-colors duration-200 resize-none"
+                readOnly={!isCustomMessage}
+                className={`w-full px-4 py-3 rounded-xl border-2 transition-colors duration-200 resize-none ${!isCustomMessage ? 'opacity-80 cursor-not-allowed' : ''}`}
                 style={{
                   backgroundColor: colors.background.primary,
                   borderColor: colors.border.primary,
@@ -2403,18 +2430,47 @@ const ProductDetail: React.FC = () => {
                   e.currentTarget.style.borderColor = colors.border.primary;
                 }}
               />
+              <div className="flex justify-end mt-2">
+                {!isCustomMessage ? (
+                  <button
+                    onClick={() => {
+                      setIsCustomMessage(true);
+                      setEnquiryMessage("");
+                    }}
+                    className="text-sm font-medium text-blue-600"
+                  >
+                    Write custom message
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      // revert to default
+                      const productName = product?.name || "this product";
+                      const productPrice = selectedOption
+                        ? formatPriceWithSymbol(selectedOption.priceINR, selectedOption.priceUSD)
+                        : "";
+                      const defaultMsg = `Hi, I'm interested in ${productName}${productPrice ? ` (${productPrice})` : ""}.\n\nI would like to know more about the product and pricing.\n\n`;
+                      setEnquiryMessage(defaultMsg);
+                      setIsCustomMessage(false);
+                    }}
+                    className="text-sm font-medium text-blue-600"
+                  >
+                    Use default message
+                  </button>
+                )}
+              </div>
               <p
                 className="text-xs mt-2"
                 style={{ color: colors.text.secondary }}
               >
-                This message will be sent to our WhatsApp: +91 9042993986
+                This message will be sent to our WhatsApp: +91 8807423228
               </p>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3">
               <button
-                onClick={() => setShowEnquiryModal(false)}
+                onClick={closeEnquiryModal}
                 className="flex-1 py-3 rounded-xl font-medium transition-colors duration-200"
                 style={{
                   backgroundColor: colors.background.primary,
