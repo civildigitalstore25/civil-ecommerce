@@ -115,7 +115,7 @@ const SuperAdminCreateAdminPage: React.FC = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
-          
+
           {/* Permissions Section */}
           <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
             <div className="flex items-center justify-between mb-3">

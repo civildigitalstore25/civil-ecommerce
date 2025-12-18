@@ -39,19 +39,19 @@ const SuperAdminAdminsPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [editingAdmin, setEditingAdmin] = useState<{ _id: string; email: string; permissions: string[] } | null>(null);
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
-  
+
   const { data: admins, isLoading, error } = useQuery({
     queryKey: ["admins"],
     queryFn: fetchAdmins,
   });
-  
+
   const deleteMutation = useMutation({
     mutationFn: deleteAdmin,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admins"] });
     },
   });
-  
+
   const updatePermissionsMutation = useMutation({
     mutationFn: async ({ id, permissions }: { id: string; permissions: string[] }) => {
       const token = localStorage.getItem("token");
@@ -115,7 +115,7 @@ const SuperAdminAdminsPage: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-800 text-lg">{admin.fullName || admin.email}</h3>
                   <p className="text-sm text-gray-600">{admin.email}</p>
-                  
+
                   {/* Display Permissions */}
                   <div className="mt-3">
                     <p className="text-xs font-medium text-gray-700 mb-2">Permissions:</p>
@@ -135,7 +135,7 @@ const SuperAdminAdminsPage: React.FC = () => {
                     )}
                   </div>
                 </div>
-                
+
                 {/* Action Buttons */}
                 <div className="ml-4 flex gap-2">
                   <button
@@ -174,7 +174,7 @@ const SuperAdminAdminsPage: React.FC = () => {
             <h2 className="text-2xl font-bold mb-4" style={{ color: '#1F5D95' }}>
               Edit Permissions - {editingAdmin.email}
             </h2>
-            
+
             <div className="border border-gray-300 rounded-lg p-4 bg-gray-50 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-semibold text-gray-700">Admin Permissions</h3>

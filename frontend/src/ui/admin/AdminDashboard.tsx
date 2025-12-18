@@ -69,7 +69,7 @@ const AdminDashboardContent: React.FC = () => {
 
   // Filter menu items based on permissions
   const menuItems = allMenuItems.filter(item => hasPermission(item.permission));
-  
+
   // Add admin management only for superadmin
   if (user?.role === "superadmin") {
     menuItems.push({ id: "admin-management", label: "Admin Management", icon: Users, permission: "admin-management" });
@@ -131,7 +131,7 @@ const AdminDashboardContent: React.FC = () => {
       {/* Header */}
       <div
         className="shadow-xl transition-colors duration-200"
-       
+
       >
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">

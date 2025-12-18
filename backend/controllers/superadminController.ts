@@ -3,19 +3,19 @@ export const createAdmin = async (req: Request, res: Response) => {
   const { email, password, fullName, phoneNumber, permissions } = req.body;
   try {
     console.log('📝 Creating admin with data:', { email, fullName, permissions });
-    
+
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
-    
+
     // Validate permissions if provided
     const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons'];
-    const adminPermissions = permissions && Array.isArray(permissions) 
+    const adminPermissions = permissions && Array.isArray(permissions)
       ? permissions.filter((p: string) => validPermissions.includes(p))
       : [];
-    
+
     console.log('✅ Validated permissions:', adminPermissions);
-    
+
     const existing = await User.findOne({ email });
     if (existing) {
       return res.status(400).json({ success: false, message: 'User already exists' });
@@ -31,9 +31,9 @@ export const createAdmin = async (req: Request, res: Response) => {
       permissions: adminPermissions,
     });
     await user.save();
-    
+
     console.log('✅ Admin created successfully:', { email, permissions: user.permissions });
-    
+
     res.status(201).json({ success: true, message: 'Admin created successfully', admin: { email: user.email, fullName: user.fullName, permissions: user.permissions } });
   } catch (err) {
     console.error('❌ Error creating admin:', err);
@@ -77,7 +77,7 @@ export const updateAdminPermissions = async (req: Request, res: Response) => {
   const { permissions } = req.body;
   try {
     console.log('📝 Updating admin permissions:', { id, permissions });
-    
+
     const user = await User.findById(id);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -85,18 +85,18 @@ export const updateAdminPermissions = async (req: Request, res: Response) => {
     if (user.role !== 'admin') {
       return res.status(400).json({ success: false, message: 'Can only update admin users' });
     }
-    
+
     // Validate permissions
     const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons'];
-    const adminPermissions = permissions && Array.isArray(permissions) 
+    const adminPermissions = permissions && Array.isArray(permissions)
       ? permissions.filter((p: string) => validPermissions.includes(p))
       : [];
-    
+
     user.permissions = adminPermissions;
     await user.save();
-    
+
     console.log('✅ Admin permissions updated:', { email: user.email, permissions: user.permissions });
-    
+
     res.json({ success: true, message: 'Permissions updated successfully', admin: { email: user.email, fullName: user.fullName, permissions: user.permissions } });
   } catch (err) {
     console.error('❌ Error updating permissions:', err);

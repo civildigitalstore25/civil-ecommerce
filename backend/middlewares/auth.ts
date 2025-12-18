@@ -17,20 +17,20 @@ export const authenticate = async (
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'No token provided. Authentication required.' 
+        message: 'No token provided. Authentication required.'
       });
       return;
     }
 
     // Verify token
     const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
-    
+
     if (!decoded.userId) {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'Invalid token format' 
+        message: 'Invalid token format'
       });
       return;
     }
@@ -39,9 +39,9 @@ export const authenticate = async (
     const user = await User.findById(decoded.userId).select('-password');
 
     if (!user) {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'User not found. Token invalid.' 
+        message: 'User not found. Token invalid.'
       });
       return;
     }
@@ -51,21 +51,21 @@ export const authenticate = async (
     next();
   } catch (error: any) {
     console.error('Authentication error:', error);
-    
+
     if (error.name === 'JsonWebTokenError') {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'Invalid token' 
+        message: 'Invalid token'
       });
     } else if (error.name === 'TokenExpiredError') {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'Token expired' 
+        message: 'Token expired'
       });
     } else {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'Authentication failed' 
+        message: 'Authentication failed'
       });
     }
   }
@@ -87,16 +87,16 @@ export const requireAdmin = (
 ): void => {
   const user = (req as any).user as IUser;
   if (!user) {
-    res.status(401).json({ 
+    res.status(401).json({
       success: false,
-      message: 'Authentication required' 
+      message: 'Authentication required'
     });
     return;
   }
   if (user.role !== 'admin' && user.role !== 'superadmin') {
-    res.status(403).json({ 
+    res.status(403).json({
       success: false,
-      message: 'Admin access required. Insufficient permissions.' 
+      message: 'Admin access required. Insufficient permissions.'
     });
     return;
   }
@@ -114,16 +114,16 @@ export const requireSuperadmin = (
 ): void => {
   const user = (req as any).user as IUser;
   if (!user) {
-    res.status(401).json({ 
+    res.status(401).json({
       success: false,
-      message: 'Authentication required' 
+      message: 'Authentication required'
     });
     return;
   }
   if (user.role !== 'superadmin') {
-    res.status(403).json({ 
+    res.status(403).json({
       success: false,
-      message: 'Superadmin access required. Insufficient permissions.' 
+      message: 'Superadmin access required. Insufficient permissions.'
     });
     return;
   }
@@ -140,38 +140,38 @@ export const requireSuperadmin = (
 export const requirePermission = (permission: string) => {
   return (req: Request, res: Response, next: NextFunction): void => {
     const user = (req as any).user as IUser;
-    
+
     if (!user) {
-      res.status(401).json({ 
+      res.status(401).json({
         success: false,
-        message: 'Authentication required' 
+        message: 'Authentication required'
       });
       return;
     }
-    
+
     // Superadmin has all permissions
     if (user.role === 'superadmin') {
       next();
       return;
     }
-    
+
     // Check if admin has the required permission
     if (user.role === 'admin') {
       if (!user.permissions || !user.permissions.includes(permission)) {
-        res.status(403).json({ 
+        res.status(403).json({
           success: false,
-          message: `Access denied. Required permission: ${permission}` 
+          message: `Access denied. Required permission: ${permission}`
         });
         return;
       }
       next();
       return;
     }
-    
+
     // Not admin or superadmin
-    res.status(403).json({ 
+    res.status(403).json({
       success: false,
-      message: 'Admin access required' 
+      message: 'Admin access required'
     });
   };
 };
