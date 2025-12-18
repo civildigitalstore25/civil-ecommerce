@@ -45,27 +45,58 @@ const AdminDashboardContent: React.FC = () => {
   const { colors } = useAdminTheme();
   const { user, isLoading } = useAuth();
 
-  // Show nothing until user is loaded
-  if (isLoading) return null;
 
-  // Build menu items, add admin-management only for superadmin
-  const menuItems = [
-    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "users", label: "Users", icon: Users },
-    { id: "products", label: "Products", icon: Package },
-    { id: "categories", label: "Categories", icon: Tag },
-    { id: "companies", label: "Companies", icon: Building2 },
-    { id: "orders", label: "Orders", icon: ShoppingCart },
-    { id: "reviews", label: "Reviews", icon: MessageSquare },
-    { id: "banner", label: "Banner", icon: Image },
-    { id: "coupons", label: "Coupons", icon: TicketPercent },
-    // Only superadmin sees Admin Management menu
-    ...(user?.role === "superadmin"
-      ? [{ id: "admin-management", label: "Admin Management", icon: Users }]
-      : []),
+  // Helper function to check if admin has permission
+  const hasPermission = (permission: string): boolean => {
+    // Superadmin has all permissions
+    if (user?.role === "superadmin") return true;
+    // Check if admin has the specific permission
+    return user?.permissions?.includes(permission) || false;
+  };
+
+  // Build menu items based on permissions
+  const allMenuItems = [
+    { id: "dashboard", label: "Dashboard", icon: BarChart3, permission: "dashboard" },
+    { id: "users", label: "Users", icon: Users, permission: "users" },
+    { id: "products", label: "Products", icon: Package, permission: "products" },
+    { id: "categories", label: "Categories", icon: Tag, permission: "categories" },
+    { id: "companies", label: "Companies", icon: Building2, permission: "companies" },
+    { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
+    { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
+    { id: "banner", label: "Banner", icon: Image, permission: "banners" },
+    { id: "coupons", label: "Coupons", icon: TicketPercent, permission: "coupons" },
   ];
 
+  // Filter menu items based on permissions
+  const menuItems = allMenuItems.filter(item => hasPermission(item.permission));
+  
+  // Add admin management only for superadmin
+  if (user?.role === "superadmin") {
+    menuItems.push({ id: "admin-management", label: "Admin Management", icon: Users, permission: "admin-management" });
+  }
+
+  // Auto-select first available menu if current activeMenu is not accessible
+  React.useEffect(() => {
+    const currentMenuItem = menuItems.find(item => item.id === activeMenu);
+    if (!currentMenuItem && menuItems.length > 0) {
+      setActiveMenu(menuItems[0].id as MenuType);
+    }
+  }, [user?.permissions, activeMenu, menuItems]);
+
+  // Show nothing until user is loaded (keep after hooks)
+  if (isLoading) return null;
+
   const renderContent = () => {
+    // Check permission before rendering content
+    if (activeMenu !== "admin-management" && !hasPermission(activeMenu)) {
+      return (
+        <div className="p-8 text-center">
+          <p className="text-red-600 font-bold text-xl">Access Denied</p>
+          <p className="text-gray-600 mt-2">You don't have permission to access this section.</p>
+        </div>
+      );
+    }
+
     switch (activeMenu) {
       case "dashboard":
         return <Dashboard />;

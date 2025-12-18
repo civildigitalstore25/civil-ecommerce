@@ -131,6 +131,52 @@ export const requireSuperadmin = (
 };
 
 /**
+ * Permission-based authorization middleware factory
+ * Checks if admin has specific permission or if user is superadmin
+ * Must be used after authenticate middleware
+ * 
+ * @param permission - The required permission (e.g., 'users', 'products', 'orders')
+ */
+export const requirePermission = (permission: string) => {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const user = (req as any).user as IUser;
+    
+    if (!user) {
+      res.status(401).json({ 
+        success: false,
+        message: 'Authentication required' 
+      });
+      return;
+    }
+    
+    // Superadmin has all permissions
+    if (user.role === 'superadmin') {
+      next();
+      return;
+    }
+    
+    // Check if admin has the required permission
+    if (user.role === 'admin') {
+      if (!user.permissions || !user.permissions.includes(permission)) {
+        res.status(403).json({ 
+          success: false,
+          message: `Access denied. Required permission: ${permission}` 
+        });
+        return;
+      }
+      next();
+      return;
+    }
+    
+    // Not admin or superadmin
+    res.status(403).json({ 
+      success: false,
+      message: 'Admin access required' 
+    });
+  };
+};
+
+/**
  * Optional authentication middleware
  * Attaches user if token is valid, but doesn't fail if no token
  */
