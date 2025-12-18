@@ -1,7 +1,7 @@
 
 import express from 'express';
 import { authenticate, requireSuperadmin } from '../middlewares/auth';
-import { getAdmins, deleteAdmin, createAdmin } from '../controllers/superadminController';
+import { getAdmins, deleteAdmin, createAdmin, updateAdminPermissions } from '../controllers/superadminController';
 
 const router = express.Router();
 
@@ -15,6 +15,10 @@ router.get('/dashboard', authenticate, requireSuperadmin, (req, res) => {
 
 // List all admins
 router.get('/admins', authenticate, requireSuperadmin, getAdmins);
+
+// Update admin permissions (support PUT and PATCH)
+router.patch('/admins/:id/permissions', authenticate, requireSuperadmin, updateAdminPermissions);
+router.put('/admins/:id/permissions', authenticate, requireSuperadmin, updateAdminPermissions);
 
 // Delete an admin by ID
 router.delete('/admins/:id', authenticate, requireSuperadmin, deleteAdmin);

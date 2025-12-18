@@ -61,7 +61,7 @@ router.get('/stats/overview', authenticate, requireAdmin, async (req, res) => {
 router.patch('/bulk-status', authenticate, requireAdmin, async (req, res) => {
   try {
     const { bannerIds, status } = req.body;
-    
+
     if (!bannerIds || !Array.isArray(bannerIds) || bannerIds.length === 0) {
       return res.status(400).json({
         success: false,
@@ -124,9 +124,9 @@ router.get('/active/:position', async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching active banners:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching banners' 
+      message: 'Error fetching banners'
     });
   }
 });
@@ -141,9 +141,9 @@ router.get('/', authenticate, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching banners:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching banners' 
+      message: 'Error fetching banners'
     });
   }
 });
@@ -153,9 +153,9 @@ router.get('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const banner = await Banner.findById(req.params.id);
     if (!banner) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Banner not found' 
+        message: 'Banner not found'
       });
     }
     res.json({
@@ -164,9 +164,9 @@ router.get('/:id', authenticate, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error fetching banner:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error fetching banner' 
+      message: 'Error fetching banner'
     });
   }
 });
@@ -192,9 +192,9 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating banner:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error creating banner' 
+      message: 'Error creating banner'
     });
   }
 });
@@ -217,14 +217,14 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
       req.body,
       { new: true, runValidators: true }
     );
-    
+
     if (!banner) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Banner not found' 
+        message: 'Banner not found'
       });
     }
-    
+
     res.json({
       success: true,
       data: banner,
@@ -232,9 +232,9 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     });
   } catch (error) {
     console.error('Error updating banner:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error updating banner' 
+      message: 'Error updating banner'
     });
   }
 });
@@ -243,23 +243,23 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
 router.delete('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const banner = await Banner.findByIdAndDelete(req.params.id);
-    
+
     if (!banner) {
-      return res.status(404).json({ 
+      return res.status(404).json({
         success: false,
-        message: 'Banner not found' 
+        message: 'Banner not found'
       });
     }
-    
-    res.json({ 
+
+    res.json({
       success: true,
-      message: 'Banner deleted successfully' 
+      message: 'Banner deleted successfully'
     });
   } catch (error) {
     console.error('Error deleting banner:', error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Error deleting banner' 
+      message: 'Error deleting banner'
     });
   }
 });

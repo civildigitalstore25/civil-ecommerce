@@ -4,6 +4,7 @@ export interface User {
   fullName?: string;
   phoneNumber?: string;
   role: "user" | "admin";
+  permissions?: string[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

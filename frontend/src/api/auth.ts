@@ -23,6 +23,7 @@ export interface User {
   fullName?: string;
   phoneNumber?: string;
   role: "user" | "admin" | "superadmin";
+  permissions?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -62,7 +62,8 @@ export const register = async (req: Request, res: Response): Promise<void> => {
         email: savedUser.email,
         fullName: savedUser.fullName,
         phoneNumber: savedUser.phoneNumber,
-        role: savedUser.role
+        role: savedUser.role,
+        permissions: savedUser.permissions || []
       }
     });
   } catch (error: any) {
@@ -101,7 +102,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         email: user.email,
         fullName: user.fullName,
         phoneNumber: user.phoneNumber,
-        role: user.role
+        role: user.role,
+        permissions: user.permissions || []
       }
     });
   } catch (error: any) {
@@ -182,7 +184,8 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       email: updatedUser.email,
       fullName: updatedUser.fullName,
       phoneNumber: updatedUser.phoneNumber,
-      role: updatedUser.role
+      role: updatedUser.role,
+      permissions: updatedUser.permissions || []
     });
   } catch (error: any) {
     if (error.name === 'ValidationError') {

@@ -4,6 +4,19 @@ import { useUser } from "../api/userQueries";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
+// Available permissions for admin
+const AVAILABLE_PERMISSIONS = [
+  { value: 'dashboard', label: 'Dashboard' },
+  { value: 'users', label: 'Users' },
+  { value: 'products', label: 'Products' },
+  { value: 'categories', label: 'Categories' },
+  { value: 'companies', label: 'Companies' },
+  { value: 'orders', label: 'Orders' },
+  { value: 'reviews', label: 'Reviews' },
+  { value: 'banners', label: 'Banner' },
+  { value: 'coupons', label: 'Coupons' },
+];
+
 const SuperAdminCreateAdminPage: React.FC = () => {
   const { data: user } = useUser();
   const [form, setForm] = useState({
@@ -12,6 +25,7 @@ const SuperAdminCreateAdminPage: React.FC = () => {
     fullName: "",
     phoneNumber: "",
   });
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -24,6 +38,22 @@ const SuperAdminCreateAdminPage: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handlePermissionToggle = (permission: string) => {
+    setSelectedPermissions((prev) =>
+      prev.includes(permission)
+        ? prev.filter((p) => p !== permission)
+        : [...prev, permission]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedPermissions.length === AVAILABLE_PERMISSIONS.length) {
+      setSelectedPermissions([]);
+    } else {
+      setSelectedPermissions(AVAILABLE_PERMISSIONS.map(p => p.value));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -33,11 +63,12 @@ const SuperAdminCreateAdminPage: React.FC = () => {
       const token = localStorage.getItem("token");
       await axios.post(
         `${API_BASE_URL}/api/superadmin/admins`,
-        form,
+        { ...form, permissions: selectedPermissions },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSuccess("Admin created successfully!");
       setForm({ email: "", password: "", fullName: "", phoneNumber: "" });
+      setSelectedPermissions([]);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to create admin");
     } finally {
@@ -46,7 +77,7 @@ const SuperAdminCreateAdminPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-8">
+    <div className="max-w-2xl mx-auto mt-8 px-4">
       <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
         <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: '#1F5D95' }}>Create Admin</h1>
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -84,6 +115,43 @@ const SuperAdminCreateAdminPage: React.FC = () => {
             onChange={handleChange}
             className="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none transition"
           />
+
+          {/* Permissions Section */}
+          <div className="border border-gray-300 rounded-lg p-4 bg-gray-50">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-gray-700">Admin Permissions</h3>
+              <button
+                type="button"
+                onClick={handleSelectAll}
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+              >
+                {selectedPermissions.length === AVAILABLE_PERMISSIONS.length ? 'Deselect All' : 'Select All'}
+              </button>
+            </div>
+            <p className="text-sm text-gray-600 mb-4">Select which sections this admin can access</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {AVAILABLE_PERMISSIONS.map((permission) => (
+                <label
+                  key={permission.value}
+                  className="flex items-center space-x-2 cursor-pointer hover:bg-gray-100 p-2 rounded transition"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedPermissions.includes(permission.value)}
+                    onChange={() => handlePermissionToggle(permission.value)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm text-gray-700">{permission.label}</span>
+                </label>
+              ))}
+            </div>
+            {selectedPermissions.length === 0 && (
+              <p className="text-xs text-amber-600 mt-3 bg-amber-50 p-2 rounded">
+                ⚠️ No permissions selected. This admin won't be able to access any section.
+              </p>
+            )}
+          </div>
+
           <button
             type="submit"
             className="w-full py-3 rounded-lg font-semibold text-lg shadow hover:opacity-90 transition disabled:opacity-60"

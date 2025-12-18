@@ -28,69 +28,69 @@ import Swal from "sweetalert2";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const Products: React.FC = () => {
-      const [exportOpen, setExportOpen] = useState(false);
-    // Export handlers
-    const getExportData = () => {
-      // Only export visible/filtered products with key fields
-      return products.map((p) => ({
-        Name: p.name,
-        Version: p.version,
-        Category: p.category,
-        Company: p.company,
-        Brand: p.brand || "",
-        Status: p.status || "active",
-        "Best Seller": p.isBestSeller ? "Yes" : "No",
-        Price:
-          p.subscriptionDurations && p.subscriptionDurations.length > 0
-            ? p.subscriptionDurations[0].price
-            : p.price1,
-        Tags: p.tags ? p.tags.join(", ") : "",
-        Rating: p.rating || "",
-        "Rating Count": p.ratingCount || "",
-        "Created At": p.createdAt || "",
-        "Updated At": p.updatedAt || "",
-      }));
-    };
+  const [exportOpen, setExportOpen] = useState(false);
+  // Export handlers
+  const getExportData = () => {
+    // Only export visible/filtered products with key fields
+    return products.map((p) => ({
+      Name: p.name,
+      Version: p.version,
+      Category: p.category,
+      Company: p.company,
+      Brand: p.brand || "",
+      Status: p.status || "active",
+      "Best Seller": p.isBestSeller ? "Yes" : "No",
+      Price:
+        p.subscriptionDurations && p.subscriptionDurations.length > 0
+          ? p.subscriptionDurations[0].price
+          : p.price1,
+      Tags: p.tags ? p.tags.join(", ") : "",
+      Rating: p.rating || "",
+      "Rating Count": p.ratingCount || "",
+      "Created At": p.createdAt || "",
+      "Updated At": p.updatedAt || "",
+    }));
+  };
 
-    const handleExportExcel = async () => {
-      try {
-        const data = getExportData();
-        const XLSX = (await import("xlsx")) as any;
-        const ws = XLSX.utils.json_to_sheet(data);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Products");
-        XLSX.writeFile(
-          wb,
-          `products_export_${new Date()
-            .toISOString()
-            .slice(0, 19)
-            .replace(/[:T]/g, "-")}.xlsx`
-        );
-      } catch (err) {
-        Swal.fire("Error", "Failed to export products", "error");
-      }
-    };
-
-    const handleExportJSON = async () => {
-      try {
-        const data = getExportData();
-        const json = JSON.stringify(data, null, 2);
-        const blob = new Blob([json], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `products_export_${new Date()
+  const handleExportExcel = async () => {
+    try {
+      const data = getExportData();
+      const XLSX = (await import("xlsx")) as any;
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Products");
+      XLSX.writeFile(
+        wb,
+        `products_export_${new Date()
           .toISOString()
           .slice(0, 19)
-          .replace(/[:T]/g, "-")}.json`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        Swal.fire("Error", "Failed to export products", "error");
-      }
-    };
+          .replace(/[:T]/g, "-")}.xlsx`
+      );
+    } catch (err) {
+      Swal.fire("Error", "Failed to export products", "error");
+    }
+  };
+
+  const handleExportJSON = async () => {
+    try {
+      const data = getExportData();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `products_export_${new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace(/[:T]/g, "-")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      Swal.fire("Error", "Failed to export products", "error");
+    }
+  };
   const { colors, theme } = useAdminTheme();
   const [viewMode, setViewMode] = useState("list");
   const [modalOpen, setModalOpen] = useState(false);
@@ -167,7 +167,7 @@ const Products: React.FC = () => {
 
   const handleSaveProduct = (productData: any) => {
     console.log('💾 Frontend - Saving product with driveLink:', productData.driveLink || 'NOT PROVIDED');
-    
+
     if (editingProduct && editingProduct._id) {
       updateProductMutation.mutate(
         {
@@ -471,7 +471,7 @@ const Products: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                        {/* Export Dropdown Button moved above */}
+            {/* Export Dropdown Button moved above */}
             <div className="relative">
               <Search
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
@@ -560,21 +560,21 @@ const Products: React.FC = () => {
               selectedCompany !== "All Companies" ||
               selectedStatus !== "All Status" ||
               showBestSellers) && (
-              <button
-                onClick={clearFilters}
-                className="flex items-center space-x-1 transition-colors duration-200"
-                style={{ color: colors.text.secondary }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.color = colors.text.primary)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.color = colors.text.secondary)
-                }
-              >
-                <X className="w-4 h-4" />
-                <span>Clear filters</span>
-              </button>
-            )}
+                <button
+                  onClick={clearFilters}
+                  className="flex items-center space-x-1 transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.color = colors.text.primary)
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.color = colors.text.secondary)
+                  }
+                >
+                  <X className="w-4 h-4" />
+                  <span>Clear filters</span>
+                </button>
+              )}
           </div>
 
           <div className="flex items-center space-x-3">
@@ -634,19 +634,19 @@ const Products: React.FC = () => {
             <button
               className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
               style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                background: theme === "dark"
+                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  colors.interactive.primaryHover)
+              (e.currentTarget.style.backgroundColor =
+                colors.interactive.primaryHover)
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  colors.interactive.primary)
+              (e.currentTarget.style.backgroundColor =
+                colors.interactive.primary)
               }
               onClick={() => {
                 setEditingProduct(null);
@@ -742,8 +742,8 @@ const Products: React.FC = () => {
                       key={product._id}
                       className="transition-colors duration-200"
                       onMouseEnter={(e) =>
-                        (e.currentTarget.style.backgroundColor =
-                          colors.background.accent)
+                      (e.currentTarget.style.backgroundColor =
+                        colors.background.accent)
                       }
                       onMouseLeave={(e) =>
                         (e.currentTarget.style.backgroundColor = "transparent")
@@ -827,7 +827,7 @@ const Products: React.FC = () => {
                       <td className="py-4 px-4">
                         <span
                           className="inline-block text-xs px-2 py-1 rounded-full font-medium"
-                         
+
                         >
                           {product.category}
                         </span>
@@ -860,7 +860,7 @@ const Products: React.FC = () => {
                         <div className="space-y-1">
                           {/* Show subscription pricing if available, otherwise show legacy pricing */}
                           {product.subscriptionDurations &&
-                          product.subscriptionDurations.length > 0 ? (
+                            product.subscriptionDurations.length > 0 ? (
                             <div>
                               <div
                                 className="font-medium text-sm"

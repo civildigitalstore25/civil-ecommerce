@@ -11,7 +11,7 @@ const truncate = (s: string, n = 120) =>
   s && s.length > n ? s.slice(0, n).trim() + "..." : s;
 
 const BannerManagement: React.FC = () => {
-  const { cardStyle} = useAdminThemeStyles();
+  const { cardStyle } = useAdminThemeStyles();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -122,15 +122,15 @@ const BannerManagement: React.FC = () => {
             setShowForm(true);
           }}
           className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center border-2"
-         style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+          style={{
+            background: theme === "dark"
+              ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+              : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+            color: colors.text.inverse,
+            border: 'none',
+          }}
         >
-          <Plus size={20}  /> Add Banner
+          <Plus size={20} /> Add Banner
         </button>
       </div>
 
@@ -156,17 +156,17 @@ const BannerManagement: React.FC = () => {
               <div
                 className="mb-3 md:mb-4 p-3 md:p-4 rounded-full"
                 style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                  background: theme === "dark"
+                    ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                    : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                  color: colors.text.inverse,
+                  border: 'none',
+                }}
               >
                 <Plus
                   size={24}
                   className="md:w-8 md:h-8"
-                  
+
                 />
               </div>
               <h2
@@ -184,13 +184,13 @@ const BannerManagement: React.FC = () => {
                   setEditingBanner(null);
                   setShowForm(true);
                 }}
-               style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                style={{
+                  background: theme === "dark"
+                    ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                    : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                  color: colors.text.inverse,
+                  border: 'none',
+                }}
                 className="rounded-lg px-4 py-2 font-medium hover:shadow-md transition border-2"
               >
                 Create Your First Banner

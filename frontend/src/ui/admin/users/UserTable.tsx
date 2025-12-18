@@ -36,7 +36,7 @@ const UserTable: React.FC<Props> = ({
         <table className="w-full">
           <thead
             className="border-b transition-colors duration-200"
-            
+
           >
             <tr>
               <th
@@ -98,7 +98,7 @@ const UserTable: React.FC<Props> = ({
                   <div className="flex items-center space-x-3">
                     <div
                       className="w-10 h-10 rounded-full flex items-center justify-center"
-                      
+
                     >
                       <span className="text-lg">👤</span>
                     </div>
