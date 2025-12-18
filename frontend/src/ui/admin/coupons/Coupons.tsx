@@ -202,7 +202,7 @@ const Coupons: React.FC = () => {
           <button
             onClick={fetchCoupons}
             className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
-           style={{
+            style={{
               background: theme === "dark"
                 ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
                 : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
@@ -220,7 +220,7 @@ const Coupons: React.FC = () => {
               setShowForm(true);
             }}
             className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition border-2"
-           style={{
+            style={{
               background: theme === "dark"
                 ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
                 : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
@@ -335,12 +335,12 @@ const Coupons: React.FC = () => {
                 <div
                   className="mb-3 md:mb-4 p-3 md:p-4 rounded-full"
                   style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                    background: theme === "dark"
+                      ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                      : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                    color: colors.text.inverse,
+                    border: 'none',
+                  }}
                 >
                   <Plus
                     size={24}
@@ -363,13 +363,13 @@ const Coupons: React.FC = () => {
                 <button
                   onClick={() => setShowForm(true)}
                   className="flex items-center gap-2 px-4 md:px-6 lg:px-8 py-2 md:py-3 lg:py-3 rounded-lg font-semibold hover:opacity-90 transition-all duration-200 shadow-md text-xs md:text-sm lg:text-base border-2"
-                 style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                  style={{
+                    background: theme === "dark"
+                      ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                      : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                    color: colors.text.inverse,
+                    border: 'none',
+                  }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "scale(1.05)";
                   }}
@@ -755,13 +755,13 @@ const CouponFormModal: React.FC<{
                 type="button"
                 onClick={handleGenerateCode}
                 className="flex items-center justify-center gap-2 px-4 py-2 rounded transition hover:opacity-90 h-[42px]"
-               style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+                style={{
+                  background: theme === "dark"
+                    ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                    : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                  color: colors.text.inverse,
+                  border: 'none',
+                }}
               >
                 <RefreshCcw size={16} />
                 Generate
@@ -974,13 +974,13 @@ const CouponFormModal: React.FC<{
               onClick={onClose}
               disabled={isSubmitting}
               className="px-4 py-2 rounded transition hover:opacity-90"
-             style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+              style={{
+                background: theme === "dark"
+                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
             >
               Cancel
             </button>
@@ -988,13 +988,13 @@ const CouponFormModal: React.FC<{
               type="submit"
               disabled={isSubmitting}
               className="px-4 py-2 rounded font-medium hover:opacity-90 transition disabled:opacity-50"
-             style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+              style={{
+                background: theme === "dark"
+                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
             >
               {isSubmitting
                 ? "Saving..."
