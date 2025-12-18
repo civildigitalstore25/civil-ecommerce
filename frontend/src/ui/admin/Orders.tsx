@@ -17,11 +17,88 @@ import {
   getAllOrders,
   updateOrderStatus,
   deleteAdminOrder,
+  adminCreateOrder,
 } from "../../api/adminOrderApi";
 import FormButton from "../../components/Button/FormButton";
 import Swal from "sweetalert2";
 
+import type { IOrderItem } from "../../api/types/orderTypes";
+
 const Orders: React.FC = () => {
+    // State for admin order creation form (no dropdown, no address, no shipping)
+    const [showCreateForm, setShowCreateForm] = useState(false);
+    const [orderForm, setOrderForm] = useState<{
+      email?: string;
+      items: IOrderItem[];
+      subtotal: number;
+      discount?: number;
+      totalAmount: number;
+      notes?: string;
+    }>({
+      items: [],
+      subtotal: 0,
+      discount: undefined,
+      totalAmount: 0,
+    });
+
+    // Add product to order items (by type input)
+    const handleAddProductToOrder = (product: { productId: string; name: string; quantity: number; price: number; discount?: number }) => {
+      setOrderForm((prev) => {
+        const exists = prev.items.find((i) => i.productId === product.productId);
+        if (exists) return prev;
+        return {
+          ...prev,
+          items: [
+            ...prev.items,
+            product as IOrderItem,
+          ],
+        };
+      });
+    };
+
+    // Remove product from order items
+    const handleRemoveOrderItem = (productId: string) => {
+      setOrderForm((prev) => ({
+        ...prev,
+        items: prev.items.filter((i) => i.productId !== productId),
+      }));
+    };
+
+    // Update quantity/price for order item
+    const handleOrderItemChange = (productId: string, field: string, value: any) => {
+      setOrderForm((prev) => ({
+        ...prev,
+        items: prev.items.map((i) =>
+          i.productId === productId ? { ...i, [field]: value } : i
+        ),
+      }));
+    };
+
+    // Calculate totals (no shipping)
+    React.useEffect(() => {
+      const subtotal = orderForm.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+      const totalAmount = subtotal - (orderForm.discount || 0);
+      setOrderForm((prev) => ({ ...prev, subtotal, totalAmount }));
+    }, [orderForm.items, orderForm.discount]);
+
+    // Admin create order mutation
+    const createOrderMutation = useMutation({
+      mutationFn: (data: any) => adminCreateOrder(data),
+      onSuccess: () => {
+        Swal.fire({ icon: "success", title: "Order Created", text: "Order created successfully!", timer: 2000, showConfirmButton: false });
+        setShowCreateForm(false);
+        setOrderForm({
+          items: [],
+          subtotal: 0,
+          discount: 0,
+          totalAmount: 0,
+        });
+        queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+      },
+      onError: (error: any) => {
+        Swal.fire({ icon: "error", title: "Error", text: error?.response?.data?.message || "Failed to create order" });
+      },
+    });
   const { colors } = useAdminTheme();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -37,6 +114,8 @@ const Orders: React.FC = () => {
     queryFn: () =>
       getAllOrders({ status: statusFilter || undefined, limit: 100 }),
   });
+
+
 
   // Update order status mutation
   const updateStatusMutation = useMutation({
@@ -234,13 +313,15 @@ const Orders: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2
-          className="text-2xl font-bold"
-          style={{ color: colors.text.primary }}
-        >
-          Orders Management
-        </h2>
+        <h2 className="text-2xl font-bold" style={{ color: colors.text.primary }}>Orders Management</h2>
         <div className="flex items-center space-x-3">
+          <button
+            className="px-4 py-2 rounded-lg font-medium"
+            style={{ background: colors.interactive.primary, color: colors.text.inverse }}
+            onClick={() => setShowCreateForm((v) => !v)}
+          >
+            {showCreateForm ? "Close" : "Create Order"}
+          </button>
           <select
             className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
             style={{
@@ -258,6 +339,98 @@ const Orders: React.FC = () => {
           </select>
         </div>
       </div>
+
+      {/* Admin Order Creation Form */}
+      {showCreateForm && (
+        <div className="border rounded-lg p-6 mb-6" style={{ background: colors.background.secondary, borderColor: colors.border.primary }}>
+          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Create New Order</h3>
+          
+          {/* Email field for order (manual entry) */}
+          <div className="mb-4">
+            <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+              Customer Email 
+            </label>
+            <input
+              className="input w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              type="email"
+              placeholder="Enter customer email"
+              value={orderForm.email || ""}
+              onChange={e => setOrderForm(f => ({ ...f, email: e.target.value }))}
+              style={{ color: colors.text.primary, background: '#fff' }}
+            />
+          </div>
+
+          <div className="mb-4">
+            <h4 className="font-medium mb-2">Order Items</h4>
+            {orderForm.items.length === 0 && <div className="text-sm text-gray-500">No products added.</div>}
+            {orderForm.items.map((item) => (
+              <div key={item.productId} className="flex items-center gap-2 mb-2">
+                <input className="input w-36 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: colors.text.primary, background: '#fff' }} />
+                <input className="input w-40 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: colors.text.primary, background: '#fff' }} />
+                <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
+                <input type="number" className="input w-24 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
+                <input type="number" className="input w-28 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Discount (optional)" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
+                <button className="text-red-500 ml-2" onClick={() => handleRemoveOrderItem(item.productId)}>Remove</button>
+              </div>
+            ))}
+            {/* Add new product row */}
+            <div className="flex items-center gap-2 mt-2">
+              <input className="input w-32 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: '#fff' }} />
+              <input className="input w-32 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: '#fff' }} />
+              <input type="number" className="input w-16 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: '#fff' }} />
+              <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: '#fff' }} />
+              <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Discount (optional)" id="newProductDiscount" style={{ color: colors.text.primary, background: '#fff' }} />
+              <button className="text-green-600 ml-2" onClick={() => {
+                const productId = (document.getElementById("newProductId") as HTMLInputElement).value;
+                const name = (document.getElementById("newProductName") as HTMLInputElement).value;
+                const quantity = Number((document.getElementById("newProductQty") as HTMLInputElement).value);
+                const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
+                const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
+                const discount = discountValue === '' ? undefined : Number(discountValue);
+                if (productId && name && quantity > 0) {
+                  handleAddProductToOrder({ productId, name, quantity, price, discount });
+                  (document.getElementById("newProductId") as HTMLInputElement).value = "";
+                  (document.getElementById("newProductName") as HTMLInputElement).value = "";
+                  (document.getElementById("newProductQty") as HTMLInputElement).value = "1";
+                  (document.getElementById("newProductPrice") as HTMLInputElement).value = "0";
+                  (document.getElementById("newProductDiscount") as HTMLInputElement).value = "";
+                }
+              }}>Add</button>
+            </div>
+          </div>
+          {/* Discount, Notes */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            <div>
+              <label className="block text-sm mb-1">Total Discount (optional)</label>
+              <input type="number" className="input border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: colors.text.primary, background: '#fff' }} />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm mb-1">Notes</label>
+            <textarea className="input w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: colors.text.primary, background: '#fff' }} />
+          </div>
+          {/* Totals */}
+          <div className="mt-4 flex gap-6">
+            <div>Subtotal: <span className="font-semibold">₹{orderForm.subtotal}</span></div>
+            <div>Total: <span className="font-semibold">₹{orderForm.totalAmount}</span></div>
+          </div>
+          <div className="mt-6 flex gap-4">
+            <button
+              className="px-6 py-2 rounded-lg font-medium"
+              style={{ background: colors.interactive.primary, color: colors.text.inverse }}
+              onClick={() => createOrderMutation.mutate(orderForm)}
+              disabled={createOrderMutation.status === "pending"}
+            >
+              {createOrderMutation.status === "pending" ? "Creating..." : "Create Order"}
+            </button>
+            <button
+              className="px-6 py-2 rounded-lg font-medium border"
+              style={{ borderColor: colors.border.primary, color: colors.text.primary }}
+              onClick={() => setShowCreateForm(false)}
+            >Cancel</button>
+          </div>
+        </div>
+      )}
 
       {/* Order Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -353,54 +526,14 @@ const Orders: React.FC = () => {
               
             >
               <tr>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Order ID
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Customer
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Product
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Amount
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Status
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Date
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Update Status
-                </th>
-                <th
-                  className="text-center py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Actions
-                </th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Order ID</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Customer</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Product</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Amount</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Status</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Update Status</th>
+                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Date</th>
+                <th className="text-center py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Actions</th>
               </tr>
             </thead>
             <tbody

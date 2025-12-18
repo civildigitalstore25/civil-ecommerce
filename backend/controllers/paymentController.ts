@@ -40,6 +40,122 @@ const getNextOrderNumber = async (retries = 5): Promise<number> => {
 };
 
 /**
+ * Admin Create Order (Admin only - no payment gateway)
+ */
+export const adminCreateOrder = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = (req as any).user;
+
+    if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+      res.status(403).json({
+        success: false,
+        message: 'Admin or Superadmin access required'
+      });
+      return;
+    }
+
+    const {
+      email,
+      items,
+      subtotal,
+      discount = 0,
+      totalAmount,
+      notes
+    } = req.body;
+
+    console.log('📝 Admin creating order:', { email, items, subtotal, discount, totalAmount });
+
+    // Validation
+    if (!items || items.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: 'Order items are required'
+      });
+      return;
+    }
+
+    // If all productIds are valid ObjectIds, fetch driveLinks; otherwise, skip driveLink logic
+    let itemsWithDriveLink = items;
+    const allProductIdsAreObjectIds = items.every((item: any) => mongoose.Types.ObjectId.isValid(item.productId));
+    if (allProductIdsAreObjectIds) {
+      const Product = (await import('../models/Product')).default;
+      const productIds = items.map((item: any) => item.productId);
+      console.log('🔍 Admin order - Fetching products for IDs:', productIds);
+      const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
+      console.log('📦 Products found with driveLinks:', products.map(p => ({ 
+        id: p._id, 
+        name: (p as any).name, 
+        driveLink: p.driveLink ? 'present' : 'missing' 
+      })));
+      // Create a map for quick lookup
+      const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
+      // Add driveLink to each item
+      itemsWithDriveLink = items.map((item: any) => {
+        const driveLink = productMap.get(item.productId) || null;
+        console.log(`📎 Adding driveLink to order item: ${item.name} - ${driveLink ? 'has driveLink' : 'NO driveLink'}`);
+        return {
+          ...item,
+          driveLink
+        };
+      });
+    } else {
+      // Arbitrary product IDs: just pass through, no driveLink
+      itemsWithDriveLink = items;
+    }
+
+    // Generate order ID
+    const orderId = generateOrderId();
+
+    // Get next order number
+    const orderNumber = await getNextOrderNumber();
+
+    // Create order in database (no Razorpay, admin-created)
+    const order = new Order({
+      orderId,
+      orderNumber,
+      items: itemsWithDriveLink,
+      subtotal,
+      discount,
+      shippingCharges: 0, // No shipping for digital products
+      totalAmount,
+      shippingAddress: {
+        fullName: email || 'Admin Created',
+        phoneNumber: 'N/A',
+        addressLine1: 'N/A',
+        city: 'N/A',
+        state: 'N/A',
+        pincode: '000000',
+        country: 'N/A'
+      },
+      notes: notes || 'Order created by admin',
+      paymentStatus: 'paid', // Admin orders are marked as paid
+      orderStatus: 'processing'
+    });
+
+    await order.save();
+
+    console.log('✅ Admin order created:', orderId, 'for email:', email);
+
+    res.status(201).json({
+      success: true,
+      message: 'Order created successfully by admin',
+      data: {
+        orderId: order.orderId,
+        orderNumber: order.orderNumber,
+        orderStatus: order.orderStatus,
+        paymentStatus: order.paymentStatus
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Admin create order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
  * Create order and initiate Razorpay payment
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
@@ -167,7 +283,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       }
     });
   } catch (error: any) {
-    console.error(' Create order error:', error);
+    console.error('❌ Create order error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -331,7 +447,7 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       }
     });
   } catch (error: any) {
-    console.error(' Verify payment error:', error);
+    console.error('❌ Verify payment error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -361,7 +477,7 @@ export const paymentFailed = async (req: Request, res: Response): Promise<void> 
       order.notes = `${order.notes || ''}\nPayment failed: ${error?.description || 'Unknown error'}`;
       await order.save();
 
-      console.log(' Payment failed for order:', order.orderId);
+      console.log('❌ Payment failed for order:', order.orderId);
     }
 
     res.status(200).json({
@@ -369,7 +485,7 @@ export const paymentFailed = async (req: Request, res: Response): Promise<void> 
       message: 'Payment failure recorded'
     });
   } catch (error: any) {
-    console.error(' Payment failed handler error:', error);
+    console.error('❌ Payment failed handler error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -396,7 +512,7 @@ export const getOrder = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Check if user owns this order (unless admin)
-    if (user.role !== 'admin' && order.userId.toString() !== user._id.toString()) {
+    if (user.role !== 'admin' && order.userId && order.userId.toString() !== user._id.toString()) {
       res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -409,7 +525,7 @@ export const getOrder = async (req: Request, res: Response): Promise<void> => {
       data: order
     });
   } catch (error: any) {
-    console.error(' Get order error:', error);
+    console.error('❌ Get order error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -534,7 +650,7 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
       }
     });
   } catch (error: any) {
-    console.error(' Get all orders error:', error);
+    console.error('❌ Get all orders error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
@@ -659,7 +775,7 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
     order.orderStatus = 'cancelled';
     await order.save();
 
-    console.log(' Refund initiated for order:', order.orderId);
+    console.log('✅ Refund initiated for order:', order.orderId);
 
     res.status(200).json({
       success: true,
@@ -667,7 +783,7 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
       data: refundResult.refund
     });
   } catch (error: any) {
-    console.error(' Initiate refund error:', error);
+    console.error('❌ Initiate refund error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'

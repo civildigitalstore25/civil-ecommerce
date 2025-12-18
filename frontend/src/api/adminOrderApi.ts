@@ -30,6 +30,17 @@ export interface AdminOrdersResponse {
 }
 
 /**
+ * Create order (Admin only)
+ */
+export const adminCreateOrder = async (orderData: any) => {
+  console.log("🌐 AdminOrderAPI - adminCreateOrder called with:", orderData);
+  console.log("🌐 Request URL:", "/payments/admin/orders");
+  const response = await api.post("/payments/admin/orders", orderData);
+  console.log("🌐 Create Order Response:", response.data);
+  return response.data;
+};
+
+/**
  * Fetch all orders (Admin only)
  */
 export const getAllOrders = async (params?: {
