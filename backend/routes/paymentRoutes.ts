@@ -9,7 +9,8 @@ import {
   updateOrderStatus,
   initiateRefund,
   deleteOrder,
-  adminDeleteOrder
+  adminDeleteOrder,
+  adminCreateOrder
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -24,6 +25,7 @@ router.get('/orders/:orderId', authenticate, getOrder);
 router.delete('/orders/:orderId', authenticate, deleteOrder);
 
 // Admin routes
+router.post('/admin/orders', authenticate, requireAdmin, adminCreateOrder);
 router.get('/admin/orders', authenticate, requireAdmin, getAllOrders);
 router.put('/admin/orders/:orderId/status', authenticate, requireAdmin, updateOrderStatus);
 router.delete('/admin/orders/:orderId', authenticate, requireAdmin, adminDeleteOrder);
