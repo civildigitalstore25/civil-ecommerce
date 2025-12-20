@@ -39,6 +39,9 @@ export interface IOrder extends Document {
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;
+  phonepeTransactionId?: string;
+  phonepePaymentId?: string;
+  paymentGateway?: 'razorpay' | 'phonepe';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -90,14 +93,14 @@ const OrderSchema = new Schema<IOrder>({
     min: 0
   },
   shippingAddress: {
-    fullName: { type: String, required: true },
-    phoneNumber: { type: String, required: true },
-    addressLine1: { type: String, required: true },
+    fullName: { type: String, required: false },
+    phoneNumber: { type: String, required: false },
+    addressLine1: { type: String, required: false },
     addressLine2: { type: String },
-    city: { type: String, required: true },
-    state: { type: String, required: true },
-    pincode: { type: String, required: true },
-    country: { type: String, required: true, default: 'India' }
+    city: { type: String, required: false },
+    state: { type: String, required: false },
+    pincode: { type: String, required: false },
+    country: { type: String, required: false, default: 'India' }
   },
   couponCode: {
     type: String
@@ -123,6 +126,17 @@ const OrderSchema = new Schema<IOrder>({
   },
   razorpaySignature: {
     type: String
+  },
+  phonepeTransactionId: {
+    type: String
+  },
+  phonepePaymentId: {
+    type: String
+  },
+  paymentGateway: {
+    type: String,
+    enum: ['razorpay', 'phonepe'],
+    default: 'razorpay'
   }
 }, {
   timestamps: true
@@ -131,6 +145,7 @@ const OrderSchema = new Schema<IOrder>({
 // Index for faster queries
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ razorpayOrderId: 1 });
+OrderSchema.index({ phonepeTransactionId: 1 });
 
 const Order = mongoose.model<IOrder>('Order', OrderSchema);
 

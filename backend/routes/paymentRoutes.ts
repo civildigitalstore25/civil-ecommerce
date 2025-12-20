@@ -10,7 +10,9 @@ import {
   initiateRefund,
   deleteOrder,
   adminDeleteOrder,
-  adminCreateOrder
+  adminCreateOrder,
+  verifyPhonePePayment,
+  handlePhonePeCallback
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -19,6 +21,8 @@ const router = Router();
 // User routes (require authentication)
 router.post('/create-order', authenticate, createOrder);
 router.post('/verify', authenticate, verifyPayment);
+router.post('/verify-phonepe', authenticate, verifyPhonePePayment);
+router.post('/phonepe-callback', handlePhonePeCallback);
 router.post('/failed', authenticate, paymentFailed);
 router.get('/orders', authenticate, getUserOrders);
 router.get('/orders/:orderId', authenticate, getOrder);

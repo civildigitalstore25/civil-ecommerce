@@ -1,4 +1,14 @@
 import React, { useMemo } from "react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend
+} from "recharts";
 import { TrendingUp, Users, Package2, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
@@ -35,8 +45,8 @@ const Dashboard: React.FC = () => {
     refetchInterval: 60000, // Auto-refresh every minute
   });
 
-  // Calculate statistics
-  const stats = useMemo(() => {
+  // Calculate statistics and sales data for charts
+  const { stats, monthlySales, yearlySales } = useMemo(() => {
     const products = productsData?.products || [];
     const orders = ordersData?.data?.orders || [];
     const users = usersData?.users || [];
@@ -72,23 +82,87 @@ const Dashboard: React.FC = () => {
       categoryCounts[category] = (categoryCounts[category] || 0) + 1;
     });
 
+    // Monthly sales (current year)
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthlySales = Array.from({ length: 12 }, (_, i) => ({
+      month: new Date(year, i).toLocaleString("default", { month: "short" }),
+      sales: 0,
+    }));
+    orders.forEach((order: any) => {
+      if (order.paymentStatus === "paid") {
+        const d = new Date(order.createdAt);
+        if (d.getFullYear() === year) {
+          monthlySales[d.getMonth()].sales += order.totalAmount;
+        }
+      }
+    });
+
+    // Yearly sales (last 5 years)
+    const yearMap: Record<number, number> = {};
+    orders.forEach((order: any) => {
+      if (order.paymentStatus === "paid") {
+        const d = new Date(order.createdAt);
+        const y = d.getFullYear();
+        yearMap[y] = (yearMap[y] || 0) + order.totalAmount;
+      }
+    });
+    const years = Object.keys(yearMap)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .slice(-5);
+    const yearlySales = years.map((y) => ({ year: y, sales: yearMap[y] }));
+
     return {
-      totalRevenue,
-      totalProducts: products.length,
-      totalCategories: categories.length,
-      totalUsers: users.length,
-      totalOrders: orders.length,
-      todayOrders,
-      topCompanies: Object.entries(companyCounts)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 5)
-        .map(([name, count]) => ({ name, products: count })),
-      topCategories: Object.entries(categoryCounts)
-        .sort(([, a], [, b]) => b - a)
-        .slice(0, 6)
-        .map(([name, count]) => ({ name, products: count })),
+      stats: {
+        totalRevenue,
+        totalProducts: products.length,
+        totalCategories: categories.length,
+        totalUsers: users.length,
+        totalOrders: orders.length,
+        todayOrders,
+        topCompanies: Object.entries(companyCounts)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 5)
+          .map(([name, count]) => ({ name, products: count })),
+        topCategories: Object.entries(categoryCounts)
+          .sort(([, a], [, b]) => b - a)
+          .slice(0, 6)
+          .map(([name, count]) => ({ name, products: count })),
+      },
+      monthlySales,
+      yearlySales,
     };
   }, [productsData, ordersData, usersData]);
+      {/* Sales Graphs */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="rounded-xl p-6 shadow-sm border transition-colors duration-200" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
+          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Monthly Sales (Current Year)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={monthlySales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" stroke={colors.text.secondary} />
+              <YAxis stroke={colors.text.secondary} tickFormatter={(v: number) => `₹${v.toLocaleString("en-IN")}`} />
+              <Tooltip formatter={(value?: number) => value !== undefined ? `₹${value.toLocaleString("en-IN")}` : ''} />
+              <Legend />
+              <Line type="monotone" dataKey="sales" stroke={colors.interactive.primary} strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} name="Sales" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="rounded-xl p-6 shadow-sm border transition-colors duration-200" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
+          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Yearly Sales (Last 5 Years)</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={yearlySales} margin={{ top: 20, right: 30, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="year" stroke={colors.text.secondary} />
+              <YAxis stroke={colors.text.secondary} tickFormatter={(v: number) => `₹${v.toLocaleString("en-IN")}`} />
+              <Tooltip formatter={(value?: number) => value !== undefined ? `₹${value.toLocaleString("en-IN")}` : ''} />
+              <Legend />
+              <Line type="monotone" dataKey="sales" stroke={colors.status.success} strokeWidth={3} dot={{ r: 5 }} activeDot={{ r: 8 }} name="Sales" />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
 
   return (
     <div className="space-y-6">

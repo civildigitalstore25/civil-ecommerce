@@ -117,9 +117,12 @@ export const useSignIn = () => {
 };
 
 export const useCurrentUser = () => {
+  const token = localStorage.getItem("token");
+  
   return useQuery({
     queryKey: ["currentUser"],
     queryFn: authApi.getCurrentUser,
+    enabled: !!token, // Only run query if token exists
     retry: (failureCount, error: any) => {
       // Don't retry if it's an authentication error (401)
       if (error?.response?.status === 401) {

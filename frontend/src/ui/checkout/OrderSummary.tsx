@@ -1,5 +1,7 @@
 import React from "react";
 import FormButton from "../../components/Button/FormButton";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 interface CartItem {
   id: string | number;
@@ -24,6 +26,17 @@ interface OrderSummaryProps {
   setCouponCode: (code: string) => void;
   applyCoupon: () => void;
   isProcessing?: boolean;
+  user?: any;
+  shippingAddress?: any;
+  clearCart?: () => void;
+  navigate?: any;
+}
+
+// Declare Razorpay on window
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -36,7 +49,199 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   setCouponCode,
   applyCoupon,
   isProcessing = false,
+  user,
+  shippingAddress,
+  clearCart,
+  navigate
 }) => {
+  const [showGatewayModal, setShowGatewayModal] = React.useState(false);
+  const [selectedGateway, setSelectedGateway] = React.useState<'razorpay' | 'phonepe' | null>(null);
+  const [loading, setLoading] = React.useState(false);
+
+  // Debug modal state
+  React.useEffect(() => {
+    console.log('🎭 Modal state changed:', showGatewayModal);
+  }, [showGatewayModal]);
+
+  // Handler for Place Order button
+  const handlePlaceOrderClick = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log('🔘 Place Order button clicked');
+    console.log('👤 User:', user);
+    console.log('🛒 Cart Items:', cartItems);
+    
+    // Validate cart items
+    if (!cartItems || cartItems.length === 0) {
+      toast.error('Your cart is empty');
+      console.log('❌ Cart is empty');
+      return;
+    }
+
+    // Validate user authentication
+    if (!user) {
+      toast.error('Please login to place order');
+      console.log('❌ User not authenticated');
+      return;
+    }
+
+    console.log('✅ Opening payment gateway modal');
+    setShowGatewayModal(true);
+  };
+
+  // Handler for selecting a gateway
+  const handleGatewaySelect = async (gateway: 'razorpay' | 'phonepe') => {
+    setSelectedGateway(gateway);
+    setShowGatewayModal(false);
+    setLoading(true);
+
+    try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        toast.error('Authentication required. Please login.');
+        setLoading(false);
+        return;
+      }
+
+      // Prepare order payload
+      const payload: any = {
+        items: cartItems.map(item => ({
+          productId: item.id,
+          name: item.product.name,
+          quantity: item.quantity,
+          price: Number(item.product.price),
+        })),
+        subtotal: summary.subtotal,
+        discount: summary.discount,
+        totalAmount: summary.total,
+        shippingCharges: 0,
+        shippingAddress: shippingAddress || {
+          fullName: user?.fullName || user?.name || 'Customer',
+          phoneNumber: user?.phoneNumber || 'N/A',
+          addressLine1: 'N/A',
+          city: 'N/A',
+          state: 'N/A',
+          pincode: '000000',
+          country: 'India'
+        },
+        couponCode: couponCode || null,
+        notes: '',
+        gateway,
+        callbackUrl: `${window.location.origin}/payment/callback`
+      };
+
+      console.log('📦 Creating order with payload:', payload);
+
+      const res = await axios.post(
+        `${API_BASE_URL}/api/payments/create-order`, 
+        payload, 
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const data = res.data?.data;
+      console.log('✅ Order created:', data);
+
+      if (gateway === 'razorpay' && data?.razorpayOrderId) {
+        // Load Razorpay script if not loaded
+        if (!window.Razorpay) {
+          await new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = resolve;
+            script.onerror = reject;
+            document.body.appendChild(script);
+          });
+        }
+
+        const options = {
+          key: data.keyId,
+          amount: data.amount,
+          currency: data.currency || 'INR',
+          order_id: data.razorpayOrderId,
+          name: 'Order Payment',
+          description: `Order #${data.orderId}`,
+          handler: async function (response: any) {
+            try {
+              // Verify payment
+              const verifyRes = await axios.post(
+                `${API_BASE_URL}/api/payments/verify`,
+                {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature
+                },
+                {
+                  headers: { Authorization: `Bearer ${token}` }
+                }
+              );
+
+              if (verifyRes.data.success) {
+                toast.success('Payment successful!');
+                clearCart && clearCart();
+                navigate && navigate('/my-orders');
+              } else {
+                toast.error('Payment verification failed');
+              }
+            } catch (error: any) {
+              console.error('Payment verification error:', error);
+              toast.error('Payment verification failed');
+            }
+          },
+          prefill: {
+            name: user?.fullName || user?.name,
+            email: user?.email,
+            contact: user?.phoneNumber || ''
+          },
+          theme: { 
+            color: '#0A2A6B' 
+          },
+          modal: {
+            ondismiss: function() {
+              setLoading(false);
+              toast.error('Payment cancelled');
+            }
+          }
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.on('payment.failed', function (response: any) {
+          toast.error('Payment failed: ' + response.error.description);
+          setLoading(false);
+        });
+        rzp.open();
+        setLoading(false);
+
+      } else if (gateway === 'phonepe' && data?.paymentUrl) {
+        // Store order details for callback
+        sessionStorage.setItem('phonepe_order_id', data.orderId);
+        sessionStorage.setItem('phonepe_transaction_id', data.merchantTransactionId);
+        
+        // Redirect to PhonePe payment URL
+        toast.success('Redirecting to PhonePe...');
+        setTimeout(() => {
+          window.location.href = data.paymentUrl;
+        }, 1000);
+
+      } else {
+        toast.error('Payment initiation failed. Please try again.');
+        setLoading(false);
+      }
+
+    } catch (err: any) {
+      console.error('Payment error:', err);
+      const errorMessage = err?.response?.data?.message || err.message || 'Payment failed';
+      toast.error(errorMessage);
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"
@@ -151,14 +356,12 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       <div
         className="p-4 rounded-md mb-4 text-sm leading-relaxed"
-       
       >
         <strong style={{ color: colors.text.primary }}>
-          Razorpay Payment Gateway
+          Multiple Payment Options
         </strong>
         <br />
-        All UPI apps, Debit and Credit Cards, and NetBanking accepted | Powered
-        by Razorpay
+        Pay with Razorpay (Cards, UPI, NetBanking) or PhonePe (UPI)
       </div>
 
       <p
@@ -177,15 +380,133 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         .
       </p>
 
+      {/* Payment Gateway Modal */}
+      {showGatewayModal && (
+        <div 
+          style={{
+            position: 'fixed', 
+            top: 0, 
+            left: 0, 
+            width: '100vw', 
+            height: '100vh',
+            background: 'rgba(0,0,0,0.6)', 
+            zIndex: 9999, 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center'
+          }}
+          onClick={() => setShowGatewayModal(false)}
+        >
+          <div 
+            style={{ 
+              background: '#fff', 
+              borderRadius: 16, 
+              padding: 32, 
+              minWidth: 360,
+              maxWidth: 450,
+              boxShadow: '0 20px 60px rgba(0,0,0,0.3)', 
+              textAlign: 'center' 
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ 
+              fontSize: 24, 
+              marginBottom: 8, 
+              color: '#1a1a1a',
+              fontWeight: 'bold'
+            }}>
+              Choose Payment Method
+            </h2>
+            <p style={{ 
+              fontSize: 14, 
+              color: '#666', 
+              marginBottom: 24 
+            }}>
+              Select your preferred payment gateway
+            </p>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <button
+                style={{ 
+                  padding: '16px 24px', 
+                  fontSize: 16, 
+                  fontWeight: '600',
+                  borderRadius: 10, 
+                  background: 'linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)', 
+                  color: '#fff', 
+                  border: 'none', 
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  boxShadow: '0 4px 12px rgba(13, 148, 136, 0.3)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(13, 148, 136, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 148, 136, 0.3)';
+                }}
+                onClick={() => handleGatewaySelect('razorpay')}
+              >
+                💳 Pay with Razorpay
+              </button>
+              
+              <button
+                style={{ 
+                  padding: '16px 24px', 
+                  fontSize: 16, 
+                  fontWeight: '600',
+                  borderRadius: 10, 
+                  background: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)', 
+                  color: '#fff', 
+                  border: 'none', 
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  boxShadow: '0 4px 12px rgba(124, 58, 237, 0.3)'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(124, 58, 237, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(124, 58, 237, 0.3)';
+                }}
+                onClick={() => handleGatewaySelect('phonepe')}
+              >
+                📱 Pay with PhonePe
+              </button>
+              
+              <button
+                style={{ 
+                  marginTop: 12, 
+                  color: '#666', 
+                  background: 'none', 
+                  border: 'none', 
+                  fontSize: 14, 
+                  cursor: 'pointer',
+                  padding: '8px'
+                }}
+                onClick={() => setShowGatewayModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <FormButton
-        type="submit"
+        type="button"
         variant="primary"
         className={`w-full py-3 text-lg transition duration-300 ease-in-out 
                    bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg shadow-md 
-                   hover:shadow-lg ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}`}
-        disabled={isProcessing}
+                   hover:shadow-lg ${isProcessing || loading ? "opacity-70 cursor-not-allowed" : ""}`}
+        disabled={isProcessing || loading}
+        onClick={handlePlaceOrderClick}
       >
-        {isProcessing ? (
+        {isProcessing || loading ? (
           <span className="flex items-center justify-center gap-2">
             <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
               <circle

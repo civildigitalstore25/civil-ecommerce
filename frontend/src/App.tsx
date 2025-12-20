@@ -35,7 +35,7 @@ import PrivacyPolicy from "./ui/policy/PrivacyPolicy";
 import ShippingPolicy from "./ui/policy/ShippingPolicy";
 import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
-import PaymentCallback from "./ui/payment/PaymentCallback";
+import PaymentCallback from "./pages/PaymentCallback";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
@@ -242,6 +242,14 @@ function AppLayout() {
           element={
             <AuthGuard>
               <CheckoutPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/payment/callback"
+          element={
+            <AuthGuard>
+              <PaymentCallback />
             </AuthGuard>
           }
         />

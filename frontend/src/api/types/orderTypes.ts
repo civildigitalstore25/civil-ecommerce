@@ -1,12 +1,12 @@
 export interface IShippingAddress {
-  fullName: string;
-  phoneNumber: string;
-  addressLine1: string;
+  fullName?: string;
+  phoneNumber?: string;
+  addressLine1?: string;
   addressLine2?: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  country?: string;
 }
 
 export interface IOrderItem {
@@ -29,7 +29,7 @@ export interface IOrder {
   discount: number;
   shippingCharges: number;
   totalAmount: number;
-  shippingAddress: IShippingAddress;
+  shippingAddress?: IShippingAddress;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
   orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
   razorpayOrderId?: string;

@@ -85,6 +85,7 @@ app.use('/api/contact', contactRoutes);
 app.use("/api/banners", bannerRoutes);
 app.use('/api/coupons', couponRoutes);
 app.use("/api/reviews", reviewRoutes);
+
 app.use('/api/payments', paymentRoutes);
 
 app.use('/api/download', downloadRoutes);
