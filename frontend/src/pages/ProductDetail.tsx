@@ -947,8 +947,8 @@ const ProductDetail: React.FC = () => {
               <span
                 className="px-2 py-1 lg:px-3 lg:py-1 rounded-lg text-xs lg:text-sm font-bold transition-colors duration-200"
                 style={{
-                  backgroundColor: colors.interactive.primary,
-                  color: colors.background.primary,
+                  background: colors.interactive.primary,
+                  color: colors.text.inverse,
                 }}
               >
                 {product.brand || product.company}
