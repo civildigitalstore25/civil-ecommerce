@@ -23,6 +23,14 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   const { addItem } = useCartContext();
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
+  // Some theme values (like interactive.primary) may be gradients;
+  // compute a safe tint color (hex with alpha) for badge backgrounds.
+  const interactiveTint =
+    colors.interactive.primary &&
+      typeof colors.interactive.primary === "string" &&
+      colors.interactive.primary.startsWith("linear-gradient")
+      ? `${colors.interactive.secondary}20`
+      : `${colors.interactive.primary}20`;
 
   const handleAddToCart = async (
     product: any,
@@ -122,8 +130,8 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 <span
                   className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200 font-medium"
                   style={{
-                    backgroundColor: `${colors.interactive.primary}20`,
-                    color: colors.interactive.primary,
+                    backgroundColor: interactiveTint,
+                    color: (typeof colors.interactive.primary === "string" && colors.interactive.primary.startsWith("linear-gradient")) ? colors.interactive.secondary : colors.interactive.primary,
                   }}
                 >
                   {product.category}
@@ -170,7 +178,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
 
               {/* Actions */}
               <div className="flex flex-col gap-1.5 md:gap-2 mt-auto">
-                
+
                 <button
                   className="w-full font-bold rounded-md md:rounded-lg py-1.5 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{

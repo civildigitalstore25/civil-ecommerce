@@ -85,6 +85,12 @@ const BrandCategoryListing: React.FC = () => {
   const { addItem } = useCartContext();
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
+  const interactiveTint =
+    colors.interactive.primary &&
+      typeof colors.interactive.primary === "string" &&
+      colors.interactive.primary.startsWith("linear-gradient")
+      ? `${colors.interactive.secondary}20`
+      : `${colors.interactive.primary}20`;
 
   const handleAddToCart = async (
     product: any,
@@ -266,8 +272,8 @@ const BrandCategoryListing: React.FC = () => {
                   <span
                     className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
                     style={{
-                      backgroundColor: `${colors.interactive.primary}20`,
-                      color: colors.interactive.primary,
+                      backgroundColor: interactiveTint,
+                      color: (typeof colors.interactive.primary === "string" && colors.interactive.primary.startsWith("linear-gradient")) ? colors.interactive.secondary : colors.interactive.primary,
                     }}
                   >
                     {product.category}
