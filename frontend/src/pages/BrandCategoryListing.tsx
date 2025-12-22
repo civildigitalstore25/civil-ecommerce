@@ -219,11 +219,11 @@ const BrandCategoryListing: React.FC = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-3 gap-0.5 md:gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6">
             {products.map((product: any) => (
               <div
                 key={product._id}
-                className="rounded-none md:rounded-2xl shadow hover:shadow-lg transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
+                className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
                 style={{
                   backgroundColor: colors.background.primary,
                 }}
