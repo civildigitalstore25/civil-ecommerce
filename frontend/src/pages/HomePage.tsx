@@ -50,10 +50,10 @@ const HomePage: React.FC = () => {
         <section className="px-4 sm:px-6 lg:px-8">
           <WhyChooseUs />
         </section>
-
+{/* 
         <section className="px-4 sm:px-6 lg:px-8">
           <Reviews />
-        </section>
+        </section> */}
       </main>
     </div>
   );

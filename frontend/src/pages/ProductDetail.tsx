@@ -123,6 +123,9 @@ const ProductDetail: React.FC = () => {
   const [activeTab, setActiveTab] = useState<
     "features" | "requirements" | "reviews" | "faq"
   >("features");
+  const [renderedTabs, setRenderedTabs] = useState<
+    ("features" | "requirements" | "reviews" | "faq")[]
+  >(["features", "requirements", "reviews", "faq"]);
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -159,6 +162,25 @@ const ProductDetail: React.FC = () => {
       loadReviewStats(product._id);
     }
   }, [product?._id]);
+
+  // Compute which tabs to show based on available product data
+  useEffect(() => {
+    const hasFeatures = !!(product && product.keyFeatures && product.keyFeatures.length > 0);
+    const hasRequirements = !!(product && product.systemRequirements && product.systemRequirements.length > 0);
+
+    const tabs: ("features" | "requirements" | "reviews" | "faq")[] = [];
+    if (hasFeatures) tabs.push("features");
+    if (hasRequirements) tabs.push("requirements");
+    // Always include reviews and faq
+    tabs.push("reviews", "faq");
+
+    setRenderedTabs(tabs);
+
+    // Ensure activeTab is valid — if not, switch to first available
+    if (!tabs.includes(activeTab)) {
+      setActiveTab(tabs[0]);
+    }
+  }, [product, activeTab]);
 
   // Load reviews for the product
   const loadReviews = async (productId: string) => {
@@ -1449,43 +1471,46 @@ const ProductDetail: React.FC = () => {
             style={{ borderColor: colors.border.primary }}
           >
             <div className="flex gap-4 lg:gap-8 overflow-x-auto scrollbar-hide">
-              {[
-                { key: "features", label: "Features" },
-                { key: "requirements", label: "System" },
-                {
-                  key: "reviews",
-                  label: `Reviews (${reviewStats?.totalReviews || 0})`,
-                },
-                { key: "faq", label: "FAQ" },
-              ].map((tab) => (
-                <button
-                  key={tab.key}
-                  onClick={() => setActiveTab(tab.key as typeof activeTab)}
-                  className="py-3 lg:py-4 px-1 lg:px-2 font-medium transition-colors duration-200 border-b-2 whitespace-nowrap text-sm lg:text-base flex-shrink-0"
-                  style={{
-                    borderColor:
-                      activeTab === tab.key
-                        ? colors.interactive.primary
-                        : "transparent",
-                    color:
-                      activeTab === tab.key
-                        ? colors.interactive.primary
-                        : colors.text.secondary,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (activeTab !== tab.key) {
-                      e.currentTarget.style.color = colors.text.primary;
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (activeTab !== tab.key) {
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
+              {renderedTabs.map((tabKey) => {
+                const label =
+                  tabKey === "features"
+                    ? "Features"
+                    : tabKey === "requirements"
+                      ? "System"
+                      : tabKey === "reviews"
+                        ? `Reviews (${reviewStats?.totalReviews || 0})`
+                        : "FAQ";
+
+                return (
+                  <button
+                    key={tabKey}
+                    onClick={() => setActiveTab(tabKey as typeof activeTab)}
+                    className="py-3 lg:py-4 px-1 lg:px-2 font-medium transition-colors duration-200 border-b-2 whitespace-nowrap text-sm lg:text-base flex-shrink-0"
+                    style={{
+                      borderColor:
+                        activeTab === tabKey
+                          ? colors.interactive.primary
+                          : "transparent",
+                      color:
+                        activeTab === tabKey
+                          ? colors.interactive.primary
+                          : colors.text.secondary,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (activeTab !== tabKey) {
+                        e.currentTarget.style.color = colors.text.primary;
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (activeTab !== tabKey) {
+                        e.currentTarget.style.color = colors.text.secondary;
+                      }
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
