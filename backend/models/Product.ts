@@ -26,7 +26,7 @@ interface Requirement {
 
 export interface IProduct extends Document {
   name: string;
-  version: string;
+  version?: string;
   shortDescription?: string;
   description: string;
   overallFeatures?: string;
@@ -96,7 +96,7 @@ const requirementSchema = new Schema({
 const productSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
-    version: { type: String, required: true },
+    version: { type: String },
     shortDescription: { type: String },
     description: { type: String, required: true },
     overallFeatures: { type: String },

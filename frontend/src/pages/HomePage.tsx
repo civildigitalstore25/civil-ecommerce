@@ -3,7 +3,7 @@ import React from "react";
 import HeroSection from "../ui/home/HeroSection";
 import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
-import Reviews from "../ui/home/Reviews";
+// import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 // import { MobileShopByCategory } from "../components/Header";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
@@ -50,10 +50,10 @@ const HomePage: React.FC = () => {
         <section className="px-4 sm:px-6 lg:px-8">
           <WhyChooseUs />
         </section>
-
+{/* 
         <section className="px-4 sm:px-6 lg:px-8">
           <Reviews />
-        </section>
+        </section> */}
       </main>
     </div>
   );

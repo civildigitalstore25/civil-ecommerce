@@ -207,10 +207,11 @@ const Header: React.FC = () => {
               <ShoppingCart className="w-5 h-5 lg:w-5 lg:h-5" />
               {getItemCount() > 0 && (
                 <span
-                  className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-5 h-5 lg:w-5 lg:h-5 flex items-center justify-center"
+                  className="absolute -top-1 -right-1 lg:-top-2 lg:-right-2 text-xs rounded-full w-5 h-5 lg:w-5 lg:h-5 flex items-center justify-center border"
                   style={{
-                    backgroundColor: colors.interactive.primary,
+                    background: colors.interactive.primary,
                     color: colors.text.inverse,
+                    borderColor: colors.background.primary,
                   }}
                 >
                   {getItemCount()}
