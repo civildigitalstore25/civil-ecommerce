@@ -132,6 +132,13 @@ const ProductDetail: React.FC = () => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
 
+  // Use theme primary color directly for selected background (theme blue).
+  const selectedBg =
+    (colors && colors.interactive && colors.interactive.primary) ||
+    colors?.interactive?.secondary ||
+    colors?.background?.accent ||
+    "#10b981";
+
   // Review-related state
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
@@ -1067,9 +1074,10 @@ const ProductDetail: React.FC = () => {
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          background: selectedLicense === option.id
-                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
-                            : colors.background.secondary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
                           color: selectedLicense === option.id ? '#fff' : colors.text.primary,
                           boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
@@ -1133,9 +1141,10 @@ const ProductDetail: React.FC = () => {
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          background: selectedLicense === option.id
-                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
-                            : colors.background.secondary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
                           color: selectedLicense === option.id ? '#fff' : colors.text.primary,
                           boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
@@ -1184,9 +1193,10 @@ const ProductDetail: React.FC = () => {
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          background: selectedLicense === option.id
-                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
-                            : colors.background.secondary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
                           color: selectedLicense === option.id ? '#fff' : colors.text.primary,
                           boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
@@ -1250,9 +1260,10 @@ const ProductDetail: React.FC = () => {
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          background: selectedLicense === option.id
-                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
-                            : colors.background.secondary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
                           color: selectedLicense === option.id ? '#fff' : colors.text.primary,
                           boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
@@ -1311,9 +1322,10 @@ const ProductDetail: React.FC = () => {
                             selectedLicense === option.id
                               ? colors.interactive.primary
                               : colors.border.primary,
-                          background: selectedLicense === option.id
-                            ? `linear-gradient(120deg, ${colors.interactive.primary} 60%, ${colors.interactive.primaryHover} 100%)`
-                            : colors.background.secondary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
                           color: selectedLicense === option.id ? '#fff' : colors.text.primary,
                           boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
                         }}
