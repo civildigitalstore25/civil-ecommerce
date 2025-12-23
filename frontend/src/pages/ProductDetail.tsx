@@ -468,6 +468,14 @@ const ProductDetail: React.FC = () => {
   React.useEffect(() => {
     if (allPricingOptions.length > 0 && !selectedOption) {
       setSelectedLicense(allPricingOptions[0].id);
+      // If there's only one pricing option available, treat it as already selected
+      // so we don't force the user to manually pick it before buying/adding to cart.
+      if (allPricingOptions.length === 1) {
+        setUserHasSelectedPlan(true);
+      }
+    } else if (allPricingOptions.length === 1) {
+      // Ensure flag is set even if selectedOption already exists.
+      setUserHasSelectedPlan(true);
     }
   }, [allPricingOptions, selectedOption]);
 
