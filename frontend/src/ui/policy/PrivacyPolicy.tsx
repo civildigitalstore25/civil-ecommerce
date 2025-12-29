@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import {  FileText, Link, Shield,  } from "lucide-react";
+import { FileText, Link, Shield, CreditCard, Database, Lock } from "lucide-react";
 import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
 
 const cardVariants = {
@@ -161,11 +161,160 @@ const PrivacyPolicy: React.FC = () => {
                         Visitor comments may be checked through an automated spam detection service.
                     </p>
                 </motion.div>
+
+                {/* Payment Information - Razorpay */}
+                <motion.div
+                    className="rounded-2xl shadow-md p-8 border"
+                    style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-full" style={{ backgroundColor: colors.background.secondary }}>
+                            <CreditCard className="w-7 h-7" style={{ color: colors.interactive.primary }} />
+                        </div>
+                        <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+                            Payment Information Collection
+                        </h2>
+                    </div>
+                    <p className="leading-relaxed mb-4" style={{ color: colors.text.secondary }}>
+                        When you make a purchase on our website, your payment is processed by <strong style={{ color: colors.interactive.primary }}>Razorpay</strong>, our trusted third-party payment processor. We collect and share the following information with Razorpay:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 mb-4" style={{ color: colors.text.secondary }}>
+                        <li>Name and billing address</li>
+                        <li>Email address and phone number</li>
+                        <li>Order details and transaction amount</li>
+                        <li>Device and browser information for fraud prevention</li>
+                    </ul>
+                    <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+                        <strong style={{ color: colors.text.primary }}>Important:</strong> We do NOT store your complete credit/debit card numbers, CVV, or banking credentials on our servers. All sensitive payment information is securely handled by Razorpay's PCI-DSS Level 1 compliant infrastructure.
+                    </p>
+                </motion.div>
+
+                {/* Third-Party Payment Processor */}
+                <motion.div
+                    className="rounded-2xl shadow-md p-8 border"
+                    style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    transition={{ duration: 0.6, delay: 0.5 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-full" style={{ backgroundColor: colors.background.secondary }}>
+                            <Lock className="w-7 h-7" style={{ color: colors.interactive.primary }} />
+                        </div>
+                        <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+                            Third-Party Payment Processing
+                        </h2>
+                    </div>
+                    <p className="leading-relaxed mb-4" style={{ color: colors.text.secondary }}>
+                        Razorpay is an independent payment service provider with its own privacy practices. When you complete a transaction:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 mb-4" style={{ color: colors.text.secondary }}>
+                        <li>You are redirected to Razorpay's secure payment gateway</li>
+                        <li>Your payment data is transmitted directly to Razorpay using 256-bit SSL encryption</li>
+                        <li>Razorpay processes the payment according to their Terms of Service and Privacy Policy</li>
+                        <li>We receive only transaction confirmation and basic order details</li>
+                    </ul>
+                    <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
+                        We recommend reviewing Razorpay's Privacy Policy at{" "}
+                        <a
+                            href="https://razorpay.com/privacy/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline font-semibold"
+                            style={{ color: colors.interactive.primary }}
+                        >
+                            https://razorpay.com/privacy/
+                        </a>{" "}
+                        to understand how they handle your payment information.
+                    </p>
+                    <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+                        <strong style={{ color: colors.text.primary }}>Merchant Agreement:</strong> We entered into a merchant agreement with Razorpay on December 14, 2025, governing our use of their payment services and data handling practices.
+                    </p>
+                </motion.div>
+
+                {/* Data Security & Compliance */}
+                <motion.div
+                    className="rounded-2xl shadow-md p-8 border"
+                    style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-full" style={{ backgroundColor: colors.background.secondary }}>
+                            <Database className="w-7 h-7" style={{ color: colors.interactive.primary }} />
+                        </div>
+                        <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+                            Data Security & Compliance
+                        </h2>
+                    </div>
+                    <p className="leading-relaxed mb-4" style={{ color: colors.text.secondary }}>
+                        We implement industry-standard security measures to protect your personal and payment information:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 mb-4" style={{ color: colors.text.secondary }}>
+                        <li><strong>Encryption:</strong> All data transmitted between your browser and our servers is encrypted using SSL/TLS protocols</li>
+                        <li><strong>Secure Storage:</strong> Personal data is stored on secure servers with restricted access</li>
+                        <li><strong>Tokenization:</strong> Payment card details are tokenized by Razorpay for secure storage</li>
+                        <li><strong>Regular Audits:</strong> We conduct regular security audits and vulnerability assessments</li>
+                        <li><strong>Access Controls:</strong> Only authorized personnel have access to sensitive customer data</li>
+                    </ul>
+                    <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+                        In the event of a data breach affecting your payment information, we will notify you promptly in accordance with applicable data protection laws.
+                    </p>
+                </motion.div>
+
+                {/* Payment Data Retention */}
+                <motion.div
+                    className="rounded-2xl shadow-md p-8 border"
+                    style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary }}
+                    variants={cardVariants}
+                    initial="hidden"
+                    whileInView="visible"
+                    transition={{ duration: 0.6, delay: 0.7 }}
+                    viewport={{ once: true }}
+                >
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-full" style={{ backgroundColor: colors.background.secondary }}>
+                            <Shield className="w-7 h-7" style={{ color: colors.interactive.primary }} />
+                        </div>
+                        <h2 className="text-2xl font-semibold" style={{ color: colors.text.primary }}>
+                            Payment Data Retention
+                        </h2>
+                    </div>
+                    <p className="leading-relaxed mb-4" style={{ color: colors.text.secondary }}>
+                        We retain transaction-related data for the following purposes:
+                    </p>
+                    <ul className="list-disc pl-6 space-y-2 mb-4" style={{ color: colors.text.secondary }}>
+                        <li>Order fulfillment and customer service</li>
+                        <li>Processing refunds and handling disputes</li>
+                        <li>Compliance with tax and financial regulations</li>
+                        <li>Fraud detection and prevention</li>
+                        <li>Legal obligations and record-keeping requirements</li>
+                    </ul>
+                    <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
+                        Transaction records are typically retained for 7 years from the date of purchase to comply with accounting and tax laws. Payment card tokens stored by Razorpay may be retained as long as your account is active or as needed for recurring transactions.
+                    </p>
+                </motion.div>
             </div>
 
             {/* Footer Notice */}
             <div className="mt-12 text-center text-sm" style={{ color: colors.text.secondary }}>
                 Last updated: <strong>December 2025</strong> • Subject to change anytime
+                <br />
+                <span className="mt-2 inline-block">
+                    Payment processing powered by{" "}
+                    <strong style={{ color: colors.interactive.primary }}>Razorpay</strong> •
+                    Secure payment gateway partner since December 2025
+                </span>
             </div>
         </div>
     );
