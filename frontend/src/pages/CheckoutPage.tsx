@@ -34,6 +34,7 @@ interface CheckoutFormData {
   name: string;
   whatsapp: string;
   email: string;
+  paymentGateway: 'razorpay' | 'phonepe';
 }
 
 const CheckoutPage: React.FC = () => {
@@ -56,6 +57,7 @@ const CheckoutPage: React.FC = () => {
       name: user?.fullName || "",
       whatsapp: "",
       email: user?.email || "",
+      paymentGateway: "razorpay", // Default to Razorpay
     },
   });
 
@@ -126,14 +128,6 @@ const CheckoutPage: React.FC = () => {
         return;
       }
 
-      // Load Razorpay script
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        toast.error("Failed to load payment gateway. Please try again.");
-        setIsProcessing(false);
-        return;
-      }
-
       const subtotal = normalizePrice(summary.subtotal);
       const finalTotal = subtotal - discount;
 
@@ -179,6 +173,7 @@ const CheckoutPage: React.FC = () => {
         },
         couponCode: couponCode || null,
         notes: `Email: ${data.email}`,
+        paymentGateway: data.paymentGateway, // Send selected payment gateway
       };
 
       console.log('📦 Final Order Data:', orderData);
@@ -199,6 +194,29 @@ const CheckoutPage: React.FC = () => {
 
       if (!responseData.success) {
         toast.error(responseData.message || "Failed to create order");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Handle payment based on selected gateway
+      if (data.paymentGateway === 'razorpay') {
+        await handleRazorpayPayment(responseData, token, finalTotal, data);
+      } else if (data.paymentGateway === 'phonepe') {
+        await handlePhonePePayment(responseData);
+      }
+    } catch (error: any) {
+      console.error("Place order error:", error);
+      toast.error("Failed to process order");
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRazorpayPayment = async (responseData: any, token: string, finalTotal: number, data: CheckoutFormData) => {
+    try {
+      // Load Razorpay script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        toast.error("Failed to load Razorpay. Please try again.");
         setIsProcessing(false);
         return;
       }
@@ -350,9 +368,33 @@ const CheckoutPage: React.FC = () => {
       });
 
       razorpay.open();
-    } catch (error: any) {
-      console.error("Order creation error:", error);
-      toast.error("Failed to process order. Please try again.");
+    } catch (error) {
+      console.error("Razorpay payment error:", error);
+      toast.error("Failed to process Razorpay payment");
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePhonePePayment = async (responseData: any) => {
+    try {
+      // PhonePe redirects to their payment page
+      if (responseData.data.paymentUrl) {
+        // Store order info in localStorage for status checking
+        localStorage.setItem('pendingPhonePeOrder', JSON.stringify({
+          orderId: responseData.data.orderId,
+          transactionId: responseData.data.transactionId,
+          timestamp: Date.now()
+        }));
+
+        // Redirect to PhonePe payment page
+        window.location.href = responseData.data.paymentUrl;
+      } else {
+        toast.error("Failed to initiate PhonePe payment");
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("PhonePe payment error:", error);
+      toast.error("Failed to process PhonePe payment");
       setIsProcessing(false);
     }
   };

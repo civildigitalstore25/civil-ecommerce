@@ -36,9 +36,12 @@ export interface IOrder extends Document {
   notes?: string;
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  paymentGateway?: 'razorpay' | 'phonepe';
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;
+  phonepeTransactionId?: string;
+  phonepePaymentId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -115,6 +118,11 @@ const OrderSchema = new Schema<IOrder>({
     enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
+  paymentGateway: {
+    type: String,
+    enum: ['razorpay', 'phonepe'],
+    default: 'razorpay'
+  },
   razorpayOrderId: {
     type: String
   },
@@ -122,6 +130,12 @@ const OrderSchema = new Schema<IOrder>({
     type: String
   },
   razorpaySignature: {
+    type: String
+  },
+  phonepeTransactionId: {
+    type: String
+  },
+  phonepePaymentId: {
     type: String
   }
 }, {
@@ -131,6 +145,7 @@ const OrderSchema = new Schema<IOrder>({
 // Index for faster queries
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ razorpayOrderId: 1 });
+OrderSchema.index({ phonepeTransactionId: 1 });
 
 const Order = mongoose.model<IOrder>('Order', OrderSchema);
 

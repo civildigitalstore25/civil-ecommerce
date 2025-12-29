@@ -7,6 +7,7 @@ interface CheckoutFormData {
   name: string;
   whatsapp: string;
   email: string;
+  paymentGateway: 'razorpay' | 'phonepe';
 }
 
 interface BillingFormProps {
@@ -177,6 +178,85 @@ const BillingForm: React.FC<BillingFormProps> = ({
         />
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+        )}
+      </div>
+
+      {/* Payment Gateway Selection */}
+      <div>
+        <label
+          className="block text-sm font-medium mb-3"
+          style={{ color: colors.text.primary }}
+        >
+          Select Payment Method <span className="text-red-500">*</span>
+        </label>
+        <div className="space-y-3">
+          {/* Razorpay Option */}
+          <label
+            className="flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md"
+            style={{
+              backgroundColor: colors.background.primary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <input
+              type="radio"
+              value="razorpay"
+              className="w-4 h-4 text-blue-600"
+              {...register("paymentGateway", {
+                required: "Please select a payment method",
+              })}
+            />
+            <div className="ml-3 flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-2">
+                <img
+                  src="https://cdn.razorpay.com/logo.svg"
+                  alt="Razorpay"
+                  className="h-6"
+                />
+                <span className="font-medium" style={{ color: colors.text.primary }}>
+                  Razorpay
+                </span>
+              </div>
+              <span className="text-xs" style={{ color: colors.text.secondary }}>
+                (Cards, UPI, Wallets, Net Banking)
+              </span>
+            </div>
+          </label>
+
+          {/* PhonePe Option */}
+          <label
+            className="flex items-center p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 hover:shadow-md"
+            style={{
+              backgroundColor: colors.background.primary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <input
+              type="radio"
+              value="phonepe"
+              className="w-4 h-4 text-purple-600"
+              {...register("paymentGateway", {
+                required: "Please select a payment method",
+              })}
+            />
+            <div className="ml-3 flex items-center gap-3 flex-1">
+              <div className="flex items-center gap-2">
+                <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+                  <rect width="24" height="24" rx="4" fill="#5F259F" />
+                  <path d="M7 12L10 15L17 8" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+                <span className="font-medium" style={{ color: colors.text.primary }}>
+                  PhonePe
+                </span>
+              </div>
+              <span className="text-xs" style={{ color: colors.text.secondary }}>
+                (UPI, Cards, Wallets)
+              </span>
+            </div>
+          </label>
+        </div>
+        {errors.paymentGateway && (
+          <p className="text-red-500 text-sm mt-2">{errors.paymentGateway.message}</p>
         )}
       </div>
 

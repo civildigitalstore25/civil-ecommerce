@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
 import razorpayService from '../services/razorpayService';
+import phonepeService from '../services/phonepeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 
@@ -82,10 +83,10 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       const productIds = items.map((item: any) => item.productId);
       console.log('🔍 Admin order - Fetching products for IDs:', productIds);
       const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
-      console.log('📦 Products found with driveLinks:', products.map(p => ({ 
-        id: p._id, 
-        name: (p as any).name, 
-        driveLink: p.driveLink ? 'present' : 'missing' 
+      console.log('📦 Products found with driveLinks:', products.map(p => ({
+        id: p._id,
+        name: (p as any).name,
+        driveLink: p.driveLink ? 'present' : 'missing'
       })));
       // Create a map for quick lookup
       const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
@@ -156,7 +157,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
 };
 
 /**
- * Create order and initiate Razorpay payment
+ * Create order and initiate payment (Razorpay or PhonePe)
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -178,7 +179,8 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       totalAmount,
       shippingAddress,
       couponCode,
-      notes
+      notes,
+      paymentGateway = 'razorpay' // 'razorpay' or 'phonepe'
     } = req.body;
 
     // Validation
@@ -198,20 +200,28 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
+    if (!['razorpay', 'phonepe'].includes(paymentGateway)) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid payment gateway selected'
+      });
+      return;
+    }
+
     // Fetch products to get driveLinks
     const Product = (await import('../models/Product')).default;
     const productIds = items.map((item: any) => item.productId);
     console.log('🔍 Creating order - Fetching products for IDs:', productIds);
     const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
-    console.log('📦 Products found with driveLinks:', products.map(p => ({ 
-      id: p._id, 
-      name: (p as any).name, 
-      driveLink: p.driveLink ? 'present' : 'missing' 
+    console.log('📦 Products found with driveLinks:', products.map(p => ({
+      id: p._id,
+      name: (p as any).name,
+      driveLink: p.driveLink ? 'present' : 'missing'
     })));
-    
+
     // Create a map for quick lookup
     const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
-    
+
     // Add driveLink to each item
     const itemsWithDriveLink = items.map((item: any) => {
       const driveLink = productMap.get(item.productId) || null;
@@ -228,29 +238,16 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
-    // Create Razorpay order
+    // Prepare customer info
     const customerInfo = {
+      userId: user._id.toString(),
       name: shippingAddress.fullName,
       email: user.email,
       phone: shippingAddress.phoneNumber
     };
 
-    const razorpayOrder = await razorpayService.createOrder(
-      totalAmount,
-      orderId,
-      customerInfo
-    );
-
-    if (!razorpayOrder.success) {
-      res.status(500).json({
-        success: false,
-        message: razorpayOrder.message || 'Failed to create payment order'
-      });
-      return;
-    }
-
-    // Create order in database
-    const order = new Order({
+    let paymentOrderResponse;
+    let orderData: any = {
       userId: user._id,
       orderId,
       orderNumber,
@@ -262,26 +259,88 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       shippingAddress,
       couponCode: couponCode ? couponCode.toUpperCase() : null,
       notes,
-      razorpayOrderId: razorpayOrder.orderId,
+      paymentGateway,
       paymentStatus: 'pending',
       orderStatus: 'pending'
-    });
+    };
 
-    await order.save();
+    // Create payment order based on selected gateway
+    if (paymentGateway === 'razorpay') {
+      console.log('💳 Creating Razorpay order...');
+      const razorpayResponse = await razorpayService.createOrder(
+        totalAmount,
+        orderId,
+        customerInfo
+      );
 
-    console.log('✅ Order created:', orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
-
-    res.status(201).json({
-      success: true,
-      message: 'Order created successfully',
-      data: {
-        orderId: order.orderId,
-        razorpayOrderId: razorpayOrder.orderId,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-        keyId: process.env.RAZORPAY_KEY_ID
+      if (!razorpayResponse.success) {
+        res.status(500).json({
+          success: false,
+          message: razorpayResponse.message || 'Failed to create Razorpay order'
+        });
+        return;
       }
-    });
+
+      orderData.razorpayOrderId = razorpayResponse.orderId;
+
+      // Create order in database
+      const order = new Order(orderData);
+      await order.save();
+
+      console.log(`✅ Order created with Razorpay:`, orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
+
+      // Return Razorpay response
+      res.status(201).json({
+        success: true,
+        message: 'Order created successfully',
+        data: {
+          orderId: order.orderId,
+          razorpayOrderId: razorpayResponse.orderId,
+          amount: razorpayResponse.amount,
+          currency: razorpayResponse.currency,
+          keyId: process.env.RAZORPAY_KEY_ID,
+          paymentGateway: 'razorpay'
+        }
+      });
+
+    } else if (paymentGateway === 'phonepe') {
+      console.log('📱 Creating PhonePe order...');
+      const phonepeResponse = await phonepeService.createOrder(
+        totalAmount,
+        orderId,
+        customerInfo
+      );
+
+      if (!phonepeResponse.success) {
+        res.status(500).json({
+          success: false,
+          message: phonepeResponse.message || 'Failed to create PhonePe order'
+        });
+        return;
+      }
+
+      orderData.phonepeTransactionId = phonepeResponse.transactionId;
+
+      // Create order in database
+      const order = new Order(orderData);
+      await order.save();
+
+      console.log(`✅ Order created with PhonePe:`, orderId, 'for userId:', user._id, couponCode ? `with coupon: ${couponCode.toUpperCase()}` : '');
+
+      // Return PhonePe response
+      res.status(201).json({
+        success: true,
+        message: 'Order created successfully',
+        data: {
+          orderId: order.orderId,
+          paymentUrl: phonepeResponse.paymentUrl,
+          transactionId: phonepeResponse.transactionId,
+          amount: phonepeResponse.amount,
+          currency: phonepeResponse.currency,
+          paymentGateway: 'phonepe'
+        }
+      });
+    }
   } catch (error: any) {
     console.error('❌ Create order error:', error);
     res.status(500).json({
@@ -564,17 +623,17 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
         const itemsWithDriveLinks = await Promise.all(
           order.items.map(async (item: any) => {
             console.log(`🔍 Checking item: ${item.name}, productId: ${item.productId}, existing driveLink: ${item.driveLink}`);
-            
+
             // If item already has driveLink, keep it
             if (item.driveLink) {
               console.log(`✓ Item already has driveLink: ${item.driveLink}`);
               return item;
             }
-            
+
             // Otherwise, fetch from Product
             const product = await Product.findById(item.productId).select('driveLink').lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
-            
+
             return {
               ...item,
               driveLink: product?.driveLink || null
@@ -589,8 +648,8 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
     );
 
     console.log(`📦 Found ${ordersWithDriveLinks.length} orders for user ${user._id}`);
-    console.log('First order items:', ordersWithDriveLinks[0]?.items?.map((i: any) => ({ 
-      name: i.name, 
+    console.log('First order items:', ordersWithDriveLinks[0]?.items?.map((i: any) => ({
+      name: i.name,
       driveLink: i.driveLink ? 'present' : 'missing',
       fullDriveLink: i.driveLink
     })));
@@ -877,3 +936,186 @@ export const adminDeleteOrder = async (req: Request, res: Response): Promise<voi
     });
   }
 };
+
+/**
+ * PhonePe payment callback handler
+ */
+export const phonepeCallback = async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log('🔔 PhonePe callback received');
+
+    const { response } = req.body;
+
+    if (!response) {
+      res.status(400).send('Invalid callback data');
+      return;
+    }
+
+    // Parse the response
+    const callbackData = phonepeService.parseCallbackResponse(response);
+
+    if (!callbackData) {
+      res.status(400).send('Failed to parse callback data');
+      return;
+    }
+
+    console.log('📦 PhonePe Callback Data:', {
+      transactionId: callbackData.data?.merchantTransactionId,
+      status: callbackData.data?.state
+    });
+
+    const transactionId = callbackData.data?.merchantTransactionId;
+    const paymentState = callbackData.data?.state;
+
+    // Find order by transaction ID
+    const order = await Order.findOne({ phonepeTransactionId: transactionId });
+
+    if (!order) {
+      console.log('❌ Order not found for transaction:', transactionId);
+      res.redirect(`${process.env.FRONTEND_URL}/payment/failed?error=Order not found`);
+      return;
+    }
+
+    if (paymentState === 'COMPLETED') {
+      // Payment successful
+      order.phonepePaymentId = callbackData.data?.transactionId;
+      order.paymentStatus = 'paid';
+      order.orderStatus = 'processing';
+      await order.save();
+
+      console.log('✅ PhonePe payment successful for order:', order.orderId);
+
+      // Apply coupon if used
+      if (order.couponCode) {
+        try {
+          const Coupon = (await import('../models/Coupon')).default;
+          const coupon = await Coupon.findOne({ code: order.couponCode.toUpperCase() });
+
+          if (coupon && coupon.status === 'Active' && coupon.usedCount < coupon.usageLimit) {
+            coupon.usedCount += 1;
+            if (coupon.usedCount >= coupon.usageLimit) {
+              coupon.status = 'Inactive';
+            }
+            await coupon.save();
+          }
+        } catch (couponError) {
+          console.error('❌ Error applying coupon:', couponError);
+        }
+      }
+
+      // Send notifications
+      try {
+        await order.populate('userId', 'name email');
+        const orderDetails = {
+          orderId: order.orderId,
+          orderNumber: order.orderNumber,
+          customerName: order.shippingAddress.fullName,
+          customerPhone: order.shippingAddress.phoneNumber,
+          customerEmail: (order as any).userId?.email || order.notes?.replace('Email: ', '') || 'N/A',
+          items: order.items.map((item: any) => ({
+            productId: item.productId || null,
+            name: item.name,
+            version: item.version || null,
+            pricingPlan: item.pricingPlan || null,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          subtotal: order.subtotal,
+          discount: order.discount,
+          totalAmount: order.totalAmount,
+          paymentId: callbackData.data?.transactionId
+        };
+
+        await emailService.sendOrderConfirmationToAdmin(orderDetails);
+      } catch (notificationError) {
+        console.error('❌ Error sending notifications:', notificationError);
+      }
+
+      // Redirect to success page
+      res.redirect(`${process.env.FRONTEND_URL}/payment/success?orderId=${order.orderId}`);
+    } else if (paymentState === 'FAILED') {
+      // Payment failed
+      order.paymentStatus = 'failed';
+      order.orderStatus = 'cancelled';
+      await order.save();
+
+      console.log('❌ PhonePe payment failed for order:', order.orderId);
+      res.redirect(`${process.env.FRONTEND_URL}/payment/failed?orderId=${order.orderId}`);
+    } else {
+      // Payment pending or other state
+      console.log('⏳ PhonePe payment in state:', paymentState, 'for order:', order.orderId);
+      res.redirect(`${process.env.FRONTEND_URL}/payment/pending?orderId=${order.orderId}`);
+    }
+  } catch (error: any) {
+    console.error('❌ PhonePe callback error:', error);
+    res.status(500).send('Callback processing failed');
+  }
+};
+
+/**
+ * Check PhonePe payment status
+ */
+export const checkPhonePeStatus = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { transactionId } = req.params;
+
+    if (!transactionId) {
+      res.status(400).json({
+        success: false,
+        message: 'Transaction ID is required'
+      });
+      return;
+    }
+
+    // Check payment status with PhonePe
+    const statusResult = await phonepeService.checkPaymentStatus(transactionId);
+
+    if (!statusResult.success) {
+      res.status(500).json({
+        success: false,
+        message: statusResult.message || 'Failed to check payment status'
+      });
+      return;
+    }
+
+    // Find and update order
+    const order = await Order.findOne({ phonepeTransactionId: transactionId });
+
+    if (!order) {
+      res.status(404).json({
+        success: false,
+        message: 'Order not found'
+      });
+      return;
+    }
+
+    // Update order based on status
+    if (statusResult.status === 'COMPLETED' && order.paymentStatus !== 'paid') {
+      order.phonepePaymentId = statusResult.transactionId;
+      order.paymentStatus = 'paid';
+      order.orderStatus = 'processing';
+      await order.save();
+    } else if (statusResult.status === 'FAILED') {
+      order.paymentStatus = 'failed';
+      order.orderStatus = 'cancelled';
+      await order.save();
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        orderId: order.orderId,
+        paymentStatus: order.paymentStatus,
+        orderStatus: order.orderStatus,
+        transactionStatus: statusResult.status
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Check PhonePe status error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+

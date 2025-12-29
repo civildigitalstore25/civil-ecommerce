@@ -10,7 +10,9 @@ import {
   initiateRefund,
   deleteOrder,
   adminDeleteOrder,
-  adminCreateOrder
+  adminCreateOrder,
+  phonepeCallback,
+  checkPhonePeStatus
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -23,6 +25,10 @@ router.post('/failed', authenticate, paymentFailed);
 router.get('/orders', authenticate, getUserOrders);
 router.get('/orders/:orderId', authenticate, getOrder);
 router.delete('/orders/:orderId', authenticate, deleteOrder);
+
+// PhonePe specific routes
+router.post('/phonepe/callback', phonepeCallback);
+router.get('/phonepe/status/:transactionId', authenticate, checkPhonePeStatus);
 
 // Admin routes
 router.post('/admin/orders', authenticate, requireAdmin, adminCreateOrder);
