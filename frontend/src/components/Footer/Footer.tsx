@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -88,6 +88,14 @@ const Footer = () => {
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
+              <div className="ml-3">
+                <div className="text-base font-semibold" style={{ color: colors.text.primary }}>
+                  Civil Digital Store
+                </div>
+                <div className="text-sm" style={{ color: colors.text.secondary }}>
+                  (trading as Softzcart)
+                </div>
+              </div>
             </div>
             <p
               className="text-base leading-relaxed font-lato transition-colors duration-200"
@@ -471,7 +479,7 @@ const Footer = () => {
           className="font-poppins font-semibold transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
-          Softzcart
+          Civil Digital Store
         </span>
         . All rights reserved 2025.
       </div>
@@ -481,13 +489,13 @@ const Footer = () => {
         <button
           onClick={scrollToTop}
           className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
-         style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
-              border: 'none',
-            }}
+          style={{
+            background: theme === "dark"
+              ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+              : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+            color: colors.text.inverse,
+            border: 'none',
+          }}
           aria-label="Scroll to top"
         >
           <ArrowUp className="w-6 h-6" />
