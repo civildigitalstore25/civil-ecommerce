@@ -119,20 +119,22 @@ const testEmailService = async () => {
   }
 };
 
-const testRazorpayService = () => {
-  console.log('\n💳 Testing Razorpay configuration...');
+const testCashfreeService = () => {
+  console.log('\n💳 Testing Cashfree configuration...');
 
-  const keyId = process.env.RAZORPAY_KEY_ID;
-  const keySecret = process.env.RAZORPAY_KEY_SECRET;
+  const appId = process.env.CASHFREE_APP_ID;
+  const secretKey = process.env.CASHFREE_SECRET_KEY;
+  const environment = process.env.CASHFREE_ENV || 'sandbox';
 
-  if (!keyId || !keySecret) {
-    console.warn('⚠️  Missing Razorpay credentials in environment variables');
-    console.warn('⚠️  Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env file');
+  if (!appId || !secretKey) {
+    console.warn('⚠️  Missing Cashfree credentials in environment variables');
+    console.warn('⚠️  Add CASHFREE_APP_ID and CASHFREE_SECRET_KEY to .env file');
     return false;
   }
 
-  console.log('✅ Razorpay credentials found');
-  console.log(`   Key ID: ${keyId.substring(0, 12)}...`);
+  console.log('✅ Cashfree credentials found');
+  console.log(`   Environment: ${environment}`);
+  console.log(`   App ID: ${appId.substring(0, 12)}...`);
   return true;
 };
 
@@ -144,7 +146,7 @@ mongoose
     // Test email service after database connection
     await testEmailService();
 
-    testRazorpayService();
+    testCashfreeService();
 
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);

@@ -25,80 +25,80 @@ import Swal from "sweetalert2";
 import type { IOrderItem } from "../../api/types/orderTypes";
 
 const Orders: React.FC = () => {
-    // State for admin order creation form (no dropdown, no address, no shipping)
-    const [showCreateForm, setShowCreateForm] = useState(false);
-    const [orderForm, setOrderForm] = useState<{
-      email?: string;
-      items: IOrderItem[];
-      subtotal: number;
-      discount?: number;
-      totalAmount: number;
-      notes?: string;
-    }>({
-      items: [],
-      subtotal: 0,
-      discount: undefined,
-      totalAmount: 0,
-    });
+  // State for admin order creation form (no dropdown, no address, no shipping)
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [orderForm, setOrderForm] = useState<{
+    email?: string;
+    items: IOrderItem[];
+    subtotal: number;
+    discount?: number;
+    totalAmount: number;
+    notes?: string;
+  }>({
+    items: [],
+    subtotal: 0,
+    discount: undefined,
+    totalAmount: 0,
+  });
 
-    // Add product to order items (by type input)
-    const handleAddProductToOrder = (product: { productId: string; name: string; quantity: number; price: number; discount?: number }) => {
-      setOrderForm((prev) => {
-        const exists = prev.items.find((i) => i.productId === product.productId);
-        if (exists) return prev;
-        return {
-          ...prev,
-          items: [
-            ...prev.items,
-            product as IOrderItem,
-          ],
-        };
+  // Add product to order items (by type input)
+  const handleAddProductToOrder = (product: { productId: string; name: string; quantity: number; price: number; discount?: number }) => {
+    setOrderForm((prev) => {
+      const exists = prev.items.find((i) => i.productId === product.productId);
+      if (exists) return prev;
+      return {
+        ...prev,
+        items: [
+          ...prev.items,
+          product as IOrderItem,
+        ],
+      };
+    });
+  };
+
+  // Remove product from order items
+  const handleRemoveOrderItem = (productId: string) => {
+    setOrderForm((prev) => ({
+      ...prev,
+      items: prev.items.filter((i) => i.productId !== productId),
+    }));
+  };
+
+  // Update quantity/price for order item
+  const handleOrderItemChange = (productId: string, field: string, value: any) => {
+    setOrderForm((prev) => ({
+      ...prev,
+      items: prev.items.map((i) =>
+        i.productId === productId ? { ...i, [field]: value } : i
+      ),
+    }));
+  };
+
+  // Calculate totals (no shipping)
+  React.useEffect(() => {
+    const subtotal = orderForm.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+    const totalAmount = subtotal - (orderForm.discount || 0);
+    setOrderForm((prev) => ({ ...prev, subtotal, totalAmount }));
+  }, [orderForm.items, orderForm.discount]);
+
+  // Admin create order mutation
+  const createOrderMutation = useMutation({
+    mutationFn: (data: any) => adminCreateOrder(data),
+    onSuccess: () => {
+      Swal.fire({ icon: "success", title: "Order Created", text: "Order created successfully!", timer: 2000, showConfirmButton: false });
+      setShowCreateForm(false);
+      setOrderForm({
+        items: [],
+        subtotal: 0,
+        discount: 0,
+        totalAmount: 0,
       });
-    };
-
-    // Remove product from order items
-    const handleRemoveOrderItem = (productId: string) => {
-      setOrderForm((prev) => ({
-        ...prev,
-        items: prev.items.filter((i) => i.productId !== productId),
-      }));
-    };
-
-    // Update quantity/price for order item
-    const handleOrderItemChange = (productId: string, field: string, value: any) => {
-      setOrderForm((prev) => ({
-        ...prev,
-        items: prev.items.map((i) =>
-          i.productId === productId ? { ...i, [field]: value } : i
-        ),
-      }));
-    };
-
-    // Calculate totals (no shipping)
-    React.useEffect(() => {
-      const subtotal = orderForm.items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
-      const totalAmount = subtotal - (orderForm.discount || 0);
-      setOrderForm((prev) => ({ ...prev, subtotal, totalAmount }));
-    }, [orderForm.items, orderForm.discount]);
-
-    // Admin create order mutation
-    const createOrderMutation = useMutation({
-      mutationFn: (data: any) => adminCreateOrder(data),
-      onSuccess: () => {
-        Swal.fire({ icon: "success", title: "Order Created", text: "Order created successfully!", timer: 2000, showConfirmButton: false });
-        setShowCreateForm(false);
-        setOrderForm({
-          items: [],
-          subtotal: 0,
-          discount: 0,
-          totalAmount: 0,
-        });
-        queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
-      },
-      onError: (error: any) => {
-        Swal.fire({ icon: "error", title: "Error", text: error?.response?.data?.message || "Failed to create order" });
-      },
-    });
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+    },
+    onError: (error: any) => {
+      Swal.fire({ icon: "error", title: "Error", text: error?.response?.data?.message || "Failed to create order" });
+    },
+  });
   const { colors } = useAdminTheme();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -344,11 +344,11 @@ const Orders: React.FC = () => {
       {showCreateForm && (
         <div className="border rounded-lg p-6 mb-6" style={{ background: colors.background.secondary, borderColor: colors.border.primary }}>
           <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Create New Order</h3>
-          
+
           {/* Email field for order (manual entry) */}
           <div className="mb-4">
             <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
-              Customer Email 
+              Customer Email
             </label>
             <input
               className="input w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
@@ -523,7 +523,7 @@ const Orders: React.FC = () => {
           <table className="w-full">
             <thead
               className="border-b transition-colors duration-200"
-              
+
             >
               <tr>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Order ID</th>
@@ -538,7 +538,7 @@ const Orders: React.FC = () => {
             </thead>
             <tbody
               className="divide-y transition-colors duration-200"
-               
+
             >
               {orders.length === 0 ? (
                 <tr>
@@ -774,7 +774,7 @@ const Orders: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                   className="p-4 rounded-lg border"
-                  
+
                 >
                   <p
                     className="text-sm mb-1"
@@ -798,7 +798,7 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-                 
+
                 >
                   <p
                     className="text-sm mb-1"
@@ -820,7 +820,7 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-                  
+
                 >
                   <p
                     className="text-sm mb-1"
@@ -847,7 +847,7 @@ const Orders: React.FC = () => {
               {/* Customer Information */}
               <div
                 className="p-5 rounded-lg border"
-                
+
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
@@ -955,7 +955,7 @@ const Orders: React.FC = () => {
               {/* Ordered Products */}
               <div
                 className="p-5 rounded-lg border"
-               
+
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
@@ -1080,7 +1080,7 @@ const Orders: React.FC = () => {
               {/* Order Summary */}
               <div
                 className="p-5 rounded-lg border"
-              
+
               >
                 <h4
                   className="text-lg font-semibold mb-4"
@@ -1135,7 +1135,7 @@ const Orders: React.FC = () => {
               {selectedOrder.notes && (
                 <div
                   className="p-5 rounded-lg border"
-                 
+
                 >
                   <h4
                     className="text-lg font-semibold mb-2"
@@ -1150,10 +1150,10 @@ const Orders: React.FC = () => {
               )}
 
               {/* Payment Details */}
-              {selectedOrder.razorpayPaymentId && (
+              {selectedOrder.cashfreePaymentId && (
                 <div
                   className="p-5 rounded-lg border"
-                 
+
                 >
                   <h4
                     className="text-lg font-semibold mb-3"
@@ -1162,29 +1162,33 @@ const Orders: React.FC = () => {
                     Payment Details
                   </h4>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>
-                        Payment ID
-                      </span>
-                      <span
-                        className="font-mono"
-                        style={{ color: colors.text.primary }}
-                      >
-                        {selectedOrder.razorpayPaymentId}
-                      </span>
-                    </div>
-                    {selectedOrder.razorpayOrderId && (
-                      <div className="flex justify-between">
-                        <span style={{ color: colors.text.secondary }}>
-                          Razorpay Order ID
-                        </span>
-                        <span
-                          className="font-mono"
-                          style={{ color: colors.text.primary }}
-                        >
-                          {selectedOrder.razorpayOrderId}
-                        </span>
-                      </div>
+                    {selectedOrder.cashfreePaymentId && (
+                      <>
+                        <div className="flex justify-between">
+                          <span style={{ color: colors.text.secondary }}>
+                            Payment ID
+                          </span>
+                          <span
+                            className="font-mono"
+                            style={{ color: colors.text.primary }}
+                          >
+                            {selectedOrder.cashfreePaymentId}
+                          </span>
+                        </div>
+                        {selectedOrder.cashfreeOrderId && (
+                          <div className="flex justify-between">
+                            <span style={{ color: colors.text.secondary }}>
+                              Cashfree Order ID
+                            </span>
+                            <span
+                              className="font-mono"
+                              style={{ color: colors.text.primary }}
+                            >
+                              {selectedOrder.cashfreeOrderId}
+                            </span>
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>

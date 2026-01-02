@@ -36,9 +36,9 @@ export interface IOrder extends Document {
   notes?: string;
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  razorpayOrderId?: string;
-  razorpayPaymentId?: string;
-  razorpaySignature?: string;
+  cashfreeOrderId?: string;
+  paymentSessionId?: string;
+  cashfreePaymentId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -115,13 +115,13 @@ const OrderSchema = new Schema<IOrder>({
     enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'pending'
   },
-  razorpayOrderId: {
+  cashfreeOrderId: {
     type: String
   },
-  razorpayPaymentId: {
+  paymentSessionId: {
     type: String
   },
-  razorpaySignature: {
+  cashfreePaymentId: {
     type: String
   }
 }, {
@@ -130,7 +130,7 @@ const OrderSchema = new Schema<IOrder>({
 
 // Index for faster queries
 OrderSchema.index({ userId: 1, createdAt: -1 });
-OrderSchema.index({ razorpayOrderId: 1 });
+OrderSchema.index({ cashfreeOrderId: 1 });
 
 const Order = mongoose.model<IOrder>('Order', OrderSchema);
 

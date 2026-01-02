@@ -36,6 +36,7 @@ import ShippingPolicy from "./ui/policy/ShippingPolicy";
 import ContactPage from "./pages/ContactPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import PaymentCallback from "./ui/payment/PaymentCallback";
+import PaymentStatusPage from "./pages/PaymentStatusPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
@@ -254,15 +255,18 @@ function AppLayout() {
           }
         />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/payment-status" element={<PaymentStatusPage />} />
+        <Route path="/payment/callback" element={<PaymentCallback />} />
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/signin" replace />} />
+        {/* Policy Routes */}
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/disclaimer" element={<Disclaimer />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
-        <Route path="/payment/callback" element={<PaymentCallback />} />
+
+        {/* Catch all route */}
+        <Route path="*" element={<Navigate to="/signin" replace />} />
       </Routes>
       {!shouldHideHeader && <Footer />}
     </>
