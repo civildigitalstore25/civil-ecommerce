@@ -10,11 +10,15 @@ import {
   initiateRefund,
   deleteOrder,
   adminDeleteOrder,
-  adminCreateOrder
+  adminCreateOrder,
+  handleWebhook
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
 const router = Router();
+
+// Webhook route (no authentication required - Cashfree will call this)
+router.post('/webhook', handleWebhook);
 
 // User routes (require authentication)
 router.post('/create-order', authenticate, createOrder);

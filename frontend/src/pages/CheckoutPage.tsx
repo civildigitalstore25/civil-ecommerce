@@ -10,10 +10,10 @@ import Swal from "sweetalert2";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
 
-// Declare Razorpay on window
+// Declare Cashfree on window
 declare global {
   interface Window {
-    Razorpay: any;
+    Cashfree: any;
   }
 }
 
@@ -96,10 +96,15 @@ const CheckoutPage: React.FC = () => {
   const normalizePrice = (price: any) =>
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
 
-  const loadRazorpayScript = (): Promise<boolean> => {
+  const loadCashfreeScript = (): Promise<boolean> => {
     return new Promise((resolve) => {
+      const environment = import.meta.env.VITE_CASHFREE_ENV || 'sandbox';
+      const scriptSrc = environment === 'production'
+        ? 'https://sdk.cashfree.com/js/v3/cashfree.js'
+        : 'https://sdk.cashfree.com/js/v3/cashfree.js'; // Same SDK for both environments
+
       const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.src = scriptSrc;
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -126,8 +131,8 @@ const CheckoutPage: React.FC = () => {
         return;
       }
 
-      // Load Razorpay script
-      const scriptLoaded = await loadRazorpayScript();
+      // Load Cashfree script
+      const scriptLoaded = await loadCashfreeScript();
       if (!scriptLoaded) {
         toast.error("Failed to load payment gateway. Please try again.");
         setIsProcessing(false);
@@ -203,15 +208,53 @@ const CheckoutPage: React.FC = () => {
         return;
       }
 
-      // Configure Razorpay options
-      const options = {
-        key: responseData.data.keyId,
-        amount: responseData.data.amount,
-        currency: responseData.data.currency,
-        name: "Your Store Name",
-        description: `Order #${responseData.data.orderId}`,
-        order_id: responseData.data.razorpayOrderId,
-        handler: async function (response: any) {
+      // Initialize Cashfree SDK
+      const cashfree = await window.Cashfree({
+        mode: responseData.data.environment || 'sandbox'
+      });
+
+      // Configure payment options
+      const checkoutOptions = {
+        paymentSessionId: responseData.data.paymentSessionId,
+        redirectTarget: "_self", // Keep user on same page
+        returnUrl: `${window.location.origin}/payment-status?order_id=${responseData.data.orderId}`
+      };
+
+      // Handle payment
+      cashfree.checkout(checkoutOptions).then(async (result: any) => {
+        if (result.error) {
+          console.error('Payment error:', result.error);
+          toast.error(result.error.message || "Payment failed");
+          setIsProcessing(false);
+
+          // Report payment failure
+          await fetch(
+            `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/failed`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                orderId: responseData.data.orderId,
+                error: result.error,
+              }),
+            },
+          );
+          return;
+        }
+
+        // For redirect payments, user will be redirected to payment-status page
+        if (result.redirect) {
+          console.log('Payment redirected to gateway, will return to payment-status page');
+          // The Cashfree SDK will handle the redirect
+          return;
+        }
+
+        if (result.paymentDetails) {
+          console.log('Payment completed:', result.paymentDetails);
+
           try {
             // Verify payment on backend
             const verifyResponse = await fetch(
@@ -223,9 +266,7 @@ const CheckoutPage: React.FC = () => {
                   Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature: response.razorpay_signature,
+                  orderId: responseData.data.orderId
                 }),
               },
             );
@@ -252,10 +293,6 @@ const CheckoutPage: React.FC = () => {
                       <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
                         <strong>Order ID:</strong>
                         <span style="font-family: monospace;">${responseData.data.orderId}</span>
-                      </div>
-                      <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <strong>Payment ID:</strong>
-                        <span style="font-family: monospace; font-size: 12px;">${response.razorpay_payment_id}</span>
                       </div>
                       <div style="display: flex; justify-content: space-between;">
                         <strong>Amount Paid:</strong>
@@ -290,66 +327,14 @@ const CheckoutPage: React.FC = () => {
             toast.error("Payment verification failed");
             setIsProcessing(false);
           }
-        },
-        prefill: {
-          name: data.name,
-          email: data.email,
-          contact: data.whatsapp,
-        },
-        notes: {
-          orderId: responseData.data.orderId,
-        },
-        theme: {
-          color: "#F59E0B",
-        },
-        modal: {
-          ondismiss: function () {
-            toast.error("Payment cancelled");
-            setIsProcessing(false);
-
-            // Report payment failure
-            fetch(
-              `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/failed`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                  razorpay_order_id: responseData.data.razorpayOrderId,
-                  error: { description: "Payment cancelled by user" },
-                }),
-              },
-            );
-          },
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-
-      razorpay.on("payment.failed", async function (response: any) {
-        toast.error("Payment failed: " + response.error.description);
+        }
+      }).catch((error: any) => {
+        console.error('Cashfree checkout error:', error);
+        toast.error("Payment process failed. Please try again.");
+        console.error('Cashfree checkout error:', error);
+        toast.error("Payment process failed. Please try again.");
         setIsProcessing(false);
-
-        // Report payment failure
-        await fetch(
-          `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/payments/failed`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              razorpay_order_id: responseData.data.razorpayOrderId,
-              error: response.error,
-            }),
-          },
-        );
       });
-
-      razorpay.open();
     } catch (error: any) {
       console.error("Order creation error:", error);
       toast.error("Failed to process order. Please try again.");
@@ -357,13 +342,13 @@ const CheckoutPage: React.FC = () => {
     }
   };
 
-  const applyCoupon = async () => {
-    const code = couponCode.trim().toUpperCase();
-    if (!code) {
-      Swal.fire({
-        icon: "warning",
-        title: "Missing Coupon Code",
-        html: `
+const applyCoupon = async () => {
+  const code = couponCode.trim().toUpperCase();
+  if (!code) {
+    Swal.fire({
+      icon: "warning",
+      title: "Missing Coupon Code",
+      html: `
           <div style="text-align: left; margin-top: 10px;">
             <div style="background: #fffbeb; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; margin-bottom: 15px;">
               <div style="display: flex; align-items: center; gap: 10px;">
@@ -376,72 +361,72 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
         `,
-        confirmButtonText: "OK",
-        confirmButtonColor: "#f59e0b",
-      });
-      return;
-    }
+      confirmButtonText: "OK",
+      confirmButtonColor: "#f59e0b",
+    });
+    return;
+  }
 
-    const subtotal = normalizePrice(summary.subtotal);
+  const subtotal = normalizePrice(summary.subtotal);
 
-    try {
-      // Validate coupon with backend
-      const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/coupons/validate`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            code: code,
-            subtotal: subtotal,
-          }),
-        }
-      );
+  try {
+    // Validate coupon with backend
+    const response = await fetch(
+      `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/coupons/validate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          code: code,
+          subtotal: subtotal,
+        }),
+      }
+    );
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        // Determine the error type for appropriate message
-        const errorMessage = data.message || "Invalid coupon code";
-        let icon: "error" | "warning" | "info" = "error";
-        let title = "Coupon Invalid";
-        let iconColor = "#ef4444";
-        let bgColor = "#fef2f2";
-        let borderColor = "#ef4444";
+    if (!response.ok) {
+      // Determine the error type for appropriate message
+      const errorMessage = data.message || "Invalid coupon code";
+      let icon: "error" | "warning" | "info" = "error";
+      let title = "Coupon Invalid";
+      let iconColor = "#ef4444";
+      let bgColor = "#fef2f2";
+      let borderColor = "#ef4444";
 
-        // Check for specific error types
-        if (errorMessage.includes("usage limit reached") || errorMessage.includes("validity expired")) {
-          icon = "warning";
-          title = "Coupon Limit Reached";
-          iconColor = "#f59e0b";
-          bgColor = "#fffbeb";
-          borderColor = "#f59e0b";
-        } else if (errorMessage.includes("expired")) {
-          icon = "info";
-          title = "Coupon Expired";
-          iconColor = "#3b82f6";
-          bgColor = "#eff6ff";
-          borderColor = "#3b82f6";
-        } else if (errorMessage.includes("not yet valid")) {
-          icon = "info";
-          title = "Coupon Not Yet Active";
-          iconColor = "#8b5cf6";
-          bgColor = "#f5f3ff";
-          borderColor = "#8b5cf6";
-        } else if (errorMessage.includes("no longer active") || errorMessage.includes("Inactive")) {
-          icon = "warning";
-          title = "Coupon Validity Expired";
-          iconColor = "#f59e0b";
-          bgColor = "#fffbeb";
-          borderColor = "#f59e0b";
-        }
+      // Check for specific error types
+      if (errorMessage.includes("usage limit reached") || errorMessage.includes("validity expired")) {
+        icon = "warning";
+        title = "Coupon Limit Reached";
+        iconColor = "#f59e0b";
+        bgColor = "#fffbeb";
+        borderColor = "#f59e0b";
+      } else if (errorMessage.includes("expired")) {
+        icon = "info";
+        title = "Coupon Expired";
+        iconColor = "#3b82f6";
+        bgColor = "#eff6ff";
+        borderColor = "#3b82f6";
+      } else if (errorMessage.includes("not yet valid")) {
+        icon = "info";
+        title = "Coupon Not Yet Active";
+        iconColor = "#8b5cf6";
+        bgColor = "#f5f3ff";
+        borderColor = "#8b5cf6";
+      } else if (errorMessage.includes("no longer active") || errorMessage.includes("Inactive")) {
+        icon = "warning";
+        title = "Coupon Validity Expired";
+        iconColor = "#f59e0b";
+        bgColor = "#fffbeb";
+        borderColor = "#f59e0b";
+      }
 
-        Swal.fire({
-          icon: icon,
-          title: title,
-          html: `
+      Swal.fire({
+        icon: icon,
+        title: title,
+        html: `
             <div style="text-align: left; margin-top: 10px;">
               <div style="background: ${bgColor}; padding: 15px; border-radius: 8px; border-left: 4px solid ${borderColor}; margin-bottom: 15px;">
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -460,25 +445,25 @@ const CheckoutPage: React.FC = () => {
               </div>
             </div>
           `,
-          confirmButtonText: "Try Another Code",
-          confirmButtonColor: iconColor,
-          showCancelButton: true,
-          cancelButtonText: "Close",
-          cancelButtonColor: "#6b7280",
-        });
-        return;
-      }
+        confirmButtonText: "Try Another Code",
+        confirmButtonColor: iconColor,
+        showCancelButton: true,
+        cancelButtonText: "Close",
+        cancelButtonColor: "#6b7280",
+      });
+      return;
+    }
 
-      if (data.success) {
-        const discountAmount = data.coupon.discountAmount;
-        setDiscount(discountAmount);
-        setCouponCode(code);
+    if (data.success) {
+      const discountAmount = data.coupon.discountAmount;
+      setDiscount(discountAmount);
+      setCouponCode(code);
 
-        // Show success message with SweetAlert
-        Swal.fire({
-          icon: "success",
-          title: "Coupon Applied Successfully!",
-          html: `
+      // Show success message with SweetAlert
+      Swal.fire({
+        icon: "success",
+        title: "Coupon Applied Successfully!",
+        html: `
             <div style="text-align: left; margin-top: 10px;">
               <div style="background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -503,19 +488,19 @@ const CheckoutPage: React.FC = () => {
              
             </div>
           `,
-          confirmButtonText: "Continue",
-          confirmButtonColor: "#10b981",
-          timer: 5000,
-          timerProgressBar: true,
-        });
-      }
-    } catch (error) {
-      console.error("Error validating coupon:", error);
+        confirmButtonText: "Continue",
+        confirmButtonColor: "#10b981",
+        timer: 5000,
+        timerProgressBar: true,
+      });
+    }
+  } catch (error) {
+    console.error("Error validating coupon:", error);
 
-      Swal.fire({
-        icon: "error",
-        title: "Connection Error",
-        html: `
+    Swal.fire({
+      icon: "error",
+      title: "Connection Error",
+      html: `
           <div style="text-align: left; margin-top: 10px;">
             <div style="background: #fef2f2; padding: 15px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 15px;">
               <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
@@ -529,60 +514,60 @@ const CheckoutPage: React.FC = () => {
             </div>
           </div>
         `,
-        confirmButtonText: "Retry",
-        confirmButtonColor: "#ef4444",
-        showCancelButton: true,
-        cancelButtonText: "Close",
-        cancelButtonColor: "#6b7280",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          applyCoupon();
-        }
-      });
-    }
-  };
+      confirmButtonText: "Retry",
+      confirmButtonColor: "#ef4444",
+      showCancelButton: true,
+      cancelButtonText: "Close",
+      cancelButtonColor: "#6b7280",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        applyCoupon();
+      }
+    });
+  }
+};
 
-  return (
-    <div
-      className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
-      style={{ backgroundColor: colors.background.primary }}
+return (
+  <div
+    className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
+    style={{ backgroundColor: colors.background.primary }}
+  >
+    <h1
+      className="text-3xl font-bold mb-8 text-center mt-5"
+      style={{ color: colors.text.primary }}
     >
-      <h1
-        className="text-3xl font-bold mb-8 text-center mt-5"
-        style={{ color: colors.text.primary }}
-      >
-        Checkout
-      </h1>
+      Checkout
+    </h1>
 
-      <form
-        className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
-        onSubmit={handleSubmit(handlePlaceOrder)}
-      >
-        <BillingForm
-          register={register}
-          errors={errors}
-          control={control}
-          colors={colors}
-        />
-        <OrderSummary
-          cartItems={cartItems}
-          summary={{
-            subtotal: summary.subtotal,
-            discount: discount,
-            total: summary.subtotal - discount,
-            itemCount: summary.itemCount,
-          }}
-          colors={colors}
-          normalizePrice={normalizePrice}
-          formatPriceWithSymbol={formatPriceWithSymbol}
-          isProcessing={isProcessing}
-          couponCode={couponCode}
-          setCouponCode={setCouponCode}
-          applyCoupon={applyCoupon}
-        />
-      </form>
-    </div>
-  );
+    <form
+      className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
+      onSubmit={handleSubmit(handlePlaceOrder)}
+    >
+      <BillingForm
+        register={register}
+        errors={errors}
+        control={control}
+        colors={colors}
+      />
+      <OrderSummary
+        cartItems={cartItems}
+        summary={{
+          subtotal: summary.subtotal,
+          discount: discount,
+          total: summary.subtotal - discount,
+          itemCount: summary.itemCount,
+        }}
+        colors={colors}
+        normalizePrice={normalizePrice}
+        formatPriceWithSymbol={formatPriceWithSymbol}
+        isProcessing={isProcessing}
+        couponCode={couponCode}
+        setCouponCode={setCouponCode}
+        applyCoupon={applyCoupon}
+      />
+    </form>
+  </div>
+);
 };
 
 export default CheckoutPage;

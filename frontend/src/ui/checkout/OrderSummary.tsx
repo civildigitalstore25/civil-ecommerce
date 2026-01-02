@@ -151,14 +151,14 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       <div
         className="p-4 rounded-md mb-4 text-sm leading-relaxed"
-       
+
       >
         <strong style={{ color: colors.text.primary }}>
-          Razorpay Payment Gateway
+          Secure Payment Gateway
         </strong>
         <br />
         All UPI apps, Debit and Credit Cards, and NetBanking accepted | Powered
-        by Razorpay
+        by Cashfree
       </div>
 
       <p

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Order from '../models/Order';
-import razorpayService from '../services/razorpayService';
+import cashfreeService from '../services/cashfreeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 
@@ -82,10 +82,10 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       const productIds = items.map((item: any) => item.productId);
       console.log('🔍 Admin order - Fetching products for IDs:', productIds);
       const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
-      console.log('📦 Products found with driveLinks:', products.map(p => ({ 
-        id: p._id, 
-        name: (p as any).name, 
-        driveLink: p.driveLink ? 'present' : 'missing' 
+      console.log('📦 Products found with driveLinks:', products.map(p => ({
+        id: p._id,
+        name: (p as any).name,
+        driveLink: p.driveLink ? 'present' : 'missing'
       })));
       // Create a map for quick lookup
       const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
@@ -109,7 +109,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
-    // Create order in database (no Razorpay, admin-created)
+    // Create order in database (admin-created)
     const order = new Order({
       orderId,
       orderNumber,
@@ -156,7 +156,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
 };
 
 /**
- * Create order and initiate Razorpay payment
+ * Create order and initiate Cashfree payment
  */
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -203,15 +203,15 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     const productIds = items.map((item: any) => item.productId);
     console.log('🔍 Creating order - Fetching products for IDs:', productIds);
     const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
-    console.log('📦 Products found with driveLinks:', products.map(p => ({ 
-      id: p._id, 
-      name: (p as any).name, 
-      driveLink: p.driveLink ? 'present' : 'missing' 
+    console.log('📦 Products found with driveLinks:', products.map(p => ({
+      id: p._id,
+      name: (p as any).name,
+      driveLink: p.driveLink ? 'present' : 'missing'
     })));
-    
+
     // Create a map for quick lookup
     const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
-    
+
     // Add driveLink to each item
     const itemsWithDriveLink = items.map((item: any) => {
       const driveLink = productMap.get(item.productId) || null;
@@ -228,23 +228,24 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
-    // Create Razorpay order
+    // Create Cashfree order
     const customerInfo = {
+      customerId: user._id.toString(),
       name: shippingAddress.fullName,
       email: user.email,
       phone: shippingAddress.phoneNumber
     };
 
-    const razorpayOrder = await razorpayService.createOrder(
+    const cashfreeOrder = await cashfreeService.createOrder(
       totalAmount,
       orderId,
       customerInfo
     );
 
-    if (!razorpayOrder.success) {
+    if (!cashfreeOrder.success) {
       res.status(500).json({
         success: false,
-        message: razorpayOrder.message || 'Failed to create payment order'
+        message: cashfreeOrder.message || 'Failed to create payment order'
       });
       return;
     }
@@ -262,7 +263,8 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       shippingAddress,
       couponCode: couponCode ? couponCode.toUpperCase() : null,
       notes,
-      razorpayOrderId: razorpayOrder.orderId,
+      cashfreeOrderId: cashfreeOrder.orderId,
+      paymentSessionId: cashfreeOrder.paymentSessionId,
       paymentStatus: 'pending',
       orderStatus: 'pending'
     });
@@ -276,10 +278,10 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       message: 'Order created successfully',
       data: {
         orderId: order.orderId,
-        razorpayOrderId: razorpayOrder.orderId,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-        keyId: process.env.RAZORPAY_KEY_ID
+        paymentSessionId: cashfreeOrder.paymentSessionId,
+        amount: cashfreeOrder.amount,
+        currency: cashfreeOrder.currency,
+        environment: process.env.CASHFREE_ENV || 'sandbox'
       }
     });
   } catch (error: any) {
@@ -298,40 +300,46 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
   try {
     console.log('🔔 Payment verification started');
     const {
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature
+      orderId
     } = req.body;
-    console.log('📦 Razorpay Order ID:', razorpay_order_id);
+    console.log('📦 Order ID:', orderId);
 
-    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+    if (!orderId) {
       res.status(400).json({
         success: false,
-        message: 'Missing payment verification data'
+        message: 'Missing order ID'
       });
       return;
     }
 
-    // Verify signature
-    const isValid = razorpayService.verifyPaymentSignature(
-      razorpay_order_id,
-      razorpay_payment_id,
-      razorpay_signature
-    );
+    // Fetch order details from Cashfree
+    const cashfreeOrderDetails = await cashfreeService.getOrderDetails(orderId);
 
-    if (!isValid) {
+    if (!cashfreeOrderDetails.success) {
       res.status(400).json({
         success: false,
-        message: 'Payment verification failed. Invalid signature.'
+        message: 'Failed to verify payment with Cashfree'
+      });
+      return;
+    }
+
+    const orderStatus = cashfreeOrderDetails.order.order_status;
+    console.log('📊 Cashfree Order Status:', orderStatus);
+
+    // Check if payment is successful
+    if (orderStatus !== 'PAID') {
+      res.status(400).json({
+        success: false,
+        message: `Payment not completed. Status: ${orderStatus}`
       });
       return;
     }
 
     // Update order in database
-    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+    const order = await Order.findOne({ orderId });
 
     if (!order) {
-      console.log('❌ Order not found for Razorpay Order ID:', razorpay_order_id);
+      console.log('❌ Order not found for Order ID:', orderId);
       res.status(404).json({
         success: false,
         message: 'Order not found'
@@ -342,8 +350,13 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
     console.log('✅ Order found:', order.orderId);
     console.log('🎟️ Coupon code in order:', order.couponCode || 'None');
 
-    order.razorpayPaymentId = razorpay_payment_id;
-    order.razorpaySignature = razorpay_signature;
+    // Fetch payment details
+    const paymentDetails = await cashfreeService.getPaymentDetails(orderId);
+    const cfPaymentId = paymentDetails.success && paymentDetails.payments[0]
+      ? paymentDetails.payments[0].cf_payment_id
+      : null;
+
+    order.cashfreePaymentId = cfPaymentId;
     order.paymentStatus = 'paid';
     order.orderStatus = 'processing';
     await order.save();
@@ -419,7 +432,7 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
         subtotal: order.subtotal,
         discount: order.discount,
         totalAmount: order.totalAmount,
-        paymentId: razorpay_payment_id
+        paymentId: cfPaymentId || 'N/A'
       };
 
       console.log('📧 Sending email to:', process.env.CONTACT_EMAIL);
@@ -460,9 +473,9 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
  */
 export const paymentFailed = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { razorpay_order_id, error } = req.body;
+    const { orderId, error } = req.body;
 
-    if (!razorpay_order_id) {
+    if (!orderId) {
       res.status(400).json({
         success: false,
         message: 'Order ID is required'
@@ -470,7 +483,7 @@ export const paymentFailed = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
-    const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
+    const order = await Order.findOne({ orderId });
 
     if (order) {
       order.paymentStatus = 'failed';
@@ -564,17 +577,17 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
         const itemsWithDriveLinks = await Promise.all(
           order.items.map(async (item: any) => {
             console.log(`🔍 Checking item: ${item.name}, productId: ${item.productId}, existing driveLink: ${item.driveLink}`);
-            
+
             // If item already has driveLink, keep it
             if (item.driveLink) {
               console.log(`✓ Item already has driveLink: ${item.driveLink}`);
               return item;
             }
-            
+
             // Otherwise, fetch from Product
             const product = await Product.findById(item.productId).select('driveLink').lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
-            
+
             return {
               ...item,
               driveLink: product?.driveLink || null
@@ -589,8 +602,8 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
     );
 
     console.log(`📦 Found ${ordersWithDriveLinks.length} orders for user ${user._id}`);
-    console.log('First order items:', ordersWithDriveLinks[0]?.items?.map((i: any) => ({ 
-      name: i.name, 
+    console.log('First order items:', ordersWithDriveLinks[0]?.items?.map((i: any) => ({
+      name: i.name,
       driveLink: i.driveLink ? 'present' : 'missing',
       fullDriveLink: i.driveLink
     })));
@@ -750,7 +763,7 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    if (!order.razorpayPaymentId) {
+    if (!order.cashfreePaymentId) {
       res.status(400).json({
         success: false,
         message: 'Payment ID not found'
@@ -758,9 +771,14 @@ export const initiateRefund = async (req: Request, res: Response): Promise<void>
       return;
     }
 
-    const refundResult = await razorpayService.initiateRefund(
-      order.razorpayPaymentId,
-      amount || order.totalAmount
+    // Generate unique refund ID
+    const refundId = `REFUND-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`.toUpperCase();
+
+    const refundResult = await cashfreeService.initiateRefund(
+      order.orderId,
+      order.cashfreePaymentId,
+      amount || order.totalAmount,
+      refundId
     );
 
     if (!refundResult.success) {
@@ -871,6 +889,107 @@ export const adminDeleteOrder = async (req: Request, res: Response): Promise<voi
     });
   } catch (error: any) {
     console.error('❌ Admin delete order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Handle Cashfree webhook for payment notifications
+ */
+export const handleWebhook = async (req: Request, res: Response): Promise<void> => {
+  try {
+    console.log('📬 Cashfree webhook received');
+    
+    const signature = req.headers['x-webhook-signature'] as string;
+    const timestamp = req.headers['x-webhook-timestamp'] as string;
+    const rawBody = JSON.stringify(req.body);
+
+    // Verify webhook signature
+    const isValid = cashfreeService.verifyWebhookSignature(
+      rawBody,
+      signature,
+      timestamp
+    );
+
+    if (!isValid) {
+      console.error('❌ Invalid webhook signature');
+      res.status(400).json({
+        success: false,
+        message: 'Invalid signature'
+      });
+      return;
+    }
+
+    const { type, data } = req.body;
+
+    console.log(`📨 Webhook type: ${type}`);
+    console.log(`📦 Webhook data:`, data);
+
+    // Handle payment success webhook
+    if (type === 'PAYMENT_SUCCESS_WEBHOOK') {
+      const { order } = data;
+      const orderId = order.order_id;
+
+      // Find order in database
+      const dbOrder = await Order.findOne({ orderId });
+
+      if (!dbOrder) {
+        console.error(`❌ Order not found: ${orderId}`);
+        res.status(404).json({
+          success: false,
+          message: 'Order not found'
+        });
+        return;
+      }
+
+      // Update order status if not already updated
+      if (dbOrder.paymentStatus !== 'paid') {
+        // Get payment details from Cashfree
+        const paymentDetails = await cashfreeService.getPaymentDetails(orderId);
+        const cfPaymentId = paymentDetails.success && paymentDetails.payments[0]
+          ? paymentDetails.payments[0].cf_payment_id
+          : null;
+
+        dbOrder.cashfreePaymentId = cfPaymentId;
+        dbOrder.paymentStatus = 'paid';
+        dbOrder.orderStatus = 'processing';
+        await dbOrder.save();
+
+        console.log(`✅ Order ${orderId} marked as paid via webhook`);
+
+        // Apply coupon if used
+        if (dbOrder.couponCode) {
+          try {
+            const Coupon = (await import('../models/Coupon')).default;
+            const coupon = await Coupon.findOne({ code: dbOrder.couponCode.toUpperCase() });
+
+            if (coupon && coupon.status === 'Active' && coupon.usedCount < coupon.usageLimit) {
+              coupon.usedCount += 1;
+              if (coupon.usedCount >= coupon.usageLimit) {
+                coupon.status = 'Inactive';
+              }
+              await coupon.save();
+              console.log(`✅ Coupon ${coupon.code} usage updated via webhook`);
+            }
+          } catch (couponError) {
+            console.error('❌ Error applying coupon via webhook:', couponError);
+          }
+        }
+      } else {
+        console.log(`ℹ️ Order ${orderId} already marked as paid`);
+      }
+    }
+
+    // Acknowledge webhook
+    res.status(200).json({
+      success: true,
+      message: 'Webhook processed'
+    });
+  } catch (error: any) {
+    console.error('❌ Webhook handler error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
