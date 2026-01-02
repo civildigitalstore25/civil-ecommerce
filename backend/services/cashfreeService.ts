@@ -53,6 +53,21 @@ class CashfreeService {
      */
     async createOrder(amount: number, orderId: string, customerInfo: any) {
         try {
+            // Build notify_url and ensure HTTPS in production
+            let backendBase = (process.env.BACKEND_URL || process.env.FRONTEND_URL || 'http://localhost:5000').trim();
+
+            // In production Cashfree requires an https notify_url. Prefer explicit BACKEND_URL.
+            if (this.config.environment === 'production') {
+                if (!process.env.BACKEND_URL) {
+                    console.warn('⚠️ BACKEND_URL not set; using FRONTEND_URL or default and forcing https for notify_url');
+                }
+                // Force https scheme for production notify_url
+                backendBase = backendBase.replace(/^http:\/\//i, 'https://');
+            }
+
+            // Remove trailing slash if present
+            backendBase = backendBase.replace(/\/$/, '');
+
             const orderData = {
                 order_id: orderId,
                 order_amount: amount,
@@ -64,8 +79,8 @@ class CashfreeService {
                     customer_phone: customerInfo.phone
                 },
                 order_meta: {
-                    return_url: `${process.env.FRONTEND_URL}/payment-status?order_id={order_id}`,
-                    notify_url: `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/payments/webhook`
+                    return_url: `${(process.env.FRONTEND_URL || '').replace(/\/$/, '')}/payment-status?order_id={order_id}`,
+                    notify_url: `${backendBase}/api/payments/webhook`
                 },
                 order_note: `Order for ${customerInfo.name}`
             };
