@@ -18,8 +18,8 @@ export const headerConfig = {
     { label: "Adobe Cloud", href: "/adobe-cloud" },
   ],
   contact: {
-    phone: "790-355-4767",
-    phoneHref: "tel:+17903554767",
+    phone: "9042993986",
+    phoneHref: "tel:+919042993986",
   },
   search: {
     placeholder: "Search for software, brands, or categories...",
