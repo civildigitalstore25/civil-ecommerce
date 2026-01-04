@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   X,
   Package,
@@ -50,12 +51,22 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
       return (
         <p style={{ color: colors.text.secondary }}>No content available</p>
       );
+
+    const isHTML = /<[^>]+>/.test(htmlContent);
+    if (isHTML) {
+      return (
+        <div
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+          className="prose max-w-none"
+          style={{ color: colors.text.secondary }}
+        />
+      );
+    }
+
     return (
-      <div
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-        className="prose max-w-none"
-        style={{ color: colors.text.secondary }}
-      />
+      <div className="prose max-w-none" style={{ color: colors.text.secondary }}>
+        <ReactMarkdown>{htmlContent}</ReactMarkdown>
+      </div>
     );
   };
 
@@ -158,11 +169,10 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                        selectedImageIndex === index
+                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
                           ? "border-yellow-500"
                           : "border-gray-600"
-                      }`}
+                        }`}
                     >
                       <img
                         src={image}
@@ -191,66 +201,64 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   Version {product.version}
                 </p>
                 {product.shortDescription && (
-                  <p className="mt-2" style={{ color: colors.text.secondary }}>
-                    {product.shortDescription}
-                  </p>
+                  renderHTMLContent(product.shortDescription)
                 )}
               </div>
 
               {/* Rating and Tags */}
               {(product.rating ||
                 (product.tags && product.tags.length > 0)) && (
-                <div className="space-y-3">
-                  {product.rating && (
-                    <div className="flex items-center space-x-2">
-                      <div className="flex items-center">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <Star
-                            key={star}
-                            className="w-5 h-5"
+                  <div className="space-y-3">
+                    {product.rating && (
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Star
+                              key={star}
+                              className="w-5 h-5"
+                              style={{
+                                color:
+                                  star <= product.rating!
+                                    ? colors.interactive.primary
+                                    : colors.text.secondary,
+                                fill:
+                                  star <= product.rating!
+                                    ? colors.interactive.primary
+                                    : "none",
+                              }}
+                            />
+                          ))}
+                        </div>
+                        <span style={{ color: colors.text.secondary }}>
+                          {product.rating}
+                        </span>
+                        {product.ratingCount && (
+                          <span style={{ color: colors.text.secondary }}>
+                            ({product.ratingCount} reviews)
+                          </span>
+                        )}
+                      </div>
+                    )}
+
+                    {product.tags && product.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {product.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-1 rounded-full text-sm"
                             style={{
-                              color:
-                                star <= product.rating!
-                                  ? colors.interactive.primary
-                                  : colors.text.secondary,
-                              fill:
-                                star <= product.rating!
-                                  ? colors.interactive.primary
-                                  : "none",
+                              backgroundColor: colors.background.tertiary,
+                              color: colors.text.primary,
                             }}
-                          />
+                          >
+                            <Tag className="w-3 h-3 mr-1" />
+                            {tag}
+                          </span>
                         ))}
                       </div>
-                      <span style={{ color: colors.text.secondary }}>
-                        {product.rating}
-                      </span>
-                      {product.ratingCount && (
-                        <span style={{ color: colors.text.secondary }}>
-                          ({product.ratingCount} reviews)
-                        </span>
-                      )}
-                    </div>
-                  )}
-
-                  {product.tags && product.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2 py-1 rounded-full text-sm"
-                          style={{
-                            backgroundColor: colors.background.tertiary,
-                            color: colors.text.primary,
-                          }}
-                        >
-                          <Tag className="w-3 h-3 mr-1" />
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
 
               {/* Brand/Company Info */}
               <div
@@ -470,113 +478,113 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             {/* Legacy Pricing (backward compatibility) */}
             {(!product.subscriptionDurations ||
               product.subscriptionDurations.length === 0) && (
-              <div className="mb-6">
-                <h4
-                  className="text-lg font-medium mb-3"
-                  style={{ color: colors.text.primary }}
-                >
-                  License Plans
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {product.price1 && (
-                    <div
-                      className="rounded-lg p-4 border"
-                      style={{
-                        backgroundColor: colors.background.primary,
-                        borderColor: colors.border.primary,
-                      }}
-                    >
-                      <div className="text-center">
-                        <div
-                          className="text-2xl font-bold"
-                          style={{ color: colors.text.primary }}
-                        >
-                          ₹{product.price1.toLocaleString()}
-                        </div>
-                        <div
-                          className="text-sm"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          1-Year License
-                        </div>
-                        {product.oldPrice1 && (
+                <div className="mb-6">
+                  <h4
+                    className="text-lg font-medium mb-3"
+                    style={{ color: colors.text.primary }}
+                  >
+                    License Plans
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {product.price1 && (
+                      <div
+                        className="rounded-lg p-4 border"
+                        style={{
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        <div className="text-center">
                           <div
-                            className="text-sm line-through"
+                            className="text-2xl font-bold"
+                            style={{ color: colors.text.primary }}
+                          >
+                            ₹{product.price1.toLocaleString()}
+                          </div>
+                          <div
+                            className="text-sm"
                             style={{ color: colors.text.secondary }}
                           >
-                            ₹{product.oldPrice1.toLocaleString()}
+                            1-Year License
                           </div>
-                        )}
+                          {product.oldPrice1 && (
+                            <div
+                              className="text-sm line-through"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              ₹{product.oldPrice1.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {product.price3 && (
-                    <div
-                      className="rounded-lg p-4 border"
-                      style={{
-                        backgroundColor: colors.background.primary,
-                        borderColor: colors.border.primary,
-                      }}
-                    >
-                      <div className="text-center">
-                        <div
-                          className="text-2xl font-bold"
-                          style={{ color: colors.text.primary }}
-                        >
-                          ₹{product.price3.toLocaleString()}
-                        </div>
-                        <div
-                          className="text-sm"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          3-Year License
-                        </div>
-                        {product.oldPrice3 && (
+                    )}
+                    {product.price3 && (
+                      <div
+                        className="rounded-lg p-4 border"
+                        style={{
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        <div className="text-center">
                           <div
-                            className="text-sm line-through"
+                            className="text-2xl font-bold"
+                            style={{ color: colors.text.primary }}
+                          >
+                            ₹{product.price3.toLocaleString()}
+                          </div>
+                          <div
+                            className="text-sm"
                             style={{ color: colors.text.secondary }}
                           >
-                            ₹{product.oldPrice3.toLocaleString()}
+                            3-Year License
                           </div>
-                        )}
+                          {product.oldPrice3 && (
+                            <div
+                              className="text-sm line-through"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              ₹{product.oldPrice3.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {product.priceLifetime && (
-                    <div
-                      className="rounded-lg p-4 border"
-                      style={{
-                        backgroundColor: colors.background.primary,
-                        borderColor: colors.border.primary,
-                      }}
-                    >
-                      <div className="text-center">
-                        <div
-                          className="text-2xl font-bold"
-                          style={{ color: colors.text.primary }}
-                        >
-                          ₹{product.priceLifetime.toLocaleString()}
-                        </div>
-                        <div
-                          className="text-sm"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Lifetime License
-                        </div>
-                        {product.oldPriceLifetime && (
+                    )}
+                    {product.priceLifetime && (
+                      <div
+                        className="rounded-lg p-4 border"
+                        style={{
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        <div className="text-center">
                           <div
-                            className="text-sm line-through"
+                            className="text-2xl font-bold"
+                            style={{ color: colors.text.primary }}
+                          >
+                            ₹{product.priceLifetime.toLocaleString()}
+                          </div>
+                          <div
+                            className="text-sm"
                             style={{ color: colors.text.secondary }}
                           >
-                            ₹{product.oldPriceLifetime.toLocaleString()}
+                            Lifetime License
                           </div>
-                        )}
+                          {product.oldPriceLifetime && (
+                            <div
+                              className="text-sm line-through"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              ₹{product.oldPriceLifetime.toLocaleString()}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             {/* Special Pricing */}
             {(product.hasLifetime || product.hasMembership) && (

@@ -5,6 +5,8 @@ import type { Product } from "../../../api/types/productTypes";
 import Swal from "sweetalert2";
 import { Plus, X, Save, HelpCircle } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import RichTextEditor from "../../../components/RichTextEditor/RichTextEditor";
+import TurndownService from "turndown";
 
 const brands = [
   { value: "autodesk", label: "Autodesk" },
@@ -496,14 +498,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       const brandHasCategories = (brandCategories[newProduct.brand] || []).length > 0;
       const categoryValue = brandHasCategories ? newProduct.category : newProduct.brand;
 
+      // Convert long description (HTML) to Markdown for storage (keeps formatting but avoids raw HTML)
+      const turndownService = new TurndownService();
+      const markdownDescription = turndownService.turndown(newProduct.longDescription || "");
+
       // Transform new product structure to match current backend expectations
       const productData = {
         // Basic Information
         name: newProduct.name,
         version: newProduct.version,
         slug,
-        shortDescription: newProduct.longDescription,
-        description: newProduct.longDescription, // Map longDescription to description for backend compatibility
+        shortDescription: markdownDescription,
+        description: markdownDescription, // Store Markdown instead of raw HTML
         category: categoryValue,
 
         // Brand/Company (backward compatibility)
@@ -817,25 +823,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               >
                 Long Description
               </label>
-              <textarea
+              <RichTextEditor
                 value={newProduct.longDescription}
-                onChange={(e) =>
-                  handleInputChange("longDescription", e.target.value)
-                }
+                onChange={(val) => handleInputChange("longDescription", val)}
                 placeholder="Detailed product description, features, installation and activation instructions..."
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 min-h-[140px] transition-colors duration-200"
-                style={{
-                  backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary,
-                  color: colors.text.primary,
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = colors.interactive.primary;
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = colors.border.primary;
-                }}
-                required
+                className="w-full"
               />
             </div>
           </div>

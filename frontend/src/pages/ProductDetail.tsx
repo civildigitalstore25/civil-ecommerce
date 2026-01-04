@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
@@ -80,18 +81,18 @@ const FAQItem: React.FC<FAQItemProps> = ({
             className="pl-12 border-l-2 transition-colors duration-200"
             style={{ borderColor: colors.interactive.primary + "30" }}
           >
-            <p
+            <div
               className="leading-relaxed"
               style={{ color: colors.text.secondary }}
-            >
-              {answer}
-            </p>
+              dangerouslySetInnerHTML={{ __html: answer }}
+            />
           </div>
         </div>
       )}
     </div>
   );
 };
+
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -186,6 +187,31 @@ const ProductDetail: React.FC = () => {
     }
     // Fallback to a default icon if the specified icon doesn't exist
     return <LucideIcons.Check className={className} size={24} />;
+  };
+
+  // Helper to render saved HTML content (rich text)
+  const renderHTMLContent = (htmlContent?: string, className?: string) => {
+    if (!htmlContent) return (
+      <p style={{ color: colors.text.secondary }}>No content available</p>
+    );
+
+    const isHTML = /<[^>]+>/.test(htmlContent);
+    if (isHTML) {
+      return (
+        <div
+          className={className || "prose max-w-none"}
+          style={{ color: colors.text.secondary }}
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+      );
+    }
+
+    // Treat as Markdown
+    return (
+      <div className={className || "prose max-w-none"} style={{ color: colors.text.secondary }}>
+        <ReactMarkdown>{htmlContent}</ReactMarkdown>
+      </div>
+    );
   };
 
   // Load reviews when component mounts or product changes
@@ -1019,12 +1045,7 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Description */}
-            <p
-              className="text-base lg:text-lg leading-relaxed"
-              style={{ color: colors.text.secondary }}
-            >
-              {product.shortDescription}
-            </p>
+            {renderHTMLContent(product.shortDescription, 'text-base lg:text-lg leading-relaxed')}
 
             {/* License Selection */}
             <div
@@ -1600,12 +1621,7 @@ const ProductDetail: React.FC = () => {
                             {feature.title}
                           </h4>
                         </div>
-                        <p
-                          className="text-sm lg:text-base"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          {feature.description}
-                        </p>
+                        {renderHTMLContent(feature.description, 'text-sm lg:text-base')}
                       </div>
                     ))}
                   </div>
@@ -1824,9 +1840,7 @@ const ProductDetail: React.FC = () => {
                             {requirement.title}
                           </h4>
                         </div>
-                        <p style={{ color: colors.text.secondary }}>
-                          {requirement.description}
-                        </p>
+                        {renderHTMLContent(requirement.description)}
                       </div>
                     ))}
                   </div>
