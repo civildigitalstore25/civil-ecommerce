@@ -268,6 +268,15 @@ const ProductDetail: React.FC = () => {
     }
   }, [product?._id]);
 
+  // Ensure page opens scrolled to top when navigating to a product
+  useEffect(() => {
+    try {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } catch (e) {
+      // ignore in non-browser environments
+    }
+  }, [slug]);
+
   // Compute which tabs to show based on available product data
   useEffect(() => {
     const hasFeatures = !!(product && product.keyFeatures && product.keyFeatures.length > 0);
