@@ -113,6 +113,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     subscriptionDurations: [
       { duration: "1 Year", price: "" },
     ] as SubscriptionDuration[],
+    // Simple price fields for ebook brand
+    ebookPriceINR: "",
+    ebookPriceUSD: "",
     subscriptions: [
       { duration: "Monthly", price: "" },
     ] as SubscriptionDuration[],
@@ -159,8 +162,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               : ""),
           brand: productBrand,
           subscriptionDurations:
-            product.subscriptionDurations &&
-              product.subscriptionDurations.length > 0
+            product.subscriptionDurations && product.subscriptionDurations.length > 0
               ? product.subscriptionDurations.map((sub) => ({
                 duration: sub.duration,
                 price: sub.price?.toString() || "",
@@ -185,6 +187,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   ]
                   : []),
               ],
+          // Map ebook simple prices if present
+          ebookPriceINR: product.price1INR?.toString() || product.price1?.toString() || "",
+          ebookPriceUSD: product.price1USD?.toString() || "",
           subscriptions:
             product.subscriptions && product.subscriptions.length > 0
               ? product.subscriptions.map((sub) => ({
@@ -249,6 +254,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           subscriptionDurations: [
             { duration: "1 Year", price: "", priceINR: "", priceUSD: "" },
           ],
+          // Simple ebook price fields
+          ebookPriceINR: "",
+          ebookPriceUSD: "",
           subscriptions: [
             { duration: "Monthly", price: "", priceINR: "", priceUSD: "" },
           ],
@@ -290,6 +298,21 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       brand: brandValue,
       category:
         availableCategories.length > 0 ? availableCategories[0].value : "",
+      // If switching to ebook, clear other pricing options to avoid confusion
+      ...(brandValue === "ebook"
+        ? {
+          subscriptionDurations: [],
+          subscriptions: [],
+          hasLifetime: false,
+          lifetimePrice: "",
+          lifetimePriceINR: "",
+          lifetimePriceUSD: "",
+          hasMembership: false,
+          membershipPrice: "",
+          membershipPriceINR: "",
+          membershipPriceUSD: "",
+        }
+        : {}),
     }));
   };
 
@@ -519,40 +542,56 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         company: newProduct.brand, // For backward compatibility
         brand: newProduct.brand, // New field
 
-        // Legacy pricing structure (for backward compatibility)
-        price1: newProduct.subscriptionDurations[0]?.price
-          ? Number(newProduct.subscriptionDurations[0].price)
-          : 0,
-        price3: newProduct.subscriptionDurations[1]?.price
+        // Pricing handling
+        // For ebook brand, prefer the simple ebook price fields
+        price1:
+          newProduct.brand === "ebook"
+            ? newProduct.ebookPriceINR
+              ? Number(newProduct.ebookPriceINR)
+              : 0
+            : newProduct.subscriptionDurations[0]?.price
+              ? Number(newProduct.subscriptionDurations[0].price)
+              : 0,
+        price3: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.price
           ? Number(newProduct.subscriptionDurations[1].price)
           : undefined,
         priceLifetime:
-          newProduct.hasLifetime && newProduct.lifetimePrice
-            ? Number(newProduct.lifetimePrice)
-            : undefined,
+          newProduct.brand === "ebook"
+            ? undefined
+            : newProduct.hasLifetime && newProduct.lifetimePrice
+              ? Number(newProduct.lifetimePrice)
+              : undefined,
 
         // Dual currency pricing
-        price1INR: newProduct.subscriptionDurations[0]?.priceINR
-          ? Number(newProduct.subscriptionDurations[0].priceINR)
-          : undefined,
-        price1USD: newProduct.subscriptionDurations[0]?.priceUSD
-          ? Number(newProduct.subscriptionDurations[0].priceUSD)
-          : undefined,
-        price3INR: newProduct.subscriptionDurations[1]?.priceINR
+        price1INR: newProduct.brand === "ebook"
+          ? newProduct.ebookPriceINR
+            ? Number(newProduct.ebookPriceINR)
+            : undefined
+          : newProduct.subscriptionDurations[0]?.priceINR
+            ? Number(newProduct.subscriptionDurations[0].priceINR)
+            : undefined,
+        price1USD: newProduct.brand === "ebook"
+          ? newProduct.ebookPriceUSD
+            ? Number(newProduct.ebookPriceUSD)
+            : undefined
+          : newProduct.subscriptionDurations[0]?.priceUSD
+            ? Number(newProduct.subscriptionDurations[0].priceUSD)
+            : undefined,
+        price3INR: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceINR
           ? Number(newProduct.subscriptionDurations[1].priceINR)
           : undefined,
-        price3USD: newProduct.subscriptionDurations[1]?.priceUSD
+        price3USD: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceUSD
           ? Number(newProduct.subscriptionDurations[1].priceUSD)
           : undefined,
-        priceLifetimeINR: newProduct.lifetimePriceINR
+        priceLifetimeINR: newProduct.brand === "ebook" ? undefined : newProduct.lifetimePriceINR
           ? Number(newProduct.lifetimePriceINR)
           : undefined,
-        priceLifetimeUSD: newProduct.lifetimePriceUSD
+        priceLifetimeUSD: newProduct.brand === "ebook" ? undefined : newProduct.lifetimePriceUSD
           ? Number(newProduct.lifetimePriceUSD)
           : undefined,
 
         // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
-        subscriptionDurations: newProduct.subscriptionDurations
+        subscriptionDurations: newProduct.brand === "ebook" ? [] : newProduct.subscriptionDurations
           .map((sub) => ({
             duration: sub.duration,
             price: sub.price ? Number(sub.price) : 0,
@@ -701,7 +740,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
       // Check if we have at least one price
       const hasValidPrice =
-        productData.price1 > 0 ||
+        (productData.price1 && productData.price1 > 0) ||
+        (productData.price1INR && productData.price1INR > 0) ||
+        (productData.price1USD && productData.price1USD > 0) ||
         (productData.hasLifetime &&
           productData.lifetimePrice &&
           productData.lifetimePrice > 0) ||
@@ -1193,557 +1234,432 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             </h2>
 
             <div className="space-y-4">
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Add different year-based pricing options
-              </p>
 
-              {/* Pricing Durations */}
-              <div className="space-y-4">
-                <label
-                  className="block text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
-                >
-                  Pricing
-                </label>
-                {newProduct.subscriptionDurations.map((sub, index) => (
-                  <div
-                    key={index}
-                    className="p-4 border rounded-lg transition-colors duration-200"
-
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Duration
-                        </label>
-                        <select
-                          value={sub.duration}
-                          onChange={(e) =>
-                            updateSubscriptionDuration(
-                              index,
-                              "duration",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        >
-                          <option value="1 Year">1 Year</option>
-                          <option value="2 Year">2 Year</option>
-                          <option value="3 Year">3 Year</option>
-                          <option value="6 Months">6 Months</option>
-                          <option value="Monthly">Monthly</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Price INR (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={sub.price}
-                          onChange={(e) =>
-                            updateSubscriptionDuration(
-                              index,
-                              "price",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Price USD ($)
-                        </label>
-                        <input
-                          type="number"
-                          value={sub.priceUSD}
-                          onChange={(e) =>
-                            updateSubscriptionDuration(
-                              index,
-                              "priceUSD",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        />
-                      </div>
-                      <div className="flex justify-center md:justify-end">
-                        <button
-                          type="button"
-                          onClick={() => removeSubscriptionDuration(index)}
-                          title="Remove pricing duration"
-                          className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
-                          style={{
-                            color: colors.status.error,
-                            borderColor: colors.status.error,
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addSubscriptionDuration}
-                  className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
-                  style={{
-                    color: colors.interactive.primary,
-                    borderColor: colors.interactive.primary,
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Duration
-                </button>
-              </div>
-
-              {/* Lifetime License */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="hasLifetime"
-                  checked={newProduct.hasLifetime}
-                  onChange={(e) =>
-                    setNewProduct((prev) => ({
-                      ...prev,
-                      hasLifetime: e.target.checked,
-                    }))
-                  }
-                  className="rounded focus:ring-2 transition-colors duration-200"
-                  style={{
-                    borderColor: colors.border.primary,
-                    backgroundColor: colors.background.primary,
-                    color: colors.interactive.primary,
-                  }}
-                />
-                <label
-                  htmlFor="hasLifetime"
-                  className="text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
-                >
-                  Offer Lifetime License
-                </label>
-              </div>
-              {newProduct.hasLifetime && (
-                <div
-                  className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
-                  style={{
-                    backgroundColor: colors.background.secondary,
-                    borderColor: colors.border.primary,
-                  }}
-                >
-                  <h4
-                    className="text-sm font-medium"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    Lifetime Pricing
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* For ebook brand show simple single-price inputs */}
+              {newProduct.brand === 'ebook' ? (
+                <div className="p-4 border rounded-lg transition-colors duration-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                     <div>
-                      <label
-                        className="block text-sm font-medium mb-1"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        Lifetime Price INR (₹)
+                      <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                        Price INR (₹)
                       </label>
                       <input
                         type="number"
-                        value={newProduct.lifetimePriceINR}
-                        onChange={(e) =>
-                          handleInputChange("lifetimePriceINR", e.target.value)
-                        }
+                        value={newProduct.ebookPriceINR}
+                        onChange={(e) => handleInputChange('ebookPriceINR', e.target.value)}
                         placeholder="0.00"
                         step="0.01"
                         min="0"
                         className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor =
-                            colors.interactive.primary;
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = colors.border.primary;
-                        }}
+                        style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
                       />
                     </div>
                     <div>
-                      <label
-                        className="block text-sm font-medium mb-1"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        Lifetime Price USD ($)
+                      <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
+                        Price USD ($)
                       </label>
                       <input
                         type="number"
-                        value={newProduct.lifetimePriceUSD}
-                        onChange={(e) =>
-                          handleInputChange("lifetimePriceUSD", e.target.value)
-                        }
+                        value={newProduct.ebookPriceUSD}
+                        onChange={(e) => handleInputChange('ebookPriceUSD', e.target.value)}
                         placeholder="0.00"
                         step="0.01"
                         min="0"
                         className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor =
-                            colors.interactive.primary;
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = colors.border.primary;
-                        }}
+                        style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
                       />
                     </div>
                   </div>
                 </div>
-              )}
-
-              {/* Membership Option */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="hasMembership"
-                  checked={newProduct.hasMembership}
-                  onChange={(e) =>
-                    setNewProduct((prev) => ({
-                      ...prev,
-                      hasMembership: e.target.checked,
-                    }))
-                  }
-                  className="rounded focus:ring-2 transition-colors duration-200"
-                  style={{
-                    borderColor: colors.border.primary,
-                    backgroundColor: colors.background.primary,
-                    color: colors.interactive.primary,
-                  }}
-                />
-                <label
-                  htmlFor="hasMembership"
-                  className="text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
-                >
-                  VIP/Premium Membership Option
-                </label>
-              </div>
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Premium membership with exclusive benefits and priority support
-              </p>
-              {newProduct.hasMembership && (
-                <div
-                  className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
-                  style={{
-                    backgroundColor: colors.background.secondary,
-                    borderColor: colors.border.primary,
-                  }}
-                >
-                  <h4
-                    className="text-sm font-medium"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    Membership Pricing
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label
-                        className="block text-sm font-medium mb-1"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        Membership Price INR (₹)
-                      </label>
-                      <input
-                        type="number"
-                        value={newProduct.membershipPriceINR}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "membershipPriceINR",
-                            e.target.value,
-                          )
-                        }
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor =
-                            colors.interactive.primary;
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = colors.border.primary;
-                        }}
-                      />
+              ) : (
+                /* existing pricing durations UI for non-ebook brands */
+                <div className="space-y-4">
+                  <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>Pricing</label>
+                  {newProduct.subscriptionDurations.map((sub, index) => (
+                    <div key={index} className="p-4 border rounded-lg transition-colors duration-200">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                          <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Duration</label>
+                          <select value={sub.duration} onChange={(e) => updateSubscriptionDuration(index, 'duration', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}>
+                            <option value="1 Year">1 Year</option>
+                            <option value="2 Year">2 Year</option>
+                            <option value="3 Year">3 Year</option>
+                            <option value="6 Months">6 Months</option>
+                            <option value="Monthly">Monthly</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Price INR (₹)</label>
+                          <input type="number" value={sub.price} onChange={(e) => updateSubscriptionDuration(index, 'price', e.target.value)} placeholder="0.00" step="0.01" min="0" className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }} />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Price USD ($)</label>
+                          <input type="number" value={sub.priceUSD} onChange={(e) => updateSubscriptionDuration(index, 'priceUSD', e.target.value)} placeholder="0.00" step="0.01" min="0" className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }} />
+                        </div>
+                        <div className="flex justify-center md:justify-end">
+                          <button type="button" onClick={() => removeSubscriptionDuration(index)} title="Remove pricing duration" className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200" style={{ color: colors.status.error, borderColor: colors.status.error }}>
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label
-                        className="block text-sm font-medium mb-1"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        Membership Price USD ($)
-                      </label>
-                      <input
-                        type="number"
-                        value={newProduct.membershipPriceUSD}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "membershipPriceUSD",
-                            e.target.value,
-                          )
-                        }
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
-                        onFocus={(e) => {
-                          e.target.style.borderColor =
-                            colors.interactive.primary;
-                        }}
-                        onBlur={(e) => {
-                          e.target.style.borderColor = colors.border.primary;
-                        }}
-                      />
-                    </div>
-                  </div>
+                  ))}
+                  <button type="button" onClick={addSubscriptionDuration} className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200" style={{ color: colors.interactive.primary, borderColor: colors.interactive.primary }}>
+                    <Plus className="h-4 w-4" /> Add Duration
+                  </button>
                 </div>
               )}
-            </div>
-          </div>
 
-          {/* Subscription Plans */}
-          <div className="space-y-6">
-            <h2
-              className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
-              style={{
-                color: colors.text.primary,
-                borderBottomColor: colors.border.primary,
-              }}
-            >
-              Subscription Plans
-            </h2>
-
-            <div className="space-y-4">
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Add recurring subscription plans for your software
-              </p>
-
-              {/* Subscription Durations */}
-              <div className="space-y-4">
-                <label
-                  className="block text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
-                >
-                  Subscription Plans
-                </label>
-                {newProduct.subscriptions.map((sub, index) => (
-                  <div
-                    key={index}
-                    className="p-4 rounded-lg transition-colors duration-200"
-
-                  >
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Duration
-                        </label>
-                        <select
-                          value={sub.duration}
-                          onChange={(e) =>
-                            updateSubscription(
-                              index,
-                              "duration",
-                              e.target.value,
-                            )
-                          }
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        >
-                          <option value="Monthly">Monthly</option>
-                          <option value="Quarterly">Quarterly</option>
-                          <option value="Semi-Annual">Semi-Annual</option>
-                          <option value="Annual">Annual</option>
-                          <option value="Weekly">Weekly</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          INR (₹)
-                        </label>
-                        <input
-                          type="number"
-                          value={sub.price}
-                          onChange={(e) =>
-                            updateSubscription(index, "price", e.target.value)
-                          }
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        />
-                      </div>
-                      <div>
-                        <label
-                          className="block text-sm font-medium mb-1"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          USD ($)
-                        </label>
-                        <input
-                          type="number"
-                          value={sub.priceUSD || ""}
-                          onChange={(e) =>
-                            updateSubscription(
-                              index,
-                              "priceUSD",
-                              e.target.value,
-                            )
-                          }
-                          placeholder="0.00"
-                          step="0.01"
-                          min="0"
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          onFocus={(e) => {
-                            e.target.style.borderColor =
-                              colors.interactive.primary;
-                          }}
-                          onBlur={(e) => {
-                            e.target.style.borderColor = colors.border.primary;
-                          }}
-                        />
-                      </div>
-                      <div className="flex justify-center md:justify-end">
-                        <button
-                          type="button"
-                          onClick={() => removeSubscription(index)}
-                          title="Remove subscription plan"
-                          className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
-                          style={{
-                            color: colors.status.error,
-                            borderColor: colors.status.error,
-                          }}
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+              {/* Lifetime, Membership - hide for ebook brand */}
+              {newProduct.brand !== 'ebook' && (
+                <>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="hasLifetime"
+                      checked={newProduct.hasLifetime}
+                      onChange={(e) =>
+                        setNewProduct((prev) => ({
+                          ...prev,
+                          hasLifetime: e.target.checked,
+                        }))
+                      }
+                      className="rounded focus:ring-2 transition-colors duration-200"
+                      style={{
+                        borderColor: colors.border.primary,
+                        backgroundColor: colors.background.primary,
+                        color: colors.interactive.primary,
+                      }}
+                    />
+                    <label
+                      htmlFor="hasLifetime"
+                      className="text-sm font-medium"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Offer Lifetime License
+                    </label>
+                  </div>
+                  {newProduct.hasLifetime && (
+                    <div
+                      className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
+                      style={{
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary,
+                      }}
+                    >
+                      <h4
+                        className="text-sm font-medium"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Lifetime Pricing
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Lifetime Price INR (₹)
+                          </label>
+                          <input
+                            type="number"
+                            value={newProduct.lifetimePriceINR}
+                            onChange={(e) =>
+                              handleInputChange("lifetimePriceINR", e.target.value)
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Lifetime Price USD ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={newProduct.lifetimePriceUSD}
+                            onChange={(e) =>
+                              handleInputChange("lifetimePriceUSD", e.target.value)
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
+                  )}
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="hasMembership"
+                      checked={newProduct.hasMembership}
+                      onChange={(e) =>
+                        setNewProduct((prev) => ({
+                          ...prev,
+                          hasMembership: e.target.checked,
+                        }))
+                      }
+                      className="rounded focus:ring-2 transition-colors duration-200"
+                      style={{
+                        borderColor: colors.border.primary,
+                        backgroundColor: colors.background.primary,
+                        color: colors.interactive.primary,
+                      }}
+                    />
+                    <label
+                      htmlFor="hasMembership"
+                      className="text-sm font-medium"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      VIP/Premium Membership Option
+                    </label>
                   </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={addSubscription}
-                  className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
-                  style={{
-                    color: colors.interactive.primary,
-                    borderColor: colors.interactive.primary,
-                  }}
-                >
-                  <Plus className="h-4 w-4" />
-                  Add Subscription Plan
-                </button>
-              </div>
+                  <p className="text-sm" style={{ color: colors.text.secondary }}>
+                    Premium membership with exclusive benefits and priority support
+                  </p>
+                  {newProduct.hasMembership && (
+                    <div
+                      className="space-y-4 p-4 border rounded-lg transition-colors duration-200"
+                      style={{
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary,
+                      }}
+                    >
+                      <h4
+                        className="text-sm font-medium"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        Membership Pricing
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Membership Price INR (₹)
+                          </label>
+                          <input
+                            type="number"
+                            value={newProduct.membershipPriceINR}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "membershipPriceINR",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Membership Price USD ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={newProduct.membershipPriceUSD}
+                            onChange={(e) =>
+                              handleInputChange(
+                                "membershipPriceUSD",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
+
+          {/* Subscription Plans - hide for ebook brand */}
+          {newProduct.brand !== 'ebook' && (
+            <div className="space-y-6">
+              <h2
+                className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+                style={{
+                  color: colors.text.primary,
+                  borderBottomColor: colors.border.primary,
+                }}
+              >
+                Subscription Plans
+              </h2>
+
+              <div className="space-y-4">
+                <p className="text-sm" style={{ color: colors.text.secondary }}>
+                  Add recurring subscription plans for your software
+                </p>
+
+                {/* Subscription Durations */}
+                <div className="space-y-4">
+                  <label
+                    className="block text-sm font-medium"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Subscription Plans
+                  </label>
+                  {newProduct.subscriptions.map((sub, index) => (
+                    <div
+                      key={index}
+                      className="p-4 rounded-lg transition-colors duration-200"
+
+                    >
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Duration
+                          </label>
+                          <select
+                            value={sub.duration}
+                            onChange={(e) =>
+                              updateSubscription(
+                                index,
+                                "duration",
+                                e.target.value,
+                              )
+                            }
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          >
+                            <option value="Monthly">Monthly</option>
+                            <option value="Quarterly">Quarterly</option>
+                            <option value="Semi-Annual">Semi-Annual</option>
+                            <option value="Annual">Annual</option>
+                            <option value="Weekly">Weekly</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            INR (₹)
+                          </label>
+                          <input
+                            type="number"
+                            value={sub.price}
+                            onChange={(e) =>
+                              updateSubscription(index, "price", e.target.value)
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
+                        <div>
+                          <label
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            USD ($)
+                          </label>
+                          <input
+                            type="number"
+                            value={sub.priceUSD || ""}
+                            onChange={(e) =>
+                              updateSubscription(
+                                index,
+                                "priceUSD",
+                                e.target.value,
+                              )
+                            }
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              borderColor: colors.border.primary,
+                              color: colors.text.primary,
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-center md:justify-end">
+                          <button
+                            type="button"
+                            onClick={() => removeSubscription(index)}
+                            title="Remove subscription plan"
+                            className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
+                            style={{
+                              color: colors.status.error,
+                              borderColor: colors.status.error,
+                            }}
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addSubscription}
+                    className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200"
+                    style={{
+                      color: colors.interactive.primary,
+                      borderColor: colors.interactive.primary,
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Subscription Plan
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Media Information */}
           <div className="space-y-6">

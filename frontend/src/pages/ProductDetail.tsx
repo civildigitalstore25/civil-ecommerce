@@ -20,6 +20,17 @@ import BannerCarousel from "../ui/admin/banner/BannerCarousel";
 import Swal from "sweetalert2";
 import * as LucideIcons from "lucide-react";
 
+// Small fallback Share2 icon component in case lucide export is missing
+const Share2IconFallback = (props: any) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <path d="M8.59 13.51L15.42 17.49" />
+    <path d="M15.41 6.51L8.59 10.49" />
+  </svg>
+);
+
 // Enhanced FAQ Item Component
 interface FAQItemProps {
   question: string;
@@ -113,11 +124,17 @@ const ProductDetail: React.FC = () => {
   // You may need to update useProductDetail to support fetching by name+version, or filter after fetching all products
   // For now, try to fetch all products and filter (replace with API call if available)
   const { data: productList, isLoading } = useProductDetail(); // Assume this returns all products if no param
-  const product = productList?.find(
-    (p: any) =>
-      p.name?.toLowerCase().replace(/\s+/g, " ") === productName.toLowerCase() &&
-      (productVersion ? p.version?.toString().toLowerCase() === productVersion.toLowerCase() : true)
-  );
+  // Prefer matching by stored slug (if available). Fallback to name+version matching.
+  const product = productList?.find((p: any) => {
+    if (!slug) return false;
+    if (p.slug && p.slug.toLowerCase() === slug.toLowerCase()) return true;
+    // fallback: compare name and optional version
+    const nameMatch = p.name?.toLowerCase().replace(/\s+/g, " ") === productName.toLowerCase();
+    const versionMatch = productVersion
+      ? p.version?.toString().toLowerCase() === productVersion.toLowerCase()
+      : true;
+    return nameMatch && versionMatch;
+  });
   const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
   const [mainImage, setMainImage] = useState<string | null>(null);
@@ -898,6 +915,48 @@ const ProductDetail: React.FC = () => {
     });
   };
 
+  // Social sharing helpers
+  const getShareText = () => `${product.name} - ${window.location.href}`;
+
+  const shareTo = (platform: string) => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(`${product.name} - ${window.location.href}`);
+    let shareUrl = "";
+
+    switch (platform) {
+      case "whatsapp":
+        shareUrl = `https://wa.me/?text=${text}`;
+        break;
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?text=${text}`;
+        break;
+      case "linkedin":
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${url}`;
+        break;
+      case "email":
+        shareUrl = `mailto:?subject=${encodeURIComponent(product.name)}&body=${text}`;
+        break;
+      default:
+        shareUrl = "";
+    }
+
+    if (shareUrl) {
+      window.open(shareUrl, "_blank", "noopener noreferrer");
+    }
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      Swal.fire({ icon: "success", title: "Link copied", timer: 1200, showConfirmButton: false });
+    } catch (err) {
+      Swal.fire("Error", "Failed to copy link", "error");
+    }
+  };
+
   const cartLicenseType = getCartLicenseTypeForCheck();
   const isInCart = product
     ? isItemInCart(product._id!, cartLicenseType)
@@ -1071,6 +1130,51 @@ const ProductDetail: React.FC = () => {
                 <span style={{ color: colors.text.secondary }}>☆</span>
               </div>
               <span style={{ color: colors.text.primary }}>4.9 (2,341)</span>
+            </div>
+
+            {/* Social Share Buttons */}
+            <div className="flex items-center gap-2 mt-3">
+              {(() => {
+                const getIcon = (name: string) => {
+                  const comp = (LucideIcons as any)[name];
+                  return comp || (LucideIcons as any).Share2 || (() => null);
+                };
+
+                const WhatsappIcon = getIcon('MessageSquare');
+                const FacebookIcon = getIcon('Facebook');
+                const TwitterIcon = getIcon('Twitter');
+                const LinkedInIcon = getIcon('LinkedIn') || getIcon('Linkedin');
+                const MailIcon = getIcon('Mail') || getIcon('MailForward') || getIcon('AtSign');
+                const LinkIcon = getIcon('Link2') || getIcon('Link');
+
+                return (
+                  <>
+                    <button onClick={() => shareTo('whatsapp')} title="Share on WhatsApp" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {WhatsappIcon ? <WhatsappIcon size={18} /> : null}
+                    </button>
+
+                    <button onClick={() => shareTo('facebook')} title="Share on Facebook" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {FacebookIcon ? <FacebookIcon size={18} /> : <Share2IconFallback />}
+                    </button>
+
+                    <button onClick={() => shareTo('twitter')} title="Share on Twitter" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {TwitterIcon ? <TwitterIcon size={18} /> : <Share2IconFallback />}
+                    </button>
+
+                    <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {LinkedInIcon ? <LinkedInIcon size={18} /> : <Share2IconFallback />}
+                    </button>
+
+                    <button onClick={() => shareTo('email')} title="Share via Email" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {MailIcon ? <MailIcon size={18} /> : null}
+                    </button>
+
+                    <button onClick={copyLink} title="Copy link" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
+                      {LinkIcon ? <LinkIcon size={18} /> : null}
+                    </button>
+                  </>
+                );
+              })()}
             </div>
 
             {/* Description as Accordion (desktop only) */}
