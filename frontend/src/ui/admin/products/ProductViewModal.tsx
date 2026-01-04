@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import {
   X,
@@ -29,6 +29,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
 }) => {
   const { colors } = useAdminTheme();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Scroll to top when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [isOpen]);
 
   if (!isOpen || !product) return null;
 

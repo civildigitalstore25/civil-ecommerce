@@ -95,7 +95,11 @@ const FAQItem: React.FC<FAQItemProps> = ({
 
 
 const ProductDetail: React.FC = () => {
+  // Scroll to top when this page loads or slug changes
   const { slug } = useParams<{ slug: string }>();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [slug]);
   // Parse slug to get product name and version
   let productName = "";
   let productVersion = "";
