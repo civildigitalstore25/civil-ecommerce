@@ -925,7 +925,6 @@ const ProductDetail: React.FC = () => {
   };
 
   // Social sharing helpers
-  const getShareText = () => `${product.name} - ${window.location.href}`;
 
   const shareTo = (platform: string) => {
     const url = encodeURIComponent(window.location.href);

@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 import { Plus, X, Save, HelpCircle } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 import RichTextEditor from "../../../components/RichTextEditor/RichTextEditor";
-import TurndownService from "turndown";
 
 const brands = [
   { value: "autodesk", label: "Autodesk" },
@@ -524,8 +523,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       // Preserve the raw HTML from the Rich Text Editor for exact display
       const htmlDescription = newProduct.longDescription || "";
       // Also generate Markdown (kept for reference / compatibility)
-      const turndownService = new TurndownService();
-      const markdownDescription = turndownService.turndown(htmlDescription);
 
       // Transform new product structure to match current backend expectations
       const productData = {
