@@ -498,9 +498,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       const brandHasCategories = (brandCategories[newProduct.brand] || []).length > 0;
       const categoryValue = brandHasCategories ? newProduct.category : newProduct.brand;
 
-      // Convert long description (HTML) to Markdown for storage (keeps formatting but avoids raw HTML)
+      // Preserve the raw HTML from the Rich Text Editor for exact display
+      const htmlDescription = newProduct.longDescription || "";
+      // Also generate Markdown (kept for reference / compatibility)
       const turndownService = new TurndownService();
-      const markdownDescription = turndownService.turndown(newProduct.longDescription || "");
+      const markdownDescription = turndownService.turndown(htmlDescription);
 
       // Transform new product structure to match current backend expectations
       const productData = {
@@ -508,8 +510,9 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         name: newProduct.name,
         version: newProduct.version,
         slug,
-        shortDescription: markdownDescription,
-        description: markdownDescription, // Store Markdown instead of raw HTML
+        // Store raw HTML so product detail page can render exactly what was entered
+        shortDescription: htmlDescription,
+        description: htmlDescription,
         category: categoryValue,
 
         // Brand/Company (backward compatibility)
