@@ -23,7 +23,7 @@ interface BannerCarouselProps {
   page: "home" | "product";
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api`;
 
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
   const [banners, setBanners] = useState<Banner[]>([]);
@@ -301,11 +301,10 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
                 aria-label={`Go to slide ${index + 1}`}
                 className={`
       w-4 h-4 sm:w-3 sm:h-3 rounded-full transition-all duration-300
-      ${
-        index === current
-          ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
-          : "bg-white/40 hover:bg-white/70"
-      } // inactive: semi-transparent white
+      ${index === current
+                    ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
+                    : "bg-white/40 hover:bg-white/70"
+                  } // inactive: semi-transparent white
     `}
               />
             ))}
