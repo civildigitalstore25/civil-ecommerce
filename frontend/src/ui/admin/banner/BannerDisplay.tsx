@@ -40,7 +40,7 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
 
   const fetchBanners = async () => {
     try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+      const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
       const response = await fetch(`${API_URL}/api/banners/active/${position}`);
       const data = await response.json();
       setBanners(data);

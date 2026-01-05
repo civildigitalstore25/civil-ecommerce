@@ -21,7 +21,7 @@ const PaymentCallback = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/payments/status/${merchantTransactionId}`,
+        `${import.meta.env.VITE_API_BASE_URL}/api/payments/status/${merchantTransactionId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
 
