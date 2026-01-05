@@ -34,6 +34,7 @@ interface CheckoutFormData {
   name: string;
   whatsapp: string;
   email: string;
+  countryCode: string;
 }
 
 const CheckoutPage: React.FC = () => {
@@ -51,11 +52,13 @@ const CheckoutPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
   } = useAppForm<CheckoutFormData>({
     defaultValues: {
       name: user?.fullName || "",
       whatsapp: "",
       email: user?.email || "",
+      countryCode: "+91",
     },
   });
 
@@ -540,7 +543,7 @@ return (
     </h1>
 
     <form
-      className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10"
+      className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10"
       onSubmit={handleSubmit(handlePlaceOrder)}
     >
       <BillingForm
@@ -548,6 +551,7 @@ return (
         errors={errors}
         control={control}
         colors={colors}
+        setValue={setValue}
       />
       <OrderSummary
         cartItems={cartItems}

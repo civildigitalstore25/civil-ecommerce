@@ -99,7 +99,7 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
     return (
       <div className="flex flex-col sm:flex-row items-start gap-4">
         {/* Product Image */}
-        <div className="relative flex-shrink-0">
+        <div className="relative flex justify-center sm:justify-start flex-shrink-0 w-full sm:w-auto">
           <div
             className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center"
             style={{
@@ -184,30 +184,6 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
                 {isDownloading ? 'DOWNLOADING...' : canDownload ? 'DOWNLOAD' : 'DOWNLOAD (Pending Payment)'}
               </button>
             )}
-            
-            <button
-              onClick={onBuyAgain}
-              className="px-4 py-2 rounded text-xs sm:text-sm font-semibold border transition-colors duration-200 w-full sm:w-auto"
-              style={{
-                backgroundColor: colors.background.secondary,
-                color: colors.text.primary,
-                borderColor: colors.border.primary,
-              }}
-            >
-              BUY IT AGAIN
-            </button>
-
-            <button
-              onClick={onViewDetails}
-              className="px-4 py-2 rounded text-xs sm:text-sm font-semibold border transition-colors duration-200 w-full sm:w-auto"
-              style={{
-                backgroundColor: colors.background.secondary,
-                color: colors.text.primary,
-                borderColor: colors.border.primary,
-              }}
-            >
-              VIEW DETAILS
-            </button>
           </div>
         </div>
       </div>

@@ -99,7 +99,7 @@ const Orders: React.FC = () => {
       Swal.fire({ icon: "error", title: "Error", text: error?.response?.data?.message || "Failed to create order" });
     },
   });
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [editedStatuses, setEditedStatuses] = useState<Record<string, string>>(
@@ -628,14 +628,14 @@ const Orders: React.FC = () => {
                         }
                         className="border rounded px-2 py-1 text-sm transition-colors duration-200"
                         style={{
-                          backgroundColor: 'transparent',
+                          backgroundColor: theme === "dark" ? "#fff" : "#fff",
                           borderColor: colors.border.primary,
-                          color: colors.text.primary,
+                          color: theme === "dark" ? "#222" : colors.text.primary,
                         }}
                       >
-                        <option value="processing">Processing</option>
-                        <option value="delivered">Success</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="processing" style={{ color: '#222', background: '#fff' }}>Processing</option>
+                        <option value="delivered" style={{ color: '#222', background: '#fff' }}>Success</option>
+                        <option value="cancelled" style={{ color: '#222', background: '#fff' }}>Cancelled</option>
                       </select>
                       {editedStatuses[getOrderId(order)] &&
                         editedStatuses[getOrderId(order)] !==

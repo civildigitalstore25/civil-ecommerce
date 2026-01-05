@@ -88,11 +88,11 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
   if (related.length === 0) return <div>No related products found.</div>;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
       {related.slice(0, limit).map((product) => (
         <div
           key={product._id}
-          className="rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer shadow-lg"
+          className="rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer shadow-lg min-h-[350px] flex flex-col"
           style={{
             background: colors.background.secondary,
             border: `1.5px solid ${colors.border.primary}`,
@@ -113,23 +113,20 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
               style={{ borderRadius: 8 }}
             />
           </div>
-          <div className="p-4 flex flex-col items-center">
+          <div className="p-4 flex flex-col flex-1 justify-between">
             <h4
-              className="font-bold text-lg mb-2 text-center"
+              className="font-bold text-base sm:text-lg text-center line-clamp-2 mb-2"
               style={{ color: colors.text.primary }}
             >
               {product.name}
             </h4>
             <Button
               variant="primary"
-              className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none mt-2 mx-auto"
+              className="!py-2 !px-6 !rounded-xl !text-sm font-semibold shadow-none mt-auto"
               style={{
                 background: colors.interactive.primary,
                 color: colors.text.inverse,
                 border: `1px solid ${colors.border.accent}`,
-                display: 'block',
-                marginLeft: 'auto',
-                marginRight: 'auto',
               }}
               onClick={(event?: React.MouseEvent) => {
                 if (event) event.stopPropagation();

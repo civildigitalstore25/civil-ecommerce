@@ -216,13 +216,13 @@ export default function SigninPage() {
                   to="/forgot-password"
                   className="text-sm font-medium transition-colors duration-200"
                   style={{
-                    color: colors.interactive.primary,
+                    color: colors.text.primary,
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.color = colors.interactive.primaryHover;
+                    e.currentTarget.style.color = colors.interactive.primary;
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.color = colors.interactive.primary;
+                    e.currentTarget.style.color = colors.text.primary;
                   }}
                 >
                   Forgot your password?

@@ -9,7 +9,7 @@ import FormButton from "../../components/Button/FormButton";
 import FormInput from "../../components/Input/FormInput";
 import AdminThemeToggle from "../../components/ThemeToggle/AdminThemeToggle";
 import { validateResetTokenAPI, resetPasswordAPI } from "../../services/api";
-import logo from "../../assets/logo.png";
+const logo = "/softlogo.png";
 
 interface PasswordResetFormData {
   email: string;
@@ -440,7 +440,7 @@ export default function PasswordResetPage() {
                 />
               </div>
               {email && !errors.email && (
-                <div className="absolute right-3 top-9 pointer-events-none">
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                   <CheckCircle
                     className="h-5 w-5"
                     style={{ color: colors.status.success }}
@@ -484,7 +484,10 @@ export default function PasswordResetPage() {
               />
               <button
                 type="button"
-                className={`absolute right-3 top-9 transition-colors z-10 ${colors.text.secondary} hover:${colors.text.primary}`}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors z-10`}
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => e.currentTarget.style.color = colors.text.primary}
+                onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
@@ -528,7 +531,10 @@ export default function PasswordResetPage() {
               />
               <button
                 type="button"
-                className={`absolute right-3 top-9 transition-colors z-10 ${colors.text.secondary} hover:${colors.text.primary}`}
+                className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors z-10`}
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => e.currentTarget.style.color = colors.text.primary}
+                onMouseLeave={(e) => e.currentTarget.style.color = colors.text.secondary}
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (

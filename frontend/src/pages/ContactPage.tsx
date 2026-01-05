@@ -82,11 +82,10 @@ const ContactPage: React.FC = () => {
           {/* Left side - Info */}
           <div className="space-y-6">
             <div className="space-y-5">
-              {/* Phone */}
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  backgroundColor: "#fff",
                   borderLeft: `4px solid #00C8FF`,
                   color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
@@ -121,11 +120,10 @@ const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Email */}
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  backgroundColor: "#fff",
                   borderLeft: `4px solid #00C8FF`,
                   color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
@@ -158,11 +156,10 @@ const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Business Hours */}
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  backgroundColor: "#fff",
                   borderLeft: `4px solid #00C8FF`,
                   color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}
@@ -189,11 +186,10 @@ const ContactPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Address */}
               <div
                 className="flex gap-4 rounded-lg border-l-4 p-5"
                 style={{
-                  backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.tertiary,
+                  backgroundColor: "#fff",
                   borderLeft: `4px solid #00C8FF`,
                   color: theme === "light" ? "#0A2A6B" : colors.text.inverse,
                 }}

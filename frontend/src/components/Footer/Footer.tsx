@@ -119,54 +119,7 @@ const Footer = () => {
                 OUR SERVICES
               </h3>
               <ul className="space-y-2 text-sm md:text-base font-lato">
-                <li>
-                  <Link
-                    to="/advertising"
-                    className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  >
-                    Advertising
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/careers"
-                    className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  >
-                    Careers
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/permissions"
-                    className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  >
-                    Permissions
-                  </Link>
-                </li>
+                
                 <li>
                   <Link
                     to="/shipping-policy"
