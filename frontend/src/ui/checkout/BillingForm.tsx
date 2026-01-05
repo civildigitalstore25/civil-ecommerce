@@ -28,7 +28,7 @@ const BillingForm: React.FC<BillingFormProps> = ({
   colors,
   setValue,
 }) => {
-  const [countryCode, setCountryCode] = useState<string>("91");
+  const [, setCountryCode] = useState<string>("91");
   return (
     <div
       className="space-y-6 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-2xl transition-shadow duration-200"

@@ -13,7 +13,7 @@ interface ProductInfoProps {
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = React.memo(
-  ({ order, onBuyAgain, onViewDetails }) => {
+  ({ order }) => {
     const { colors, theme } = useAdminTheme();
     const { formatPriceWithSymbol } = useCurrency();
     const product = order.items[0];
