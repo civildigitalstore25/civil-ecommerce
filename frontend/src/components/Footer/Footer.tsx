@@ -216,7 +216,7 @@ const Footer = () => {
             </div>
 
             {/* Software */}
-            {/* <div className="col-span-2 md:col-span-1">
+            <div className="col-span-2 md:col-span-1">
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
                 style={{ color: colors.interactive.primary }}
@@ -315,7 +315,7 @@ const Footer = () => {
                   </Link>
                 </li>
               </ul>
-            </div> */}
+            </div> 
           </div>
         </div>
       </div>
