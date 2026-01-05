@@ -110,59 +110,44 @@ const CartItem: React.FC<CartItemProps> = ({
     licenseType: string,
     subscriptionPlan?: any,
   ) => {
-    // If subscription plan details are available, use plan-specific styling
+    // Use theme-aware background and border for readable badge in dark and light themes.
+    // Provide a small accent on the left to indicate license type while keeping text readable.
+    const base = {
+      backgroundColor: colors.background.secondary,
+      color: colors.text.primary,
+      border: `1px solid ${colors.border.primary}`,
+      padding: undefined,
+    } as any;
+
+    const withAccent = (accentColor: string) => ({
+      ...base,
+      borderLeft: `4px solid ${accentColor}`,
+    });
+
     if (subscriptionPlan && subscriptionPlan.planType) {
       switch (subscriptionPlan.planType) {
         case "admin-subscription":
-          return {
-            backgroundColor: `${colors.interactive.primary}20`,
-            color: colors.interactive.primary,
-          };
+          return withAccent(colors.interactive.primary);
         case "subscription":
-          return {
-            backgroundColor: `${colors.status.success}20`,
-            color: colors.status.success,
-          };
+          return withAccent(colors.status.success);
         case "membership":
-          return {
-            backgroundColor: `${colors.interactive.secondary}20`,
-            color: colors.interactive.secondary,
-          };
+          return withAccent(colors.interactive.secondary);
         case "lifetime":
-          return {
-            backgroundColor: `${colors.interactive.secondary}20`,
-            color: colors.interactive.secondary,
-          };
+          return withAccent(colors.interactive.secondary);
         default:
-          return {
-            backgroundColor: `${colors.interactive.primary}20`,
-            color: colors.interactive.primary,
-          };
+          return base;
       }
     }
 
-    // Otherwise, use generic license styling
     switch (licenseType) {
       case "1year":
-        return {
-          backgroundColor: `${colors.interactive.primary}20`,
-          color: colors.interactive.primary,
-        };
+        return withAccent(colors.interactive.primary);
       case "3year":
-        return {
-          backgroundColor: `${colors.status.success}20`,
-          color: colors.status.success,
-        };
+        return withAccent(colors.status.success);
       case "lifetime":
-        return {
-          backgroundColor: `${colors.interactive.secondary}20`,
-          color: colors.interactive.secondary,
-        };
+        return withAccent(colors.interactive.secondary);
       default:
-        return {
-          backgroundColor: colors.background.secondary,
-          color: colors.text.secondary,
-        };
+        return base;
     }
   };
 
@@ -193,9 +178,9 @@ const CartItem: React.FC<CartItemProps> = ({
         borderColor: colors.border.primary,
       }}
     >
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div className="flex flex-row flex-wrap items-start gap-3 sm:gap-4">
         {/* Product Image */}
-        <div className="flex-shrink-0 flex sm:block justify-center">
+        <div className="flex-shrink-0 mr-3">
           <div
             className="w-20 h-20 sm:w-28 sm:h-28 rounded-md sm:rounded-lg overflow-hidden transition-colors duration-200"
             style={{ backgroundColor: colors.background.secondary }}
@@ -279,12 +264,7 @@ const CartItem: React.FC<CartItemProps> = ({
           </div>
 
           {/* Product Description */}
-          <p
-            className="text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            {item.product.description}
-          </p>
+          {/* Description intentionally removed to streamline cart UI on mobile */}
 
           {/* Bottom Section: Quantity and Price */}
           <div className="mt-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
@@ -303,7 +283,7 @@ const CartItem: React.FC<CartItemProps> = ({
                 <button
                   ref={decreaseButtonRef}
                   onClick={handleDecrease}
-                  className="p-2 transition-colors disabled:opacity-50"
+                  className="p-1 sm:p-2 transition-colors disabled:opacity-50"
                   style={{ color: colors.text.primary }}
                   onMouseEnter={(e) => {
                     if (!e.currentTarget.disabled) {
@@ -332,14 +312,14 @@ const CartItem: React.FC<CartItemProps> = ({
                 </button>
                 <span
                   ref={quantityDisplayRef}
-                  className="px-4 py-2 font-medium min-w-[3rem] text-center transition-colors duration-200"
+                  className="px-3 py-1 text-sm font-medium min-w-[2.25rem] text-center transition-colors duration-200"
                   style={{ color: colors.text.primary }}
                 >
                   {item.quantity}
                 </span>
                 <button
                   onClick={handleIncrease}
-                  className="p-2 transition-colors"
+                  className="p-1 sm:p-2 transition-colors"
                   style={{ color: colors.text.primary }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor =
@@ -376,7 +356,7 @@ const CartItem: React.FC<CartItemProps> = ({
               </p>
               <div
                 ref={totalPriceRef}
-                className="text-lg sm:text-xl font-bold transition-colors duration-200"
+                className="text-base sm:text-xl font-bold transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
                 {formatPriceWithSymbol(item.totalPrice)}
