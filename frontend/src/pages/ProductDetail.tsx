@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
+import { isAuthenticated } from "../utils/auth";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import RelatedProducts from "../components/RelatedProducts";
@@ -2273,7 +2274,7 @@ const ProductDetail: React.FC = () => {
                 {/* Write Review Button */}
                 {!showReviewForm && (
                   <div className="mb-8">
-                    {user ? (
+                    {user || isAuthenticated() ? (
                       <button
                         onClick={() => setShowReviewForm(true)}
                         className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
