@@ -2277,18 +2277,22 @@ const ProductDetail: React.FC = () => {
                     {user || isAuthenticated() ? (
                       <button
                         onClick={() => setShowReviewForm(true)}
-                        className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                        className="font-bold py-3 px-6 rounded-xl transition-colors duration-200 z-10"
                         style={{
-                          backgroundColor: colors.interactive.primary,
-                          color: colors.background.primary,
+                          backgroundColor: colors.interactive.primary || '#2563eb',
+                          color: '#ffffff',
+                          border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
+                          boxShadow: '0 4px 14px rgba(37,99,235,0.18)'
                         }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor =
-                            colors.interactive.primaryHover;
+                            (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                          e.currentTarget.style.color = '#ffffff';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.backgroundColor =
-                            colors.interactive.primary;
+                            colors.interactive.primary || '#2563eb';
+                          e.currentTarget.style.color = '#ffffff';
                         }}
                       >
                         Write a Review
@@ -2313,18 +2317,22 @@ const ProductDetail: React.FC = () => {
                         </p>
                         <button
                           onClick={() => navigate("/signin")}
-                          className="font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+                          className="font-bold py-3 px-6 rounded-xl transition-colors duration-200 z-10"
                           style={{
-                            backgroundColor: colors.interactive.primary,
-                            color: colors.background.primary,
+                            backgroundColor: colors.interactive.primary || '#2563eb',
+                            color: '#ffffff',
+                            border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
+                            boxShadow: '0 4px 14px rgba(37,99,235,0.18)'
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.backgroundColor =
-                              colors.interactive.primaryHover;
+                              (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                            e.currentTarget.style.color = '#ffffff';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor =
-                              colors.interactive.primary;
+                              colors.interactive.primary || '#2563eb';
+                            e.currentTarget.style.color = '#ffffff';
                           }}
                         >
                           Login to Review
