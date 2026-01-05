@@ -12,7 +12,25 @@ export default function ProfilePage() {
   const { data: user, isLoading, error, refetch } = useCurrentUser();
   const updateProfileMutation = useUpdateProfile();
   const [isEditing, setIsEditing] = React.useState(false);
+  const [avatarPreview, setAvatarPreview] = React.useState<string | null>(null);
   const { colors } = useAdminTheme();
+
+  const getInitials = (name?: string) => {
+    if (!name) return "";
+    return name
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((n) => n[0].toUpperCase())
+      .join("");
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const url = URL.createObjectURL(file);
+    setAvatarPreview(url);
+  };
 
   const {
     register,
@@ -33,6 +51,7 @@ export default function ProfilePage() {
         fullName: user.fullName || "",
         phoneNumber: user.phoneNumber || "",
       });
+      setAvatarPreview((user as any)?.avatarUrl || null);
     }
   }, [user, reset]);
 
@@ -120,7 +139,7 @@ export default function ProfilePage() {
 
   return (
     <div
-      className="min-h-screen py-8 px-4 pt-20 transition-colors duration-200"
+      className="min-h-screen py-8 px-4 pt-20 transition-colors duration-200 mt-10"
       style={{ backgroundColor: colors.background.secondary }}
     >
       <div className="max-w-4xl mx-auto">
@@ -130,35 +149,80 @@ export default function ProfilePage() {
         >
           {/* Header Section */}
           <div
-            className="p-6 transition-colors duration-200"
+            className="p-6 transition-colors duration-200 flex flex-col sm:flex-row items-center sm:items-center sm:justify-between gap-4"
             style={{
-              background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+              background: `linear-gradient(90deg, ${colors.interactive.primary} 0%, ${colors.interactive.secondary} 100%)`,
             }}
           >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-              <div>
+            <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="relative flex-shrink-0">
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="avatar"
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shadow-md border-4"
+                    style={{ borderColor: colors.background.primary }}
+                  />
+                ) : (
+                  <div
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center text-2xl font-bold shadow-md"
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      color: colors.text.primary,
+                    }}
+                  >
+                    {getInitials(user?.fullName) || 'U'}
+                  </div>
+                )}
+                {isEditing && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                    className="absolute bottom-0 right-0 opacity-0 w-8 h-8"
+                    title="Upload avatar"
+                  />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
                 <h1
-                  className="text-2xl font-bold transition-colors duration-200"
-                  style={{ color: colors.background.primary }}
+                  className="text-2xl font-bold transition-colors duration-200 truncate"
+                  style={{ color: colors.text.primary }}
                 >
-                  Profile Information
+                  {user?.fullName || 'User'}
                 </h1>
                 <p
-                  className="opacity-90 transition-colors duration-200"
-                  style={{ color: colors.background.primary }}
+                  className="text-sm mt-1 transition-colors duration-200 whitespace-normal break-words"
+                  style={{ color: colors.text.secondary }}
                 >
                   Manage your personal information
                 </p>
+                <div className="mt-3">
+                  <span
+                    className="px-3 py-1 text-sm rounded-full font-semibold inline-block"
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      color: colors.text.primary,
+                      border: `1px solid ${colors.border.primary}`,
+                      opacity: 0.95,
+                    }}
+                  >
+                    {user?.role || 'user'}
+                  </span>
+                </div>
               </div>
-              {!isEditing && (
+            </div>
+            <div className="w-full sm:w-auto flex justify-end sm:justify-end mt-2 sm:mt-0">
+              {!isEditing ? (
                 <FormButton
                   onClick={() => setIsEditing(true)}
                   variant="secondary"
-                  className="mt-4 sm:mt-0"
+                  className="ml-2"
+                  style={{ borderRadius: 8 }}
                 >
                   Edit Profile
                 </FormButton>
-              )}
+              ) : null}
             </div>
           </div>
 
@@ -204,7 +268,7 @@ export default function ProfilePage() {
                       name="phoneNumber"
                       value={watch("phoneNumber")}
                       onChange={register("phoneNumber", { required: "Phone number is required" }).onChange}
-                      placeholder="Enter your phone number"
+                      placeholder="Enter number"
                     />
                     {errors.phoneNumber && (
                       <p className="text-red-500 text-xs mt-1">{errors.phoneNumber.message}</p>
