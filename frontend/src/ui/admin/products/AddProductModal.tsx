@@ -2018,9 +2018,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               type="submit"
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
               style={{
-                background: theme === "dark"
-                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                background: '#00BEF5',
                 color: colors.text.inverse,
                 border: 'none',
               }}

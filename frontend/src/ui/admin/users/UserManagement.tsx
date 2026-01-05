@@ -10,10 +10,9 @@ import AddUserModal from "./AddUserModal";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const UserManagement: React.FC = () => {
-  const { colors, theme } = useAdminTheme();
+  const { colors } = useAdminTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const limit = 10;
@@ -51,18 +50,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const handleStatusChange = async (userId: string, isActive: boolean) => {
-    try {
-      await updateUserMutation.mutateAsync({ id: userId, data: { isActive } });
-      Swal.fire(
-        "Success!",
-        `User ${isActive ? "activated" : "deactivated"}`,
-        "success",
-      );
-    } catch {
-      Swal.fire("Error!", "Failed to update user status", "error");
-    }
-  };
+ 
 
   const handleDeleteUser = async (userId: string, userEmail: string) => {
     const result = await Swal.fire({
@@ -85,7 +73,6 @@ const UserManagement: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setRoleFilter("");
-    setStatusFilter("");
     setCurrentPage(1);
   };
 
@@ -101,12 +88,6 @@ const UserManagement: React.FC = () => {
       role: roleFilter,
     });
     let users = resp.users || [];
-    // Filter by status on frontend if needed
-    if (statusFilter === "Active") {
-      users = users.filter((u) => u.isActive);
-    } else if (statusFilter === "Inactive") {
-      users = users.filter((u) => !u.isActive);
-    }
     return users.map((u) => ({
       id: u._id,
       fullName: u.fullName || "",
@@ -176,9 +157,7 @@ const UserManagement: React.FC = () => {
           <button
             className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
             style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+              background: '#00BEF5',
               color: colors.text.inverse,
               border: 'none',
             }}
@@ -239,8 +218,6 @@ const UserManagement: React.FC = () => {
         setSearchTerm={setSearchTerm}
         roleFilter={roleFilter}
         setRoleFilter={setRoleFilter}
-        statusFilter={statusFilter}
-        setStatusFilter={setStatusFilter}
         clearFilters={clearFilters}
         totalUsers={usersData?.total || 0}
       />
@@ -267,7 +244,6 @@ const UserManagement: React.FC = () => {
           <UserTable
             users={users as User[]}
             handleRoleChange={handleRoleChange}
-            handleStatusChange={handleStatusChange}
             handleDeleteUser={handleDeleteUser}
           />
           <Pagination

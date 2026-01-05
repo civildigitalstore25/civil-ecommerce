@@ -5,12 +5,9 @@ import {
   Eye,
   Edit,
   Trash2,
-  List,
-  Grid3X3,
   X,
   Star,
   Award,
-  Circle,
   CheckCircle,
 } from "lucide-react";
 import {
@@ -92,7 +89,7 @@ const Products: React.FC = () => {
     }
   };
   const { colors, theme } = useAdminTheme();
-  const [viewMode, setViewMode] = useState("list");
+  // Removed unused viewMode state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [viewingProduct, setViewingProduct] = useState<Product | null>(null);
@@ -527,7 +524,7 @@ const Products: React.FC = () => {
               ))}
             </select>
 
-            <select
+            {/* <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="border rounded-lg px-3 py-2 focus:ring-2 w-full sm:w-40 transition-colors duration-200"
@@ -541,7 +538,7 @@ const Products: React.FC = () => {
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
               <option value="draft">Draft</option>
-            </select>
+            </select> */}
 
             <label className="flex items-center space-x-2 text-sm">
               <input
@@ -582,54 +579,8 @@ const Products: React.FC = () => {
               className="flex items-center border rounded-lg"
               style={{ borderColor: colors.border.primary }}
             >
-              <button
-                onClick={() => setViewMode("list")}
-                className="p-2 transition-colors duration-200"
-                style={{
-                  backgroundColor:
-                    viewMode === "list"
-                      ? colors.interactive.primary
-                      : "transparent",
-                  color:
-                    viewMode === "list"
-                      ? colors.text.inverse
-                      : colors.text.secondary,
-                }}
-                onMouseEnter={(e) => {
-                  if (viewMode !== "list")
-                    e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  if (viewMode !== "list")
-                    e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                <List className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("grid")}
-                className="p-2 transition-colors duration-200"
-                style={{
-                  backgroundColor:
-                    viewMode === "grid"
-                      ? colors.interactive.primary
-                      : "transparent",
-                  color:
-                    viewMode === "grid"
-                      ? colors.text.inverse
-                      : colors.text.secondary,
-                }}
-                onMouseEnter={(e) => {
-                  if (viewMode !== "grid")
-                    e.currentTarget.style.color = colors.text.primary;
-                }}
-                onMouseLeave={(e) => {
-                  if (viewMode !== "grid")
-                    e.currentTarget.style.color = colors.text.secondary;
-                }}
-              >
-                <Grid3X3 className="w-4 h-4" />
-              </button>
+             
+              
             </div>
             <button
               className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
@@ -713,12 +664,12 @@ const Products: React.FC = () => {
                     >
                       Pricing
                     </th>
-                    <th
+                    {/* <th
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
                       Status
-                    </th>
+                    </th> */}
                     <th
                       className="text-center py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
@@ -908,7 +859,7 @@ const Products: React.FC = () => {
                           )} */}
                         </div>
                       </td>
-                      <td className="py-4 px-4">
+                      {/* <td className="py-4 px-4">
                         <div className="flex items-center space-x-2">
                           {product.status === "active" && (
                             <div className="flex items-center space-x-1">
@@ -943,7 +894,7 @@ const Products: React.FC = () => {
                             </div>
                           )}
                         </div>
-                      </td>
+                      </td> */}
                       <td className="py-4 px-4">
                         <div className="flex justify-center items-center">
                           <label className="flex items-center space-x-2 cursor-pointer">

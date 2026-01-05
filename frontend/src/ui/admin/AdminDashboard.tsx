@@ -3,8 +3,6 @@ import React, { useState } from "react";
 import {
   BarChart3,
   Package,
-  Tag,
-  Building2,
   ShoppingCart,
   Users,
   Image,
@@ -13,8 +11,6 @@ import {
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import Products from "./products/Products";
-import Categories from "./Categories";
-import Companies from "./Companies";
 import Orders from "./Orders";
 
 import UserManagement from "./users/UserManagement";
@@ -30,8 +26,7 @@ type MenuType =
   | "dashboard"
   | "users"
   | "products"
-  | "categories"
-  | "companies"
+  // Removed "categories" and "companies"
   | "orders"
   | "settings"
   | "banner"
@@ -59,8 +54,7 @@ const AdminDashboardContent: React.FC = () => {
     { id: "dashboard", label: "Dashboard", icon: BarChart3, permission: "dashboard" },
     { id: "users", label: "Users", icon: Users, permission: "users" },
     { id: "products", label: "Products", icon: Package, permission: "products" },
-    { id: "categories", label: "Categories", icon: Tag, permission: "categories" },
-    { id: "companies", label: "Companies", icon: Building2, permission: "companies" },
+    // Removed Categories and Companies menu items
     { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
     { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
     { id: "banner", label: "Banner", icon: Image, permission: "banners" },
@@ -104,10 +98,7 @@ const AdminDashboardContent: React.FC = () => {
         return <UserManagement />;
       case "products":
         return <Products />;
-      case "categories":
-        return <Categories />;
-      case "companies":
-        return <Companies />;
+      // Removed Categories and Companies content
       case "orders":
         return <Orders />;
       case "reviews":

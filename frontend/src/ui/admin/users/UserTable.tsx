@@ -7,7 +7,6 @@ import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 interface Props {
   users: User[];
   handleRoleChange: (userId: string, newRole: "user" | "admin") => void;
-  handleStatusChange: (userId: string, isActive: boolean) => void;
   handleDeleteUser: (userId: string, userEmail: string) => void;
 }
 
@@ -130,14 +129,14 @@ const UserTable: React.FC<Props> = ({
                     onChange={(e) => handleRoleSelect(user._id, e.target.value)}
                     className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
                     style={{
-                      background: theme === "dark" ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)' : '#fff',
-                      color: theme === "dark" ? colors.text.inverse : colors.text.primary,
-                      border: theme === "dark" ? 'none' : `1px solid ${colors.border.primary}`,
+                      background: '#fff',
+                      color: 'black',
+                      border: `1px solid ${colors.border.primary}`,
                       minWidth: 80,
                     }}
                   >
-                    <option value="user" style={{ color: theme === "dark" ? colors.text.inverse : colors.text.primary }}>User</option>
-                    <option value="admin" style={{ color: theme === "dark" ? colors.text.inverse : colors.text.primary }}>Admin</option>
+                    <option value="user" style={{ color: 'black' }}>User</option>
+                    <option value="admin" style={{ color: 'black' }}>Admin</option>
                   </select>
                   {editedRoles[user._id] &&
                     editedRoles[user._id] !== user.role && (
