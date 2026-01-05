@@ -18,6 +18,7 @@ import {
 } from "../api/reviewApi";
 import BannerCarousel from "../ui/admin/banner/BannerCarousel";
 import Swal from "sweetalert2";
+import { Helmet } from "react-helmet";
 import * as LucideIcons from "lucide-react";
 
 // Small fallback Share2 icon component in case lucide export is missing
@@ -984,6 +985,19 @@ const ProductDetail: React.FC = () => {
         color: colors.text.primary,
       }}
     >
+      <Helmet>
+        <title>{product ? `${product.name} - SoftCart Ecommerce` : 'Product Detail - SoftCart Ecommerce'}</title>
+        <meta name="description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
+        <meta property="og:title" content={product ? product.name : 'Product Detail'} />
+        <meta property="og:description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
+        <meta property="og:image" content={product ? (product.imageUrl || product.image) : ''} />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:type" content="product" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={product ? product.name : 'Product Detail'} />
+        <meta name="twitter:description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
+        <meta name="twitter:image" content={product ? (product.imageUrl || product.image) : ''} />
+      </Helmet>
       {/* Back Button and Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
         <div className="flex items-start justify-between gap-4 mb-3">

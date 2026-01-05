@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import type { ProductViewModalProps } from "./types/ProductViewModal";
 import FormButton from "../../../components/Button/FormButton";
-import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 import "./AddProductModal.css";
 
 const ProductViewModal: React.FC<ProductViewModalProps> = ({
@@ -27,7 +26,6 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  const { colors } = useAdminTheme();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   // Scroll to top when modal opens
@@ -56,7 +54,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
   const renderHTMLContent = (htmlContent?: string) => {
     if (!htmlContent)
       return (
-        <p style={{ color: colors.text.secondary }}>No content available</p>
+        <p style={{ color: 'gray' }}>No content available</p>
       );
 
     const isHTML = /<[^>]+>/.test(htmlContent);
@@ -65,13 +63,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
         <div
           dangerouslySetInnerHTML={{ __html: htmlContent }}
           className="prose max-w-none"
-          style={{ color: colors.text.secondary }}
+          style={{ color: 'gray' }}
         />
       );
     }
 
     return (
-      <div className="prose max-w-none" style={{ color: colors.text.secondary }}>
+      <div className="prose max-w-none" style={{ color: 'gray' }}>
         <ReactMarkdown>{htmlContent}</ReactMarkdown>
       </div>
     );
@@ -81,19 +79,19 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div
         className="rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-200"
-        style={{ backgroundColor: colors.background.secondary }}
+        style={{ backgroundColor: 'white' }}
       >
         <div
           className="sticky top-0 border-b px-6 py-4 flex items-center justify-between rounded-t-xl z-10 transition-colors duration-200"
           style={{
-            backgroundColor: colors.background.secondary,
-            borderBottomColor: colors.border.primary,
+            backgroundColor: 'white',
+            borderBottomColor: 'gray',
           }}
         >
           <div className="flex items-center space-x-3">
             <h2
               className="text-2xl font-bold"
-              style={{ color: colors.text.primary }}
+              style={{ color: 'black' }}
             >
               Product Details
             </h2>
@@ -101,8 +99,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
               <span
                 className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
                 style={{
-                  backgroundColor: colors.interactive.primary,
-                  color: colors.text.inverse,
+                  backgroundColor: 'gold',
+                  color: 'black',
                 }}
               >
                 <Award className="w-4 h-4 mr-1" />
@@ -115,11 +113,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                 style={{
                   backgroundColor:
                     product.status === "active"
-                      ? colors.status.success
+                      ? "green"
                       : product.status === "inactive"
-                        ? colors.status.error
-                        : colors.status.warning,
-                  color: colors.text.inverse,
+                      ? "red"
+                      : "orange",
+                  color: "white",
                 }}
               >
                 {product.status === "active" && (
@@ -139,12 +137,12 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
           <button
             onClick={onClose}
             className="transition-colors"
-            style={{ color: colors.text.secondary }}
+            style={{ color: 'black' }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.color = colors.text.primary)
+              (e.currentTarget.style.color = 'gray')
             }
             onMouseLeave={(e) =>
-              (e.currentTarget.style.color = colors.text.secondary)
+              (e.currentTarget.style.color = 'black')
             }
           >
             <X className="w-6 h-6" />
@@ -158,7 +156,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             <div className="space-y-4">
               <div
                 className="aspect-square rounded-lg overflow-hidden"
-                style={{ backgroundColor: colors.background.tertiary }}
+                style={{ backgroundColor: 'lightgray' }}
               >
                 <img
                   src={
@@ -176,10 +174,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
+                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
+                        selectedImageIndex === index
                           ? "border-yellow-500"
                           : "border-gray-600"
-                        }`}
+                      }`}
                     >
                       <img
                         src={image}
@@ -197,13 +196,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
               <div>
                 <h3
                   className="text-3xl font-bold"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: 'black' }}
                 >
                   {product.name}
                 </h3>
                 <p
                   className="text-lg mt-1"
-                  style={{ color: colors.text.secondary }}
+                  style={{ color: 'gray' }}
                 >
                   Version {product.version}
                 </p>
@@ -226,21 +225,21 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                               style={{
                                 color:
                                   star <= product.rating!
-                                    ? colors.interactive.primary
-                                    : colors.text.secondary,
+                                    ? 'gold'
+                                    : 'gray',
                                 fill:
                                   star <= product.rating!
-                                    ? colors.interactive.primary
+                                    ? 'gold'
                                     : "none",
                               }}
                             />
                           ))}
                         </div>
-                        <span style={{ color: colors.text.secondary }}>
+                        <span style={{ color: 'gray' }}>
                           {product.rating}
                         </span>
                         {product.ratingCount && (
-                          <span style={{ color: colors.text.secondary }}>
+                          <span style={{ color: 'gray' }}>
                             ({product.ratingCount} reviews)
                           </span>
                         )}
@@ -254,8 +253,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                             key={index}
                             className="inline-flex items-center px-2 py-1 rounded-full text-sm"
                             style={{
-                              backgroundColor: colors.background.tertiary,
-                              color: colors.text.primary,
+                              backgroundColor: 'lightgray',
+                              color: 'black',
                             }}
                           >
                             <Tag className="w-3 h-3 mr-1" />
@@ -270,11 +269,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
               {/* Brand/Company Info */}
               <div
                 className="rounded-lg p-4"
-                style={{ backgroundColor: colors.background.tertiary }}
+                style={{ backgroundColor: 'white' }}
               >
                 <h4
                   className="text-lg font-semibold mb-3 flex items-center"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: 'black' }}
                 >
                   <Building2 className="w-5 h-5 mr-2" />
                   Brand & Category
@@ -283,13 +282,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   <div>
                     <span
                       className="text-sm font-medium"
-                      style={{ color: colors.text.secondary }}
+                      style={{ color: 'gray' }}
                     >
                       Brand:
                     </span>
                     <span
                       className="ml-2"
-                      style={{ color: colors.text.primary }}
+                      style={{ color: 'black' }}
                     >
                       {product.brand || product.company}
                     </span>
@@ -297,15 +296,15 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   <div>
                     <span
                       className="text-sm font-medium"
-                      style={{ color: colors.text.secondary }}
+                      style={{ color: 'gray' }}
                     >
                       Category:
                     </span>
                     <span
                       className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm"
                       style={{
-                        backgroundColor: colors.interactive.primary,
-                        color: colors.text.inverse,
+                        backgroundColor: 'lightblue',
+                        color: 'black',
                       }}
                     >
                       {product.category}
@@ -320,11 +319,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
           {(product.videoUrl || product.activationVideoUrl) && (
             <div
               className="rounded-lg p-6 mb-8"
-              style={{ backgroundColor: colors.background.tertiary }}
+              style={{ backgroundColor: 'lightgray' }}
             >
               <h3
                 className="text-xl font-semibold mb-4 flex items-center"
-                style={{ color: colors.text.primary }}
+                style={{ color: 'black' }}
               >
                 <Play className="w-6 h-6 mr-2" />
                 Videos
@@ -334,13 +333,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   <div>
                     <h4
                       className="font-medium mb-2"
-                      style={{ color: colors.text.secondary }}
+                      style={{ color: 'gray' }}
                     >
                       Product Demo
                     </h4>
                     <div
                       className="aspect-video rounded-lg overflow-hidden"
-                      style={{ backgroundColor: colors.background.primary }}
+                      style={{ backgroundColor: 'white' }}
                     >
                       <iframe
                         src={product.videoUrl}
@@ -355,13 +354,13 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                   <div>
                     <h4
                       className="font-medium mb-2"
-                      style={{ color: colors.text.secondary }}
+                      style={{ color: 'gray' }}
                     >
                       Activation Guide
                     </h4>
                     <div
                       className="aspect-video rounded-lg overflow-hidden"
-                      style={{ backgroundColor: colors.background.primary }}
+                      style={{ backgroundColor: 'white' }}
                     >
                       <iframe
                         src={product.activationVideoUrl}
@@ -381,11 +380,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             {/* Description */}
             <div
               className="rounded-lg p-6"
-              style={{ backgroundColor: colors.background.tertiary }}
+              style={{ backgroundColor: 'white' }}
             >
               <h3
                 className="text-xl font-semibold mb-4 flex items-center"
-                style={{ color: colors.text.primary }}
+                style={{ color: 'black' }}
               >
                 <Package className="w-6 h-6 mr-2" />
                 Description
@@ -397,11 +396,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             {product.overallFeatures && (
               <div
                 className="rounded-lg p-6"
-                style={{ backgroundColor: colors.background.tertiary }}
+                style={{ backgroundColor: 'white' }}
               >
                 <h3
                   className="text-xl font-semibold mb-4 flex items-center"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: 'black' }}
                 >
                   <Zap className="w-6 h-6 mr-2" />
                   Features
@@ -414,11 +413,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             {product.requirements && (
               <div
                 className="rounded-lg p-6"
-                style={{ backgroundColor: colors.background.tertiary }}
+                style={{ backgroundColor: 'lightgray' }}
               >
                 <h3
                   className="text-xl font-semibold mb-4 flex items-center"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: 'black' }}
                 >
                   <Monitor className="w-6 h-6 mr-2" />
                   System Requirements
@@ -431,11 +430,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
           {/* Pricing Section */}
           <div
             className="rounded-lg p-6 mb-8"
-            style={{ backgroundColor: colors.background.tertiary }}
+            style={{ backgroundColor: 'white' }}
           >
             <h3
               className="text-xl font-semibold mb-4 flex items-center"
-              style={{ color: colors.text.primary }}
+              style={{ color: 'black' }}
             >
               <DollarSign className="w-6 h-6 mr-2" />
               Pricing Plans
@@ -447,7 +446,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                 <div className="mb-6">
                   <h4
                     className="text-lg font-medium mb-3 flex items-center"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: 'black' }}
                   >
                     <CreditCard className="w-5 h-5 mr-2" />
                     Subscription Plans
@@ -458,20 +457,20 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                         key={index}
                         className="rounded-lg p-4 border"
                         style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
+                          backgroundColor: 'white',
+                          borderColor: 'gray',
                         }}
                       >
                         <div className="text-center">
                           <div
                             className="text-2xl font-bold"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: 'black' }}
                           >
                             ₹{sub.price?.toLocaleString()}
                           </div>
                           <div
                             className="text-sm"
-                            style={{ color: colors.text.secondary }}
+                            style={{ color: 'gray' }}
                           >
                             {sub.duration}
                           </div>
@@ -488,7 +487,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                 <div className="mb-6">
                   <h4
                     className="text-lg font-medium mb-3"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: 'black' }}
                   >
                     License Plans
                   </h4>
@@ -497,27 +496,27 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       <div
                         className="rounded-lg p-4 border"
                         style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
+                          backgroundColor: 'white',
+                          borderColor: 'gray',
                         }}
                       >
                         <div className="text-center">
                           <div
                             className="text-2xl font-bold"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: 'black' }}
                           >
                             ₹{product.price1.toLocaleString()}
                           </div>
                           <div
                             className="text-sm"
-                            style={{ color: colors.text.secondary }}
+                            style={{ color: 'gray' }}
                           >
                             1-Year License
                           </div>
                           {product.oldPrice1 && (
                             <div
                               className="text-sm line-through"
-                              style={{ color: colors.text.secondary }}
+                              style={{ color: 'gray' }}
                             >
                               ₹{product.oldPrice1.toLocaleString()}
                             </div>
@@ -529,27 +528,27 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       <div
                         className="rounded-lg p-4 border"
                         style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
+                          backgroundColor: 'white',
+                          borderColor: 'gray',
                         }}
                       >
                         <div className="text-center">
                           <div
                             className="text-2xl font-bold"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: 'black' }}
                           >
                             ₹{product.price3.toLocaleString()}
                           </div>
                           <div
                             className="text-sm"
-                            style={{ color: colors.text.secondary }}
+                            style={{ color: 'gray' }}
                           >
                             3-Year License
                           </div>
                           {product.oldPrice3 && (
                             <div
                               className="text-sm line-through"
-                              style={{ color: colors.text.secondary }}
+                              style={{ color: 'gray' }}
                             >
                               ₹{product.oldPrice3.toLocaleString()}
                             </div>
@@ -561,27 +560,27 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       <div
                         className="rounded-lg p-4 border"
                         style={{
-                          backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary,
+                          backgroundColor: 'white',
+                          borderColor: 'gray',
                         }}
                       >
                         <div className="text-center">
                           <div
                             className="text-2xl font-bold"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: 'black' }}
                           >
                             ₹{product.priceLifetime.toLocaleString()}
                           </div>
                           <div
                             className="text-sm"
-                            style={{ color: colors.text.secondary }}
+                            style={{ color: 'gray' }}
                           >
                             Lifetime License
                           </div>
                           {product.oldPriceLifetime && (
                             <div
                               className="text-sm line-through"
-                              style={{ color: colors.text.secondary }}
+                              style={{ color: 'gray' }}
                             >
                               ₹{product.oldPriceLifetime.toLocaleString()}
                             </div>
@@ -597,24 +596,30 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
             {(product.hasLifetime || product.hasMembership) && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {product.hasLifetime && product.lifetimePrice && (
-                  <div className="bg-green-600 rounded-lg p-4 border border-green-500">
+                  <div
+                    className="rounded-lg p-4 border"
+                    style={{ backgroundColor: 'white', borderColor: 'gray' }}
+                  >
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white">
+                      <div className="text-2xl font-bold" style={{ color: 'black' }}>
                         ₹{product.lifetimePrice.toLocaleString()}
                       </div>
-                      <div className="text-sm text-green-100">
+                      <div className="text-sm" style={{ color: 'gray' }}>
                         Lifetime Access
                       </div>
                     </div>
                   </div>
                 )}
                 {product.hasMembership && product.membershipPrice && (
-                  <div className="bg-purple-600 rounded-lg p-4 border border-purple-500">
+                  <div
+                    className="rounded-lg p-4 border"
+                    style={{ backgroundColor: 'white', borderColor: 'gray' }}
+                  >
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white">
+                      <div className="text-2xl font-bold" style={{ color: 'black' }}>
                         ₹{product.membershipPrice.toLocaleString()}
                       </div>
-                      <div className="text-sm text-purple-100">Membership</div>
+                      <div className="text-sm" style={{ color: 'gray' }}>Membership</div>
                     </div>
                   </div>
                 )}
@@ -626,15 +631,15 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
           {product.faqs && product.faqs.length > 0 && (
             <div
               className="rounded-lg p-6 mb-8 transition-colors duration-200"
-              style={{ backgroundColor: colors.background.secondary }}
+              style={{ backgroundColor: 'white' }}
             >
               <h3
                 className="text-xl font-semibold mb-4 flex items-center"
-                style={{ color: colors.text.primary }}
+                style={{ color: 'black' }}
               >
                 <HelpCircle
                   className="w-6 h-6 mr-2"
-                  style={{ color: colors.interactive.primary }}
+                  style={{ color: 'blue' }}
                 />
                 Frequently Asked Questions
               </h3>
@@ -644,17 +649,17 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                     key={index}
                     className="rounded-lg p-4 border transition-colors duration-200"
                     style={{
-                      backgroundColor: colors.background.primary,
-                      borderColor: colors.border.primary,
+                      backgroundColor: 'white',
+                      borderColor: 'gray',
                     }}
                   >
                     <h4
                       className="font-medium mb-2"
-                      style={{ color: colors.text.primary }}
+                      style={{ color: 'black' }}
                     >
                       {faq.question}
                     </h4>
-                    <p style={{ color: colors.text.secondary }}>{faq.answer}</p>
+                    <p style={{ color: 'gray' }}>{faq.answer}</p>
                   </div>
                 ))}
               </div>
@@ -664,15 +669,15 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
           {/* Metadata */}
           <div
             className="rounded-lg p-6 transition-colors duration-200"
-            style={{ backgroundColor: colors.background.secondary }}
+            style={{ backgroundColor: 'white' }}
           >
             <h3
               className="text-xl font-semibold mb-4 flex items-center"
-              style={{ color: colors.text.primary }}
+              style={{ color: 'black' }}
             >
               <Calendar
                 className="w-6 h-6 mr-2"
-                style={{ color: colors.interactive.primary }}
+                style={{ color: 'blue' }}
               />
               Metadata
             </h3>
@@ -680,35 +685,35 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
               <div>
                 <span
                   className="text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
+                  style={{ color: 'gray' }}
                 >
                   Created At
                 </span>
-                <p style={{ color: colors.text.primary }}>
+                <p style={{ color: 'black' }}>
                   {formatDate(product.createdAt)}
                 </p>
               </div>
               <div>
                 <span
                   className="text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
+                  style={{ color: 'gray' }}
                 >
                   Updated At
                 </span>
-                <p style={{ color: colors.text.primary }}>
+                <p style={{ color: 'black' }}>
                   {formatDate(product.updatedAt)}
                 </p>
               </div>
               <div>
                 <span
                   className="text-sm font-medium"
-                  style={{ color: colors.text.secondary }}
+                  style={{ color: 'gray' }}
                 >
                   Product ID
                 </span>
                 <p
-                  className="font-mono text-sm px-2 py-1 rounded bg-gray-100 dark:bg-gray-800"
-                  style={{ color: colors.text.primary }}
+                  className="font-mono text-sm px-2 py-1 rounded bg-gray-100"
+                  style={{ color: 'black' }}
                 >
                   {product._id || "N/A"}
                 </p>
@@ -720,8 +725,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
         <div
           className="sticky bottom-0 border-t px-6 py-4 flex justify-end transition-colors duration-200"
           style={{
-            backgroundColor: colors.background.primary,
-            borderColor: colors.border.primary,
+            backgroundColor: 'white',
+            borderColor: 'gray',
           }}
         >
           <FormButton type="button" variant="primary" onClick={onClose}>
