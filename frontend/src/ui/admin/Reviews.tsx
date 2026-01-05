@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useUser } from "../../api/userQueries";
 import {
   getAllReviews,
   deleteReview,
@@ -11,6 +12,7 @@ import Swal from "sweetalert2";
 
 const Reviews: React.FC = () => {
   const { colors } = useAdminTheme();
+  const { data: user } = useUser();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
@@ -59,6 +61,20 @@ const Reviews: React.FC = () => {
   };
 
   const handleEditReview = (review: Review) => {
+    // Require user to be owner or have admin/superadmin role
+    if (!user) {
+      Swal.fire("Error", "Please login to edit reviews", "error");
+      return;
+    }
+
+    const isOwner = user.id === review.user._id;
+    const isAdmin = user.role === "admin" || user.role === "superadmin";
+
+    if (!isOwner && !isAdmin) {
+      Swal.fire("Error", "You can only edit your own reviews", "error");
+      return;
+    }
+
     setEditingReview(review);
     setEditForm({ rating: review.rating, comment: review.comment });
   };
@@ -197,10 +213,20 @@ const Reviews: React.FC = () => {
             <div className="flex gap-3">
               <button
                 onClick={handleUpdateReview}
-                className="flex-1 font-bold py-2 px-4 rounded-lg transition-colors"
+                className="flex-1 font-bold py-2 px-4 rounded-lg transition-colors shadow-sm"
                 style={{
-                  backgroundColor: colors.interactive.primary,
-                  color: colors.background.primary,
+                  background: colors.interactive.primary,
+                  color: '#fff',
+                  border: `1.5px solid ${colors.interactive.primary}`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
+                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
                 }}
               >
                 Update
@@ -213,6 +239,13 @@ const Reviews: React.FC = () => {
                   color: colors.text.primary,
                   border: `1px solid ${colors.border.primary}`,
                 }}
+                onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor =
+                  (colors as any).background?.accent || colors.background.secondary)
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = colors.background.primary)
+                }
               >
                 Cancel
               </button>
@@ -233,7 +266,7 @@ const Reviews: React.FC = () => {
           <table className="w-full">
             <thead
               className="border-b transition-colors duration-200"
-              
+
             >
               <tr>
                 <th
@@ -294,8 +327,8 @@ const Reviews: React.FC = () => {
                     key={review._id}
                     className="transition-colors duration-200"
                     onMouseEnter={(e) =>
-                      (e.currentTarget.style.backgroundColor =
-                        colors.background.accent)
+                    (e.currentTarget.style.backgroundColor =
+                      colors.background.accent)
                     }
                     onMouseLeave={(e) =>
                       (e.currentTarget.style.backgroundColor = "transparent")
@@ -305,7 +338,7 @@ const Reviews: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <div
                           className="w-10 h-10 rounded-full flex items-center justify-center"
-                         
+
                         >
                           <span className="text-lg">👤</span>
                         </div>

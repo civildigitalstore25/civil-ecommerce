@@ -2277,22 +2277,20 @@ const ProductDetail: React.FC = () => {
                     {user || isAuthenticated() ? (
                       <button
                         onClick={() => setShowReviewForm(true)}
-                        className="font-bold py-3 px-6 rounded-xl transition-colors duration-200 z-10"
+                        className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                         style={{
-                          backgroundColor: colors.interactive.primary || '#2563eb',
-                          color: '#ffffff',
-                          border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
-                          boxShadow: '0 4px 14px rgba(37,99,235,0.18)'
+                          background: colors.interactive.primary,
+                          color: '#fff',
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
-                          e.currentTarget.style.color = '#ffffff';
+                          (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
+                          (e.currentTarget as HTMLButtonElement).style.color = '#fff';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.backgroundColor =
-                            colors.interactive.primary || '#2563eb';
-                          e.currentTarget.style.color = '#ffffff';
+                          (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                          (e.currentTarget as HTMLButtonElement).style.color = '#fff';
                         }}
                       >
                         Write a Review
@@ -2317,22 +2315,20 @@ const ProductDetail: React.FC = () => {
                         </p>
                         <button
                           onClick={() => navigate("/signin")}
-                          className="font-bold py-3 px-6 rounded-xl transition-colors duration-200 z-10"
+                          className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                           style={{
-                            backgroundColor: colors.interactive.primary || '#2563eb',
-                            color: '#ffffff',
-                            border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
-                            boxShadow: '0 4px 14px rgba(37,99,235,0.18)'
+                            background: colors.interactive.primary,
+                            color: '#fff',
+                            border: `1.5px solid ${colors.interactive.primary}`,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
                           }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
-                            e.currentTarget.style.color = '#ffffff';
+                            (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
+                            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
                           }}
                           onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor =
-                              colors.interactive.primary || '#2563eb';
-                            e.currentTarget.style.color = '#ffffff';
+                            (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
                           }}
                         >
                           Login to Review
@@ -2416,10 +2412,22 @@ const ProductDetail: React.FC = () => {
                         <button
                           type="submit"
                           disabled={submittingReview}
-                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50"
+                          className="font-bold py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 flex items-center justify-center"
                           style={{
-                            backgroundColor: colors.interactive.primary,
-                            color: colors.background.primary,
+                            background: colors.interactive.primary || '#2563eb',
+                            color: '#ffffff',
+                            border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                              (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                            (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                              colors.interactive.primary || '#2563eb';
+                            (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
                           }}
                         >
                           {submittingReview

@@ -78,7 +78,8 @@ export const updateReview = async (req: Request, res: Response) => {
         const { reviewId } = req.params;
         const { rating, comment } = req.body;
         const userId = (req as any).user.id;
-        const isAdmin = (req as any).user.role === 'admin';
+        const userRole = (req as any).user.role;
+        const isAdmin = userRole === 'admin' || userRole === 'superadmin';
 
         const review = await Review.findById(reviewId);
         if (!review) {
@@ -108,7 +109,8 @@ export const deleteReview = async (req: Request, res: Response) => {
     try {
         const { reviewId } = req.params;
         const userId = (req as any).user.id;
-        const isAdmin = (req as any).user.role === 'admin';
+        const userRole = (req as any).user.role;
+        const isAdmin = userRole === 'admin' || userRole === 'superadmin';
 
         const review = await Review.findById(reviewId);
         if (!review) {
