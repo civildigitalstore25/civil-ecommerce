@@ -1011,8 +1011,9 @@ const ProductDetail: React.FC = () => {
             <span>{">"}</span>
             <span>{product.category}</span>
             <span>{">"}</span>
-            <span style={{ color: colors.interactive.primary }}>
-              {product.name}
+                <span style={{ color: colors.interactive.primary }}>
+              <span className="hidden md:inline">{product.name}</span>
+              <span className="inline md:hidden">{product.name.length > 15 ? product.name.substring(0,15).trim() + '...' : product.name}</span>
             </span>
           </div>
 
