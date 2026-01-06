@@ -119,7 +119,7 @@ const Footer = () => {
                 OUR SERVICES
               </h3>
               <ul className="space-y-2 text-sm md:text-base font-lato">
-                
+
                 <li>
                   <Link
                     to="/shipping-policy"
@@ -226,7 +226,7 @@ const Footer = () => {
               <ul className="space-y-2 text-sm md:text-base font-lato grid grid-cols-2 md:grid-cols-1 gap-x-4">
                 <li>
                   <Link
-                    to="/software?category=CAD Software"
+                    to="/category?brand=autodesk&category=autocad"
                     className="transition-colors duration-200 hover:underline"
                     style={{ color: colors.text.secondary }}
                     onMouseEnter={(e) => {
@@ -235,13 +235,14 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     AutoCAD
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/software?category=Lumion"
+                    to="/category?brand=architectural-softwares&category=lumion"
                     className="transition-colors duration-200 hover:underline"
                     style={{ color: colors.text.secondary }}
                     onMouseEnter={(e) => {
@@ -250,13 +251,14 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Lumion
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/software?category=MS Office"
+                    to="/category?brand=microsoft&category=microsoft-365"
                     className="transition-colors duration-200 hover:underline"
                     style={{ color: colors.text.secondary }}
                     onMouseEnter={(e) => {
@@ -265,13 +267,14 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     MS Office
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/software?category=SketchUp"
+                    to="/category?brand=structural-softwares&category=tekla"
                     className="transition-colors duration-200 hover:underline"
                     style={{ color: colors.text.secondary }}
                     onMouseEnter={(e) => {
@@ -280,28 +283,14 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
-                  >
-                    SketchUp
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="/software?category=Tekla"
-                    className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Tekla
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/software?category=Revit"
+                    to="/category?brand=autodesk&category=revit"
                     className="transition-colors duration-200 hover:underline"
                     style={{ color: colors.text.secondary }}
                     onMouseEnter={(e) => {
@@ -310,12 +299,13 @@ const Footer = () => {
                     onMouseLeave={(e) => {
                       e.currentTarget.style.color = colors.text.secondary;
                     }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Revit
                   </Link>
                 </li>
               </ul>
-            </div> 
+            </div>
           </div>
         </div>
       </div>

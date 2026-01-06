@@ -147,7 +147,7 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
 
   return (
     <div
-      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border w-[800px]"
+      className="absolute left-0 mt-[-1] rounded-xl shadow-2xl z-50 overflow-hidden border w-[800px]"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
