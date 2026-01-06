@@ -734,27 +734,27 @@ const Orders: React.FC = () => {
         >
           <div
             className="rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-            style={{ backgroundColor: '#fff' }}
+            style={{ backgroundColor: '#fff', color: '#000' }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div
               className="sticky top-0 flex items-center justify-between p-6 border-b z-10"
               style={{
-                backgroundColor: colors.background.secondary,
-                borderBottomColor: colors.border.primary,
+                backgroundColor: '#ffffff',
+                borderBottomColor: '#e5e7eb',
               }}
             >
               <div>
                 <h3
                   className="text-2xl font-bold"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: '#000' }}
                 >
                   Order Details
                 </h3>
                 <p
                   className="text-sm mt-1"
-                  style={{ color: colors.text.secondary }}
+                  style={{ color: '#6b7280' }}
                 >
                   Order #{selectedOrder.orderNumber} • {selectedOrder.orderId}
                 </p>
@@ -762,9 +762,9 @@ const Orders: React.FC = () => {
               <button
                 onClick={handleCloseModal}
                 className="p-2 rounded-lg hover:bg-opacity-10 transition-colors duration-200"
-                style={{ backgroundColor: colors.background.accent }}
+                style={{ backgroundColor: '#f3f4f6' }}
               >
-                <X className="w-6 h-6" style={{ color: colors.text.primary }} />
+                <X className="w-6 h-6" style={{ color: '#000' }} />
               </button>
             </div>
 
@@ -774,11 +774,11 @@ const Orders: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div
                   className="p-4 rounded-lg border"
-
+                  style={{ backgroundColor: '#fff', borderColor: '#000' }}
                 >
                   <p
                     className="text-sm mb-1"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: '#6b7280' }}
                   >
                     Order Status
                   </p>
@@ -798,11 +798,11 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-
+                  style={{ backgroundColor: '#fff', borderColor: '#000' }}
                 >
                   <p
                     className="text-sm mb-1"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: '#6b7280' }}
                   >
                     Payment Status
                   </p>
@@ -820,17 +820,17 @@ const Orders: React.FC = () => {
                 </div>
                 <div
                   className="p-4 rounded-lg border"
-
+                  style={{ backgroundColor: '#fff', borderColor: '#000' }}
                 >
                   <p
                     className="text-sm mb-1"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: '#6b7280' }}
                   >
                     Order Date
                   </p>
                   <p
                     className="text-lg font-semibold"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: '#000' }}
                   >
                     {new Date(selectedOrder.createdAt).toLocaleDateString(
                       "en-IN",
@@ -847,11 +847,11 @@ const Orders: React.FC = () => {
               {/* Customer Information */}
               <div
                 className="p-5 rounded-lg border"
-
+                style={{ backgroundColor: '#fff', borderColor: '#000' }}
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: '#000' }}
                 >
                   <User className="w-5 h-5" />
                   Customer Information
@@ -865,13 +865,13 @@ const Orders: React.FC = () => {
                     <div>
                       <p
                         className="text-sm"
-                        style={{ color: colors.text.secondary }}
+                        style={{ color: '#6b7280' }}
                       >
                         Name
                       </p>
                       <p
                         className="font-medium"
-                        style={{ color: colors.text.primary }}
+                        style={{ color: '#000' }}
                       >
                         {selectedOrder.shippingAddress.fullName}
                       </p>
@@ -885,13 +885,13 @@ const Orders: React.FC = () => {
                     <div>
                       <p
                         className="text-sm"
-                        style={{ color: colors.text.secondary }}
+                        style={{ color: '#6b7280' }}
                       >
                         Phone
                       </p>
                       <p
                         className="font-medium"
-                        style={{ color: colors.text.primary }}
+                        style={{ color: '#000' }}
                       >
                         {selectedOrder.shippingAddress.phoneNumber}
                       </p>
@@ -906,13 +906,13 @@ const Orders: React.FC = () => {
                       <div>
                         <p
                           className="text-sm"
-                          style={{ color: colors.text.secondary }}
+                          style={{ color: '#6b7280' }}
                         >
                           Email
                         </p>
                         <p
                           className="font-medium"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: '#000' }}
                         >
                           {selectedOrder.userId.email}
                         </p>
@@ -922,44 +922,15 @@ const Orders: React.FC = () => {
                 </div>
               </div>
 
-              {/* Shipping Address */}
-              {/* <div
-                className="p-5 rounded-lg border"
-                style={{
-                  backgroundColor: colors.background.tertiary,
-                  borderColor: colors.border.primary,
-                }}
-              >
-                <h4
-                  className="text-lg font-semibold mb-4 flex items-center gap-2"
-                  style={{ color: colors.text.primary }}
-                >
-                  <MapPin className="w-5 h-5" />
-                  Shipping Address
-                </h4>
-                <div style={{ color: colors.text.primary }}>
-                  <p className="font-medium">{selectedOrder.shippingAddress.fullName}</p>
-                  <p className="mt-2">{selectedOrder.shippingAddress.addressLine1}</p>
-                  {selectedOrder.shippingAddress.addressLine2 && (
-                    <p>{selectedOrder.shippingAddress.addressLine2}</p>
-                  )}
-                  <p>
-                    {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} -{' '}
-                    {selectedOrder.shippingAddress.pincode}
-                  </p>
-                  <p>{selectedOrder.shippingAddress.country}</p>
-                  <p className="mt-2 font-medium">Phone: {selectedOrder.shippingAddress.phoneNumber}</p>
-                </div>
-              </div> */}
-
               {/* Ordered Products */}
               <div
                 className="p-5 rounded-lg border"
+                style={{ backgroundColor: '#fff', borderColor: '#000' }}
 
               >
                 <h4
                   className="text-lg font-semibold mb-4 flex items-center gap-2"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: '#000' }}
                 >
                   <Package className="w-5 h-5" />
                   Ordered Products ({selectedOrder.items.length} items)
@@ -979,7 +950,7 @@ const Orders: React.FC = () => {
                       <div
                         key={index}
                         className="flex items-start gap-4 p-4 rounded-lg"
-                        style={{ backgroundColor: colors.background.secondary }}
+                        style={{ backgroundColor: '#fff' }}
                       >
                         {item.image && (
                           <img
@@ -991,7 +962,7 @@ const Orders: React.FC = () => {
                         <div className="flex-1 min-w-0">
                           <p
                             className="font-semibold text-base mb-2"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: '#000' }}
                           >
                             {item.name}
                           </p>
@@ -1000,21 +971,21 @@ const Orders: React.FC = () => {
                             {/* Product ID - Always show */}
                             <p
                               className="text-xs"
-                              style={{ color: colors.text.secondary }}
+                              style={{ color: '#6b7280' }}
                             >
-                              <span className="font-medium" style={{ color: colors.text.primary }}>Product ID:</span> {item.productId}
+                              <span className="font-medium" style={{ color: '#000' }}>Product ID:</span> {item.productId}
                             </p>
 
                             {/* Version - Show if available */}
                             {item.version ? (
                               <p
                                 className="text-sm flex items-center gap-2"
-                                style={{ color: colors.text.secondary }}
+                                style={{ color: '#6b7280' }}
                               >
-                                <span className="font-medium" style={{ color: colors.text.primary }}>Version:</span>
+                                <span className="font-medium" style={{ color: '#000' }}>Version:</span>
                                 <span className="px-2 py-0.5 rounded text-xs font-medium" style={{
-                                  backgroundColor: colors.background.accent,
-                                  color: colors.interactive.primary
+                                  backgroundColor: "#000",
+                                  color: "#000"
                                 }}>
                                   {item.version}
                                 </span>
@@ -1022,9 +993,9 @@ const Orders: React.FC = () => {
                             ) : (
                               <p
                                 className="text-xs"
-                                style={{ color: colors.text.secondary }}
+                                style={{ color: "#000" }}
                               >
-                                <span className="font-medium" style={{ color: colors.text.primary }}>Version:</span> <span style={{ opacity: 0.6 }}>Not specified</span>
+                                <span className="font-medium" style={{ color: '#000' }}>Version:</span> <span style={{ opacity: 0.6, color: '#000' }}>Not specified</span>
                               </p>
                             )}
 
@@ -1032,9 +1003,9 @@ const Orders: React.FC = () => {
                             {item.pricingPlan ? (
                               <p
                                 className="text-sm flex items-center gap-2"
-                                style={{ color: colors.text.secondary }}
+                                style={{ color: '#6b7280' }}
                               >
-                                <span className="font-medium" style={{ color: colors.text.primary }}>Plan:</span>
+                                <span className="font-medium" style={{ color: '#000' }}>Plan:</span>
                                 <span className="px-2 py-0.5 rounded text-xs font-medium capitalize" style={{
                                   backgroundColor: colors.background.accent,
                                   color: colors.interactive.primary
@@ -1055,18 +1026,18 @@ const Orders: React.FC = () => {
                             <p
                               className="text-sm mt-2 pt-2"
                               style={{
-                                color: colors.text.secondary,
-                                borderTop: `1px solid ${colors.border.secondary}`
+                                color: '#6b7280',
+                                borderTop: `1px solid #e5e7eb`
                               }}
                             >
-                              <span className="font-medium" style={{ color: colors.text.primary }}>Quantity:</span> {item.quantity} × ₹{item.price.toLocaleString()}
+                              <span className="font-medium" style={{ color: '#000' }}>Quantity:</span> {item.quantity} × ₹{item.price.toLocaleString()}
                             </p>
                           </div>
                         </div>
                         <div className="text-right flex-shrink-0">
                           <p
                             className="font-bold text-lg"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: '#000' }}
                           >
                             ₹{(item.quantity * item.price).toLocaleString()}
                           </p>
@@ -1084,22 +1055,22 @@ const Orders: React.FC = () => {
               >
                 <h4
                   className="text-lg font-semibold mb-4"
-                  style={{ color: colors.text.primary }}
+                  style={{ color: '#000' }}
                 >
                   Order Summary
                 </h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span style={{ color: colors.text.secondary }}>
+                    <span style={{ color: '#000' }}>
                       Subtotal
                     </span>
-                    <span style={{ color: colors.text.primary }}>
+                    <span style={{ color: '#000' }}>
                       ₹{selectedOrder.subtotal.toLocaleString()}
                     </span>
                   </div>
                   {selectedOrder.discount > 0 && (
                     <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>
+                      <span style={{ color: '#000' }}>
                         Discount
                       </span>
                       <span style={{ color: colors.status.success }}>
@@ -1109,19 +1080,19 @@ const Orders: React.FC = () => {
                   )}
                   {selectedOrder.shippingCharges > 0 && (
                     <div className="flex justify-between">
-                      <span style={{ color: colors.text.secondary }}>
+                      <span style={{ color: '#000' }}>
                         Shipping
                       </span>
-                      <span style={{ color: colors.text.primary }}>
+                      <span style={{ color: '#000' }}>
                         ₹{selectedOrder.shippingCharges.toLocaleString()}
                       </span>
                     </div>
                   )}
                   <div
                     className="flex justify-between pt-3 border-t text-lg font-bold"
-                    style={{ borderTopColor: colors.border.primary }}
+                    style={{ borderTopColor: '#e5e7eb' }}
                   >
-                    <span style={{ color: colors.text.primary }}>
+                    <span style={{ color: '#000' }}>
                       Total Amount
                     </span>
                     <span style={{ color: colors.interactive.primary }}>
@@ -1139,11 +1110,11 @@ const Orders: React.FC = () => {
                 >
                   <h4
                     className="text-lg font-semibold mb-2"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: '#000' }}
                   >
                     Notes
                   </h4>
-                  <p style={{ color: colors.text.secondary }}>
+                  <p style={{ color: '#000' }}>
                     {selectedOrder.notes}
                   </p>
                 </div>
@@ -1157,7 +1128,7 @@ const Orders: React.FC = () => {
                 >
                   <h4
                     className="text-lg font-semibold mb-3"
-                    style={{ color: colors.text.primary }}
+                    style={{ color: '#000' }}
                   >
                     Payment Details
                   </h4>
@@ -1165,24 +1136,24 @@ const Orders: React.FC = () => {
                     {selectedOrder.cashfreePaymentId && (
                       <>
                         <div className="flex justify-between">
-                          <span style={{ color: colors.text.secondary }}>
+                          <span style={{ color: '#000' }}>
                             Payment ID
                           </span>
                           <span
                             className="font-mono"
-                            style={{ color: colors.text.primary }}
+                            style={{ color: '#000' }}
                           >
                             {selectedOrder.cashfreePaymentId}
                           </span>
                         </div>
                         {selectedOrder.cashfreeOrderId && (
                           <div className="flex justify-between">
-                            <span style={{ color: colors.text.secondary }}>
+                            <span style={{ color: '#000' }}>
                               Cashfree Order ID
                             </span>
                             <span
                               className="font-mono"
-                              style={{ color: colors.text.primary }}
+                              style={{ color: '#000' }}
                             >
                               {selectedOrder.cashfreeOrderId}
                             </span>
@@ -1199,15 +1170,15 @@ const Orders: React.FC = () => {
             <div
               className="sticky bottom-0 p-6 border-t flex justify-end"
               style={{
-                backgroundColor: colors.background.secondary,
-                borderTopColor: colors.border.primary,
+                backgroundColor: "#ffffff",
+                borderTopColor: "#e5e7eb",
               }}
             >
               <button
                 onClick={handleCloseModal}
                 className="px-6 py-2.5 rounded-lg font-medium transition-colors duration-200"
                 style={{
-                  backgroundColor: colors.interactive.primary,
+                  backgroundColor: "#000",
                   color: "#ffffff",
                 }}
               >
