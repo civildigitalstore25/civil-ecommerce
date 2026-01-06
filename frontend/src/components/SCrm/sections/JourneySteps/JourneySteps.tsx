@@ -71,24 +71,18 @@ const JourneySteps = () => {
       icon: <ChartBarIcon className="w-8 h-8" />,
       title: "Secure Your Access",
       description: "Choose your plan and get instant access. We'll immediately send your login details, tutorials, and bonuses to your email and WhatsApp.",
-      imageUrl: "https://via.placeholder.com/400x225/ffffff/000000?text=Browser+Window",
-      imageAlt: "Browser window with login"
     },
     {
       stepNumber: 2,
       icon: <ChatBubbleBottomCenterTextIcon className="w-8 h-8" />,
       title: "Configure & Automate",
       description: "Activate your dashboard in minutes. Set up automated follow-ups, chatbots, and pipelines to handle your leads 24/7.",
-      imageUrl: "https://via.placeholder.com/400x225/25D366/ffffff?text=WhatsApp+Business",
-      imageAlt: "WhatsApp Business dashboard"
     },
     {
       stepNumber: 3,
       icon: <RocketLaunchIcon className="w-8 h-8" />,
       title: "Scale & Convert",
       description: "Engage your audience with our powerful tools, track your performance with analytics, and close more deals effortlessly.",
-      imageUrl: "https://via.placeholder.com/400x225/ff6b9d/ffffff?text=Success+Mobile+View",
-      imageAlt: "Success mobile view"
     }
   ];
 
@@ -115,8 +109,6 @@ const JourneySteps = () => {
               icon={step.icon}
               title={step.title}
               description={step.description}
-              imageUrl={step.imageUrl}
-              imageAlt={step.imageAlt}
             />
           ))}
         </div>

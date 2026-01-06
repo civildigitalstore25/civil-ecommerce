@@ -22,7 +22,7 @@ interface AutodeskDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (href: string) => void;
-  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  buttonRef: React.RefObject<HTMLElement | null>;
 }
 
 // Real Autodesk categories from brand-category structure
@@ -128,7 +128,7 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
   return (
     //give mt as negative margin to align better with header
     <div
-      className="absolute left-0 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-0 d rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
@@ -159,7 +159,7 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
               <h4
                 className="font-semibold text-base uppercase tracking-wide pb-2 border-b"
                 style={{
-                  color: colors.interactive.primary,
+                  color: colors.text.primary,
                   borderColor: colors.border.primary,
                 }}
               >
@@ -265,7 +265,7 @@ const AutodeskDropdown: React.FC<AutodeskDropdownProps> = ({
             }}
             className="py-3 px-6 rounded-lg font-medium transition-all duration-200 text-lg"
             style={{
-              backgroundColor: colors.interactive.primary,
+              backgroundColor: colors.text.primary,
               color: colors.text.inverse,
             }}
           >

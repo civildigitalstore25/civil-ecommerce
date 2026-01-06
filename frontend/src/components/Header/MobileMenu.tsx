@@ -88,35 +88,55 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           </div>
         </div> */}
 
-          {/* Mobile navigation - show only essential items. Other nav items commented for later use. */}
+          {/* Mobile navigation */}
           <div className="space-y-1">
-            {/* Original navigation (commented out for mobile):
-          {headerConfig.navigation.map((item) => (
-            <button key={item.href} onClick={() => onNavigate(item.href)}>
-              {item.label}
-            </button>
-          ))}
-          */}
+            {/* Navigation items from headerConfig */}
+            {headerConfig.navigation.map((item) => (
+              <button
+                key={item.href}
+                onClick={() => onNavigate(item.href)}
+                className="block w-full text-left px-3 py-2 sm:py-3 text-base rounded-md transition-all duration-200 hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    "transparent";
+                }}
+              >
+                {item.label}
+              </button>
+            ))}
 
-            <button
-              onClick={() => onNavigate('/')}
-              className="block w-full text-left px-3 py-2 sm:py-3 text-base rounded-md transition-all duration-200 hover:opacity-80"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.interactive.primary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  colors.background.secondary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.text.secondary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  "transparent";
-              }}
-            >
-              Home
-            </button>
+            {/* Offers */}
+            {headerConfig.offers.map((offer) => (
+              <button
+                key={offer.href}
+                onClick={() => onNavigate(offer.href)}
+                className="block w-full text-left px-3 py-2 sm:py-3 text-base rounded-md transition-all duration-200 hover:opacity-80"
+                style={{ color: colors.text.secondary }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.interactive.primary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.color =
+                    colors.text.secondary;
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    "transparent";
+                }}
+              >
+                {offer.label}
+              </button>
+            ))}
 
             <button
               onClick={() => onNavigate('/about')}

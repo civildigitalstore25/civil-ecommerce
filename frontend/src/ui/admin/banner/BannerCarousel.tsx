@@ -96,15 +96,15 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
 
   return (
     <div
-      className="relative max-w-7xl mx-auto mb-6 px-4"
+      className="relative max-w-7xl mx-auto mb-6 px-4 mt-6"
       role="region"
       aria-label="Promotional Carousel"
     >
       <div
         className="relative rounded-2xl overflow-hidden min-h-[220px] sm:min-h-[260px] flex items-center justify-center transition-all duration-300"
         style={{
-          background: `linear-gradient(135deg, #ffd54a 0%, #ffb344 40%, #f59e0b 100%)`,
-          boxShadow: `0 8px 30px rgba(245, 158, 11, 0.18), inset 0 -6px 30px rgba(0,0,0,0.06)`,
+          background: `linear-gradient(135deg, #1e40af 0%, #1e3a8a 40%, #1e1b4b 100%)`,
+          boxShadow: `0 8px 30px rgba(30, 58, 138, 0.18), inset 0 -6px 30px rgba(0,0,0,0.06)`,
         }}
       >
         {/* Sunray behind content */}
@@ -197,14 +197,14 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
             <button
               onClick={prevSlide}
               aria-label="Previous slide"
-              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block"
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition z-30 hidden md:block text-white"
             >
               <ChevronLeftIcon className="h-6 w-6 text-white" />
             </button>
             <button
               onClick={nextSlide}
               aria-label="Next slide"
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm hover:bg-black/60 transition z-30 hidden md:block"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-3 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 transition z-30 hidden md:block text-white"
             >
               <ChevronRightIcon className="h-6 w-6 text-white" />
             </button>
@@ -293,23 +293,19 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
 
         {/* Indicators */}
         {totalSlides > 1 && (
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2 z-30">
-            {banners.map((_, index) => (
+          <div className="flex items-center justify-center space-x-2 mt-4 z-10">
+            {banners.map((_, i) => (
               <button
-                key={index}
-                onClick={() => setCurrent(index)}
-                aria-label={`Go to slide ${index + 1}`}
-                className={`
-      w-4 h-4 sm:w-3 sm:h-3 rounded-full transition-all duration-300
-      ${index === current
-                    ? "bg-yellow-500 scale-125 shadow-md" // active: brighter yellow, bigger, shadow
-                    : "bg-white/40 hover:bg-white/70"
-                  } // inactive: semi-transparent white
-    `}
+                key={i}
+                onClick={() => setCurrent(i)}
+                className={`w-2.5 h-2.5 rounded-full transition-all ${i === current ? "bg-white/90" : "bg-white/40"
+                  }`}
+                aria-label={`Go to slide ${i + 1}`}
               />
             ))}
           </div>
         )}
+
 
         {/* Animations */}
         <style>{`

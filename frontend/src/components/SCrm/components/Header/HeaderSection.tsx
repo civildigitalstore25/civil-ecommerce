@@ -26,27 +26,36 @@ const HeaderSection: React.FC = () => {
   return (
     <header
       id="top"
-      className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/95 backdrop-blur"
+      className="sticky top-0 z-40 bg-slate-900/95 backdrop-blur-lg shadow-lg border-b border-slate-800/50"
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-        <div className="flex items-center gap-3">
-          <a href="/" onClick={(e) => { e.preventDefault(); window.location.href = "/"; }} className="flex items-center">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        {/* Logo */}
+        <div className="flex items-center">
+          <a 
+            href="/" 
+            onClick={(e) => { e.preventDefault(); window.location.href = "/"; }} 
+            className="flex items-center hover:opacity-90 transition-opacity"
+          >
             <img 
-              src="/logo.png" 
+              src="/whitelogo.png" 
               alt="Logo" 
-              className="h-12 w-auto object-contain" 
+              className="h-10 w-auto sm:h-12 object-contain" 
               style={{ cursor: 'pointer' }}
             />
           </a>
         </div>
 
-        <nav className="hidden items-center gap-6 text-sm text-white/80 lg:flex">
+        {/* Desktop Navigation */}
+        <nav className="hidden items-center space-x-1 lg:flex">
           {navItems.map((item) => (
             <button
               key={item.label}
               onClick={() => handleNavClick(item.href)}
-              className="transition"
-              style={{ color: "white" }}
+              className="px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200"
+              style={{ 
+                color: colors.text.primary,
+                backgroundColor: 'transparent'
+              }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = colors.interactive.primary;
               }}
@@ -60,7 +69,7 @@ const HeaderSection: React.FC = () => {
 
           <button 
             className="rounded-xl px-4 py-2 font-semibold text-slate-900 transition hover:-translate-y-0.5"
-            style={{ backgroundColor: colors.interactive.primary }}
+            style={{ backgroundColor: colors.text.primary }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = colors.interactive.primaryHover || colors.interactive.primary;
             }}

@@ -76,8 +76,10 @@ const HeroSection: React.FC = () => {
       }}
     >
       <div className="max-w-7xl mx-auto">
-        {/* ===== Banner Carousel ===== */}
-        <BannerCarousel page="home" />
+        {/* ===== Banner Carousel - Hidden on mobile ===== */}
+        <div className="hidden md:block">
+          <BannerCarousel page="home" />
+        </div>
 
         {/* ===== Hero Content ===== */}
         <div className="flex flex-col items-center mt-6 sm:mt-12">
@@ -85,16 +87,15 @@ const HeroSection: React.FC = () => {
             className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
-            SoftzCart — Ebooks for  Engineers
+            SoftzCart — Software & Ebooks for Engineers
           </h1>
 
           <p
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Find curated ebooks, software manuals, and technical guides for 
-            engineering. SoftzCart offers authentic ebook content with instant
-            delivery and lifetime support — only ebooks are shown here.
+            Discover premium engineering software and ebooks in one place. SoftzCart offers authentic software licenses and ebooks with instant
+            delivery and lifetime support for all your engineering needs.
           </p>
 
           <button

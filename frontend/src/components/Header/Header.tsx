@@ -33,11 +33,11 @@ const Header: React.FC = () => {
   // const [searchQuery, setSearchQuery] = useState("");
   const [showAdminDashboard, setShowAdminDashboard] = useState(false);
 
-  const autodeskButtonRef = useRef<HTMLButtonElement>(null);
-  const microsoftButtonRef = useRef<HTMLButtonElement>(null);
-  const adobeButtonRef = useRef<HTMLButtonElement>(null);
-  const antivirusButtonRef = useRef<HTMLButtonElement>(null);
-  const allCategoriesButtonRef = useRef<HTMLButtonElement>(null);
+  const autodeskButtonRef = useRef<HTMLDivElement>(null);
+  const microsoftButtonRef = useRef<HTMLDivElement>(null);
+  const adobeButtonRef = useRef<HTMLDivElement>(null);
+  const antivirusButtonRef = useRef<HTMLDivElement>(null);
+  const allCategoriesButtonRef = useRef<HTMLDivElement>(null);
 
   const { data: user } = useUser();
   const invalidateUser = useUserInvalidate();

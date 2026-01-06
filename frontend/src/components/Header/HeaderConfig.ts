@@ -7,10 +7,7 @@ export const headerConfig = {
     { label: "AutoDesk", href: "/autodesk" },
     { label: "Microsoft", href: "/microsoft" },
     { label: "Adobe", href: "/adobe" },
-    { label: "Ebook", href: "/category?brand=ebook" },
-    // { label: "Adobe Cloud", href: "/adobe-cloud" },
     { label: "Antivirus", href: "/antivirus" },
-    // Super CRM moved to Offers dropdown
     { label: "Contact", href: "/contact" },
   ],
   offers: [

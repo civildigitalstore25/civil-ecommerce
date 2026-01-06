@@ -7,7 +7,6 @@ import Review from "./sections/Reviews";
 import DemoVideoSection from "./sections/DemoVideo";
 import BonusesSection from "./sections/Bonuses";
 import Features from "./sections/Features";
-import StickyCTAButton from "./components/StickyCTA";
 
 const SCrm: React.FC = () => (
   <div className="min-h-screen bg-black text-white pb-24">
@@ -19,7 +18,6 @@ const SCrm: React.FC = () => (
     <Features />
     <Review />
     <FAQ />
-    <StickyCTAButton />
   </div>
 );
 

@@ -22,7 +22,7 @@ interface AntivirusDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (href: string) => void;
-  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  buttonRef: React.RefObject<HTMLElement | null>;
 }
 
 const antivirusCategories: AntivirusCategory[] = [
@@ -243,7 +243,7 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
             <h4
               className="text-xs font-bold uppercase tracking-wider mb-3 pb-2 border-b"
               style={{
-                color: colors.interactive.primary,
+                color: colors.text.primary,
                 borderColor: colors.border.secondary,
               }}
             >
@@ -337,7 +337,7 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
         <button
           onClick={() => handleNavigate("/antivirus")}
           className="text-sm font-semibold transition-colors inline-flex items-center"
-          style={{ color: colors.interactive.primary }}
+          style={{ color: colors.text.primary }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = colors.interactive.primaryHover;
           }}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import type { RefObject } from "react";
 import { ChevronRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import "./AllCategoriesDropdown.css";
 
@@ -95,27 +95,64 @@ const brandCategories: Record<
 };
 
 
-const AllCategoriesDropdown: React.FC = () => {
+interface AllCategoriesDropdownProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onNavigate: (href: string) => void;
+  buttonRef?: RefObject<HTMLElement | null>;
+}
+
+const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
+  isOpen,
+  onClose,
+  onNavigate,
+  buttonRef
+}) => {
   const [hoveredBrand, setHoveredBrand] = useState<string | null>(null);
-  const navigate = useNavigate();
   const { colors } = useAdminTheme();
 
+  // Close dropdown when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        buttonRef?.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onClose, buttonRef]);
+
+  if (!isOpen) return null;
+
   const handleCategoryClick = (brand: string, category: string) => {
-    navigate(`/category?brand=${brand}&category=${category}`);
+    onNavigate(`/category?brand=${brand}&category=${category}`);
+    onClose();
   };
 
   const handleBrandClick = (brand: string) => {
-    navigate(`/category?brand=${brand}`);
+    onNavigate(`/category?brand=${brand}`);
+    onClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div
-      className="absolute left-0 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-0 mt-2 rounded-xl shadow-2xl z-50 overflow-hidden border w-[800px]"
       style={{
-        minWidth: "1100px",
-        backgroundColor: colors.background.secondary,
+        backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
       }}
+      ref={buttonRef as React.RefObject<HTMLDivElement>}
     >
       {/* Header */}
       <div

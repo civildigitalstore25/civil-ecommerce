@@ -16,7 +16,7 @@ interface AdobeDropdownProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (href: string) => void;
-  buttonRef: React.RefObject<HTMLButtonElement | null>;
+  buttonRef: React.RefObject<HTMLElement | null>;
 }
 
 // Real Adobe categories from brand-category structure
@@ -115,7 +115,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
               <h4
                 className="font-semibold text-base uppercase tracking-wide pb-2 border-b"
                 style={{
-                  color: colors.interactive.primary,
+                  color: colors.text.primary,
                   borderColor: colors.border.primary,
                 }}
               >
@@ -168,7 +168,7 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
             onClick={() => handleProductClick("/adobe")}
             className="py-3 px-6 rounded-lg font-medium transition-all duration-200 text-lg"
             style={{
-              backgroundColor: colors.interactive.primary,
+              backgroundColor: colors.text.primary,
               color: colors.text.inverse,
             }}
           >
