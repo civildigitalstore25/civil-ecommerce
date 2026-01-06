@@ -342,44 +342,53 @@ const Orders: React.FC = () => {
 
       {/* Admin Order Creation Form */}
       {showCreateForm && (
-        <div className="border rounded-lg p-6 mb-6" style={{ background: colors.background.secondary, borderColor: colors.border.primary }}>
-          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Create New Order</h3>
+        <div className="border rounded-lg p-6 mb-6 create-order-panel" style={{ background: colors.background.secondary, borderColor: colors.border.primary }}>
+          <style>{`
+            .create-order-panel input::placeholder,
+            .create-order-panel textarea::placeholder {
+              color: ${theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(107,114,128,1)'} !important;
+            }
+            .create-order-panel .text-sm.helper {
+              color: ${theme === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(107,114,128,1)'} !important;
+            }
+          `}</style>
+          <h3 className="text-lg font-semibold mb-4" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Create New Order</h3>
 
           {/* Email field for order (manual entry) */}
           <div className="mb-4">
-            <label className="block text-sm mb-1 font-medium" style={{ color: colors.text.primary }}>
+            <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>
               Customer Email
             </label>
             <input
-              className="input w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+              className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition"
               type="email"
               placeholder="Enter customer email"
               value={orderForm.email || ""}
               onChange={e => setOrderForm(f => ({ ...f, email: e.target.value }))}
-              style={{ color: colors.text.primary, background: '#fff' }}
+              style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }}
             />
           </div>
 
           <div className="mb-4">
-            <h4 className="font-medium mb-2">Order Items</h4>
-            {orderForm.items.length === 0 && <div className="text-sm text-gray-500">No products added.</div>}
+            <h4 className="font-medium mb-2" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Order Items</h4>
+            {orderForm.items.length === 0 && <div className="text-sm" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>No products added.</div>}
             {orderForm.items.map((item) => (
               <div key={item.productId} className="flex items-center gap-2 mb-2">
-                <input className="input w-36 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: colors.text.primary, background: '#fff' }} />
-                <input className="input w-40 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: colors.text.primary, background: '#fff' }} />
-                <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
-                <input type="number" className="input w-24 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
-                <input type="number" className="input w-28 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Discount (optional)" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: colors.text.primary, background: '#fff' }} />
+                <input className="input w-36 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                <input className="input w-40 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                <input type="number" className="input w-24 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                <input type="number" className="input w-28 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount (optional)" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
                 <button className="text-red-500 ml-2" onClick={() => handleRemoveOrderItem(item.productId)}>Remove</button>
               </div>
             ))}
             {/* Add new product row */}
             <div className="flex items-center gap-2 mt-2">
-              <input className="input w-32 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: '#fff' }} />
-              <input className="input w-32 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: '#fff' }} />
-              <input type="number" className="input w-16 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: '#fff' }} />
-              <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: '#fff' }} />
-              <input type="number" className="input w-20 border border-gray-300 rounded-lg px-2 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Discount (optional)" id="newProductDiscount" style={{ color: colors.text.primary, background: '#fff' }} />
+              <input className="input w-32 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+              <input className="input w-32 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+              <input type="number" className="input w-16 border rounded-lg px-2 py-1 focus:outline-none transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+              <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+              <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount (optional)" id="newProductDiscount" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
               <button className="text-green-600 ml-2" onClick={() => {
                 const productId = (document.getElementById("newProductId") as HTMLInputElement).value;
                 const name = (document.getElementById("newProductName") as HTMLInputElement).value;
@@ -401,18 +410,18 @@ const Orders: React.FC = () => {
           {/* Discount, Notes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm mb-1">Total Discount (optional)</label>
-              <input type="number" className="input border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: colors.text.primary, background: '#fff' }} />
+              <label className="block text-sm mb-1" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total Discount (optional)</label>
+              <input type="number" className="input border rounded-lg px-3 py-2 focus:outline-none transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm mb-1">Notes</label>
-            <textarea className="input w-full border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition" value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: colors.text.primary, background: '#fff' }} />
+            <label className="block text-sm mb-1" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Notes</label>
+            <textarea className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
           </div>
           {/* Totals */}
           <div className="mt-4 flex gap-6">
-            <div>Subtotal: <span className="font-semibold">₹{orderForm.subtotal}</span></div>
-            <div>Total: <span className="font-semibold">₹{orderForm.totalAmount}</span></div>
+            <div style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Subtotal: <span className="font-semibold" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>₹{orderForm.subtotal}</span></div>
+            <div style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total: <span className="font-semibold" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>₹{orderForm.totalAmount}</span></div>
           </div>
           <div className="mt-6 flex gap-4">
             <button
@@ -425,7 +434,7 @@ const Orders: React.FC = () => {
             </button>
             <button
               className="px-6 py-2 rounded-lg font-medium border"
-              style={{ borderColor: colors.border.primary, color: colors.text.primary }}
+              style={{ borderColor: colors.border.primary, color: theme === 'dark' ? '#fff' : colors.text.primary }}
               onClick={() => setShowCreateForm(false)}
             >Cancel</button>
           </div>
@@ -473,7 +482,7 @@ const Orders: React.FC = () => {
               </p>
               <h3
                 className="text-3xl font-bold mt-1"
-                style={{ color: colors.interactive.primary }}
+                style={{ color: "#fff" }}
               >
                 {processingOrders.length}
               </h3>
