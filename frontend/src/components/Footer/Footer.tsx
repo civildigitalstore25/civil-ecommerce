@@ -354,34 +354,34 @@ const Footer = () => {
             {
               href: "https://www.facebook.com/SoftzCart/",
               icon: FaFacebookF,
-              hoverColor: "#3b82f6",
+              bgColor: "#1877F2", // Facebook blue
+              hoverBgColor: "#166FE5", // Slightly darker blue on hover
             },
-            // {
-            //   href: "https://in.pinterest.com/civildigitalstore/",
-            //   icon: FaPinterestP,
-            //   hoverColor: "#ef4444",
-            // },
             {
               href: "https://www.instagram.com/softzcart/",
               icon: FaInstagram,
-              hoverColor: "#ec4899",
+              bgColor: "#E4405F", // Instagram pink
+              hoverBgColor: "#D42D6C", // Slightly darker pink on hover
             },
             {
               href: "https://www.linkedin.com/in/softzcart/",
               icon: FaLinkedinIn,
-              hoverColor: "#60a5fa",
+              bgColor: "#0A66C2", // LinkedIn blue
+              hoverBgColor: "#0959A8", // Slightly darker blue on hover
             },
             {
               href: "https://www.youtube.com/@SoftZcart",
               icon: FaYoutube,
-              hoverColor: "#dc2626",
+              bgColor: "#FF0000", // YouTube red
+              hoverBgColor: "#E60000", // Slightly darker red on hover
             },
             {
               href: "https://x.com/SoftZcart",
               icon: SiX,
-              hoverColor: "#0ea5e9",
+              bgColor: "#000000", // X (Twitter) black
+              hoverBgColor: "#14171A", // Slightly lighter black on hover
             },
-          ].map(({ href, icon: Icon, hoverColor }, i) => (
+          ].map(({ href, icon: Icon, bgColor, hoverBgColor }, i) => (
             <a
               key={i}
               href={href}
@@ -389,17 +389,14 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="w-9 h-9 flex items-center justify-center rounded-full transition-colors duration-200"
               style={{
-                backgroundColor: colors.background.secondary,
-                color: colors.text.primary,
+                backgroundColor: bgColor,
+                color: "#FFFFFF", // White icon
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = hoverColor;
-                e.currentTarget.style.color = colors.background.primary;
+                e.currentTarget.style.backgroundColor = hoverBgColor;
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor =
-                  colors.background.secondary;
-                e.currentTarget.style.color = colors.text.primary;
+                e.currentTarget.style.backgroundColor = bgColor;
               }}
             >
               <Icon className="w-4 h-4" />
