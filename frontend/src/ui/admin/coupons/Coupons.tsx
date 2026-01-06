@@ -190,7 +190,7 @@ const Coupons: React.FC = () => {
         <div>
           <h2
             className="text-2xl font-semibold"
-            style={{ color: colors.interactive.primary }}
+            style={{ color: theme === "dark" ? '#fff' : colors.text.primary }}
           >
             Coupon Management
           </h2>
