@@ -200,33 +200,17 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="absolute left-0 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-1/2 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
-        minWidth: "1000px",
+        minWidth: "900px",
+        maxWidth: "98vw",
         backgroundColor: colors.background.secondary,
         borderColor: colors.border.primary,
+        left: "50%",
+        transform: "translateX(-50%)",
       }}
     >
-      {/* Header */}
-      <div
-        className="px-6 py-4 border-b"
-        style={{
-          borderColor: colors.border.primary,
-          backgroundColor: colors.background.primary,
-        }}
-      >
-        <h3
-          className="text-xl font-bold mb-1"
-          style={{ color: colors.text.primary }}
-        >
-          Antivirus & Security Solutions
-        </h3>
-        <p className="text-sm" style={{ color: colors.text.secondary }}>
-          Protect your devices with trusted antivirus software
-        </p>
-      </div>
-
-      {/* Categories Grid */}
+      {/* Categories Grid - compact, header removed */}
       <div
         className="grid grid-cols-3 gap-0"
         style={{ backgroundColor: colors.background.primary }}

@@ -120,7 +120,7 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
 
   return (
     <div
-      className="absolute left-0 mt-[-1pxa] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-1/2 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
@@ -128,24 +128,13 @@ const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
         maxWidth: "1200px",
         maxHeight: "85vh",
         overflowY: "auto",
+        left: "50%",
+        transform: "translateX(-50%)",
       }}
     >
       <div className="p-8">
-        {/* Header */}
-        <div className="mb-6">
-          <h3
-            className="text-2xl font-semibold"
-            style={{ color: colors.text.primary }}
-          >
-            Microsoft Product Categories
-          </h3>
-          <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
-            Discover Microsoft software for every business and development need
-          </p>
-        </div>
-
-        {/* Categories grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
+        {/* Categories grid - compact, header removed */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {microsoftCategories.map((category, index) => (
             <div key={index} className="space-y-4">
               <h4

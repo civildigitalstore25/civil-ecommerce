@@ -1211,21 +1211,12 @@ const ProductDetail: React.FC = () => {
                 className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
                 style={{ backgroundColor: colors.background.secondary }}
               >
-                <div className="flex items-center justify-between">
-                  <h3
-                    className="text-base lg:text-lg font-bold"
-                    style={{ color: colors.text.primary }}
-                  >
-                    Product Description
-                  </h3>
-                  <button
-                    onClick={() => setDescOpen(!descOpen)}
-                    className="text-sm font-medium"
-                    style={{ color: colors.interactive.primary }}
-                  >
-                    {descOpen ? "Show less" : "Show more"}
-                  </button>
-                </div>
+                <h3
+                  className="text-base lg:text-lg font-bold"
+                  style={{ color: colors.text.primary }}
+                >
+                  Product Description
+                </h3>
 
                 <div className="mt-3" style={{ color: colors.text.secondary }}>
                   {!descOpen ? (
@@ -1244,6 +1235,22 @@ const ProductDetail: React.FC = () => {
                       {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
                     </div>
                   )}
+                </div>
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={() => setDescOpen(!descOpen)}
+                    className="text-sm font-medium px-4 py-2 rounded-lg transition-colors duration-200"
+                    style={{
+                      backgroundColor: descOpen
+                        ? colors.interactive.primary
+                        : colors.background.accent,
+                      color: descOpen
+                        ? colors.background.primary
+                        : colors.text.primary,
+                    }}
+                  >
+                    {descOpen ? "Show less" : "Show more"}
+                  </button>
                 </div>
               </div>
             </div>

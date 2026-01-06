@@ -67,12 +67,9 @@ const CurrencyDropdown: React.FC<CurrencyDropdownProps> = ({
         onBlur={(e) => {
           e.currentTarget.style.boxShadow = "none";
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.backgroundColor = colors.background.tertiary;
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = colors.background.secondary;
-        }}
+        // Remove background color change on hover
+        onMouseEnter={undefined}
+        onMouseLeave={undefined}
       >
         <span className={compact ? "text-base" : "text-lg"}>
           {currentCurrency.symbol}

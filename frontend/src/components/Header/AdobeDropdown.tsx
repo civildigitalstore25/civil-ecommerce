@@ -94,22 +94,9 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
         overflowY: "auto",
       }}
     >
-      <div className="p-8">
-        {/* Header */}
-        <div className="mb-6">
-          <h3
-            className="text-2xl font-semibold"
-            style={{ color: colors.text.primary }}
-          >
-            Adobe Product Categories
-          </h3>
-          <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
-            Explore Adobe software tools designed for every industry
-          </p>
-        </div>
-
-        {/* Categories grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-3 gap-10">
+      <div className="p-6">
+        {/* Categories grid - compact, header removed */}
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {adobeCategories.map((category, index) => (
             <div key={index} className="space-y-4">
               <h4

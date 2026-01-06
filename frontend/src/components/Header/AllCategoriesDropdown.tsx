@@ -154,24 +154,7 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
       }}
       ref={buttonRef as React.RefObject<HTMLDivElement>}
     >
-      {/* Header */}
-      <div
-        className="px-8 py-5 border-b"
-        style={{
-          borderColor: colors.border.primary,
-          backgroundColor: colors.background.primary,
-        }}
-      >
-        <h3
-          className="text-2xl font-bold mb-1"
-          style={{ color: colors.text.primary }}
-        >
-          Software Product Categories
-        </h3>
-        <p className="text-sm" style={{ color: colors.text.secondary }}>
-          Explore professional software tools designed for every industry
-        </p>
-      </div>
+      {/* Header removed for compactness */}
 
       {/* Brands Side Menu + Categories Content */}
       <div className="flex" style={{ minHeight: "400px", maxHeight: "600px" }}>
@@ -322,22 +305,10 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-full p-8">
-              <div className="text-center">
-                <div className="text-6xl mb-4">👈</div>
-                <p
-                  className="text-lg font-medium mb-2"
-                  style={{ color: colors.text.secondary }}
-                >
-                  Hover over a brand to see products
-                </p>
-                <p
-                  className="text-sm"
-                  style={{ color: colors.text.secondary, opacity: 0.7 }}
-                >
-                  Select from 8 professional software brands
-                </p>
-              </div>
+            <div className="flex items-center justify-center h-full p-4">
+              <span style={{ color: colors.text.secondary, fontSize: 14 }}>
+                Select a brand to view its products
+              </span>
             </div>
           )}
         </div>
