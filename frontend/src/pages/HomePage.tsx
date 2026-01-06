@@ -3,9 +3,9 @@ import React from "react";
 import HeroSection from "../ui/home/HeroSection";
 import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
-// import Reviews from "../ui/home/Reviews";
+import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
-// import { MobileShopByCategory } from "../components/Header";
+import { MobileShopByCategory } from "../components/Header";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 
 const HomePage: React.FC = () => {
@@ -28,7 +28,7 @@ const HomePage: React.FC = () => {
           <HeroSection />
         </section>
 
-        {/* Shop by Category - Mobile Only (commented out for now, will be used later)
+        {/* Shop by Category - Mobile Only (commented out for now, will be used later) */}
         <section className="px-2 sm:px-6 lg:hidden">
           <div
             className="rounded-lg transition-colors duration-200"
@@ -37,7 +37,7 @@ const HomePage: React.FC = () => {
             <MobileShopByCategory />
           </div>
         </section>
-        */}
+       
 
         <section className="px-4 sm:px-6 lg:px-8">
           <HomeProducts />
@@ -50,10 +50,10 @@ const HomePage: React.FC = () => {
         <section className="px-4 sm:px-6 lg:px-8">
           <WhyChooseUs />
         </section>
-{/* 
+
         <section className="px-4 sm:px-6 lg:px-8">
           <Reviews />
-        </section> */}
+        </section>
       </main>
     </div>
   );
