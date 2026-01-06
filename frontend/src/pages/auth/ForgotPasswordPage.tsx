@@ -153,7 +153,7 @@ export default function ForgotPasswordPage() {
               <FormButton
                 type="button"
                 onClick={handleResendEmail}
-                className="w-full"
+                className="w-half lg:rounded-[10px]"
               >
                 Resend Email
               </FormButton>
