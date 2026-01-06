@@ -53,11 +53,11 @@ export default function SignupPage() {
 
   const onSubmit = (data: SignupFormData) => {
     const { confirmPassword, ...signUpData } = data;
-    
+
     // Extract phone number without country code
     let phone = data.phoneNumber;
     let cc = countryCode;
-    
+
     if (phone.startsWith("+")) {
       const match = phone.match(/^\+(\d{1,4})/);
       if (match) {
@@ -65,13 +65,13 @@ export default function SignupPage() {
         phone = phone.replace(/^\+\d{1,4}/, "");
       }
     }
-    
+
     const submitData = {
       ...signUpData,
       phoneNumber: phone.trim(),
       countryCode: `+${cc}`,
     };
-    
+
     signUpMutation.mutate(submitData, {
       onSuccess: (data) => {
         saveAuth({
@@ -241,6 +241,7 @@ export default function SignupPage() {
                 render={({ field }) => (
                   <div className="phone-input-wrapper">
                     <style>{`
+                      .phone-input-wrapper { position: relative; }
                       .phone-input-wrapper .react-tel-input .form-control {
                         width: 100% !important;
                         padding-left: 60px !important;
@@ -259,12 +260,20 @@ export default function SignupPage() {
                         border-color: ${colors.interactive.primary} !important;
                         box-shadow: 0 0 0 2px ${colors.interactive.primary}33 !important;
                       }
+                      /* Position the flag dropdown absolutely so it doesn't overlap input text */
                       .phone-input-wrapper .react-tel-input .flag-dropdown {
+                        position: absolute !important;
+                        top: 50% !important;
+                        left: 8px !important;
+                        transform: translateY(-50%) !important;
                         background-color: ${colors.background.primary} !important;
                         border: none !important;
                         border-radius: 0.5rem !important;
                         padding-left: 8px !important;
                         padding-right: 8px !important;
+                        display: flex !important;
+                        align-items: center !important;
+                        z-index: 3 !important;
                       }
                       .phone-input-wrapper .react-tel-input .flag-dropdown:hover,
                       .phone-input-wrapper .react-tel-input .flag-dropdown.open {
@@ -273,6 +282,8 @@ export default function SignupPage() {
                       .phone-input-wrapper .react-tel-input .selected-flag {
                         background-color: transparent !important;
                         padding: 0 8px !important;
+                        display: flex !important;
+                        align-items: center !important;
                       }
                       .phone-input-wrapper .react-tel-input .selected-flag:hover,
                       .phone-input-wrapper .react-tel-input .selected-flag.open {
