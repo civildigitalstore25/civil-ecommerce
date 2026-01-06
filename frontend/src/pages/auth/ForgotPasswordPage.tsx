@@ -120,7 +120,7 @@ export default function ForgotPasswordPage() {
             </p>
             <p
               className="font-medium text-sm mt-1"
-              style={{ color: colors.interactive.primary }}
+              style={{ color: colors.text.secondary }}
             >
               {sentEmail}
             </p>
