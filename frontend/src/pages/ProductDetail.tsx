@@ -1241,12 +1241,8 @@ const ProductDetail: React.FC = () => {
                     onClick={() => setDescOpen(!descOpen)}
                     className="text-sm font-medium px-4 py-2 rounded-lg transition-colors duration-200"
                     style={{
-                      backgroundColor: descOpen
-                        ? colors.interactive.primary
-                        : colors.background.accent,
-                      color: descOpen
-                        ? colors.background.primary
-                        : colors.text.primary,
+                      backgroundColor: colors.background.accent,
+                      color: colors.text.primary,
                     }}
                   >
                     {descOpen ? "Show less" : "Show more"}
@@ -1698,23 +1694,14 @@ const ProductDetail: React.FC = () => {
                 className="rounded-lg p-4 transition-colors duration-200"
                 style={{ backgroundColor: colors.background.secondary }}
               >
-                <div className="flex items-center justify-between">
-                  <h3
-                    className="text-base font-bold"
-                    style={{ color: colors.text.primary }}
-                  >
-                    Product Description
-                  </h3>
-                  <button
-                    onClick={() => setDescOpen(!descOpen)}
-                    className="text-sm font-medium"
-                    style={{ color: colors.interactive.primary }}
-                  >
-                    {descOpen ? "Show less" : "Show more"}
-                  </button>
-                </div>
+                <h3
+                  className="text-base font-bold mb-3"
+                  style={{ color: colors.text.primary }}
+                >
+                  Product Description
+                </h3>
 
-                <div className="mt-3" style={{ color: colors.text.secondary }}>
+                <div className="mb-4" style={{ color: colors.text.secondary }}>
                   {!descOpen ? (
                     (() => {
                       const stripHtml = (s?: string) =>
@@ -1730,6 +1717,18 @@ const ProductDetail: React.FC = () => {
                     </div>
                   )}
                 </div>
+
+                <button
+                  onClick={() => setDescOpen(!descOpen)}
+                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.accent,
+                    color: colors.text.primary,
+                  }}
+                >
+                  {descOpen ? "Show less" : "Show more"}
+                  <LucideIcons.ChevronDown className={`w-4 h-4 transition-transform duration-200 ${descOpen ? 'rotate-180' : ''}`} />
+                </button>
               </div>
             </div>
           </div>
