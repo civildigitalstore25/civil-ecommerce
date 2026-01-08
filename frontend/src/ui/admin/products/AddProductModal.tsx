@@ -82,6 +82,7 @@ interface SubscriptionDuration {
   price: string;
   priceINR: string;
   priceUSD: string;
+  trialDays?: string;
 }
 
 interface FAQ {
@@ -110,7 +111,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     category: "",
     brand: brands[0].value,
     subscriptionDurations: [
-      { duration: "1 Year", price: "" },
+      { duration: "1 Year", price: "", trialDays: "" },
     ] as SubscriptionDuration[],
     // Simple price fields for ebook brand
     ebookPriceINR: "",
@@ -167,6 +168,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 price: sub.price?.toString() || "",
                 priceINR: sub.priceINR?.toString() || "",
                 priceUSD: sub.priceUSD?.toString() || "",
+                trialDays: sub.trialDays?.toString() || "",
               }))
               : [
                 {
@@ -251,7 +253,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             availableCategories.length > 0 ? availableCategories[0].value : "",
           brand: defaultBrand,
           subscriptionDurations: [
-            { duration: "1 Year", price: "", priceINR: "", priceUSD: "" },
+            { duration: "1 Year", price: "", priceINR: "", priceUSD: "", trialDays: "" },
           ],
           // Simple ebook price fields
           ebookPriceINR: "",
@@ -317,7 +319,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
   const updateSubscriptionDuration = (
     index: number,
-    field: "duration" | "price" | "priceINR" | "priceUSD",
+    field: "duration" | "price" | "priceINR" | "priceUSD" | "trialDays",
     value: string,
   ) => {
     setNewProduct((prev) => ({
@@ -333,7 +335,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       ...prev,
       subscriptionDurations: [
         ...prev.subscriptionDurations,
-        { duration: "", price: "", priceINR: "", priceUSD: "" },
+        { duration: "", price: "", priceINR: "", priceUSD: "", trialDays: "" },
       ],
     }));
   };
@@ -594,6 +596,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             price: sub.price ? Number(sub.price) : 0,
             priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
             priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+            trialDays: sub.trialDays ? Number(sub.trialDays) : undefined,
           }))
           .filter(
             (sub) =>
@@ -1274,7 +1277,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>Pricing</label>
                   {newProduct.subscriptionDurations.map((sub, index) => (
                     <div key={index} className="p-4 border rounded-lg transition-colors duration-200">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                         <div>
                           <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Duration</label>
                           <select value={sub.duration} onChange={(e) => updateSubscriptionDuration(index, 'duration', e.target.value)} className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}>
@@ -1282,6 +1285,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             <option value="2 Year">2 Year</option>
                             <option value="3 Year">3 Year</option>
                             <option value="6 Months">6 Months</option>
+                            <option value="Trial Pack">Trial Pack</option>
                             <option value="Monthly">Monthly</option>
                           </select>
                         </div>
@@ -1292,6 +1296,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                         <div>
                           <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Price USD ($)</label>
                           <input type="number" value={sub.priceUSD} onChange={(e) => updateSubscriptionDuration(index, 'priceUSD', e.target.value)} placeholder="0.00" step="0.01" min="0" className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }} />
+                        </div>
+                        <div>
+                          {typeof sub.duration === 'string' && sub.duration.toLowerCase().includes('trial') && (
+                            <>
+                              <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>Trial Days</label>
+                              <input type="number" value={sub.trialDays || ''} onChange={(e) => updateSubscriptionDuration(index, 'trialDays', e.target.value)} placeholder="0" min="0" className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200" style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }} />
+                            </>
+                          )}
                         </div>
                         <div className="flex justify-center md:justify-end">
                           <button type="button" onClick={() => removeSubscriptionDuration(index)} title="Remove pricing duration" className="px-3 py-2 border rounded-lg hover:opacity-80 transition-colors duration-200" style={{ color: colors.status.error, borderColor: colors.status.error }}>
@@ -2042,8 +2054,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 };
 

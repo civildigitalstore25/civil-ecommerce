@@ -450,6 +450,7 @@ const ProductDetail: React.FC = () => {
             priceINR: sub.priceINR || sub.price || 0,
             priceUSD: sub.priceUSD || (sub.price ? sub.price / 83 : 0),
             type: "subscription",
+            trialDays: sub.trialDays,
             badge: sub.duration.toLowerCase().includes("1")
               ? "Most Popular"
               : sub.duration.toLowerCase().includes("3")
@@ -472,6 +473,7 @@ const ProductDetail: React.FC = () => {
           priceUSD:
             product.price1USD || (product.price1 ? product.price1 / 83 : 0),
           type: "yearly",
+          trialDays: undefined,
           badge: "Most Popular",
           savings: null,
         });
@@ -488,6 +490,7 @@ const ProductDetail: React.FC = () => {
           priceUSD:
             product.price3USD || (product.price3 ? product.price3 / 83 : 0),
           type: "3year",
+          trialDays: undefined,
           badge: "Save 30%",
           savings: null,
         });
@@ -515,6 +518,7 @@ const ProductDetail: React.FC = () => {
         priceINR: lifetimePrice,
         priceUSD: product.lifetimePriceUSD || lifetimePrice / 83,
         type: "lifetime",
+        trialDays: undefined,
         badge: "Best Value",
         savings: savings > 0 ? `Save ₹${savings.toLocaleString()}` : null,
       });
@@ -530,6 +534,7 @@ const ProductDetail: React.FC = () => {
         priceINR: membershipPrice,
         priceUSD: product.membershipPriceUSD || membershipPrice / 83,
         type: "membership",
+        trialDays: undefined,
         badge: "Premium Access",
         savings: null,
       });
@@ -555,6 +560,7 @@ const ProductDetail: React.FC = () => {
         priceINR: sub.priceINR || sub.price || 0,
         priceUSD: sub.priceUSD || (sub.price ? sub.price / 83 : 0),
         type: "admin-subscription",
+        trialDays: undefined,
         badge: sub.duration.toLowerCase().includes("monthly")
           ? "Flexible"
           : sub.duration.toLowerCase().includes("annual")
@@ -1387,6 +1393,11 @@ const ProductDetail: React.FC = () => {
                         >
                           {option.label}
                         </div>
+                        {option.trialDays && (
+                          <div className="text-xs" style={{ color: colors.text.secondary }}>
+                            {option.trialDays} Days
+                          </div>
+                        )}
                         <div
                           className="text-sm font-bold"
                           style={{ color: colors.text.primary }}
@@ -2272,307 +2283,303 @@ const ProductDetail: React.FC = () => {
                               ></div>
                             </div>
                             <span className="text-sm w-8">
-                              {
-                                reviewStats.ratingDistribution[
-                                star as keyof typeof reviewStats.ratingDistribution
-                                ]
-                              }
+                              {reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution]}
                             </span>
                           </div>
                         ))}
                       </div>
                     </div>
-                  </div>
-                )}
 
-                {/* Write Review Button */}
-                {!showReviewForm && (
-                  <div className="mb-8">
-                    {user || isAuthenticated() ? (
-                      <button
-                        onClick={() => setShowReviewForm(true)}
-                        className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                        style={{
-                          background: colors.interactive.primary,
-                          color: '#fff',
-                          border: `1.5px solid ${colors.interactive.primary}`,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-                        }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
-                          (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                          (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                        }}
-                      >
-                        Write a Review
-                      </button>
-                    ) : (
+                    {/* Write a Review Button */}
+                    {!showReviewForm && (
+                      <div className="mb-8">
+                        {user || isAuthenticated() ? (
+                          <button
+                            onClick={() => setShowReviewForm(true)}
+                            className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                            style={{
+                              background: colors.interactive.primary,
+                              color: '#fff',
+                              border: `1.5px solid ${colors.interactive.primary}`,
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                            }}
+                            onMouseEnter={(e) => {
+                              (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
+                              (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                            }}
+                            onMouseLeave={(e) => {
+                              (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                              (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                            }}
+                          >
+                            Write a Review
+                          </button>
+                        ) : (
+                          <div
+                            className="rounded-2xl p-6 transition-colors duration-200"
+                            style={{ backgroundColor: colors.background.secondary }}
+                          >
+                            <h4
+                              className="text-xl font-bold mb-4"
+                              style={{ color: colors.text.primary }}
+                            >
+                              Write a Review
+                            </h4>
+                            <p
+                              className="mb-4"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Please login to share your experience with this
+                              product.
+                            </p>
+                            <button
+                              onClick={() => navigate("/signin")}
+                              className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                              style={{
+                                background: colors.interactive.primary,
+                                color: '#fff',
+                                border: `1.5px solid ${colors.interactive.primary}`,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
+                                (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                                (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                              }}
+                            >
+                              Login to Review
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Review Form */}
+                    {showReviewForm && user && (
                       <div
-                        className="rounded-2xl p-6 transition-colors duration-200"
+                        className="rounded-2xl p-6 mb-8 transition-colors duration-200"
                         style={{ backgroundColor: colors.background.secondary }}
                       >
                         <h4
                           className="text-xl font-bold mb-4"
                           style={{ color: colors.text.primary }}
                         >
-                          Write a Review
+                          {editingReview ? "Edit Review" : "Write a Review"}
                         </h4>
-                        <p
-                          className="mb-4"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          Please login to share your experience with this
-                          product.
-                        </p>
-                        <button
-                          onClick={() => navigate("/signin")}
-                          className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                          style={{
-                            background: colors.interactive.primary,
-                            color: '#fff',
-                            border: `1.5px solid ${colors.interactive.primary}`,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-                          }}
-                          onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
-                            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                            (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                          }}
-                        >
-                          Login to Review
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Review Form */}
-                {showReviewForm && user && (
-                  <div
-                    className="rounded-2xl p-6 mb-8 transition-colors duration-200"
-                    style={{ backgroundColor: colors.background.secondary }}
-                  >
-                    <h4
-                      className="text-xl font-bold mb-4"
-                      style={{ color: colors.text.primary }}
-                    >
-                      {editingReview ? "Edit Review" : "Write a Review"}
-                    </h4>
-                    <form onSubmit={handleReviewSubmit}>
-                      <div className="mb-4">
-                        <label
-                          className="block mb-2 font-medium"
-                          style={{ color: colors.text.primary }}
-                        >
-                          Rating
-                        </label>
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              onClick={() =>
-                                setReviewForm((prev) => ({
-                                  ...prev,
-                                  rating: star,
-                                }))
-                              }
-                              className="text-2xl transition-colors"
-                              style={{
-                                color:
-                                  star <= reviewForm.rating
-                                    ? "#fbbf24"
-                                    : colors.text.secondary,
-                              }}
+                        <form onSubmit={handleReviewSubmit}>
+                          <div className="mb-4">
+                            <label
+                              className="block mb-2 font-medium"
+                              style={{ color: colors.text.primary }}
                             >
-                              ★
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="mb-4">
-                        <label
-                          className="block mb-2 font-medium"
-                          style={{ color: colors.text.primary }}
-                        >
-                          Comment
-                        </label>
-                        <textarea
-                          value={reviewForm.comment}
-                          onChange={(e) =>
-                            setReviewForm((prev) => ({
-                              ...prev,
-                              comment: e.target.value,
-                            }))
-                          }
-                          className="w-full p-3 rounded-lg border transition-colors"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                          }}
-                          rows={4}
-                          placeholder="Share your experience with this product..."
-                          required
-                        />
-                      </div>
-                      <div className="flex gap-3">
-                        <button
-                          type="submit"
-                          disabled={submittingReview}
-                          className="font-bold py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 flex items-center justify-center"
-                          style={{
-                            background: colors.interactive.primary || '#2563eb',
-                            color: '#ffffff',
-                            border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-                          }}
-                          onMouseEnter={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                              (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
-                            (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
-                          }}
-                          onMouseLeave={(e) => {
-                            (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                              colors.interactive.primary || '#2563eb';
-                            (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
-                          }}
-                        >
-                          {submittingReview
-                            ? "Submitting..."
-                            : editingReview
-                              ? "Update Review"
-                              : "Post Review"}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setShowReviewForm(false);
-                            setEditingReview(null);
-                            setReviewForm({ rating: 5, comment: "" });
-                          }}
-                          className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            color: colors.text.primary,
-                            border: `1px solid ${colors.border.primary}`,
-                          }}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                )}
-
-                {/* Reviews List */}
-                <div className="space-y-6">
-                  {reviewsLoading ? (
-                    <div className="text-center py-8">
-                      <div
-                        className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto"
-                        style={{ borderColor: colors.interactive.primary }}
-                      ></div>
-                      <p
-                        className="mt-2"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        Loading reviews...
-                      </p>
-                    </div>
-                  ) : reviews.length === 0 ? (
-                    <div
-                      className="rounded-2xl p-8 text-center transition-colors duration-200"
-                      style={{ backgroundColor: colors.background.secondary }}
-                    >
-                      <p style={{ color: colors.text.secondary }}>
-                        No reviews yet. Be the first to review this product!
-                      </p>
-                    </div>
-                  ) : (
-                    reviews.map((review) => (
-                      <div
-                        key={review._id}
-                        className="rounded-2xl p-6 transition-colors duration-200"
-                        style={{ backgroundColor: colors.background.secondary }}
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-4">
-                            <div
-                              className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
-                              style={{
-                                backgroundColor: colors.interactive.primary,
-                                color: colors.background.primary,
-                              }}
-                            >
-                              {review.user.fullName.charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <h5
-                                className="font-bold"
-                                style={{ color: colors.text.primary }}
-                              >
-                                {review.user.fullName}
-                              </h5>
-                              <div className="flex items-center gap-2">
-                                <div className="flex text-yellow-400">
-                                  {"★".repeat(review.rating)}
-                                  {"☆".repeat(5 - review.rating)}
-                                </div>
-                                <span
-                                  className="text-sm"
-                                  style={{ color: colors.text.secondary }}
+                              Rating
+                            </label>
+                            <div className="flex gap-1">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                  key={star}
+                                  type="button"
+                                  onClick={() =>
+                                    setReviewForm((prev) => ({
+                                      ...prev,
+                                      rating: star,
+                                    }))
+                                  }
+                                  className="text-2xl transition-colors"
+                                  style={{
+                                    color:
+                                      star <= reviewForm.rating
+                                        ? "#fbbf24"
+                                        : colors.text.secondary,
+                                  }}
                                 >
-                                  {new Date(
-                                    review.createdAt,
-                                  ).toLocaleDateString()}
-                                </span>
-                              </div>
+                                  ★
+                                </button>
+                              ))}
                             </div>
                           </div>
-                          {user &&
-                            (user.id === review.user._id ||
-                              user.role === "admin") && (
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => handleEditReview(review)}
-                                  className="text-sm px-3 py-1 rounded transition-colors"
-                                  style={{
-                                    color: colors.interactive.primary,
-                                    backgroundColor: colors.background.primary,
-                                  }}
-                                >
-                                  Edit
-                                </button>
-                                <button
-                                  onClick={() => handleDeleteReview(review._id)}
-                                  className="text-sm px-3 py-1 rounded transition-colors"
-                                  style={{
-                                    color: "#ef4444",
-                                    backgroundColor: colors.background.primary,
-                                  }}
-                                >
-                                  Delete
-                                </button>
-                              </div>
-                            )}
-                        </div>
-                        <p
-                          className="mb-4"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          {review.comment}
-                        </p>
+                          <div className="mb-4">
+                            <label
+                              className="block mb-2 font-medium"
+                              style={{ color: colors.text.primary }}
+                            >
+                              Comment
+                            </label>
+                            <textarea
+                              value={reviewForm.comment}
+                              onChange={(e) =>
+                                setReviewForm((prev) => ({
+                                  ...prev,
+                                  comment: e.target.value,
+                                }))
+                              }
+                              className="w-full p-3 rounded-lg border transition-colors"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                              }}
+                              rows={4}
+                              placeholder="Share your experience with this product..."
+                              required
+                            />
+                          </div>
+                          <div className="flex gap-3">
+                            <button
+                              type="submit"
+                              disabled={submittingReview}
+                              className="font-bold py-2.5 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 flex items-center justify-center"
+                              style={{
+                                background: colors.interactive.primary || '#2563eb',
+                                color: '#ffffff',
+                                border: `1.5px solid ${colors.interactive.primary || '#2563eb'}`,
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                              }}
+                              onMouseEnter={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                  (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                                (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
+                              }}
+                              onMouseLeave={(e) => {
+                                (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                  colors.interactive.primary || '#2563eb';
+                                (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
+                              }}
+                            >
+                              {submittingReview
+                                ? "Submitting..."
+                                : editingReview
+                                  ? "Update Review"
+                                  : "Post Review"}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setShowReviewForm(false);
+                                setEditingReview(null);
+                                setReviewForm({ rating: 5, comment: "" });
+                              }}
+                              className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                color: colors.text.primary,
+                                border: `1px solid ${colors.border.primary}`,
+                              }}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </form>
                       </div>
-                    ))
-                  )}
-                </div>
+                    )}
+
+                    {/* Reviews List */}
+                    <div className="space-y-6">
+                      {reviewsLoading ? (
+                        <div className="text-center py-8">
+                          <div
+                            className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto"
+                            style={{ borderColor: colors.interactive.primary }}
+                          ></div>
+                          <p
+                            className="mt-2"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Loading reviews...
+                          </p>
+                        </div>
+                      ) : reviews.length === 0 ? (
+                        <div
+                          className="rounded-2xl p-8 text-center transition-colors duration-200"
+                          style={{ backgroundColor: colors.background.secondary }}
+                        >
+                          <p style={{ color: colors.text.secondary }}>
+                            No reviews yet. Be the first to review this product!
+                          </p>
+                        </div>
+                      ) : (
+                        reviews.map((review) => (
+                          <div
+                            key={review._id}
+                            className="rounded-2xl p-6 transition-colors duration-200"
+                            style={{ backgroundColor: colors.background.secondary }}
+                          >
+                            <div className="flex items-start justify-between mb-4">
+                              <div className="flex items-center gap-4">
+                                <div
+                                  className="w-12 h-12 rounded-full flex items-center justify-center font-bold"
+                                  style={{
+                                    backgroundColor: colors.interactive.primary,
+                                    color: colors.background.primary,
+                                  }}
+                                >
+                                  {review.user.fullName.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                  <h5
+                                    className="font-bold"
+                                    style={{ color: colors.text.primary }}
+                                  >
+                                    {review.user.fullName}
+                                  </h5>
+                                  <div className="flex items-center gap-2">
+                                    <div className="flex text-yellow-400">
+                                      {"★".repeat(review.rating)}
+                                      {"☆".repeat(5 - review.rating)}
+                                    </div>
+                                    <span
+                                      className="text-sm"
+                                      style={{ color: colors.text.secondary }}
+                                    >
+                                      {new Date(
+                                        review.createdAt,
+                                      ).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              {user &&
+                                (user.id === review.user._id ||
+                                  user.role === "admin") && (
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => handleEditReview(review)}
+                                      className="text-sm px-3 py-1 rounded transition-colors"
+                                      style={{
+                                        color: colors.interactive.primary,
+                                        backgroundColor: colors.background.primary,
+                                      }}
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteReview(review._id)}
+                                      className="text-sm px-3 py-1 rounded transition-colors"
+                                      style={{
+                                        color: "#ef4444",
+                                        backgroundColor: colors.background.primary,
+                                      }}
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                )}
+                            </div>
+                            <p
+                              className="mb-4"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              {review.comment}
+                            </p>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

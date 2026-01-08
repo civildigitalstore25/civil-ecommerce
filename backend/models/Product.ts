@@ -5,6 +5,7 @@ interface SubscriptionDuration {
   price: number;
   priceINR?: number;
   priceUSD?: number;
+  trialDays?: number;
 }
 
 interface FAQ {
@@ -74,6 +75,8 @@ const subscriptionDurationSchema = new Schema({
   price: { type: Number, required: true },
   priceINR: { type: Number },
   priceUSD: { type: Number }
+  ,
+  trialDays: { type: Number }
 }, { _id: false });
 
 const faqSchema = new Schema({

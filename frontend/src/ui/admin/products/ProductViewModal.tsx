@@ -115,8 +115,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                     product.status === "active"
                       ? "green"
                       : product.status === "inactive"
-                      ? "red"
-                      : "orange",
+                        ? "red"
+                        : "orange",
                   color: "white",
                 }}
               >
@@ -174,11 +174,10 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                     <button
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                        selectedImageIndex === index
+                      className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
                           ? "border-yellow-500"
                           : "border-gray-600"
-                      }`}
+                        }`}
                     >
                       <img
                         src={image}
@@ -473,6 +472,11 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                             style={{ color: 'gray' }}
                           >
                             {sub.duration}
+                            {sub.trialDays && (
+                              <div style={{ color: 'gray', fontSize: '12px' }}>
+                                {sub.trialDays} Days
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

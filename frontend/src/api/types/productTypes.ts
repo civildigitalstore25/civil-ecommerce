@@ -3,6 +3,7 @@ export interface SubscriptionDuration {
   price: number;
   priceINR?: number;
   priceUSD?: number;
+  trialDays?: number;
 }
 
 export interface FAQ {
