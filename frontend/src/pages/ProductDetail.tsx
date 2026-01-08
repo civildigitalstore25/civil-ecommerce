@@ -1154,10 +1154,17 @@ const ProductDetail: React.FC = () => {
             {/* Rating */}
             <div className="flex items-center gap-2">
               <div className="flex text-yellow-400">
-                {"★".repeat(4)}
-                <span style={{ color: colors.text.secondary }}>☆</span>
+                {Array.from({ length: 5 }, (_, i) => (
+                  <LucideIcons.Star
+                    key={i}
+                    size={16}
+                    fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
+                  />
+                ))}
               </div>
-              <span style={{ color: colors.text.primary }}>4.9 (2,341)</span>
+              <span style={{ color: colors.text.primary }}>
+                {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"} ({reviewStats?.totalReviews || 0})
+              </span>
             </div>
 
             {/* Social Share Buttons */}

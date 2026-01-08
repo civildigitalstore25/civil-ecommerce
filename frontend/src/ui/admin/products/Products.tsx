@@ -125,6 +125,53 @@ const Products: React.FC = () => {
   const updateProductMutation = useUpdateProduct();
   const deleteProductMutation = useDeleteProduct();
 
+  // Selection state for bulk operations
+  const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+
+  const handleSelectAll = () => {
+    if (selectedProducts.length === products.length) {
+      setSelectedProducts([]);
+    } else {
+      setSelectedProducts(products.map(p => p._id!));
+    }
+  };
+
+  const handleSelectProduct = (id: string) => {
+    setSelectedProducts(prev => 
+      prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedProducts.length === 0) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete ${selectedProducts.length} product(s). This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete them!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Delete each selected product
+        selectedProducts.forEach(id => {
+          deleteProductMutation.mutate(id);
+        });
+        setSelectedProducts([]);
+        Swal.fire({
+          title: "Deleted!",
+          text: `${selectedProducts.length} product(s) have been deleted.`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    });
+  };
+
   const rawProducts = productsData?.products || [];
 
   // Apply client-side filtering for new attributes
@@ -575,6 +622,15 @@ const Products: React.FC = () => {
           </div>
 
           <div className="flex items-center space-x-3">
+            {selectedProducts.length > 0 && (
+              <button
+                className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 bg-red-600 text-white hover:bg-red-700"
+                onClick={handleBulkDelete}
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Delete Selected ({selectedProducts.length})</span>
+              </button>
+            )}
             <div
               className="flex items-center border rounded-lg"
               style={{ borderColor: colors.border.primary }}
@@ -641,6 +697,17 @@ const Products: React.FC = () => {
                 >
                   <tr>
                     <th
+                      className="text-center py-3 px-4 font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.length === products.length && products.length > 0}
+                        onChange={handleSelectAll}
+                        className="rounded"
+                      />
+                    </th>
+                    <th
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
@@ -700,6 +767,14 @@ const Products: React.FC = () => {
                         (e.currentTarget.style.backgroundColor = "transparent")
                       }
                     >
+                      <td className="py-4 px-4 text-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(product._id!)}
+                          onChange={() => handleSelectProduct(product._id!)}
+                          className="rounded"
+                        />
+                      </td>
                       <td className="py-4 px-4">
                         <div className="flex items-center space-x-3">
                           <div
