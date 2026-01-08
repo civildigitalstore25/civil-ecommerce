@@ -257,10 +257,12 @@ const IconPicker: React.FC<IconPickerProps> = ({
       {/* Dropdown Panel */}
       {isOpen && (
         <div
-          className="absolute top-full left-0 right-0 mt-1 border rounded-lg shadow-lg z-50 max-h-96 overflow-hidden"
+          className="absolute top-full left-0 mt-1 border rounded-lg shadow-lg z-50 max-h-96 overflow-hidden"
           style={{
             backgroundColor: colors.background.primary,
             borderColor: colors.border.primary,
+            minWidth: 400,
+            maxWidth: 640,
           }}
         >
           {/* Search and Filter Header */}
@@ -316,7 +318,10 @@ const IconPicker: React.FC<IconPickerProps> = ({
 
           {/* Icons Grid */}
           <div className="p-2 overflow-y-auto max-h-64">
-            <div className="grid grid-cols-6 gap-1">
+            <div
+              className="grid gap-1"
+              style={{ gridTemplateColumns: "repeat(auto-fill, minmax(110px, 1fr))" }}
+            >
               {filteredIcons.map((iconData) => {
                 const IconComponent = iconData.icon;
                 const isSelected = selectedIcon === iconData.name;
