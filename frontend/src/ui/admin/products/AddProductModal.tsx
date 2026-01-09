@@ -16,6 +16,7 @@ const brands = [
   { value: "structural-softwares", label: "Structural Softwares" },
   { value: "architectural-softwares", label: "Architectural Softwares" },
   { value: "ebook", label: "Ebook" },
+  { value: "others", label: "Others" },
 ];
 
 const brandCategories: Record<string, { value: string; label: string }[]> = {
@@ -75,6 +76,7 @@ const brandCategories: Record<string, { value: string; label: string }[]> = {
     { value: "archi-cad", label: "Archi CAD" },
   ],
   ebook: [],
+  others: [],
 };
 
 interface SubscriptionDuration {

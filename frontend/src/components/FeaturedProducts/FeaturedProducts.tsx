@@ -66,7 +66,13 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
     }
   };
 
-  const displayedProducts = products.slice(0, limit);
+  // Exclude admin-only 'others' brand from public featured lists
+  const visibleProducts = products.filter((p: any) => {
+    const b = (p.brand || p.company || "").toString().toLowerCase();
+    return b !== "others";
+  });
+
+  const displayedProducts = visibleProducts.slice(0, limit);
 
   if (displayedProducts.length === 0) {
     return null;

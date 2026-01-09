@@ -717,7 +717,7 @@ const Products: React.FC = () => {
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
-                      Company
+                      Brand
                     </th>
                     <th
                       className="text-left py-3 px-4 font-medium"
