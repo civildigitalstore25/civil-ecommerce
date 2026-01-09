@@ -18,6 +18,7 @@ import paymentRoutes from './routes/paymentRoutes';
 import reviewRoutes from "./routes/reviewRoutes";
 import downloadRoutes from './routes/downloadRoutes';
 import superadminRoutes from './routes/superadminRoutes';
+import analyticsRoutes from './routes/analyticsRoutes';
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use('/api/payments', paymentRoutes);
 
 app.use('/api/download', downloadRoutes);
 app.use('/api/superadmin', superadminRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 

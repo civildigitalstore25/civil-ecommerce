@@ -67,7 +67,7 @@ const Reviews: React.FC = () => {
       return;
     }
 
-    const isOwner = user.id === review.user._id;
+    const isOwner = review.user ? user.id === review.user._id : false;
     const isAdmin = user.role === "admin" || user.role === "superadmin";
 
     if (!isOwner && !isAdmin) {
@@ -347,13 +347,13 @@ const Reviews: React.FC = () => {
                             className="font-medium"
                             style={{ color: colors.text.primary }}
                           >
-                            {review.user.fullName}
+                            {review.user?.fullName || "Deleted User"}
                           </div>
                           <div
                             className="text-sm"
                             style={{ color: colors.text.secondary }}
                           >
-                            {review.user.email}
+                            {review.user?.email || "N/A"}
                           </div>
                         </div>
                       </div>
