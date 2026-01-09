@@ -29,6 +29,7 @@ export interface Product {
   version: string;
   shortDescription?: string;
   description: string;
+  detailsDescription?: string;
   overallFeatures?: string;
   requirements?: string;
   keyFeatures?: Feature[];

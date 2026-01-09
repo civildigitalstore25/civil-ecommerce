@@ -108,6 +108,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     name: "",
     version: "",
     longDescription: "",
+    detailsDescription: "",
     category: "",
     brand: brands[0].value,
     subscriptionDurations: [
@@ -155,6 +156,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           name: product.name || "",
           version: product.version || "",
           longDescription: product.description || product.shortDescription || "",
+          detailsDescription: product.detailsDescription || "",
           category:
             product.category ||
             (availableCategories.length > 0
@@ -249,6 +251,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           name: "",
           version: "",
           longDescription: "",
+          detailsDescription: "",
           category:
             availableCategories.length > 0 ? availableCategories[0].value : "",
           brand: defaultBrand,
@@ -524,6 +527,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
       // Preserve the raw HTML from the Rich Text Editor for exact display
       const htmlDescription = newProduct.longDescription || "";
+      const htmlDetailsDescription = newProduct.detailsDescription || "";
       // Also generate Markdown (kept for reference / compatibility)
 
       // Transform new product structure to match current backend expectations
@@ -535,6 +539,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         // Store raw HTML so product detail page can render exactly what was entered
         shortDescription: htmlDescription,
         description: htmlDescription,
+        detailsDescription: htmlDetailsDescription,
         category: categoryValue,
 
         // Brand/Company (backward compatibility)
@@ -871,6 +876,21 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 value={newProduct.longDescription}
                 onChange={(val) => handleInputChange("longDescription", val)}
                 placeholder="Detailed product description, features, installation and activation instructions..."
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                className="block text-sm font-medium"
+                style={{ color: colors.text.secondary }}
+              >
+                Details Description
+              </label>
+              <RichTextEditor
+                value={newProduct.detailsDescription}
+                onChange={(val) => handleInputChange("detailsDescription", val)}
+                placeholder="Detailed product description with images and content (shown in Details tab)..."
                 className="w-full"
               />
             </div>

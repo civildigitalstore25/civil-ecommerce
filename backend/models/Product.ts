@@ -30,6 +30,7 @@ export interface IProduct extends Document {
   version?: string;
   shortDescription?: string;
   description: string;
+  detailsDescription?: string;
   overallFeatures?: string;
   requirements?: string;
   keyFeatures?: Feature[];
@@ -102,6 +103,7 @@ const productSchema: Schema = new Schema(
     version: { type: String },
     shortDescription: { type: String },
     description: { type: String, required: true },
+    detailsDescription: { type: String },
     overallFeatures: { type: String },
     requirements: { type: String },
     keyFeatures: [featureSchema],

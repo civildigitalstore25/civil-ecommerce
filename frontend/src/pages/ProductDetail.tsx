@@ -145,11 +145,11 @@ const ProductDetail: React.FC = () => {
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
-    "features" | "requirements" | "reviews" | "faq"
+    "features" | "requirements" | "reviews" | "faq" | "details"
   >("features");
   const [renderedTabs, setRenderedTabs] = useState<
-    ("features" | "requirements" | "reviews" | "faq")[]
-  >(["features", "requirements", "reviews", "faq"]);
+    ("features" | "requirements" | "reviews" | "faq" | "details")[]
+  >(["features", "requirements", "reviews", "faq", "details"]);
   const [descOpen, setDescOpen] = useState(false);
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
   const { data: user } = useUser();
@@ -287,8 +287,10 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     const hasFeatures = !!(product && product.keyFeatures && product.keyFeatures.length > 0);
     const hasRequirements = !!(product && product.systemRequirements && product.systemRequirements.length > 0);
+    const hasDetails = !!(product && product.detailsDescription && product.detailsDescription.trim() !== '');
 
-    const tabs: ("features" | "requirements" | "reviews" | "faq")[] = [];
+    const tabs: ("features" | "requirements" | "reviews" | "faq" | "details")[] = [];
+    if (hasDetails) tabs.push("details");
     if (hasFeatures) tabs.push("features");
     if (hasRequirements) tabs.push("requirements");
     // Always include reviews and faq
@@ -1808,13 +1810,15 @@ const ProductDetail: React.FC = () => {
             <div className="flex gap-4 lg:gap-8 overflow-x-auto scrollbar-hide">
               {renderedTabs.map((tabKey) => {
                 const label =
-                  tabKey === "features"
-                    ? "Features"
-                    : tabKey === "requirements"
-                      ? "System"
-                      : tabKey === "reviews"
-                        ? `Reviews (${reviewStats?.totalReviews || 0})`
-                        : "FAQ";
+                  tabKey === "details"
+                    ? "Product Details"
+                    : tabKey === "features"
+                      ? "Features"
+                      : tabKey === "requirements"
+                        ? "System"
+                        : tabKey === "reviews"
+                          ? `Reviews (${reviewStats?.totalReviews || 0})`
+                          : "FAQ";
 
                 return (
                   <button
@@ -1851,6 +1855,26 @@ const ProductDetail: React.FC = () => {
 
           {/* Tab Content */}
           <div className="py-4 lg:py-8">
+            {activeTab === "details" && (
+              <div>
+                <h3
+                  className="text-xl lg:text-2xl font-bold mb-4 lg:mb-6"
+                  style={{ color: colors.text.primary }}
+                >
+                  Product Details
+                </h3>
+                <div
+                  className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.border.primary,
+                  }}
+                >
+                  {renderHTMLContent(product.detailsDescription || "", 'text-sm lg:text-base')}
+                </div>
+              </div>
+            )}
+
             {activeTab === "features" && (
               <div>
                 <h3
