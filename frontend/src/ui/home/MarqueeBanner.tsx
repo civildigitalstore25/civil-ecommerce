@@ -17,7 +17,7 @@ const MarqueeBanner: React.FC = () => {
           style={{ color: colors.text.inverse }}
         >
           <span>
-            🔥 Genuine Ebooks at <strong>90% OFF</strong> – grab it
+            🔥 Genuine Software & Ebooks at <strong>90% OFF</strong> – grab it
             now!
           </span>
           <span>
@@ -33,7 +33,7 @@ const MarqueeBanner: React.FC = () => {
           style={{ color: colors.text.inverse }}
         >
           <span>
-            🔥 Genuine Ebooks at <strong>90% OFF</strong> – grab it
+            🔥 Genuine Software & Ebooks at <strong>90% OFF</strong> – grab it
             now!
           </span>
           <span>

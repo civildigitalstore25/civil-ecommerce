@@ -99,7 +99,7 @@ const HeroSection: React.FC = () => {
           </p>
 
           <button
-            onClick={() => (window.location.href = "/category?brand=ebook")}
+            onClick={() => (window.location.href = "/products")}
             className="px-5 py-2 sm:px-8 sm:py-4 rounded-md sm:rounded-lg font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-6 sm:mb-16"
             style={{
               background: colors.interactive.primary,
@@ -113,7 +113,7 @@ const HeroSection: React.FC = () => {
               e.currentTarget.style.background = colors.interactive.primary;
             }}
           >
-            Explore Ebooks
+            Explore Products
           </button>
 
           {/* ===== Features Grid (Desktop) ===== */}

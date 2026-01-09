@@ -34,7 +34,7 @@ const HomeProducts: React.FC = () => {
               textShadow: `0 2px 8px ${colors.background.primary}80`,
             }}
           >
-            Top Ebooks
+            Top Products
           </h2>
         </div>
 
