@@ -52,13 +52,13 @@ export const lightTheme: ThemeColors = {
   text: {
     primary: "#0A2A6B", // Headings
     secondary: "#4A5568", // Paragraph
-    accent: "#00C8FF", // Highlighted text
+    accent: "#0068ff", // Highlighted text
     inverse: "#FFFFFF", // Contrast text
   },
   border: {
     primary: "#E2E8F0", // Card border
     secondary: "#E2E8F0", // Subtle borders
-    accent: "#00C8FF", // Active/highlighted borders
+    accent: "#0068ff", // Active/highlighted borders
   },
   status: {
     success: "#047857",
@@ -67,8 +67,8 @@ export const lightTheme: ThemeColors = {
     info: "#1d4ed8",
   },
   interactive: {
-    primary: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)", // Button gradient
-    primaryHover: "linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)", // Button hover gradient
+    primary: "#0068ff", // Primary button color
+    primaryHover: "#0052cc", // Hover color for primary buttons
     secondary: "#6b7280",
     secondaryHover: "#9ca3af",
   },
@@ -78,19 +78,19 @@ export const darkTheme: ThemeColors = {
   background: {
     primary: "#0B1120", // Main background
     secondary: "#1E293B", // Cards
-    tertiary: "#00C8FF", // Headings, navbar highlight
+    tertiary: "#0068ff", // Headings, navbar highlight
     accent: "#334155", // Card border
   },
   text: {
     primary: "#E6F4FF", // Headings
     secondary: "#CBD5E1", // Paragraph
-    accent: "#00C8FF", // Highlighted text
+    accent: "#0068ff", // Highlighted text
     inverse: "#0A2A6B", // Contrast text
   },
   border: {
     primary: "#334155", // Card border
     secondary: "#334155", // Subtle borders
-    accent: "#00C8FF", // Active/highlighted borders
+    accent: "#0068ff", // Active/highlighted borders
   },
   status: {
     success: "#10b981",
@@ -99,8 +99,8 @@ export const darkTheme: ThemeColors = {
     info: "#3b82f6",
   },
   interactive: {
-    primary: "linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)", // Button gradient
-    primaryHover: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)", // Button hover gradient
+    primary: "#0068ff", // Primary button color
+    primaryHover: "#0052cc", // Hover color for primary buttons
     secondary: "#6b7280",
     secondaryHover: "#9ca3af",
   },
