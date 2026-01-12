@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { FaWhatsapp } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProductDetail } from "../api/productApi";
@@ -955,10 +956,6 @@ const ProductDetail: React.FC = () => {
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${text}`;
         break;
-      case "instagram":
-        // open company profile on Instagram (no web share endpoint available)
-        shareUrl = `https://www.instagram.com/softzcart/`;
-        break;
       case "facebook":
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
         break;
@@ -980,14 +977,7 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      Swal.fire({ icon: "success", title: "Link copied", timer: 1200, showConfirmButton: false });
-    } catch (err) {
-      Swal.fire("Error", "Failed to copy link", "error");
-    }
-  };
+  // copyLink removed — not used on product details page anymore
 
   const cartLicenseType = getCartLicenseTypeForCheck();
   const isInCart = product
@@ -1189,26 +1179,25 @@ const ProductDetail: React.FC = () => {
             <div className="flex items-center gap-2 mt-3">
               {(() => {
                 // Use the same icon components as the footer for visual consistency
+                const WhatsappIcon = FaWhatsapp;
                 const FacebookIcon = (LucideIcons as any).Facebook;
-                const InstagramIcon = (LucideIcons as any).Instagram;
                 const TwitterIcon = (LucideIcons as any).Twitter;
                 const LinkedInIcon = (LucideIcons as any).Linkedin || (LucideIcons as any).LinkedIn;
                 const MailIcon = (LucideIcons as any).Mail;
-                const LinkIcon = (LucideIcons as any).Link || (LucideIcons as any).Link2;
 
-                // Plain icon buttons (no circular background) — color the icon glyphs directly
+                // Render only WhatsApp, Facebook, Twitter, LinkedIn and Email icons
                 return (
                   <>
+                    <button onClick={() => shareTo('whatsapp')} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="px-1">
+                      {WhatsappIcon ? <WhatsappIcon size={20} style={{ color: '#25D366' }} /> : null}
+                    </button>
+
                     <button onClick={() => shareTo('facebook')} title="Share on Facebook" aria-label="Share on Facebook" className="px-1">
                       {FacebookIcon ? <FacebookIcon size={20} style={{ color: '#1877F2' }} /> : null}
                     </button>
 
-                    <button onClick={() => shareTo('instagram')} title="Open Instagram" aria-label="Open Instagram" className="px-1">
-                      {InstagramIcon ? <InstagramIcon size={20} style={{ color: '#E4405F' }} /> : null}
-                    </button>
-
-                    <button onClick={() => shareTo('twitter')} title="Share on X" aria-label="Share on X" className="px-1">
-                      {TwitterIcon ? <TwitterIcon size={20} style={{ color: '#000000' }} /> : null}
+                    <button onClick={() => shareTo('twitter')} title="Share on Twitter" aria-label="Share on Twitter" className="px-1">
+                      {TwitterIcon ? <TwitterIcon size={20} style={{ color: '#1DA1F2' }} /> : null}
                     </button>
 
                     <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" aria-label="Share on LinkedIn" className="px-1">
@@ -1217,10 +1206,6 @@ const ProductDetail: React.FC = () => {
 
                     <button onClick={() => shareTo('email')} title="Share via Email" aria-label="Share via Email" className="px-1">
                       {MailIcon ? <MailIcon size={20} style={{ color: '#6b7280' }} /> : null}
-                    </button>
-
-                    <button onClick={copyLink} title="Copy link" aria-label="Copy link" className="px-1">
-                      {LinkIcon ? <LinkIcon size={20} style={{ color: '#374151' }} /> : null}
                     </button>
                   </>
                 );
