@@ -348,14 +348,14 @@ const BrandCategoryListing: React.FC = () => {
                     style={{
                       ...(product.isOutOfStock
                         ? {
-                            background: colors.background.accent,
-                            color: colors.status.error,
-                            border: `1px solid ${colors.status.error}`,
-                          }
+                          background: colors.background.accent,
+                          color: colors.status.error,
+                          border: `1px solid ${colors.status.error}`,
+                        }
                         : {
-                            background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-                            color: colors.background.primary,
-                          }),
+                          background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+                          color: colors.background.primary,
+                        }),
                     }}
                     onClick={() => handleAddToCart(product)}
                     disabled={product.isOutOfStock}

@@ -111,7 +111,7 @@ const UserManagement: React.FC = () => {
   };
 
   const handleSelectUser = (id: string) => {
-    setSelectedUsers(prev => 
+    setSelectedUsers(prev =>
       prev.includes(id) ? prev.filter(uid => uid !== id) : [...prev, id]
     );
   };

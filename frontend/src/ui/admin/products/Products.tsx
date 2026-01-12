@@ -137,7 +137,7 @@ const Products: React.FC = () => {
   };
 
   const handleSelectProduct = (id: string) => {
-    setSelectedProducts(prev => 
+    setSelectedProducts(prev =>
       prev.includes(id) ? prev.filter(pid => pid !== id) : [...prev, id]
     );
   };
@@ -672,8 +672,8 @@ const Products: React.FC = () => {
               className="flex items-center border rounded-lg"
               style={{ borderColor: colors.border.primary }}
             >
-             
-              
+
+
             </div>
             <button
               className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
