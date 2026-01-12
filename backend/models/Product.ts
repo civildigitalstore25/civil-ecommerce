@@ -66,6 +66,7 @@ export interface IProduct extends Document {
   driveLink?: string; // Google Drive link for downloadable product
   status?: 'active' | 'inactive' | 'draft';
   isBestSeller?: boolean;
+  isOutOfStock?: boolean;
   faqs?: FAQ[];
   createdAt: Date;
   updatedAt: Date;
@@ -143,6 +144,7 @@ const productSchema: Schema = new Schema(
       default: 'active'
     },
     isBestSeller: { type: Boolean, default: false },
+    isOutOfStock: { type: Boolean, default: false },
     faqs: [faqSchema],
   },
   { timestamps: true }

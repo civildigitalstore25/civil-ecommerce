@@ -349,6 +349,43 @@ const Products: React.FC = () => {
     );
   };
 
+  const handleToggleOutOfStock = (product: Product) => {
+    if (!product._id) return;
+
+    const updatedProduct = {
+      ...product,
+      isOutOfStock: !product.isOutOfStock,
+    };
+
+    updateProductMutation.mutate(
+      {
+        id: product._id,
+        updatedProduct: updatedProduct,
+      },
+      {
+        onSuccess: () => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: `Product marked as ${updatedProduct.isOutOfStock ? "out of stock" : "in stock"}`,
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        },
+        onError: (error: any) => {
+          console.error("Update out of stock error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text:
+              error.response?.data?.message ||
+              "Failed to update out of stock status",
+          });
+        },
+      },
+    );
+  };
+
   // Calculate statistics
   const totalProducts = rawProducts.length;
   const activeProducts = rawProducts.filter(
@@ -744,6 +781,12 @@ const Products: React.FC = () => {
                       Best Seller
                     </th>
                     <th
+                      className="text-center py-3 px-4 font-medium"
+                      style={{ color: colors.text.primary }}
+                    >
+                      Out of Stock
+                    </th>
+                    <th
                       className="text-left py-3 px-4 font-medium"
                       style={{ color: colors.text.primary }}
                     >
@@ -987,6 +1030,27 @@ const Products: React.FC = () => {
                               style={{ color: colors.text.secondary }}
                             >
                               {product.isBestSeller ? "Yes" : "No"}
+                            </span>
+                          </label>
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex justify-center items-center">
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={product.isOutOfStock || false}
+                              onChange={() => handleToggleOutOfStock(product)}
+                              className="w-4 h-4 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                              style={{
+                                accentColor: colors.interactive.primary,
+                              }}
+                            />
+                            <span
+                              className="text-xs font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              {product.isOutOfStock ? "Yes" : "No"}
                             </span>
                           </label>
                         </div>

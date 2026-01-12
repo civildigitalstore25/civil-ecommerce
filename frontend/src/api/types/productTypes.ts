@@ -71,6 +71,7 @@ export interface Product {
   driveLink?: string; // Google Drive download link
   status?: "active" | "inactive" | "draft";
   isBestSeller?: boolean;
+  isOutOfStock?: boolean;
   faqs?: FAQ[];
   createdAt?: string;
   updatedAt?: string;

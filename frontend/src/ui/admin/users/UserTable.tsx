@@ -8,12 +8,18 @@ interface Props {
   users: User[];
   handleRoleChange: (userId: string, newRole: "user" | "admin") => void;
   handleDeleteUser: (userId: string, userEmail: string) => void;
+  selectedUsers: string[];
+  handleSelectAll: () => void;
+  handleSelectUser: (id: string) => void;
 }
 
 const UserTable: React.FC<Props> = ({
   users,
   handleRoleChange,
   handleDeleteUser,
+  selectedUsers,
+  handleSelectAll,
+  handleSelectUser,
 }) => {
   const { colors, theme } = useAdminTheme();
   const [editedRoles, setEditedRoles] = useState<Record<string, string>>({});
@@ -39,7 +45,18 @@ const UserTable: React.FC<Props> = ({
           >
             <tr>
               <th
-                className="text-left pl-14 py-3 px-4"
+                className="text-center py-3 px-4"
+                style={{ color: colors.text.primary }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selectedUsers.length === users.length && users.length > 0}
+                  onChange={handleSelectAll}
+                  className="rounded"
+                />
+              </th>
+              <th
+                className="text-left py-3 px-4"
                 style={{ color: colors.text.primary }}
               >
                 User
@@ -92,6 +109,14 @@ const UserTable: React.FC<Props> = ({
                   e.currentTarget.style.backgroundColor = "transparent";
                 }}
               >
+                <td className="py-4 px-4 text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user._id)}
+                    onChange={() => handleSelectUser(user._id)}
+                    className="rounded"
+                  />
+                </td>
                 {/* User Name */}
                 <td className="py-4 px-4">
                   <div className="flex items-center space-x-3">

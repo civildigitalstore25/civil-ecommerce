@@ -346,12 +346,21 @@ const BrandCategoryListing: React.FC = () => {
                   <button
                     className="w-full rounded-md md:rounded-lg py-1 md:py-2 font-semibold text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                     style={{
-                      background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-                      color: colors.background.primary,
+                      ...(product.isOutOfStock
+                        ? {
+                            background: colors.background.accent,
+                            color: colors.status.error,
+                            border: `1px solid ${colors.status.error}`,
+                          }
+                        : {
+                            background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
+                            color: colors.background.primary,
+                          }),
                     }}
                     onClick={() => handleAddToCart(product)}
+                    disabled={product.isOutOfStock}
                   >
-                    Add to Cart
+                    {product.isOutOfStock ? "Out of Stock" : "Add to Cart"}
                   </button>
                 </div>
               </div>

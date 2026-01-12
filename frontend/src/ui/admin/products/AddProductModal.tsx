@@ -241,6 +241,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           driveLink: product.driveLink || "",
           status: product.status || "active",
           isBestSeller: product.isBestSeller || false,
+          isOutOfStock: product.isOutOfStock || false,
           faqs: product.faqs || [],
           keyFeatures: product.keyFeatures || [],
           systemRequirements: product.systemRequirements || [],
@@ -281,6 +282,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           driveLink: "",
           status: "active",
           isBestSeller: false,
+          isOutOfStock: false,
           faqs: [],
           keyFeatures: [],
           systemRequirements: [],
@@ -675,6 +677,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         // Status and flags
         status: newProduct.status,
         isBestSeller: newProduct.isBestSeller,
+        isOutOfStock: newProduct.isOutOfStock,
 
         // FAQs
         faqs: newProduct.faqs,
@@ -1239,6 +1242,82 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     ))
                   )}
                 </select>
+              </div>
+            </div>
+
+            {/* Status and Flags */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="space-y-2">
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Status
+                </label>
+                <select
+                  value={newProduct.status}
+                  onChange={(e) => handleInputChange("status", e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                >
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                  <option value="draft">Draft</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Best Seller
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer mt-2">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.isBestSeller || false}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, isBestSeller: e.target.checked }))}
+                    className="w-5 h-5 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                    style={{
+                      accentColor: colors.interactive.primary,
+                    }}
+                  />
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: colors.text.primary }}
+                  >
+                    Mark as Best Seller
+                  </span>
+                </label>
+              </div>
+              <div className="space-y-2">
+                <label
+                  className="block text-sm font-medium"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Out of Stock
+                </label>
+                <label className="flex items-center space-x-2 cursor-pointer mt-2">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.isOutOfStock || false}
+                    onChange={(e) => setNewProduct(prev => ({ ...prev, isOutOfStock: e.target.checked }))}
+                    className="w-5 h-5 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                    style={{
+                      accentColor: colors.interactive.primary,
+                    }}
+                  />
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: colors.text.primary }}
+                  >
+                    Mark as Out of Stock
+                  </span>
+                </label>
               </div>
             </div>
           </div>

@@ -201,8 +201,17 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                     e.currentTarget.style.color = '#fff';
                   }}
                   onClick={() => handleAddToCart(product)}
+                  disabled={product.isOutOfStock}
+                  style={{
+                    ...(product.isOutOfStock && {
+                      background: colors.background.accent,
+                      color: colors.status.error,
+                      border: `1px solid ${colors.status.error}`,
+                      cursor: 'not-allowed',
+                    }),
+                  }}
                 >
-                  Add to Cart
+                  {product.isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>
               </div>
             </div>

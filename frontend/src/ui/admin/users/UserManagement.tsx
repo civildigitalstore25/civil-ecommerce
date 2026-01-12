@@ -20,6 +20,7 @@ const UserManagement: React.FC = () => {
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [customStartDate, setCustomStartDate] = useState<string>("");
   const [customEndDate, setCustomEndDate] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
   const {
     data: usersData,
@@ -99,6 +100,49 @@ const UserManagement: React.FC = () => {
         Swal.fire("Error!", "Failed to delete user", "error");
       }
     }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedUsers.length === filteredUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filteredUsers.map((u: User) => u._id));
+    }
+  };
+
+  const handleSelectUser = (id: string) => {
+    setSelectedUsers(prev => 
+      prev.includes(id) ? prev.filter(uid => uid !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedUsers.length === 0) return;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete ${selectedUsers.length} user(s). This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete them!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selectedUsers.forEach(id => {
+          deleteUserMutation.mutate(id);
+        });
+        setSelectedUsers([]);
+        Swal.fire({
+          title: "Deleted!",
+          text: `${selectedUsers.length} user(s) have been deleted.`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    });
   };
 
   const clearFilters = () => {
@@ -188,6 +232,15 @@ const UserManagement: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2 items-center">
+          {selectedUsers.length > 0 && (
+            <button
+              className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 bg-red-600 text-white hover:bg-red-700"
+              onClick={handleBulkDelete}
+            >
+              <Plus className="h-4 w-4" />
+              Delete Selected ({selectedUsers.length})
+            </button>
+          )}
           <button
             className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
             style={{
@@ -349,6 +402,9 @@ const UserManagement: React.FC = () => {
             users={filteredUsers as User[]}
             handleRoleChange={handleRoleChange}
             handleDeleteUser={handleDeleteUser}
+            selectedUsers={selectedUsers}
+            handleSelectAll={handleSelectAll}
+            handleSelectUser={handleSelectUser}
           />
           <Pagination
             currentPage={currentPage}
