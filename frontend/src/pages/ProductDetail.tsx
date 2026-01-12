@@ -150,7 +150,6 @@ const ProductDetail: React.FC = () => {
   const [renderedTabs, setRenderedTabs] = useState<
     ("features" | "requirements" | "reviews" | "faq" | "details")[]
   >(["features", "requirements", "reviews", "faq", "details"]);
-  const [descOpen, setDescOpen] = useState(false);
   const { addItem, isItemInCart, getItemQuantity } = useCartContext();
   const { data: user } = useUser();
   const navigate = useNavigate();
@@ -1252,35 +1251,11 @@ const ProductDetail: React.FC = () => {
                 </h3>
 
                 <div className="mt-3" style={{ color: colors.text.secondary }}>
-                  {!descOpen ? (
-                    // Preview: plain-text truncated version
-                    (() => {
-                      const stripHtml = (s?: string) =>
-                        (s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-                      const plain = stripHtml(product.shortDescription);
-                      const max = 100;
-                      const preview = plain.length > max ? plain.slice(0, max).trim() + "..." : plain;
-                      return <p className="leading-relaxed text-base">{preview}</p>;
-                    })()
-                  ) : (
-                    // Expanded: render full rich content (HTML or markdown)
-                    <div>
-                      {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
-                    </div>
-                  )}
+                  <div>
+                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
+                  </div>
                 </div>
-                <div className="flex justify-end mt-4">
-                  <button
-                    onClick={() => setDescOpen(!descOpen)}
-                    className="text-sm font-medium px-4 py-2 rounded-lg transition-colors duration-200"
-                    style={{
-                      backgroundColor: colors.background.accent,
-                      color: colors.text.primary,
-                    }}
-                  >
-                    {descOpen ? "Show less" : "Show more"}
-                  </button>
-                </div>
+                {/* full description always shown; 'Show more' removed */}
               </div>
             </div>
 
@@ -1629,29 +1604,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               )}
 
-              {/* Selected Option Summary */}
-              {pricingOptions.length > 1 && selectedOption && (
-                <div
-                  className="rounded-lg p-3 text-center transition-colors duration-200"
-                  style={{ backgroundColor: colors.background.primary }}
-                >
-                  <div
-                    className="text-lg lg:text-2xl font-bold mb-1"
-                    style={{ color: colors.text.primary }}
-                  >
-                    {formatPriceWithSymbol(
-                      selectedOption.priceINR,
-                      selectedOption.priceUSD,
-                    )}
-                  </div>
-                  <p
-                    className="text-xs lg:text-sm"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    {selectedOption.label} • GST Included
-                  </p>
-                </div>
-              )}
+              {/* Selected Option Summary removed per UX: price preview not needed */}
             </div>
 
             {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}
@@ -1740,33 +1693,11 @@ const ProductDetail: React.FC = () => {
                 </h3>
 
                 <div className="mb-4" style={{ color: colors.text.secondary }}>
-                  {!descOpen ? (
-                    (() => {
-                      const stripHtml = (s?: string) =>
-                        (s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
-                      const plain = stripHtml(product.shortDescription);
-                      const max = 100;
-                      const preview = plain.length > max ? plain.slice(0, max).trim() + "..." : plain;
-                      return <p className="leading-relaxed text-base">{preview}</p>;
-                    })()
-                  ) : (
-                    <div>
-                      {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base leading-relaxed')}
-                    </div>
-                  )}
+                  <div>
+                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base leading-relaxed')}
+                  </div>
                 </div>
-
-                <button
-                  onClick={() => setDescOpen(!descOpen)}
-                  className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-                  style={{
-                    backgroundColor: colors.background.accent,
-                    color: colors.text.primary,
-                  }}
-                >
-                  {descOpen ? "Show less" : "Show more"}
-                  <LucideIcons.ChevronDown className={`w-4 h-4 transition-transform duration-200 ${descOpen ? 'rotate-180' : ''}`} />
-                </button>
+                {/* full description always shown on mobile; toggle removed */}
               </div>
             </div>
           </div>
