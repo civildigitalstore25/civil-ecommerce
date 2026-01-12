@@ -140,7 +140,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                     color: (typeof colors.interactive.primary === "string" && colors.interactive.primary.startsWith("linear-gradient")) ? colors.interactive.secondary : colors.interactive.primary,
                   }}
                 >
-                  {product.category}
+                  {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ""}
                 </span>
                 <span
                   className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200 font-medium"
@@ -149,7 +149,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                     color: colors.text.secondary,
                   }}
                 >
-                  {product.company}
+                  {product.company ? product.company.charAt(0).toUpperCase() + product.company.slice(1) : ""}
                 </span>
               </div>
 
@@ -188,28 +188,33 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 <button
                   className="w-full font-bold rounded-md md:rounded-lg py-1.5 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
                   style={{
-                    background: colors.interactive.primary,
-                    color: '#fff',
-                    border: `1.5px solid ${colors.interactive.primary}`,
+                    ...(product.isOutOfStock
+                      ? {
+                        background: colors.background.accent,
+                        color: colors.status.error,
+                        border: `1px solid ${colors.status.error}`,
+                        cursor: 'not-allowed',
+                      }
+                      : {
+                        background: '#0068ff',
+                        color: '#fff',
+                        border: '1.5px solid #0068ff',
+                      }),
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors.interactive.primaryHover;
-                    e.currentTarget.style.color = '#fff';
+                    if (!product.isOutOfStock) {
+                      e.currentTarget.style.background = colors.interactive.primaryHover;
+                      e.currentTarget.style.color = '#fff';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors.interactive.primary;
-                    e.currentTarget.style.color = '#fff';
+                    if (!product.isOutOfStock) {
+                      e.currentTarget.style.background = '#0068ff';
+                      e.currentTarget.style.color = '#fff';
+                    }
                   }}
                   onClick={() => handleAddToCart(product)}
                   disabled={product.isOutOfStock}
-                  style={{
-                    ...(product.isOutOfStock && {
-                      background: colors.background.accent,
-                      color: colors.status.error,
-                      border: `1px solid ${colors.status.error}`,
-                      cursor: 'not-allowed',
-                    }),
-                  }}
                 >
                   {product.isOutOfStock ? "Out of Stock" : "Add to Cart"}
                 </button>

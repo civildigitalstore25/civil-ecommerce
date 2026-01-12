@@ -882,14 +882,14 @@ const Products: React.FC = () => {
                       </td>
                       <td className="py-4 px-4">
                         <div style={{ color: colors.text.primary }}>
-                          {product.brand || product.company}
+                          {(product.brand || product.company) ? (product.brand || product.company).charAt(0).toUpperCase() + (product.brand || product.company).slice(1) : ""}
                         </div>
                         {product.company !== product.brand && product.brand && (
                           <div
                             className="text-xs"
                             style={{ color: colors.text.secondary }}
                           >
-                            {product.company}
+                            {product.company ? product.company.charAt(0).toUpperCase() + product.company.slice(1) : ""}
                           </div>
                         )}
                       </td>
@@ -898,7 +898,7 @@ const Products: React.FC = () => {
                           className="inline-block text-xs px-2 py-1 rounded-full font-medium"
 
                         >
-                          {product.category}
+                          {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ""}
                         </span>
                         {product.tags && product.tags.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">

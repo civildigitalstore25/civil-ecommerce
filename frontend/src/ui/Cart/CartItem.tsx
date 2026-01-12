@@ -219,7 +219,7 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="text-xs sm:text-sm transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
-                {item.product.company}
+                {item.product.company ? item.product.company.charAt(0).toUpperCase() + item.product.company.slice(1) : ""}
               </p>
             </div>
             <button

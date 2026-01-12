@@ -114,7 +114,7 @@ const Footer = () => {
             <div>
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.interactive.primary }}
+                style={{ color: colors.text.primary }}
               >
                 OUR SERVICES
               </h3>
@@ -159,7 +159,7 @@ const Footer = () => {
             <div>
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.interactive.primary }}
+                style={{ color: colors.text.primary }}
               >
                 CUSTOMER POLICIES
               </h3>
@@ -219,7 +219,7 @@ const Footer = () => {
             <div className="col-span-2 md:col-span-1">
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.interactive.primary }}
+                style={{ color: colors.text.primary }}
               >
                 SOFTWARE
               </h3>

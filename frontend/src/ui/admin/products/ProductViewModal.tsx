@@ -175,8 +175,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       key={index}
                       onClick={() => setSelectedImageIndex(index)}
                       className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${selectedImageIndex === index
-                          ? "border-yellow-500"
-                          : "border-gray-600"
+                        ? "border-yellow-500"
+                        : "border-gray-600"
                         }`}
                     >
                       <img
@@ -289,7 +289,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       className="ml-2"
                       style={{ color: 'black' }}
                     >
-                      {product.brand || product.company}
+                      {(product.brand || product.company) ? (product.brand || product.company).charAt(0).toUpperCase() + (product.brand || product.company).slice(1) : ""}
                     </span>
                   </div>
                   <div>
@@ -306,7 +306,7 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                         color: 'black',
                       }}
                     >
-                      {product.category}
+                      {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ""}
                     </span>
                   </div>
                 </div>

@@ -1017,7 +1017,7 @@ const ProductDetail: React.FC = () => {
           >
             <span>Home</span>
             <span>{">"}</span>
-            <span>{product.category}</span>
+            <span>{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
             <span>{">"}</span>
             <span style={{ color: colors.interactive.primary }}>
               <span className="hidden md:inline">{product.name}</span>
@@ -1141,7 +1141,7 @@ const ProductDetail: React.FC = () => {
                   color: colors.text.inverse,
                 }}
               >
-                {product.brand || product.company}
+                {(product.brand || product.company).charAt(0).toUpperCase() + (product.brand || product.company).slice(1)}
               </span>
               <span
                 style={{ color: colors.interactive.primary }}

@@ -276,7 +276,7 @@ const BrandCategoryListing: React.FC = () => {
                       color: (typeof colors.interactive.primary === "string" && colors.interactive.primary.startsWith("linear-gradient")) ? colors.interactive.secondary : colors.interactive.primary,
                     }}
                   >
-                    {product.category}
+                    {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                   </span>
                   <span
                     className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200"
@@ -285,7 +285,7 @@ const BrandCategoryListing: React.FC = () => {
                       color: colors.text.secondary,
                     }}
                   >
-                    {product.company}
+                    {product.company.charAt(0).toUpperCase() + product.company.slice(1)}
                   </span>
                 </div>
 
@@ -353,8 +353,8 @@ const BrandCategoryListing: React.FC = () => {
                           border: `1px solid ${colors.status.error}`,
                         }
                         : {
-                          background: `linear-gradient(to right, ${colors.interactive.primary}, ${colors.interactive.secondary})`,
-                          color: colors.background.primary,
+                          background: '#0068ff',
+                          color: '#fff',
                         }),
                     }}
                     onClick={() => handleAddToCart(product)}
