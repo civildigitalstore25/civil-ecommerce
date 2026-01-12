@@ -178,6 +178,24 @@ const ProductDetail: React.FC = () => {
   const [enquiryMessage, setEnquiryMessage] = useState("");
   const [isCustomMessage, setIsCustomMessage] = useState(false);
   const enquiryTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  // Ref and state to show a sticky Buy Now button when the original actions scroll out of view
+  const actionRef = useRef<HTMLDivElement | null>(null);
+  const [showStickyBuy, setShowStickyBuy] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = actionRef.current;
+      if (!el) return setShowStickyBuy(false);
+      const rect = el.getBoundingClientRect();
+      const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+      setShowStickyBuy(!fullyVisible);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    // run once
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Open enquiry modal with default product message
   const openEnquiryModal = () => {
@@ -1637,7 +1655,7 @@ const ProductDetail: React.FC = () => {
             </div>
 
             {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}
-            <div>
+            <div ref={actionRef}>
               <div className="flex gap-2">
                 <button
                   onClick={handleAddToCart}
@@ -1752,6 +1770,33 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Sticky centered Buy Now button shown when original actions scroll out of view */}
+          {showStickyBuy && (
+            <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+              <button
+                onClick={handleBuyNow}
+                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3 rounded-full shadow-lg"
+                style={{
+                  border: `1.5px solid ${colors.interactive.primary}`,
+                  color: '#fff',
+                  background: colors.interactive.primary,
+                  boxShadow: '0 6px 20px rgba(0,0,0,0.18)'
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover;
+                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
+                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                }}
+              >
+                <LucideIcons.Zap size={18} />
+                Buy Now
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Keep only Activation Video if it exists separately */}
