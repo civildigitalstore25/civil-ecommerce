@@ -92,6 +92,39 @@ interface FAQ {
   answer: string;
 }
 
+interface NewProductForm {
+  name: string;
+  version: string;
+  longDescription: string;
+  detailsDescription: string;
+  category: string;
+  brand: string;
+  subscriptionDurations: SubscriptionDuration[];
+  // ebook simple price fields
+  ebookPriceINR: string;
+  ebookPriceUSD: string;
+  subscriptions: SubscriptionDuration[];
+  hasLifetime: boolean;
+  lifetimePrice: string;
+  lifetimePriceINR: string;
+  lifetimePriceUSD: string;
+  hasMembership: boolean;
+  membershipPrice: string;
+  membershipPriceINR: string;
+  membershipPriceUSD: string;
+  imageUrl: string;
+  additionalImages: string[];
+  videoUrl: string;
+  activationVideoUrl: string;
+  driveLink: string;
+  status: string;
+  isBestSeller: boolean;
+  isOutOfStock: boolean;
+  faqs: FAQ[];
+  keyFeatures: { icon: string; title: string; description: string }[];
+  systemRequirements: { icon: string; title: string; description: string }[];
+}
+
 interface AddProductModalProps {
   open: boolean;
   onClose: () => void;
@@ -106,7 +139,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   product,
 }) => {
   const { colors, theme } = useAdminTheme();
-  const [newProduct, setNewProduct] = useState({
+  const [newProduct, setNewProduct] = useState<NewProductForm>({
     name: "",
     version: "",
     longDescription: "",
@@ -137,6 +170,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     driveLink: "",
     status: "active",
     isBestSeller: false,
+    isOutOfStock: false,
     faqs: [] as FAQ[],
     keyFeatures: [] as { icon: string; title: string; description: string }[],
     systemRequirements: [] as {
