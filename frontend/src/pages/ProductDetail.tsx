@@ -22,17 +22,6 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import * as LucideIcons from "lucide-react";
 
-// Small fallback Share2 icon component in case lucide export is missing
-const Share2IconFallback = (props: any) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <circle cx="18" cy="5" r="3" />
-    <circle cx="6" cy="12" r="3" />
-    <circle cx="18" cy="19" r="3" />
-    <path d="M8.59 13.51L15.42 17.49" />
-    <path d="M15.41 6.51L8.59 10.49" />
-  </svg>
-);
-
 // Enhanced FAQ Item Component
 interface FAQItemProps {
   question: string;
@@ -966,6 +955,10 @@ const ProductDetail: React.FC = () => {
       case "whatsapp":
         shareUrl = `https://wa.me/?text=${text}`;
         break;
+      case "instagram":
+        // open company profile on Instagram (no web share endpoint available)
+        shareUrl = `https://www.instagram.com/softzcart/`;
+        break;
       case "facebook":
         shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
         break;
@@ -1195,42 +1188,39 @@ const ProductDetail: React.FC = () => {
             {/* Social Share Buttons */}
             <div className="flex items-center gap-2 mt-3">
               {(() => {
-                const getIcon = (name: string) => {
-                  const comp = (LucideIcons as any)[name];
-                  return comp || (LucideIcons as any).Share2 || (() => null);
-                };
+                // Use the same icon components as the footer for visual consistency
+                const FacebookIcon = (LucideIcons as any).Facebook;
+                const InstagramIcon = (LucideIcons as any).Instagram;
+                const TwitterIcon = (LucideIcons as any).Twitter;
+                const LinkedInIcon = (LucideIcons as any).Linkedin || (LucideIcons as any).LinkedIn;
+                const MailIcon = (LucideIcons as any).Mail;
+                const LinkIcon = (LucideIcons as any).Link || (LucideIcons as any).Link2;
 
-                const WhatsappIcon = getIcon('MessageSquare');
-                const FacebookIcon = getIcon('Facebook');
-                const TwitterIcon = getIcon('Twitter');
-                const LinkedInIcon = getIcon('LinkedIn') || getIcon('Linkedin');
-                const MailIcon = getIcon('Mail') || getIcon('MailForward') || getIcon('AtSign');
-                const LinkIcon = getIcon('Link2') || getIcon('Link');
-
+                // Plain icon buttons (no circular background) — color the icon glyphs directly
                 return (
                   <>
-                    <button onClick={() => shareTo('whatsapp')} title="Share on WhatsApp" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {WhatsappIcon ? <WhatsappIcon size={18} /> : null}
+                    <button onClick={() => shareTo('facebook')} title="Share on Facebook" aria-label="Share on Facebook" className="px-1">
+                      {FacebookIcon ? <FacebookIcon size={20} style={{ color: '#1877F2' }} /> : null}
                     </button>
 
-                    <button onClick={() => shareTo('facebook')} title="Share on Facebook" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {FacebookIcon ? <FacebookIcon size={18} /> : <Share2IconFallback />}
+                    <button onClick={() => shareTo('instagram')} title="Open Instagram" aria-label="Open Instagram" className="px-1">
+                      {InstagramIcon ? <InstagramIcon size={20} style={{ color: '#E4405F' }} /> : null}
                     </button>
 
-                    <button onClick={() => shareTo('twitter')} title="Share on Twitter" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {TwitterIcon ? <TwitterIcon size={18} /> : <Share2IconFallback />}
+                    <button onClick={() => shareTo('twitter')} title="Share on X" aria-label="Share on X" className="px-1">
+                      {TwitterIcon ? <TwitterIcon size={20} style={{ color: '#000000' }} /> : null}
                     </button>
 
-                    <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {LinkedInIcon ? <LinkedInIcon size={18} /> : <Share2IconFallback />}
+                    <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" aria-label="Share on LinkedIn" className="px-1">
+                      {LinkedInIcon ? <LinkedInIcon size={20} style={{ color: '#0A66C2' }} /> : null}
                     </button>
 
-                    <button onClick={() => shareTo('email')} title="Share via Email" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {MailIcon ? <MailIcon size={18} /> : null}
+                    <button onClick={() => shareTo('email')} title="Share via Email" aria-label="Share via Email" className="px-1">
+                      {MailIcon ? <MailIcon size={20} style={{ color: '#6b7280' }} /> : null}
                     </button>
 
-                    <button onClick={copyLink} title="Copy link" className="px-2 py-1 rounded bg-transparent" style={{ color: colors.interactive.primary }}>
-                      {LinkIcon ? <LinkIcon size={18} /> : null}
+                    <button onClick={copyLink} title="Copy link" aria-label="Copy link" className="px-1">
+                      {LinkIcon ? <LinkIcon size={20} style={{ color: '#374151' }} /> : null}
                     </button>
                   </>
                 );
