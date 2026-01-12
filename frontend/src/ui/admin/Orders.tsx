@@ -107,6 +107,7 @@ const Orders: React.FC = () => {
   );
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
   // Fetch all orders
   const { data, isLoading } = useQuery({
@@ -196,6 +197,21 @@ const Orders: React.FC = () => {
 
   const orders = data?.data?.orders || [];
 
+  // Filter orders by search term (name or email)
+  const getFilteredOrders = () => {
+    if (!searchTerm.trim()) return orders;
+
+    const search = searchTerm.toLowerCase();
+    return orders.filter((order: any) => {
+      const userName = order.userId?.fullName?.toLowerCase() || "";
+      const userEmail = order.userId?.email?.toLowerCase() || "";
+      const shippingName = order.shippingAddress?.fullName?.toLowerCase() || "";
+      return userName.includes(search) || userEmail.includes(search) || shippingName.includes(search);
+    });
+  };
+
+  const filteredOrders = getFilteredOrders();
+
   // Debug: Log first order to check structure
   if (orders.length > 0) {
     console.log("📦 First order structure:", orders[0]);
@@ -204,13 +220,13 @@ const Orders: React.FC = () => {
     console.log("📦 Using ID for updates:", getOrderId(orders[0]));
   }
 
-  const completedOrders = orders.filter(
+  const completedOrders = filteredOrders.filter(
     (o: any) => o.orderStatus === "delivered",
   );
-  const processingOrders = orders.filter(
+  const processingOrders = filteredOrders.filter(
     (o: any) => o.orderStatus === "processing",
   );
-  const cancelledOrders = orders.filter(
+  const cancelledOrders = filteredOrders.filter(
     (o: any) => o.orderStatus === "cancelled",
   );
 
@@ -338,6 +354,31 @@ const Orders: React.FC = () => {
             <option value="cancelled">Cancelled</option>
           </select>
         </div>
+      </div>
+
+      {/* Search by Name or Email */}
+      <div
+        className="rounded-lg p-4 border"
+        style={{
+          background: colors.background.primary,
+          borderColor: colors.border.primary,
+        }}
+      >
+        <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+          Search by Customer Name or Email
+        </label>
+        <input
+          type="text"
+          className="w-full border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+          style={{
+            backgroundColor: colors.background.secondary,
+            borderColor: colors.border.primary,
+            color: colors.text.primary,
+          }}
+          placeholder="Enter customer name or email..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       {/* Admin Order Creation Form */}
@@ -549,7 +590,7 @@ const Orders: React.FC = () => {
               className="divide-y transition-colors duration-200"
 
             >
-              {orders.length === 0 ? (
+              {filteredOrders.length === 0 ? (
                 <tr>
                   <td
                     colSpan={8}
@@ -560,7 +601,7 @@ const Orders: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                orders.map((order: any) => (
+                filteredOrders.map((order: any) => (
                   <tr
                     key={order._id}
                     className="transition-colors duration-200"

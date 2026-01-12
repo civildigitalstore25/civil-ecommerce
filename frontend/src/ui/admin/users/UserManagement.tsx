@@ -17,6 +17,9 @@ const UserManagement: React.FC = () => {
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
   const limit = 10;
   const [exportOpen, setExportOpen] = useState(false);
+  const [dateFilter, setDateFilter] = useState<string>("all");
+  const [customStartDate, setCustomStartDate] = useState<string>("");
+  const [customEndDate, setCustomEndDate] = useState<string>("");
 
   const {
     data: usersData,
@@ -35,6 +38,34 @@ const UserManagement: React.FC = () => {
   const users = usersData?.users || [];
   const totalPages = usersData?.totalPages || 1;
 
+  // Filter users by date range
+  const getFilteredUsers = () => {
+    if (dateFilter === "all") return users;
+
+    const now = new Date();
+    let startDate: Date | null = null;
+
+    if (dateFilter === "last-year") {
+      startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+    } else if (dateFilter === "last-month") {
+      startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    } else if (dateFilter === "last-week") {
+      startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    } else if (dateFilter === "custom" && customStartDate) {
+      startDate = new Date(customStartDate);
+    }
+
+    const endDate = dateFilter === "custom" && customEndDate ? new Date(customEndDate) : now;
+
+    return users.filter((user: User) => {
+      const userDate = new Date(user.createdAt);
+      if (!startDate) return true;
+      return userDate >= startDate && userDate <= endDate;
+    });
+  };
+
+  const filteredUsers = getFilteredUsers();
+
   const handleRoleChange = async (
     userId: string,
     newRole: "user" | "admin",
@@ -50,7 +81,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
- 
+
 
   const handleDeleteUser = async (userId: string, userEmail: string) => {
     const result = await Swal.fire({
@@ -73,6 +104,9 @@ const UserManagement: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setRoleFilter("");
+    setDateFilter("all");
+    setCustomStartDate("");
+    setCustomEndDate("");
     setCurrentPage(1);
   };
 
@@ -222,6 +256,76 @@ const UserManagement: React.FC = () => {
         totalUsers={usersData?.total || 0}
       />
 
+      {/* Date Filter Section */}
+      <div
+        className="rounded-lg p-4 border"
+        style={{
+          background: colors.background.primary,
+          borderColor: colors.border.primary,
+        }}
+      >
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+              Filter by Registration Date
+            </label>
+            <select
+              className="w-full border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.secondary,
+                borderColor: colors.border.primary,
+                color: colors.text.primary,
+              }}
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+            >
+              <option value="all">All Time</option>
+              <option value="last-week">Last Week</option>
+              <option value="last-month">Last Month</option>
+              <option value="last-year">Last Year</option>
+              <option value="custom">Custom Date Range</option>
+            </select>
+          </div>
+
+          {dateFilter === "custom" && (
+            <>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                  value={customStartDate}
+                  onChange={(e) => setCustomStartDate(e.target.value)}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                  value={customEndDate}
+                  onChange={(e) => setCustomEndDate(e.target.value)}
+                />
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
       {isLoading && (
         <div
           className="text-center py-8"
@@ -242,7 +346,7 @@ const UserManagement: React.FC = () => {
       {!isLoading && !error && (
         <>
           <UserTable
-            users={users as User[]}
+            users={filteredUsers as User[]}
             handleRoleChange={handleRoleChange}
             handleDeleteUser={handleDeleteUser}
           />
