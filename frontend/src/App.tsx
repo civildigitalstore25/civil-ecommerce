@@ -38,6 +38,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import PaymentCallback from "./ui/payment/PaymentCallback";
 import PaymentStatusPage from "./pages/PaymentStatusPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
+import UserEnquiriesPage from "./pages/UserEnquiriesPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
 import AboutPage from "./pages/AboutPage";
@@ -251,6 +252,14 @@ function AppLayout() {
           element={
             <AuthGuard>
               <MyOrdersPage />
+            </AuthGuard>
+          }
+        />
+        <Route
+          path="/my-enquiries"
+          element={
+            <AuthGuard>
+              <UserEnquiriesPage />
             </AuthGuard>
           }
         />

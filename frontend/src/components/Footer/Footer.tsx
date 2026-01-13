@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaFacebookF,
@@ -10,32 +9,10 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { SiX } from "react-icons/si";
-import { ArrowUp } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Footer = () => {
   const { colors, theme } = useAdminTheme();
-  const [showScrollTop, setShowScrollTop] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setShowScrollTop(true);
-      } else {
-        setShowScrollTop(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
 
   return (
     <footer
@@ -424,23 +401,6 @@ const Footer = () => {
         . All rights reserved 2025.
       </div>
 
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 z-50"
-          style={{
-            background: theme === "dark"
-              ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-              : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-            color: colors.text.inverse,
-            border: 'none',
-          }}
-          aria-label="Scroll to top"
-        >
-          <ArrowUp className="w-6 h-6" />
-        </button>
-      )}
     </footer>
   );
 };

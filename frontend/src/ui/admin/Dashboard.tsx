@@ -61,6 +61,65 @@ const Dashboard: React.FC = () => {
     refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 
+  // Calculate comparison data
+  const comparisonData = useMemo(() => {
+    if (!analyticsData || analyticsData.salesData.length < 2) {
+      return {
+        salesData: analyticsData?.salesData || [],
+        currentPeriodRevenue: 0,
+        currentPeriodOrders: 0,
+        previousPeriodRevenue: 0,
+        previousPeriodOrders: 0,
+        revenueChange: 0,
+        ordersChange: 0,
+      };
+    }
+
+    const salesData = analyticsData.salesData.map((item, index) => {
+      const previousItem = analyticsData.salesData[index - 1];
+      const revenueChange = previousItem
+        ? ((item.revenue - previousItem.revenue) / (previousItem.revenue || 1)) * 100
+        : 0;
+      const ordersChange = previousItem
+        ? ((item.orderCount - previousItem.orderCount) / (previousItem.orderCount || 1)) * 100
+        : 0;
+
+      return {
+        ...item,
+        revenueChange,
+        ordersChange,
+        previousRevenue: previousItem?.revenue || 0,
+        previousOrderCount: previousItem?.orderCount || 0,
+      };
+    });
+
+    // Calculate current period vs previous period totals
+    const currentPeriodData = salesData[salesData.length - 1];
+    const previousPeriodData = salesData[salesData.length - 2];
+
+    const currentPeriodRevenue = currentPeriodData?.revenue || 0;
+    const currentPeriodOrders = currentPeriodData?.orderCount || 0;
+    const previousPeriodRevenue = previousPeriodData?.revenue || 0;
+    const previousPeriodOrders = previousPeriodData?.orderCount || 0;
+
+    const revenueChange = previousPeriodRevenue
+      ? ((currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100
+      : 0;
+    const ordersChange = previousPeriodOrders
+      ? ((currentPeriodOrders - previousPeriodOrders) / previousPeriodOrders) * 100
+      : 0;
+
+    return {
+      salesData,
+      currentPeriodRevenue,
+      currentPeriodOrders,
+      previousPeriodRevenue,
+      previousPeriodOrders,
+      revenueChange,
+      ordersChange,
+    };
+  }, [analyticsData]);
+
   // Calculate statistics
   const stats = useMemo(() => {
     const products = productsData?.products || [];
@@ -419,14 +478,45 @@ const Dashboard: React.FC = () => {
                   className="text-sm font-medium mb-1"
                   style={{ color: colors.text.secondary }}
                 >
-                  Total Revenue
+                  Current Period Revenue
                 </p>
                 <p
                   className="text-2xl font-bold"
                   style={{ color: colors.text.primary }}
                 >
-                  ₹{analyticsData.totalRevenue.toLocaleString("en-IN")}
+                  ₹{comparisonData.currentPeriodRevenue.toLocaleString("en-IN")}
                 </p>
+                {comparisonData.previousPeriodRevenue > 0 && (
+                  <>
+                    <p
+                      className="text-sm flex items-center mt-1"
+                      style={{
+                        color: comparisonData.revenueChange >= 0
+                          ? colors.status.success
+                          : colors.status.error,
+                      }}
+                    >
+                      <TrendingUp
+                        className={`w-4 h-4 mr-1 ${
+                          comparisonData.revenueChange < 0 ? "rotate-180" : ""
+                        }`}
+                      />
+                      {comparisonData.revenueChange >= 0 ? "+" : ""}
+                      {comparisonData.revenueChange.toFixed(1)}% from previous {period.slice(0, -2)}
+                    </p>
+                    <p
+                      className="text-xs mt-1"
+                      style={{
+                        color: comparisonData.revenueChange >= 0
+                          ? colors.status.success
+                          : colors.status.error,
+                      }}
+                    >
+                      Difference: {comparisonData.revenueChange >= 0 ? "+" : ""}
+                      ₹{(comparisonData.currentPeriodRevenue - comparisonData.previousPeriodRevenue).toLocaleString("en-IN")}
+                    </p>
+                  </>
+                )}
               </div>
               <div
                 className="p-4 rounded-lg"
@@ -436,14 +526,45 @@ const Dashboard: React.FC = () => {
                   className="text-sm font-medium mb-1"
                   style={{ color: colors.text.secondary }}
                 >
-                  Total Orders
+                  Current Period Orders
                 </p>
                 <p
                   className="text-2xl font-bold"
                   style={{ color: colors.text.primary }}
                 >
-                  {analyticsData.totalOrders}
+                  {comparisonData.currentPeriodOrders}
                 </p>
+                {comparisonData.previousPeriodOrders > 0 && (
+                  <>
+                    <p
+                      className="text-sm flex items-center mt-1"
+                      style={{
+                        color: comparisonData.ordersChange >= 0
+                          ? colors.status.success
+                          : colors.status.error,
+                      }}
+                    >
+                      <TrendingUp
+                        className={`w-4 h-4 mr-1 ${
+                          comparisonData.ordersChange < 0 ? "rotate-180" : ""
+                        }`}
+                      />
+                      {comparisonData.ordersChange >= 0 ? "+" : ""}
+                      {comparisonData.ordersChange.toFixed(1)}% from previous {period.slice(0, -2)}
+                    </p>
+                    <p
+                      className="text-xs mt-1"
+                      style={{
+                        color: comparisonData.ordersChange >= 0
+                          ? colors.status.success
+                          : colors.status.error,
+                      }}
+                    >
+                      Difference: {comparisonData.ordersChange >= 0 ? "+" : ""}
+                      {comparisonData.currentPeriodOrders - comparisonData.previousPeriodOrders}
+                    </p>
+                  </>
+                )}
               </div>
               <div
                 className="p-4 rounded-lg"
@@ -468,7 +589,7 @@ const Dashboard: React.FC = () => {
             <div className="h-96">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart
-                  data={analyticsData.salesData}
+                  data={comparisonData.salesData}
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid
@@ -499,10 +620,23 @@ const Dashboard: React.FC = () => {
                       borderRadius: "0.5rem",
                       color: colors.text.primary,
                     }}
-                    formatter={(value: number | undefined, name: string | undefined) => {
+                    formatter={(value: number | undefined, name: string | undefined, props: any) => {
                       if (value === undefined || name === undefined) return ["", ""];
                       if (name === "Revenue") {
-                        return [`₹${value.toLocaleString("en-IN")}`, name];
+                        const change = props.payload.revenueChange;
+                        const diff = props.payload.revenue - props.payload.previousRevenue;
+                        const changeText = change !== undefined && props.payload.previousRevenue > 0
+                          ? ` (${change >= 0 ? '+' : ''}${change.toFixed(1)}%, ${change >= 0 ? '+' : ''}₹${diff.toLocaleString("en-IN")})`
+                          : '';
+                        return [`₹${value.toLocaleString("en-IN")}${changeText}`, name];
+                      }
+                      if (name === "Orders") {
+                        const change = props.payload.ordersChange;
+                        const diff = props.payload.orderCount - props.payload.previousOrderCount;
+                        const changeText = change !== undefined && props.payload.previousOrderCount > 0
+                          ? ` (${change >= 0 ? '+' : ''}${change.toFixed(1)}%, ${change >= 0 ? '+' : ''}${diff})`
+                          : '';
+                        return [`${value}${changeText}`, name];
                       }
                       return [value, name];
                     }}

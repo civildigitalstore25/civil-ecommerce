@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useCartContext } from "../contexts/CartContext";
 import { CartItem, CartSummary, CartEmpty } from "../ui/Cart";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import RelatedProducts from "../components/RelatedProducts";
 import Swal from "sweetalert2";
 
 const CartPage: React.FC = () => {
@@ -166,45 +167,18 @@ const CartPage: React.FC = () => {
           </div>
         )}
 
-        {/* Recently Viewed or Recommendations */}
+        {/* Related Products */}
         {items.length > 0 && (
           <div className="mt-8 sm:mt-12">
-            <div
-              className="rounded-lg sm:rounded-xl border p-4 sm:p-6 transition-colors duration-200"
-              style={{
-                backgroundColor: colors.background.primary,
-                borderColor: colors.border.primary,
-              }}
-            >
-              <h3
-                className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 transition-colors duration-200"
+            <div className="mb-6">
+              <h2
+                className="text-xl sm:text-2xl font-bold transition-colors duration-200"
                 style={{ color: colors.text.primary }}
               >
                 You might also like
-              </h3>
-              <div className="text-center py-6 sm:py-8">
-                <p
-                  className="mb-3 sm:mb-4 text-sm sm:text-base transition-colors duration-200"
-                  style={{ color: colors.text.secondary }}
-                >
-                  Recommendations will be shown here based on your cart items
-                </p>
-                <button
-                  onClick={handleContinueShopping}
-                  className="font-medium text-sm sm:text-base transition-colors duration-200"
-                  style={{ color: colors.interactive.primary }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.color =
-                      colors.interactive.primaryHover;
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = colors.interactive.primary;
-                  }}
-                >
-                  Browse more ebooks →
-                </button>
-              </div>
+              </h2>
             </div>
+            <RelatedProducts currentProduct={items[0]?.product} limit={4} />
           </div>
         )}
       </div>

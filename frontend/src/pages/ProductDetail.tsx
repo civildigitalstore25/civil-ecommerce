@@ -22,6 +22,7 @@ import BannerCarousel from "../ui/admin/banner/BannerCarousel";
 import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import * as LucideIcons from "lucide-react";
+import EnquiryModal from "../components/EnquiryModal";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -167,6 +168,8 @@ const ProductDetail: React.FC = () => {
   const [enquiryMessage, setEnquiryMessage] = useState("");
   const [isCustomMessage, setIsCustomMessage] = useState(false);
   const enquiryTextareaRef = useRef<HTMLTextAreaElement | null>(null);
+  // Site enquiry modal state
+  const [showSiteEnquiryModal, setShowSiteEnquiryModal] = useState(false);
   // Ref and state to show a sticky Buy Now button when the original actions scroll out of view
   const actionRef = useRef<HTMLDivElement | null>(null);
   const [showStickyBuy, setShowStickyBuy] = useState(false);
@@ -390,16 +393,16 @@ const ProductDetail: React.FC = () => {
     console.log("handleEditReview called");
     console.log("user:", user);
     console.log("user.id:", user?.id);
-    console.log("review.user._id:", review.user._id);
+    console.log("review.user._id:", review.user?._id);
     console.log("user.role:", user?.role);
     console.log(
       "Comparison result:",
-      user?.id !== review.user._id,
+      user?.id !== review.user?._id,
       user?.role !== "admin",
     );
 
     // Temporarily allow all edits for debugging
-    // if (!user || (user.id !== review.user._id && user.role !== 'admin')) {
+    // if (!user || (user.id !== review.user?._id && user.role !== 'admin')) {
     //   Swal.fire('Error', 'You can only edit your own reviews', 'error');
     //   return;
     // }
@@ -1182,7 +1185,7 @@ const ProductDetail: React.FC = () => {
                 const WhatsappIcon = FaWhatsapp;
                 const FacebookIcon = (LucideIcons as any).Facebook;
                 const TwitterIcon = (LucideIcons as any).Twitter;
-                const LinkedInIcon = (LucideIcons as any).Linkedin || (LucideIcons as any).LinkedIn;
+                const LinkedInIcon = (LucideIcons as any).Linkedin;
                 const MailIcon = (LucideIcons as any).Mail;
 
                 // Render only WhatsApp, Facebook, Twitter, LinkedIn and Email icons
@@ -1641,33 +1644,32 @@ const ProductDetail: React.FC = () => {
                       <LucideIcons.Zap size={20} />
                       Buy Now
                     </button>
+
+                    <button
+                      onClick={() => setShowSiteEnquiryModal(true)}
+                      className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                      style={{
+                        background: colors.interactive.primary,
+                        color: '#fff',
+                        border: `1.5px solid ${colors.interactive.primary}`,
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = colors.interactive.primaryHover;
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = colors.interactive.primary;
+                        e.currentTarget.style.color = '#fff';
+                      }}
+                    >
+                      <LucideIcons.MessageSquare size={20} />
+                      Enquiry
+                    </button>
                   </div>
                 </>
               )}
 
-              <div className="mt-3">
-                <button
-                  onClick={openEnquiryModal}
-                  className="w-full border font-medium py-3 rounded-xl transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                  style={{
-                    border: `1.5px solid ${colors.interactive.primary}`,
-                    color: '#fff',
-                    background: colors.interactive.primary,
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = colors.interactive.primaryHover;
-                    e.currentTarget.style.color = '#fff';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = colors.interactive.primary;
-                    e.currentTarget.style.color = '#fff';
-                  }}
-                >
-                  <LucideIcons.MessageSquare size={20} />
-                  Request Inquiry
-                </button>
-              </div>
             </div>
             {/* Mobile: Description placed under enquiry button */}
             <div className="block lg:hidden mt-4">
@@ -2506,14 +2508,14 @@ const ProductDetail: React.FC = () => {
                                     color: colors.background.primary,
                                   }}
                                 >
-                                  {review.user.fullName.charAt(0).toUpperCase()}
+                                  {review.user?.fullName ? review.user.fullName.charAt(0).toUpperCase() : "U"}
                                 </div>
                                 <div>
                                   <h5
                                     className="font-bold"
                                     style={{ color: colors.text.primary }}
                                   >
-                                    {review.user.fullName}
+                                    {review.user?.fullName || "Anonymous User"}
                                   </h5>
                                   <div className="flex items-center gap-2">
                                     <div className="flex text-yellow-400">
@@ -2532,7 +2534,7 @@ const ProductDetail: React.FC = () => {
                                 </div>
                               </div>
                               {user &&
-                                (user.id === review.user._id ||
+                                (user.id === review.user?._id ||
                                   user.role === "admin") && (
                                   <div className="flex gap-2">
                                     <button
@@ -2836,6 +2838,53 @@ const ProductDetail: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Site Enquiry Modal */}
+      <EnquiryModal
+        isOpen={showSiteEnquiryModal}
+        onClose={() => setShowSiteEnquiryModal(false)}
+        product={
+          product
+            ? {
+                _id: product._id!,
+                name: product.name,
+                image: product.image,
+                version: product.version,
+              }
+            : undefined
+        }
+      />
+
+      {/* Sticky Floating WhatsApp Button - Mobile Responsive */}
+      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[100]">
+        {/* WhatsApp Button */}
+        <button
+          onClick={openEnquiryModal}
+          className="w-14 h-14 md:w-14 md:h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
+          style={{
+            backgroundColor: '#25D366',
+            boxShadow: '0 4px 20px rgba(37, 211, 102, 0.4)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#20BA5A';
+            e.currentTarget.style.transform = 'scale(1.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#25D366';
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          onTouchStart={(e) => {
+            e.currentTarget.style.transform = 'scale(0.95)';
+          }}
+          onTouchEnd={(e) => {
+            e.currentTarget.style.transform = 'scale(1)';
+          }}
+          title="WhatsApp Enquiry"
+          aria-label="Contact us on WhatsApp"
+        >
+          <FaWhatsapp size={28} color="#fff" />
+        </button>
+      </div>
     </div>
   );
 };

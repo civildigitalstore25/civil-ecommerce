@@ -8,6 +8,7 @@ import {
   Settings,
   Package,
   ChevronDown,
+  Mail,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import DesktopNavigation from "./DesktopNavigation";
@@ -285,6 +286,22 @@ const Header: React.FC = () => {
                   >
                     <Package className="w-4 h-4" />
                     <span>My Orders</span>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation("/my-enquiries")}
+                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.backgroundColor = colors.background.secondary;
+                      e.currentTarget.style.color = colors.interactive.primary;
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>My Enquiries</span>
                   </button>
                   <button
                     onClick={() => handleNavigation("/logout")}

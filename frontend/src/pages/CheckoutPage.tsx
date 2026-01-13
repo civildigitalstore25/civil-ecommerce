@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../api/userQueries";
 import { useAppForm } from "../hooks/useAppForm";
@@ -9,6 +9,12 @@ import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
+import { 
+  getBillingAddresses, 
+  saveBillingAddress, 
+  deleteBillingAddress,
+  type BillingAddress 
+} from "../api/billingAddressApi";
 
 // Declare Cashfree on window
 declare global {
@@ -95,6 +101,66 @@ const CheckoutPage: React.FC = () => {
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [savedAddresses, setSavedAddresses] = useState<BillingAddress[]>([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+
+  // Load saved billing addresses on component mount
+  useEffect(() => {
+    const loadSavedAddresses = async () => {
+      if (!user) {
+        setLoadingAddresses(false);
+        return;
+      }
+
+      try {
+        const addresses = await getBillingAddresses();
+        setSavedAddresses(addresses);
+      } catch (error) {
+        console.error("Failed to load saved addresses:", error);
+      } finally {
+        setLoadingAddresses(false);
+      }
+    };
+
+    loadSavedAddresses();
+  }, [user]);
+
+  // Handle selecting a saved address
+  const handleSelectAddress = (address: BillingAddress) => {
+    setSelectedAddressId(address._id);
+    setValue("name", address.name);
+    setValue("email", address.email);
+    setValue("whatsapp", address.whatsapp);
+    setValue("countryCode", address.countryCode);
+  };
+
+  // Handle deleting a saved address
+  const handleDeleteAddress = async (addressId: string) => {
+    const result = await Swal.fire({
+      title: "Delete Address?",
+      text: "Are you sure you want to delete this billing address?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: colors.interactive.primary,
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteBillingAddress(addressId);
+        setSavedAddresses(prev => prev.filter(addr => addr._id !== addressId));
+        if (selectedAddressId === addressId) {
+          setSelectedAddressId(null);
+        }
+        toast.success("Address deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete address");
+      }
+    }
+  };
 
   const normalizePrice = (price: any) =>
     parseFloat(String(price || 0).replace(/[^0-9.]/g, "")) || 0;
@@ -144,6 +210,20 @@ const CheckoutPage: React.FC = () => {
 
       const subtotal = normalizePrice(summary.subtotal);
       const finalTotal = subtotal - discount;
+
+      // Save billing address before payment (important for redirect-based payments)
+      try {
+        await saveBillingAddress({
+          name: data.name,
+          email: data.email,
+          whatsapp: data.whatsapp,
+          countryCode: data.countryCode,
+        });
+        console.log('✅ Billing address saved successfully');
+      } catch (error) {
+        console.error("Failed to save billing address:", error);
+        // Don't block the payment flow if saving address fails
+      }
 
       // Create order on backend
       const orderData = {
@@ -546,13 +626,138 @@ return (
       className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10"
       onSubmit={handleSubmit(handlePlaceOrder)}
     >
-      <BillingForm
-        register={register}
-        errors={errors}
-        control={control}
-        colors={colors}
-        setValue={setValue}
-      />
+      <div className="space-y-6">
+        {/* Saved Addresses Section */}
+        {!loadingAddresses && savedAddresses.length > 0 && (
+          <div
+            className="rounded-xl p-4 md:p-6 border"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <h3
+              className="text-lg font-semibold mb-4"
+              style={{ color: colors.text.primary }}
+            >
+              📋 Saved Billing Details
+            </h3>
+            <p
+              className="text-sm mb-4"
+              style={{ color: colors.text.secondary }}
+            >
+              Select from your previously used billing details or enter new ones below
+            </p>
+            <div className="space-y-3">
+              {savedAddresses.map((address) => (
+                <div
+                  key={address._id}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    selectedAddressId === address._id
+                      ? "shadow-md"
+                      : "hover:shadow-sm"
+                  }`}
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor:
+                      selectedAddressId === address._id
+                        ? colors.interactive.primary
+                        : colors.border.secondary,
+                  }}
+                  onClick={() => handleSelectAddress(address)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <div
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                            selectedAddressId === address._id
+                              ? "border-transparent"
+                              : ""
+                          }`}
+                          style={{
+                            backgroundColor:
+                              selectedAddressId === address._id
+                                ? colors.interactive.primary
+                                : "transparent",
+                            borderColor:
+                              selectedAddressId === address._id
+                                ? colors.interactive.primary
+                                : colors.border.primary,
+                          }}
+                        >
+                          {selectedAddressId === address._id && (
+                            <svg
+                              className="w-3 h-3"
+                              fill="white"
+                              viewBox="0 0 20 20"
+                            >
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </div>
+                        <span
+                          className="font-semibold text-sm md:text-base"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {address.name}
+                        </span>
+                      </div>
+                      <div
+                        className="text-xs md:text-sm space-y-1 ml-7"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        <p>📧 {address.email}</p>
+                        <p>
+                          📱 {address.countryCode} {address.whatsapp}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteAddress(address._id);
+                      }}
+                      className="ml-2 p-2 rounded-lg hover:bg-opacity-10 transition-colors"
+                      style={{
+                        color: colors.status.error,
+                      }}
+                      title="Delete address"
+                    >
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <BillingForm
+          register={register}
+          errors={errors}
+          control={control}
+          colors={colors}
+          setValue={setValue}
+        />
+      </div>
       <OrderSummary
         cartItems={cartItems}
         summary={{

@@ -112,7 +112,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                  className="object-contain w-full h-full transition-transform duration-300 hover:scale-105"
                 />
                 {/* Best Seller Ribbon */}
                 {product.isBestSeller && (

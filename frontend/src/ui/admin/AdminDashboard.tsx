@@ -8,6 +8,7 @@ import {
   Image,
   TicketPercent,
   MessageSquare,
+  Mail,
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import Products from "./products/Products";
@@ -19,6 +20,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Banner from "./Banner";
 import Coupons from "../admin/coupons/Coupons";
 import Reviews from "./Reviews";
+import EnquiryManagement from "./EnquiryManagement";
 import SuperAdminAdminManagement from "./SuperAdminAdminManagement";
 import { useAuth } from "../../api/auth";
 
@@ -32,6 +34,7 @@ type MenuType =
   | "banner"
   | "coupons"
   | "reviews"
+  | "enquiries"
   | "admin-management";
 
 
@@ -57,6 +60,7 @@ const AdminDashboardContent: React.FC = () => {
     // Removed Categories and Companies menu items
     { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
     { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
+    { id: "enquiries", label: "Enquiries", icon: Mail, permission: "enquiries" },
     { id: "banner", label: "Banner", icon: Image, permission: "banners" },
     { id: "coupons", label: "Coupons", icon: TicketPercent, permission: "coupons" },
   ];
@@ -103,6 +107,8 @@ const AdminDashboardContent: React.FC = () => {
         return <Orders />;
       case "reviews":
         return <Reviews />;
+      case "enquiries":
+        return <EnquiryManagement />;
       case "banner":
         return <Banner />;
       case "coupons":

@@ -23,7 +23,7 @@ export interface Review {
     _id: string;
     fullName: string;
     email: string;
-  };
+  } | null;
   rating: number;
   comment: string;
   createdAt: string;
