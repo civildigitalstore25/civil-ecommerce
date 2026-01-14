@@ -170,24 +170,10 @@ const ProductDetail: React.FC = () => {
   const enquiryTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   // Site enquiry modal state
   const [showSiteEnquiryModal, setShowSiteEnquiryModal] = useState(false);
-  // Ref and state to show a sticky Buy Now button when the original actions scroll out of view
+  // Ref for the action buttons section
   const actionRef = useRef<HTMLDivElement | null>(null);
-  const [showStickyBuy, setShowStickyBuy] = useState(false);
 
-  useEffect(() => {
-    const onScroll = () => {
-      const el = actionRef.current;
-      if (!el) return setShowStickyBuy(false);
-      const rect = el.getBoundingClientRect();
-      const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
-      setShowStickyBuy(!fullyVisible);
-    };
 
-    window.addEventListener("scroll", onScroll, { passive: true });
-    // run once
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Open enquiry modal with default product message
   const openEnquiryModal = () => {
@@ -1694,29 +1680,47 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* Sticky centered Buy Now button shown when original actions scroll out of view */}
-          {showStickyBuy && !product.isOutOfStock && (
-            <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+          {/* Sticky Buy Now and WhatsApp buttons - Always visible, especially on mobile */}
+          {!product.isOutOfStock && (
+            <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 z-[9999] flex flex-col-reverse md:flex-row gap-2 md:gap-3 items-end">
+              {/* Buy Now Button - styled similar to WhatsApp button */}
               <button
                 onClick={handleBuyNow}
-                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3 rounded-full shadow-lg"
+                className="flex items-center rounded-full shadow-2xl px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 bg-[var(--buy-now-color,#2563eb)] hover:bg-[var(--buy-now-hover,#1d4ed8)] transition-all duration-300 gap-2 md:gap-3"
                 style={{
-                  border: `1.5px solid ${colors.interactive.primary}`,
+                  backgroundColor: colors.interactive.primary,
+                  boxShadow: '0 4px 20px rgba(37, 99, 235, 0.4)',
                   color: '#fff',
-                  background: colors.interactive.primary,
-                  boxShadow: '0 6px 20px rgba(0,0,0,0.18)'
+                  border: `1.5px solid ${colors.interactive.primary}`,
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover;
-                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                onMouseEnter={e => {
+                  e.currentTarget.style.backgroundColor = colors.interactive.primaryHover || colors.interactive.primary;
                 }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                onMouseLeave={e => {
+                  e.currentTarget.style.backgroundColor = colors.interactive.primary;
                 }}
+                title="Buy Now"
+                aria-label="Buy Now"
               >
-                <LucideIcons.Zap size={18} />
-                Buy Now
+                <LucideIcons.Zap size={24} className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
+                <div className="flex flex-col items-start">
+                  <span className="text-white font-bold text-sm md:text-base lg:text-lg leading-none">Buy Now</span>
+                  <span className="text-white text-xs md:text-xs lg:text-sm leading-none opacity-80">Instant Checkout</span>
+                </div>
+              </button>
+              {/* WhatsApp Chat Button */}
+              <button
+                onClick={openEnquiryModal}
+                className="flex items-center rounded-full shadow-2xl px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 bg-[#25D366] hover:bg-[#20BA5A] transition-all duration-300 gap-2 md:gap-3"
+                style={{ boxShadow: '0 4px 20px rgba(37, 211, 102, 0.4)' }}
+                title="WhatsApp Enquiry"
+                aria-label="Contact us on WhatsApp"
+              >
+                <FaWhatsapp size={24} className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" color="#fff" />
+                <div className="flex flex-col items-start">
+                  <span className="text-white font-bold text-sm md:text-base lg:text-lg leading-none">Whatsapp</span>
+                  <span className="text-white text-xs md:text-xs lg:text-sm leading-none opacity-80">click to chat</span>
+                </div>
               </button>
             </div>
           )}
@@ -2855,36 +2859,7 @@ const ProductDetail: React.FC = () => {
         }
       />
 
-      {/* Sticky Floating WhatsApp Button - Mobile Responsive */}
-      <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-[100]">
-        {/* WhatsApp Button */}
-        <button
-          onClick={openEnquiryModal}
-          className="w-14 h-14 md:w-14 md:h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95"
-          style={{
-            backgroundColor: '#25D366',
-            boxShadow: '0 4px 20px rgba(37, 211, 102, 0.4)',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = '#20BA5A';
-            e.currentTarget.style.transform = 'scale(1.1)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#25D366';
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
-          onTouchStart={(e) => {
-            e.currentTarget.style.transform = 'scale(0.95)';
-          }}
-          onTouchEnd={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
-          title="WhatsApp Enquiry"
-          aria-label="Contact us on WhatsApp"
-        >
-          <FaWhatsapp size={28} color="#fff" />
-        </button>
-      </div>
+      {/* Sticky buttons are now handled in the product detail section above */}
     </div>
   );
 };
