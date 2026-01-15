@@ -1,5 +1,5 @@
 import React from "react";
-import FeaturedProducts from "../../components/FeaturedProducts";
+import CategoryTabs from "../../components/CategoryTabs";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const HomeProducts: React.FC = () => {
@@ -34,13 +34,13 @@ const HomeProducts: React.FC = () => {
               textShadow: `0 2px 8px ${colors.background.primary}80`,
             }}
           >
-            Top Products
+            Shop by Brand
           </h2>
         </div>
 
-        {/* Product Grid */}
+        {/* Category Tabs with Products */}
         <div className="px-3 md:px-8 pb-3 md:pb-4">
-          <FeaturedProducts limit={10} showCount={false} />
+          <CategoryTabs />
         </div>
       </div>
     </section>

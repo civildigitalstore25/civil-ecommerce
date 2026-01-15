@@ -40,17 +40,20 @@ const MobileShopByCategory: React.FC = () => {
   };
 
   return (
-    <div className="py-4">
+    <div className="pb-4">
       {/* Header */}
-      <div className="text-center mb-4">
+      <div className="text-center pb-6">
         <h2
-          className="text-lg font-bold mb-1"
-          style={{ color: colors.text.primary }}
+          className="text-2xl font-bold transition-colors duration-200"
+          style={{
+            color: colors.text.primary,
+            textShadow: `0 2px 8px ${colors.background.primary}80`,
+          }}
         >
           Shop by Category
         </h2>
         <p
-          className="text-xs"
+          className="text-xs mt-1"
           style={{ color: colors.text.secondary }}
         >
           Find the perfect software for your needs
@@ -85,7 +88,7 @@ const MobileShopByCategory: React.FC = () => {
                   })
                 )}
               </div>
-              
+
               {/* Label */}
               <span
                 className="text-[10px] font-medium text-center leading-tight"
