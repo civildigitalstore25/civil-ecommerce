@@ -221,7 +221,7 @@ const CategoryTabs: React.FC = () => {
                   )}
                 </h2>
 
-                {/* Stars & Ratings */}
+                {/* Stars & Ratings
                 <div className="flex items-center text-[10px] md:text-sm mb-2 md:mb-3">
                   <span className="text-yellow-400 mr-0.5 md:mr-1">
                     {"★".repeat(Math.round(product.rating || 4))}
@@ -232,7 +232,7 @@ const CategoryTabs: React.FC = () => {
                   >
                     {product.ratingCount ? `(${product.ratingCount})` : ""}
                   </span>
-                </div>
+                </div> */}
 
                 {/* Actions */}
                 <div className="flex flex-col gap-1.5 md:gap-2 mt-auto">
