@@ -117,6 +117,7 @@ const Products: React.FC = () => {
     category:
       selectedCategory !== "All Categories" ? selectedCategory : undefined,
     company: selectedCompany !== "All Companies" ? selectedCompany : undefined,
+    limit: 1000, // Fetch up to 1000 products for admin panel
   };
   const { data: productsData, isLoading, error } = useProducts(queryParams);
   const { data: categories = [] } = useCategories();

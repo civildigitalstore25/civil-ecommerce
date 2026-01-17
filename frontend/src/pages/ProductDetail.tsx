@@ -1680,13 +1680,13 @@ const ProductDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* Sticky Buy Now and WhatsApp buttons - Always visible, especially on mobile */}
+          {/* Sticky WhatsApp button - Always visible, Buy Now only on desktop */}
           {!product.isOutOfStock && (
             <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 z-[9999] flex flex-col-reverse md:flex-row gap-2 md:gap-3 items-end">
-              {/* Buy Now Button - styled similar to WhatsApp button */}
+              {/* Buy Now Button - Hidden on mobile, visible on desktop only */}
               <button
                 onClick={handleBuyNow}
-                className="flex items-center rounded-full shadow-2xl px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 bg-[var(--buy-now-color,#2563eb)] hover:bg-[var(--buy-now-hover,#1d4ed8)] transition-all duration-300 gap-2 md:gap-3"
+                className="hidden md:flex items-center rounded-full shadow-2xl px-4 py-2 lg:px-6 lg:py-3 bg-[var(--buy-now-color,#2563eb)] hover:bg-[var(--buy-now-hover,#1d4ed8)] transition-all duration-300 gap-2 md:gap-3"
                 style={{
                   backgroundColor: colors.interactive.primary,
                   boxShadow: '0 4px 20px rgba(37, 99, 235, 0.4)',
@@ -1702,10 +1702,10 @@ const ProductDetail: React.FC = () => {
                 title="Buy Now"
                 aria-label="Buy Now"
               >
-                <LucideIcons.Zap size={24} className="w-6 h-6 md:w-7 md:h-7 lg:w-8 lg:h-8" />
+                <LucideIcons.Zap size={24} className="w-7 md:h-7 lg:w-8 lg:h-8" />
                 <div className="flex flex-col items-start">
-                  <span className="text-white font-bold text-sm md:text-base lg:text-lg leading-none">Buy Now</span>
-                  <span className="text-white text-xs md:text-xs lg:text-sm leading-none opacity-80">Instant Checkout</span>
+                  <span className="text-white font-bold text-base lg:text-lg leading-none">Buy Now</span>
+                  <span className="text-white text-xs lg:text-sm leading-none opacity-80">Instant Checkout</span>
                 </div>
               </button>
               {/* WhatsApp Chat Button */}
@@ -2850,11 +2850,11 @@ const ProductDetail: React.FC = () => {
         product={
           product
             ? {
-                _id: product._id!,
-                name: product.name,
-                image: product.image,
-                version: product.version,
-              }
+              _id: product._id!,
+              name: product.name,
+              image: product.image,
+              version: product.version,
+            }
             : undefined
         }
       />
