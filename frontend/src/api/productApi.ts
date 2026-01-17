@@ -73,8 +73,8 @@ export const useProductDetail = (id?: string) => {
         const { data } = await apiClient.get(`/${id}`);
         return data;
       } else {
-        // Fetch all products for slug-based lookup
-        const { data } = await apiClient.get(`/`);
+        // Fetch all products for slug-based lookup with high limit
+        const { data } = await apiClient.get(`/`, { params: { limit: 1000 } });
         return Array.isArray(data.products) ? data.products : data;
       }
     },
@@ -137,12 +137,12 @@ export const useUpdateProduct = () => {
       console.log("🔍 API - Updating product with ID:", id);
       console.log("🔍 API - driveLink in payload:", updatedProduct.driveLink || 'NOT PROVIDED');
       console.log("🔍 API - Full product payload:", JSON.stringify(updatedProduct, null, 2));
-      
+
       const { data } = await apiClient.put(`/${id}`, updatedProduct);
-      
+
       console.log("✅ API - Product updated, response:", data);
       console.log("✅ API - driveLink in response:", data.driveLink || 'NOT IN RESPONSE');
-      
+
       return data;
     },
     onSuccess: () => {
