@@ -77,6 +77,7 @@ const BrandCategoryListing: React.FC = () => {
   if (category) {
     queryParams.category = category;
   }
+  queryParams.limit = 1000; // Fetch up to 1000 products for category listing
 
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
     useProducts(queryParams);
