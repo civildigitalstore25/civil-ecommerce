@@ -20,6 +20,7 @@ import {
   adminCreateOrder,
 } from "../../api/adminOrderApi";
 import FormButton from "../../components/Button/FormButton";
+import Pagination from "./orders/Pagination";
 import Swal from "sweetalert2";
 
 import type { IOrderItem } from "../../api/types/orderTypes";
@@ -108,6 +109,8 @@ const Orders: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   // Fetch all orders
   const { data, isLoading } = useQuery({
@@ -211,6 +214,17 @@ const Orders: React.FC = () => {
   };
 
   const filteredOrders = getFilteredOrders();
+
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters or search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter, searchTerm]);
 
   // Debug: Log first order to check structure
   if (orders.length > 0) {
@@ -601,7 +615,7 @@ const Orders: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                filteredOrders.map((order: any) => (
+                paginatedOrders.map((order: any) => (
                   <tr
                     key={order._id}
                     className="transition-colors duration-200"
@@ -775,6 +789,15 @@ const Orders: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {/* Pagination */}
+      {!isLoading && filteredOrders.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
 
       {/* Order Details Modal */}
       {showDetailsModal && selectedOrder && (

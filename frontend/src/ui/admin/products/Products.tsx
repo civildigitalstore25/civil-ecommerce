@@ -21,6 +21,7 @@ import {
 import type { Product } from "../../../api/types/productTypes.ts";
 import AddProductModal from "./AddProductModal";
 import ProductViewModal from "./ProductViewModal";
+import Pagination from "./Pagination";
 import Swal from "sweetalert2";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
@@ -102,6 +103,8 @@ const Products: React.FC = () => {
   const [selectedStatus, setSelectedStatus] = useState("All Status");
   const [showBestSellers, setShowBestSellers] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -110,6 +113,11 @@ const Products: React.FC = () => {
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch, selectedCategory, selectedCompany, selectedStatus, showBestSellers]);
 
   // Build query params
   const queryParams = {
@@ -176,7 +184,7 @@ const Products: React.FC = () => {
   const rawProducts = productsData?.products || [];
 
   // Apply client-side filtering for new attributes
-  const products = rawProducts.filter((product: Product) => {
+  const allFilteredProducts = rawProducts.filter((product: Product) => {
     // Filter by status
     if (selectedStatus !== "All Status") {
       const productStatus = product.status || "active"; // Default to active if no status
@@ -209,6 +217,12 @@ const Products: React.FC = () => {
 
     return true;
   });
+
+  // Pagination calculations
+  const totalPages = Math.ceil(allFilteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const products = allFilteredProducts.slice(startIndex, endIndex);
 
   const handleSaveProduct = (productData: any) => {
     console.log('💾 Frontend - Saving product with driveLink:', productData.driveLink || 'NOT PROVIDED');
@@ -1090,6 +1104,15 @@ const Products: React.FC = () => {
               </table>
             </div>
           </div>
+        )}
+
+        {/* Pagination */}
+        {!isLoading && !error && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
         )}
 
         <AddProductModal
