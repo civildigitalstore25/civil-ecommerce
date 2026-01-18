@@ -7,6 +7,7 @@ import { useCartContext } from "../contexts/CartContext";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
 
+
 // Brand-Category mapping for display names
 const brandLabels: Record<string, string> = {
   autodesk: "Autodesk",
