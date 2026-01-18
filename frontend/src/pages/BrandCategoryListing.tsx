@@ -306,19 +306,7 @@ const BrandCategoryListing: React.FC = () => {
                   )}
                 </h2>
 
-                {/* Stars & Ratings */}
-                <div className="flex items-center text-[10px] md:text-sm mb-1 md:mb-2">
-                  <span className="text-yellow-400 mr-0.5 md:mr-1">
-                    {"★".repeat(Math.round(product.rating || 4))}{" "}
-                  </span>
-                  <span
-                    className="transition-colors duration-200"
-                    style={{ color: colors.text.accent }}
-                  >
-                    {product.ratingCount ? `(${product.ratingCount})` : ""}
-                  </span>
-                </div>
-
+               
                 {/* Price and short description hidden in listing view */}
 
                 {/* Actions */}
