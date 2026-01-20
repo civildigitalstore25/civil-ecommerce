@@ -9,7 +9,7 @@ export const HeroSection: React.FC = () => {
                 <div className="space-y-6">
                     <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
                         Adobe Creative Cloud —<br />
-                        1 Year Plan for ₹899
+                        1 Year Plan for ₹4999
                     </h1>
 
                     <p className="text-gray-700 text-lg lg:text-xl">
