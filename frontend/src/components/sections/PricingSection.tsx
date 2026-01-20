@@ -37,6 +37,7 @@ export const PricingSection: React.FC = () => {
                   <span className="text-gray-600 text-xl">/year</span>
                 </div>
               </div>
+              
 
               {/* Features List */}
               <div className="space-y-4 mb-8">
