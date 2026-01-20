@@ -33,7 +33,7 @@ export const PricingSection: React.FC = () => {
               {/* Price */}
               <div className="text-center mb-8">
                 <div className="flex items-baseline justify-center gap-2">
-                  <span className="text-5xl lg:text-6xl font-bold text-gray-900">₹899</span>
+                  <span className="text-5xl lg:text-6xl font-bold text-gray-900">₹4999</span>
                   <span className="text-gray-600 text-xl">/year</span>
                 </div>
               </div>
