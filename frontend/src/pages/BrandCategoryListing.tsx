@@ -241,7 +241,8 @@ const BrandCategoryListing: React.FC = () => {
                   className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
                   style={{ backgroundColor: colors.background.secondary }}
                   onClick={() => {
-                    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+                    const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
+                    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
                     navigate(`/product/${slug}`);
                   }}
                 >
@@ -307,14 +308,15 @@ const BrandCategoryListing: React.FC = () => {
                   )}
                 </h2>
 
-               
+
                 {/* Price and short description hidden in listing view */}
 
                 {/* Actions */}
                 <div className="flex flex-col gap-1 md:gap-2 mt-auto">
                   <button
                     onClick={() => {
-                      const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+                      const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
+                      const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
                       navigate(`/product/${slug}`);
                     }}
                     className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"

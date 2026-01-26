@@ -105,7 +105,8 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 className="rounded-md md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
                 style={{ backgroundColor: colors.background.secondary }}
                 onClick={() => {
-                  const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+                  const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
+                  const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
                   navigate(`/product/${slug}`);
                 }}
               >

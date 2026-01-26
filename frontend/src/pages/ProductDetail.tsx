@@ -109,13 +109,16 @@ const ProductDetail: React.FC = () => {
   let productName = "";
   let productVersion = "";
   if (slug) {
+    // Remove any trailing hyphens first
+    const cleanSlug = slug.replace(/-+$/, "");
+
     // Split by last hyphen for version (assuming version does not contain hyphens)
-    const lastHyphen = slug.lastIndexOf("-");
+    const lastHyphen = cleanSlug.lastIndexOf("-");
     if (lastHyphen !== -1) {
-      productName = slug.substring(0, lastHyphen).replace(/-/g, " ");
-      productVersion = slug.substring(lastHyphen + 1);
+      productName = cleanSlug.substring(0, lastHyphen).replace(/-/g, " ");
+      productVersion = cleanSlug.substring(lastHyphen + 1);
     } else {
-      productName = slug.replace(/-/g, " ");
+      productName = cleanSlug.replace(/-/g, " ");
     }
   }
 
@@ -125,13 +128,28 @@ const ProductDetail: React.FC = () => {
   // Prefer matching by stored slug (if available). Fallback to name+version matching.
   const product = productList?.find((p: any) => {
     if (!slug) return false;
-    if (p.slug && p.slug.toLowerCase() === slug.toLowerCase()) return true;
-    // fallback: compare name and optional version
-    const nameMatch = p.name?.toLowerCase().replace(/\s+/g, " ") === productName.toLowerCase();
+
+    // Clean both slugs for comparison
+    const cleanInputSlug = slug.replace(/-+$/, "").toLowerCase();
+    const cleanStoredSlug = p.slug?.replace(/-+$/, "").toLowerCase();
+
+    if (cleanStoredSlug && cleanStoredSlug === cleanInputSlug) return true;
+
+    // Strategy 1: Try matching with parsed name and version
+    const nameMatch = p.name?.toLowerCase().replace(/\s+/g, " ").trim() === productName.toLowerCase().trim();
     const versionMatch = productVersion
-      ? p.version?.toString().toLowerCase() === productVersion.toLowerCase()
-      : true;
-    return nameMatch && versionMatch;
+      ? p.version?.toString().toLowerCase().trim() === productVersion.toLowerCase().trim()
+      : !p.version || !p.version.toString().trim();
+
+    if (nameMatch && versionMatch) return true;
+
+    // Strategy 2: Try matching entire slug as product name (no version)
+    // This handles cases like "project-2024-professional" matching "Project 2024 Professional"
+    const fullSlugAsName = cleanInputSlug.replace(/-/g, " ");
+    const fullNameMatch = p.name?.toLowerCase().trim() === fullSlugAsName.trim();
+    const noVersionOrEmpty = !p.version || !p.version.toString().trim();
+
+    return fullNameMatch && noVersionOrEmpty;
   });
   const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
@@ -177,7 +195,7 @@ const ProductDetail: React.FC = () => {
   const actionRef = useRef<HTMLDivElement | null>(null);
   // Ref for the pricing section
   const pricingRef = useRef<HTMLDivElement | null>(null);
-  
+
   // Update product mutation
   const updateProductMutation = useUpdateProduct();
 
@@ -853,12 +871,12 @@ const ProductDetail: React.FC = () => {
     if (!userHasSelectedPlan || !selectedOption) {
       // Scroll to pricing section FIRST so user can see the options
       if (pricingRef.current) {
-        pricingRef.current.scrollIntoView({ 
-          behavior: "smooth", 
-          block: "start" 
+        pricingRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
         });
       }
-      
+
       // Wait a moment for scroll to complete, then show alert
       setTimeout(async () => {
         await Swal.fire({
@@ -869,7 +887,7 @@ const ProductDetail: React.FC = () => {
           confirmButtonColor: colors.interactive.primary,
         });
       }, 500);
-      
+
       return;
     }
 

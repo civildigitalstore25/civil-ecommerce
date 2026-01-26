@@ -98,7 +98,8 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
             border: `1.5px solid ${colors.border.primary}`,
           }}
           onClick={() => {
-            const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+            const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
+            const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
             navigate(`/product/${slug}`);
           }}
         >
