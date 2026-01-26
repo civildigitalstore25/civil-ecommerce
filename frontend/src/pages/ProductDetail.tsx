@@ -245,8 +245,14 @@ const ProductDetail: React.FC = () => {
     if (isHTML) {
       return (
         <div
-          className={className || "prose max-w-none"}
-          style={{ color: colors.text.secondary }}
+          className={`${className || "prose max-w-none"} overflow-x-auto`}
+          style={{
+            color: colors.text.secondary,
+            '--tw-prose-body': colors.text.secondary,
+            '--tw-prose-headings': colors.text.primary,
+            '--tw-prose-bold': colors.text.primary,
+            '--tw-prose-links': colors.interactive.primary,
+          } as React.CSSProperties}
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
       );
@@ -1311,8 +1317,41 @@ const ProductDetail: React.FC = () => {
                   Product Description
                 </h3>
 
-                <div className="mt-3" style={{ color: colors.text.secondary }}>
-                  <div>
+                <div className="mt-3">
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                    .product-description-content h1,
+                    .product-description-content h2,
+                    .product-description-content h3,
+                    .product-description-content h4,
+                    .product-description-content h5,
+                    .product-description-content h6 {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                      margin-top: 1rem;
+                      margin-bottom: 0.5rem;
+                    }
+                    .product-description-content p,
+                    .product-description-content li,
+                    .product-description-content span,
+                    .product-description-content div {
+                      color: ${colors.text.secondary} !important;
+                    }
+                    .product-description-content strong,
+                    .product-description-content b {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                    }
+                    .product-description-content ul,
+                    .product-description-content ol {
+                      padding-left: 1.5rem;
+                      margin: 0.5rem 0;
+                    }
+                    .product-description-content a {
+                      color: ${colors.interactive.primary} !important;
+                    }
+                  `}} />
+                  <div className="product-description-content">
                     {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
                   </div>
                 </div>
@@ -1792,8 +1831,41 @@ const ProductDetail: React.FC = () => {
                   Product Description
                 </h3>
 
-                <div className="mb-4" style={{ color: colors.text.secondary }}>
-                  <div>
+                <div className="mb-4">
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                    .product-description-mobile h1,
+                    .product-description-mobile h2,
+                    .product-description-mobile h3,
+                    .product-description-mobile h4,
+                    .product-description-mobile h5,
+                    .product-description-mobile h6 {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                      margin-top: 1rem;
+                      margin-bottom: 0.5rem;
+                    }
+                    .product-description-mobile p,
+                    .product-description-mobile li,
+                    .product-description-mobile span,
+                    .product-description-mobile div {
+                      color: ${colors.text.secondary} !important;
+                    }
+                    .product-description-mobile strong,
+                    .product-description-mobile b {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                    }
+                    .product-description-mobile ul,
+                    .product-description-mobile ol {
+                      padding-left: 1.5rem;
+                      margin: 0.5rem 0;
+                    }
+                    .product-description-mobile a {
+                      color: ${colors.interactive.primary} !important;
+                    }
+                  `}} />
+                  <div className="product-description-mobile">
                     {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base leading-relaxed')}
                   </div>
                 </div>
@@ -1958,13 +2030,83 @@ const ProductDetail: React.FC = () => {
                   Product Details
                 </h3>
                 <div
-                  className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200"
+                  className="rounded-xl lg:rounded-2xl p-4 lg:p-6 border transition-colors duration-200 overflow-hidden"
                   style={{
                     backgroundColor: colors.background.secondary,
                     borderColor: colors.border.primary,
                   }}
                 >
-                  {renderHTMLContent(product.detailsDescription || "", 'text-sm lg:text-base')}
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                    .product-details-content table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin: 1rem 0;
+                      font-size: 0.875rem;
+                      overflow-x: auto;
+                      display: block;
+                    }
+                    .product-details-content table thead {
+                      background-color: ${colors.background.tertiary || colors.background.accent};
+                    }
+                    .product-details-content table th,
+                    .product-details-content table td {
+                      padding: 0.75rem;
+                      text-align: left;
+                      border: 1px solid ${colors.border.primary};
+                      color: ${colors.text.primary} !important;
+                    }
+                    .product-details-content table th {
+                      font-weight: 600;
+                      color: ${colors.text.primary} !important;
+                    }
+                    .product-details-content table tbody tr:hover {
+                      background-color: ${colors.background.tertiary || colors.background.accent};
+                    }
+                    .product-details-content h1,
+                    .product-details-content h2,
+                    .product-details-content h3,
+                    .product-details-content h4,
+                    .product-details-content h5,
+                    .product-details-content h6 {
+                      color: ${colors.text.primary} !important;
+                      margin-top: 1.5rem;
+                      margin-bottom: 1rem;
+                      font-weight: 600;
+                    }
+                    .product-details-content p,
+                    .product-details-content li,
+                    .product-details-content span,
+                    .product-details-content div {
+                      color: ${colors.text.secondary} !important;
+                    }
+                    .product-details-content strong,
+                    .product-details-content b {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                    }
+                    .product-details-content ul,
+                    .product-details-content ol {
+                      padding-left: 1.5rem;
+                      margin: 1rem 0;
+                    }
+                    .product-details-content a {
+                      color: ${colors.interactive.primary} !important;
+                      text-decoration: underline;
+                    }
+                    @media (max-width: 768px) {
+                      .product-details-content table {
+                        font-size: 0.75rem;
+                      }
+                      .product-details-content table th,
+                      .product-details-content table td {
+                        padding: 0.5rem;
+                      }
+                    }
+                  `}} />
+                  <div className="product-details-content">
+                    {renderHTMLContent(product.detailsDescription || "", 'text-sm lg:text-base')}
+                  </div>
                 </div>
               </div>
             )}
