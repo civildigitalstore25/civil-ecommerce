@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaWhatsapp } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProductDetail } from "../api/productApi";
+import { useProductDetail, useUpdateProduct } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
 import { isAuthenticated } from "../utils/auth";
@@ -23,6 +23,7 @@ import Swal from "sweetalert2";
 import { Helmet } from "react-helmet";
 import * as LucideIcons from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
+import AddProductModal from "../ui/admin/products/AddProductModal";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -170,8 +171,15 @@ const ProductDetail: React.FC = () => {
   const enquiryTextareaRef = useRef<HTMLTextAreaElement | null>(null);
   // Site enquiry modal state
   const [showSiteEnquiryModal, setShowSiteEnquiryModal] = useState(false);
+  // Edit product modal state
+  const [showEditModal, setShowEditModal] = useState(false);
   // Ref for the action buttons section
   const actionRef = useRef<HTMLDivElement | null>(null);
+  // Ref for the pricing section
+  const pricingRef = useRef<HTMLDivElement | null>(null);
+  
+  // Update product mutation
+  const updateProductMutation = useUpdateProduct();
 
 
 
@@ -843,13 +851,25 @@ const ProductDetail: React.FC = () => {
   const handleBuyNow = async () => {
     // Check if user has manually selected a pricing plan
     if (!userHasSelectedPlan || !selectedOption) {
-      await Swal.fire({
-        title: "Select Pricing Plan",
-        text: "Please select a pricing plan before proceeding",
-        icon: "warning",
-        confirmButtonText: "OK",
-        confirmButtonColor: colors.interactive.primary,
-      });
+      // Scroll to pricing section FIRST so user can see the options
+      if (pricingRef.current) {
+        pricingRef.current.scrollIntoView({ 
+          behavior: "smooth", 
+          block: "start" 
+        });
+      }
+      
+      // Wait a moment for scroll to complete, then show alert
+      setTimeout(async () => {
+        await Swal.fire({
+          title: "Select Pricing Plan",
+          text: "Please select a pricing plan before proceeding",
+          icon: "warning",
+          confirmButtonText: "OK",
+          confirmButtonColor: colors.interactive.primary,
+        });
+      }, 500);
+      
       return;
     }
 
@@ -934,6 +954,40 @@ const ProductDetail: React.FC = () => {
     });
   };
 
+  // Handle Product Edit
+  const handleEditProduct = (productData: any) => {
+    if (!product?._id) return;
+
+    updateProductMutation.mutate(
+      {
+        id: product._id,
+        updatedProduct: productData,
+      },
+      {
+        onSuccess: () => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Product updated successfully",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+          setShowEditModal(false);
+          // Reload product data
+          window.location.reload();
+        },
+        onError: (error: any) => {
+          console.error("Update product error:", error);
+          Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: error.response?.data?.message || "Failed to update product",
+          });
+        },
+      }
+    );
+  };
+
   // Social sharing helpers
 
   const shareTo = (platform: string) => {
@@ -1014,26 +1068,51 @@ const ProductDetail: React.FC = () => {
             </span>
           </div>
 
-          {/* Back Button */}
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105 flex-shrink-0"
-            style={{
-              color: colors.text.secondary,
-              backgroundColor: colors.background.secondary,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = colors.background.accent;
-              e.currentTarget.style.color = colors.interactive.primary;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = colors.background.secondary;
-              e.currentTarget.style.color = colors.text.secondary;
-            }}
-          >
-            <LucideIcons.ArrowLeft size={18} />
-            <span className="text-sm font-medium">Back</span>
-          </button>
+          {/* Back Button and Edit Button */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Edit Button - Admin & Superadmin Only */}
+            {(user?.role === 'admin' || user?.role === 'superadmin') && (
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+                style={{
+                  color: '#fff',
+                  backgroundColor: '#FF6B35',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FF8C5A';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = '#FF6B35';
+                }}
+                title="Edit Product"
+              >
+                <LucideIcons.Edit size={18} />
+                <span className="text-sm font-medium">Edit</span>
+              </button>
+            )}
+
+            {/* Back Button */}
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+              style={{
+                color: colors.text.secondary,
+                backgroundColor: colors.background.secondary,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = colors.background.accent;
+                e.currentTarget.style.color = colors.interactive.primary;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = colors.background.secondary;
+                e.currentTarget.style.color = colors.text.secondary;
+              }}
+            >
+              <LucideIcons.ArrowLeft size={18} />
+              <span className="text-sm font-medium">Back</span>
+            </button>
+          </div>
         </div>
       </div>
       {/* Product Page Banner */}
@@ -1225,6 +1304,7 @@ const ProductDetail: React.FC = () => {
 
             {/* License Selection */}
             <div
+              ref={pricingRef}
               className="rounded-lg lg:rounded-xl p-3 lg:p-4 transition-colors duration-200"
               style={{ backgroundColor: colors.background.secondary }}
             >
@@ -1573,6 +1653,30 @@ const ProductDetail: React.FC = () => {
 
             {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}
             <div ref={actionRef}>
+              {/* Admin Edit Button */}
+              {user?.role === 'admin' && (
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className="w-full font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow mb-3"
+                  style={{
+                    background: '#FF6B35',
+                    color: '#fff',
+                    border: '1.5px solid #FF6B35',
+                    boxShadow: '0 2px 8px rgba(255, 107, 53, 0.3)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#FF5722';
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FF6B35';
+                    e.currentTarget.style.color = '#fff';
+                  }}
+                >
+                  <LucideIcons.Edit size={20} />
+                  Edit Product
+                </button>
+              )}
               {product.isOutOfStock ? (
                 <div
                   className="w-full font-bold py-4 rounded-lg text-center text-lg"
@@ -2858,6 +2962,16 @@ const ProductDetail: React.FC = () => {
             : undefined
         }
       />
+
+      {/* Product Edit Modal - Admin & Superadmin */}
+      {(user?.role === 'admin' || user?.role === 'superadmin') && (
+        <AddProductModal
+          open={showEditModal}
+          onClose={() => setShowEditModal(false)}
+          onSave={handleEditProduct}
+          product={product}
+        />
+      )}
 
       {/* Sticky buttons are now handled in the product detail section above */}
     </div>
