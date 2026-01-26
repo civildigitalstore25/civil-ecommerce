@@ -1379,7 +1379,7 @@ const ProductDetail: React.FC = () => {
                       >
                         <div
                           className="text-xs font-bold mb-1"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {option.label.replace(" License", "")}
                         </div>
@@ -1400,7 +1400,7 @@ const ProductDetail: React.FC = () => {
                         )}
                         <div
                           className="text-sm font-bold"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {formatPriceWithSymbol(
                             option.priceINR,
@@ -1446,18 +1446,18 @@ const ProductDetail: React.FC = () => {
                       >
                         <div
                           className="text-xs font-bold mb-1"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {option.label}
                         </div>
                         {option.trialDays && (
-                          <div className="text-xs" style={{ color: colors.text.secondary }}>
+                          <div className="text-xs" style={{ color: selectedLicense === option.id ? 'rgba(255,255,255,0.8)' : colors.text.secondary }}>
                             {option.trialDays} Days
                           </div>
                         )}
                         <div
                           className="text-sm font-bold"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {formatPriceWithSymbol(
                             option.priceINR,
@@ -1503,7 +1503,7 @@ const ProductDetail: React.FC = () => {
                       >
                         <div
                           className="text-xs font-bold mb-1"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {option.label}
                         </div>
@@ -1519,7 +1519,7 @@ const ProductDetail: React.FC = () => {
                         </div>
                         <div
                           className="text-sm font-bold"
-                          style={{ color: colors.text.primary }}
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
                           {formatPriceWithSymbol(
                             option.priceINR,
