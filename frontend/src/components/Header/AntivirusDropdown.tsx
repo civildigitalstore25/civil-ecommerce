@@ -1,16 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { ChevronRight } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-
-interface AntivirusSubProduct {
-  name: string;
-  href: string;
-}
 
 interface AntivirusProduct {
   name: string;
   href: string;
-  topProducts?: AntivirusSubProduct[];
 }
 
 interface AntivirusCategory {
@@ -31,56 +25,15 @@ const antivirusCategories: AntivirusCategory[] = [
     products: [
       {
         name: "K7 Security",
-        href: "/antivirus/k7-security",
-        topProducts: [
-          { name: "K7 Total Security", href: "/antivirus/k7-total-security" },
-          {
-            name: "K7 Internet Security",
-            href: "/antivirus/k7-internet-security",
-          },
-          {
-            name: "K7 Ultimate Security",
-            href: "/antivirus/k7-ultimate-security",
-          },
-          {
-            name: "K7 Antivirus Premium",
-            href: "/antivirus/k7-antivirus-premium",
-          },
-        ],
+        href: "/category?brand=antivirus&category=k7-security",
       },
       {
         name: "Quick Heal",
-        href: "/antivirus/quick-heal",
-        topProducts: [
-          {
-            name: "Quick Heal Total Security",
-            href: "/antivirus/quick-heal-total-security",
-          },
-          {
-            name: "Quick Heal Internet Security",
-            href: "/antivirus/quick-heal-internet-security",
-          },
-          {
-            name: "Quick Heal Antivirus Pro",
-            href: "/antivirus/quick-heal-antivirus-pro",
-          },
-        ],
+        href: "/category?brand=antivirus&category=quick-heal",
       },
       {
         name: "Norton",
-        href: "/antivirus/norton",
-        topProducts: [
-          { name: "Norton 360 Deluxe", href: "/antivirus/norton-360-deluxe" },
-          {
-            name: "Norton 360 Standard",
-            href: "/antivirus/norton-360-standard",
-          },
-          {
-            name: "Norton AntiVirus Plus",
-            href: "/antivirus/norton-antivirus-plus",
-          },
-          { name: "Norton 360 Premium", href: "/antivirus/norton-360-premium" },
-        ],
+        href: "/category?brand=antivirus&category=norton",
       },
     ],
   },
@@ -89,38 +42,11 @@ const antivirusCategories: AntivirusCategory[] = [
     products: [
       {
         name: "McAfee",
-        href: "/antivirus/mcafee",
-        topProducts: [
-          {
-            name: "McAfee Total Protection",
-            href: "/antivirus/mcafee-total-protection",
-          },
-          { name: "McAfee LiveSafe", href: "/antivirus/mcafee-livesafe" },
-          {
-            name: "McAfee AntiVirus Plus",
-            href: "/antivirus/mcafee-antivirus-plus",
-          },
-          {
-            name: "McAfee Small Business Security",
-            href: "/antivirus/mcafee-business",
-          },
-        ],
+        href: "/category?brand=antivirus&category=mcafee",
       },
       {
         name: "ESET",
-        href: "/antivirus/eset",
-        topProducts: [
-          { name: "ESET NOD32 Antivirus", href: "/antivirus/eset-nod32" },
-          {
-            name: "ESET Internet Security",
-            href: "/antivirus/eset-internet-security",
-          },
-          {
-            name: "ESET Smart Security Premium",
-            href: "/antivirus/eset-smart-security",
-          },
-          { name: "ESET Endpoint Security", href: "/antivirus/eset-endpoint" },
-        ],
+        href: "/category?brand=antivirus&category=eset",
       },
     ],
   },
@@ -129,21 +55,7 @@ const antivirusCategories: AntivirusCategory[] = [
     products: [
       {
         name: "Hyper Say",
-        href: "/antivirus/hyper-say",
-        topProducts: [
-          {
-            name: "Hyper Say Total Security",
-            href: "/antivirus/hyper-say-total-security",
-          },
-          {
-            name: "Hyper Say Internet Security",
-            href: "/antivirus/hyper-say-internet-security",
-          },
-          {
-            name: "Hyper Say Antivirus",
-            href: "/antivirus/hyper-say-antivirus",
-          },
-        ],
+        href: "/category?brand=antivirus&category=hyper-say",
       },
     ],
   },
@@ -153,164 +65,149 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  buttonRef,
 }) => {
-  const [hoveredProduct, setHoveredProduct] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const { colors } = useAdminTheme();
-
-  // Helper to update dropdown position
-  const updatePosition = () => {
-    // Position is handled by CSS (absolute positioning relative to parent)
-  };
-
-  useEffect(() => {
-    updatePosition();
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      window.addEventListener("scroll", updatePosition, true);
-      window.addEventListener("resize", updatePosition);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("scroll", updatePosition, true);
-      window.removeEventListener("resize", updatePosition);
-    };
-    // eslint-disable-next-line
-  }, [isOpen, onClose, buttonRef]);
+  const [hoveredCategory, setHoveredCategory] = React.useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleNavigate = (href: string) => {
+  const handleProductClick = (href: string) => {
     onNavigate(href);
     onClose();
   };
 
-  // Always position absolutely under the nav/menu
+  const handleCategoryClick = (categoryName: string) => {
+    const category = antivirusCategories.find(c => c.name === categoryName);
+    if (category && category.products.length > 0) {
+      onNavigate(category.products[0].href.split('&category=')[0].replace('/category?', '/category?'));
+    }
+    onClose();
+  };
+
   return (
     <div
-      ref={dropdownRef}
-      className="absolute left-1/2 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border all-categories-dropdown"
+      className="absolute left-0 mt-[-1px] rounded-xl shadow-2xl z-50 overflow-hidden border w-[800px]"
       style={{
-        minWidth: "900px",
-        maxWidth: "98vw",
-        backgroundColor: colors.background.secondary,
+        backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
-        left: "50%",
-        transform: "translateX(-50%)",
       }}
     >
-      {/* Categories Grid - compact, header removed */}
-      <div
-        className="grid grid-cols-3 gap-0"
-        style={{ backgroundColor: colors.background.primary }}
-      >
-        {antivirusCategories.map((category) => (
-          <div
-            key={category.name}
-            className="p-5 border-r last:border-r-0"
-            style={{
-              borderColor: colors.border.primary,
-              backgroundColor: colors.background.secondary,
-            }}
-          >
-            <h4
-              className="text-xs font-bold uppercase tracking-wider mb-3 pb-2 border-b"
-              style={{
-                color: colors.text.primary,
-                borderColor: colors.border.secondary,
-              }}
-            >
-              {category.name}
-            </h4>
-            <ul className="space-y-1">
-              {category.products.map((product) => (
-                <li key={product.name} className="group">
-                  <button
-                    onClick={() => handleNavigate(product.href)}
-                    onMouseEnter={() => setHoveredProduct(product.name)}
-                    onMouseLeave={() => setHoveredProduct(null)}
-                    className="w-full text-left px-3 py-2 rounded-lg transition-all duration-150 flex items-center justify-between"
+      {/* Two-panel layout */}
+      <div className="flex" style={{ minHeight: "400px", maxHeight: "600px" }}>
+        {/* Left: Categories List */}
+        <div
+          className="w-80 border-r"
+          style={{
+            borderColor: colors.border.primary,
+            backgroundColor: colors.background.secondary,
+          }}
+        >
+          <div className="py-2">
+            {antivirusCategories.map((category, index) => (
+              <button
+                key={index}
+                onMouseEnter={() => setHoveredCategory(category.name)}
+                onClick={() => handleCategoryClick(category.name)}
+                className="w-full px-6 py-4 text-left transition-all duration-200 flex items-center justify-between group border-l-4"
+                style={{
+                  backgroundColor:
+                    hoveredCategory === category.name
+                      ? colors.background.accent
+                      : "transparent",
+                  borderLeftColor:
+                    hoveredCategory === category.name
+                      ? colors.interactive.primary
+                      : "transparent",
+                }}
+              >
+                <div>
+                  <div
+                    className="font-semibold text-base mb-0.5"
                     style={{
-                      backgroundColor:
-                        hoveredProduct === product.name
-                          ? colors.background.accent
-                          : "transparent",
+                      color:
+                        hoveredCategory === category.name
+                          ? colors.interactive.primary
+                          : colors.text.primary,
                     }}
                   >
-                    <span
-                      className="font-medium text-sm transition-colors"
-                      style={{
-                        color:
-                          hoveredProduct === product.name
-                            ? colors.interactive.primary
-                            : colors.text.primary,
-                      }}
-                    >
-                      {product.name}
-                    </span>
-                    {product.topProducts && (
-                      <ChevronRight
-                        className="w-4 h-4 transition-all"
-                        style={{
-                          color:
-                            hoveredProduct === product.name
-                              ? colors.interactive.primary
-                              : colors.text.secondary,
-                        }}
-                      />
-                    )}
-                  </button>
-
-                  {/* Sub-products */}
-                  {product.topProducts && hoveredProduct === product.name && (
-                    <ul
-                      className="ml-4 mt-1 space-y-0.5 pl-3 border-l-2"
-                      style={{ borderColor: colors.interactive.primary }}
-                    >
-                      {product.topProducts.map((subProduct) => (
-                        <li key={subProduct.name}>
-                          <button
-                            onClick={() => handleNavigate(subProduct.href)}
-                            className="w-full text-left px-2 py-1.5 text-xs rounded transition-colors"
-                            style={{ color: colors.text.secondary }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.color =
-                                colors.interactive.primary;
-                              e.currentTarget.style.backgroundColor =
-                                colors.background.accent;
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.color =
-                                colors.text.secondary;
-                              e.currentTarget.style.backgroundColor =
-                                "transparent";
-                            }}
-                          >
-                            {subProduct.name}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
+                    {category.name}
+                  </div>
+                  <div
+                    className="text-xs"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    {category.products.length} products
+                  </div>
+                </div>
+                <ChevronRight
+                  className="w-5 h-5 transition-all"
+                  style={{
+                    color:
+                      hoveredCategory === category.name
+                        ? colors.interactive.primary
+                        : colors.text.secondary,
+                  }}
+                />
+              </button>
+            ))}
           </div>
-        ))}
+        </div>
+
+        {/* Right: Products for Hovered Category */}
+        <div
+          className="flex-1 p-6 overflow-y-auto"
+          style={{ backgroundColor: colors.background.primary }}
+        >
+          {hoveredCategory ? (
+            <>
+              <h3
+                className="text-lg font-bold mb-4 pb-2 border-b uppercase tracking-wide"
+                style={{
+                  color: colors.interactive.primary,
+                  borderColor: colors.border.primary,
+                }}
+              >
+                {hoveredCategory}
+              </h3>
+              <ul className="space-y-2">
+                {antivirusCategories
+                  .find((c) => c.name === hoveredCategory)
+                  ?.products.map((product, idx) => (
+                    <li key={idx}>
+                      <button
+                        onClick={() => handleProductClick(product.href)}
+                        className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group"
+                        style={{ color: colors.text.secondary }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.accent;
+                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        }}
+                      >
+                        <span className="font-medium">{product.name}</span>
+                        <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    </li>
+                  ))}
+              </ul>
+            </>
+          ) : (
+            <div
+              className="flex items-center justify-center h-full"
+              style={{ color: colors.text.secondary }}
+            >
+              <p className="text-center">
+                Select a category to view its products
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Footer */}
+      {/* Bottom button */}
       <div
         className="px-6 py-4 border-t"
         style={{
@@ -319,14 +216,14 @@ const AntivirusDropdown: React.FC<AntivirusDropdownProps> = ({
         }}
       >
         <button
-          onClick={() => handleNavigate("/antivirus")}
-          className="text-sm font-semibold transition-colors inline-flex items-center"
-          style={{ color: colors.text.primary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.interactive.primaryHover;
+          onClick={() => {
+            onNavigate("/antivirus");
+            onClose();
           }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.interactive.primary;
+          className="text-sm font-semibold transition-colors inline-flex items-center"
+          style={{ color: colors.interactive.primary }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
           }}
         >
           View All Antivirus Products
