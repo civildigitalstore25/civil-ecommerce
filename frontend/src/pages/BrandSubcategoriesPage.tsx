@@ -83,7 +83,7 @@ const brandData: Record<string, BrandData> = {
 const BrandSubcategoriesPage: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
-  
+
   // Get brand from current path
   const pathname = window.location.pathname.slice(1); // Remove leading slash
   const brandInfo = brandData[pathname] || null;

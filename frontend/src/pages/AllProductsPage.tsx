@@ -378,9 +378,8 @@ const AllProductsPage: React.FC = () => {
                   </div>
                 </div>
                 <ChevronRight
-                  className={`w-5 h-5 transition-transform duration-200 ${
-                    expandedBrand === brandKey ? "rotate-90" : ""
-                  }`}
+                  className={`w-5 h-5 transition-transform duration-200 ${expandedBrand === brandKey ? "rotate-90" : ""
+                    }`}
                   style={{ color: colors.text.secondary }}
                 />
               </button>

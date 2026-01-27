@@ -215,9 +215,8 @@ const MobileCategoriesMenu: React.FC = () => {
             </div>
             {brandData.categories.length > 0 ? (
               <ChevronDown
-                className={`w-4 h-4 transition-transform duration-200 ${
-                  expandedBrand === brandKey ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 transition-transform duration-200 ${expandedBrand === brandKey ? "rotate-180" : ""
+                  }`}
                 style={{
                   color:
                     expandedBrand === brandKey
