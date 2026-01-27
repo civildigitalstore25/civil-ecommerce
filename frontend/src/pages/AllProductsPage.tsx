@@ -34,6 +34,7 @@ const brandCategories: Record<
       { value: "microsoft-professional", label: "Microsoft Professional" },
       { value: "microsoft-projects", label: "Microsoft Projects" },
       { value: "server", label: "Server" },
+      { value: "windows", label: "Windows" },
     ],
   },
   adobe: {

@@ -48,6 +48,7 @@ const brandData: Record<string, BrandData> = {
       { name: "Productivity & Collaboration", category: "microsoft-professional", displayName: "Microsoft Professional" },
       { name: "Project Management", category: "microsoft-projects", displayName: "Microsoft Projects" },
       { name: "Server & Enterprise", category: "server", displayName: "Server" },
+      { name: "Operating Systems", category: "windows", displayName: "Windows" },
     ],
   },
   adobe: {

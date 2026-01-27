@@ -41,6 +41,7 @@ const brandCategories: Record<string, { value: string; label: string }[]> = {
     { value: "microsoft-professional", label: "Microsoft Professional" },
     { value: "microsoft-projects", label: "Microsoft Projects" },
     { value: "server", label: "Server" },
+    { value: "windows", label: "Windows" },
   ],
   adobe: [
     { value: "adobe-acrobat", label: "Adobe Acrobat" },

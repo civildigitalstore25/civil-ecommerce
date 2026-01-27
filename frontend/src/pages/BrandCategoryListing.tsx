@@ -39,6 +39,7 @@ const categoryLabels: Record<string, string> = {
   "microsoft-professional": "Microsoft Professional",
   "microsoft-projects": "Microsoft Projects",
   server: "Server",
+  windows: "Windows",
   "adobe-acrobat": "Adobe Acrobat",
   photoshop: "Photoshop",
   lightroom: "Lightroom",
@@ -249,7 +250,7 @@ const BrandCategoryListing: React.FC = () => {
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                    className="object-contain w-full h-full transition-transform duration-300 hover:scale-105"
                   />
                   {/* Best Seller Ribbon */}
                   {product.isBestSeller && (

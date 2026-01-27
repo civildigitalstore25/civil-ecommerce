@@ -55,6 +55,12 @@ const microsoftCategories: MicrosoftCategory[] = [
       { name: "Server", href: "/category?brand=microsoft&category=server" },
     ],
   },
+  {
+    name: "Operating Systems",
+    products: [
+      { name: "Windows", href: "/category?brand=microsoft&category=windows" },
+    ],
+  },
 ];
 
 const MicrosoftDropdown: React.FC<MicrosoftDropdownProps> = ({
