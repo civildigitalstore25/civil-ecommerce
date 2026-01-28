@@ -9,6 +9,7 @@ import {
   Package,
   ChevronDown,
   Mail,
+  Edit,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import DesktopNavigation from "./DesktopNavigation";
@@ -253,6 +254,24 @@ const Header: React.FC = () => {
                     >
                       <Settings className="w-4 h-4" />
                       <span>Admin Dashboard</span>
+                    </button>
+                  )}
+                  {isAdmin(user) && (
+                    <button
+                      onClick={() => handleNavigation("/admin/menus")}
+                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
+                      style={{ color: colors.text.secondary }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.backgroundColor = colors.background.secondary;
+                        e.currentTarget.style.color = colors.interactive.primary;
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                        e.currentTarget.style.color = colors.text.secondary;
+                      }}
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Edit Menus</span>
                     </button>
                   )}
                   <button

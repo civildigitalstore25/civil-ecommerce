@@ -21,6 +21,7 @@ import superadminRoutes from './routes/superadminRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import enquiryRoutes from './routes/enquiryRoutes';
 import billingAddressRoutes from './routes/billingAddressRoutes';
+import menuRoutes from './routes/menuRoutes';
 
 const app = express();
 
@@ -95,6 +96,7 @@ app.use('/api/superadmin', superadminRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/enquiries', enquiryRoutes);
 app.use('/api/billing-addresses', billingAddressRoutes);
+app.use('/api/menus', menuRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
 

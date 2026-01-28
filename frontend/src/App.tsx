@@ -44,8 +44,9 @@ import AdobeCloudPage from "./pages/adobecloudpage";
 import AboutPage from "./pages/AboutPage";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import SuperAdminAdminsPage from "./pages/SuperAdminAdminsPage";
-
 import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
+import MainLayout from "./components/layout/MainLayout";
+import MenuManagement from "./components/admins/MenuManagement";
 
 const queryClient = new QueryClient();
 
@@ -72,11 +73,22 @@ function AppLayout() {
     <>
       {!shouldHideHeader && <Header />}
       {/* Removed AdminMenu component as per request - no create admin menu needed below header */}
-      <Routes>
+      <MainLayout>
+        <Routes>
           {/* Superadmin routes */}
           <Route path="/superadmin" element={<SuperAdminDashboard />} />
           <Route path="/superadmin/admins" element={<SuperAdminAdminsPage />} />
           <Route path="/superadmin/create-admin" element={<SuperAdminCreateAdminPage />} />
+          
+          {/* Admin routes */}
+          <Route
+            path="/admin/menus"
+            element={
+              <AuthGuard>
+                <MenuManagement />
+              </AuthGuard>
+            }
+          />
         <Route
           path="/signup"
           element={
@@ -238,6 +250,12 @@ function AppLayout() {
               <BrandSubcategoriesPage />
           }
         />
+        <Route
+          path="/brand/:brand/:category"
+          element={
+              <BrandCategoryListing />
+          }
+        />
 
         <Route
           path="/checkout"
@@ -276,8 +294,9 @@ function AppLayout() {
 
         {/* Catch all route */}
         <Route path="*" element={<Navigate to="/signin" replace />} />
-      </Routes>
-      {!shouldHideHeader && <Footer />}
+        </Routes>
+        {!shouldHideHeader && <Footer />}
+      </MainLayout>
     </>
   );
 }

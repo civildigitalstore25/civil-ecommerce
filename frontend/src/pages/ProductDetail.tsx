@@ -1747,54 +1747,57 @@ const ProductDetail: React.FC = () => {
                 </div>
               ) : (
                 <>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleAddToCart}
-                      className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                      style={{
-                        background: colors.interactive.primary,
-                        color: '#fff',
-                        border: `1.5px solid ${colors.interactive.primary}`,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = colors.interactive.primaryHover;
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = colors.interactive.primary;
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                    >
-                      <LucideIcons.ShoppingCart size={20} />
-                      {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
-                    </button>
+                  {/* Desktop Buttons - Always visible */}
+                  <div className="hidden lg:block space-y-2">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleAddToCart}
+                        className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                        style={{
+                          background: colors.interactive.primary,
+                          color: '#fff',
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = colors.interactive.primaryHover;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = colors.interactive.primary;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                      >
+                        <LucideIcons.ShoppingCart size={20} />
+                        {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
+                      </button>
 
-                    <button
-                      onClick={handleBuyNow}
-                      className="flex-1 border font-bold py-2.5 lg:py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                      style={{
-                        border: `1.5px solid ${colors.interactive.primary}`,
-                        color: '#fff',
-                        background: colors.interactive.primary,
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = colors.interactive.primaryHover;
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = colors.interactive.primary;
-                        e.currentTarget.style.color = '#fff';
-                      }}
-                    >
-                      <LucideIcons.Zap size={20} />
-                      Buy Now
-                    </button>
+                      <button
+                        onClick={handleBuyNow}
+                        className="flex-1 border font-bold py-2.5 lg:py-3 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                        style={{
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          color: '#fff',
+                          background: colors.interactive.primary,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = colors.interactive.primaryHover;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = colors.interactive.primary;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                      >
+                        <LucideIcons.Zap size={20} />
+                        Buy Now
+                      </button>
+                    </div>
 
                     <button
                       onClick={() => setShowSiteEnquiryModal(true)}
-                      className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                      className="w-full font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
                       style={{
                         background: colors.interactive.primary,
                         color: '#fff',
@@ -1813,6 +1816,47 @@ const ProductDetail: React.FC = () => {
                       <LucideIcons.MessageSquare size={20} />
                       Enquiry
                     </button>
+                  </div>
+                  
+                  {/* Mobile Sticky Buttons - Above bottom navigation */}
+                  <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-4 py-3 border-t shadow-lg"
+                    style={{
+                      backgroundColor: colors.background.secondary,
+                      borderColor: colors.border.primary,
+                      position: 'fixed',
+                      bottom: '64px',
+                      left: 0,
+                      right: 0,
+                    }}
+                  >
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleAddToCart}
+                        className="flex-1 font-bold py-3 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+                        style={{
+                          background: colors.interactive.primary,
+                          color: '#fff',
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        }}
+                      >
+                        <LucideIcons.ShoppingCart size={18} />
+                        {isInCart ? 'In Cart' : 'Add to cart'}
+                      </button>
+
+                      <button
+                        onClick={handleBuyNow}
+                        className="flex-1 font-bold py-3 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+                        style={{
+                          background: colors.interactive.primary,
+                          color: '#fff',
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        }}
+                      >
+                        Buy it now
+                      </button>
+                    </div>
                   </div>
                 </>
               )}

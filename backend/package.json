@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --watch ./ --ext ts --exec ts-node server.ts",
     "start": "node dist/server.js",
-    "build": "tsc"
+    "build": "tsc",
+    "seed:menus": "ts-node scripts/seed-menus.ts"
   },
   "keywords": [],
   "author": "",
