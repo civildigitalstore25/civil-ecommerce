@@ -109,17 +109,17 @@ function AppLayout() {
     <>
       {!shouldHideHeader && <Header />}
       {/* Removed AdminMenu component as per request - no create admin menu needed below header */}
-      
+
       {/* Welcome Popup */}
       {showWelcomePopup && <WelcomePopup onClose={handleCloseWelcomePopup} />}
-      
+
       <MainLayout>
         <Routes>
           {/* Superadmin routes */}
           <Route path="/superadmin" element={<SuperAdminDashboard />} />
           <Route path="/superadmin/admins" element={<SuperAdminAdminsPage />} />
           <Route path="/superadmin/create-admin" element={<SuperAdminCreateAdminPage />} />
-          
+
           {/* Admin routes */}
           <Route
             path="/admin/menus"
@@ -129,211 +129,211 @@ function AppLayout() {
               </AuthGuard>
             }
           />
-        <Route
-          path="/signup"
-          element={
-            <PublicRoute>
-              <SignupPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/signin"
-          element={
-            <PublicRoute>
-              <SigninPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <ForgotPasswordPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/reset-password/:token"
-          element={
-            <PublicRoute>
-              <PasswordResetPage />
-            </PublicRoute>
-          }
-        />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <SignupPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signin"
+            element={
+              <PublicRoute>
+                <SigninPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <ForgotPasswordPage />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <PublicRoute>
+                <PasswordResetPage />
+              </PublicRoute>
+            }
+          />
 
-        {/* Auth callback (public) */}
-        <Route path="/auth/callback" element={<AuthCallbackPage />} />
+          {/* Auth callback (public) */}
+          <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-        {/* SCRM Landing Page */}
-        <Route path="/scrm" element={<SCrm />} />
-        <Route path="/adobe-cloud" element={<AdobeCloudPage />} />
-        <Route path="/about-us" element={<AboutPage />} />
+          {/* SCRM Landing Page */}
+          <Route path="/scrm" element={<SCrm />} />
+          <Route path="/adobe-cloud" element={<AdobeCloudPage />} />
+          <Route path="/about-us" element={<AboutPage />} />
 
-        {/* Home page is public */}
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
-        <Route
-          path="/profile"
-          element={
-            <AuthGuard>
-              <ProfilePage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin/products"
-          element={
-            <AuthGuard>
-              <Products />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin-dashboard"
-          element={
-            <AuthGuard>
-              <AdminDashboard />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin/*"
-          element={
-            <AuthGuard>
-              <AdminDashboard />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin/orders"
-          element={
-            <AuthGuard>
-              <Orders />
-            </AuthGuard>
-          }
-        />
+          {/* Home page is public */}
+          <Route
+            path="/"
+            element={<HomePage />}
+          />
+          <Route
+            path="/profile"
+            element={
+              <AuthGuard>
+                <ProfilePage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/products"
+            element={
+              <AuthGuard>
+                <Products />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin-dashboard"
+            element={
+              <AuthGuard>
+                <AdminDashboard />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/*"
+            element={
+              <AuthGuard>
+                <AdminDashboard />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/orders"
+            element={
+              <AuthGuard>
+                <Orders />
+              </AuthGuard>
+            }
+          />
 
-        <Route
-          path="/admin/categories"
-          element={
-            <AuthGuard>
-              <Categories />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin/companies"
-          element={
-            <AuthGuard>
-              <Companies />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <AuthGuard>
-              <Dashboard />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/products"
-          element={
+          <Route
+            path="/admin/categories"
+            element={
+              <AuthGuard>
+                <Categories />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/companies"
+            element={
+              <AuthGuard>
+                <Companies />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <AuthGuard>
+                <Dashboard />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/products"
+            element={
               <AllProductsPage />
-          }
-        />
-        <Route
-          path="/category"
-          element={
+            }
+          />
+          <Route
+            path="/category"
+            element={
               <BrandCategoryListing />
-          }
-        />
-        <Route
-          path="/product/:slug"
-          element={
-            <ProductDetail />
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <AuthGuard>
-              <CartPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/autodesk"
-          element={
+            }
+          />
+          <Route
+            path="/product/:slug"
+            element={
+              <ProductDetail />
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <AuthGuard>
+                <CartPage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/autodesk"
+            element={
               <BrandSubcategoriesPage />
-          }
-        />
-        <Route
-          path="/microsoft"
-          element={
+            }
+          />
+          <Route
+            path="/microsoft"
+            element={
               <BrandSubcategoriesPage />
-          }
-        />
-        <Route
-          path="/adobe"
-          element={
+            }
+          />
+          <Route
+            path="/adobe"
+            element={
               <BrandSubcategoriesPage />
-          }
-        />
-        <Route
-          path="/antivirus"
-          element={
+            }
+          />
+          <Route
+            path="/antivirus"
+            element={
               <BrandSubcategoriesPage />
-          }
-        />
-        <Route
-          path="/brand/:brand/:category"
-          element={
+            }
+          />
+          <Route
+            path="/brand/:brand/:category"
+            element={
               <BrandCategoryListing />
-          }
-        />
+            }
+          />
 
-        <Route
-          path="/checkout"
-          element={
-            <AuthGuard>
-              <CheckoutPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/my-orders"
-          element={
-            <AuthGuard>
-              <MyOrdersPage />
-            </AuthGuard>
-          }
-        />
-        <Route
-          path="/my-enquiries"
-          element={
-            <AuthGuard>
-              <UserEnquiriesPage />
-            </AuthGuard>
-          }
-        />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/payment-status" element={<PaymentStatusPage />} />
-        <Route path="/payment/callback" element={<PaymentCallback />} />
+          <Route
+            path="/checkout"
+            element={
+              <AuthGuard>
+                <CheckoutPage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/my-orders"
+            element={
+              <AuthGuard>
+                <MyOrdersPage />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/my-enquiries"
+            element={
+              <AuthGuard>
+                <UserEnquiriesPage />
+              </AuthGuard>
+            }
+          />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/payment-status" element={<PaymentStatusPage />} />
+          <Route path="/payment/callback" element={<PaymentCallback />} />
 
-        {/* Policy Routes */}
-        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-        <Route path="/disclaimer" element={<Disclaimer />} />
-        <Route path="/return-policy" element={<ReturnPolicy />} />
-        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+          {/* Policy Routes */}
+          <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/disclaimer" element={<Disclaimer />} />
+          <Route path="/return-policy" element={<ReturnPolicy />} />
+          <Route path="/shipping-policy" element={<ShippingPolicy />} />
 
-        {/* Catch all route */}
-        <Route path="*" element={<Navigate to="/signin" replace />} />
+          {/* Catch all route */}
+          <Route path="*" element={<Navigate to="/signin" replace />} />
         </Routes>
         {!shouldHideHeader && <Footer />}
       </MainLayout>

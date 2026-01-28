@@ -1,8 +1,8 @@
 import express from 'express';
-import { 
-  createWelcomeLead, 
-  getLeadByEmail, 
-  getAllLeads 
+import {
+    createWelcomeLead,
+    getLeadByEmail,
+    getAllLeads
 } from '../controllers/leadController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
