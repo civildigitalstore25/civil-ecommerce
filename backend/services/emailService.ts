@@ -422,6 +422,125 @@ class EmailService {
       throw new Error(`Failed to send order confirmation email: ${error.message}`);
     }
   }
+
+  // Send welcome discount email to new lead
+  async sendWelcomeDiscountEmail(
+    to: string, 
+    name: string, 
+    discountCode: string, 
+    discountValue: number,
+    validUntil: Date
+  ): Promise<void> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const validUntilFormatted = validUntil.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+
+    const mailOptions = {
+      from: {
+        name: process.env.FROM_NAME || 'Your Store',
+        address: process.env.FROM_EMAIL || 'noreply@yourstore.com'
+      },
+      to: to,
+      subject: `Welcome! Your ${discountValue}% Discount Code Inside`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Welcome Discount</title>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; margin: 0; padding: 0; }
+            .container { max-width: 600px; margin: 20px auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 28px; }
+            .content { padding: 40px 30px; }
+            .coupon-box { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border: 2px dashed #667eea; padding: 25px; border-radius: 10px; text-align: center; margin: 30px 0; }
+            .coupon-code { font-size: 32px; font-weight: bold; color: #667eea; letter-spacing: 3px; margin: 10px 0; font-family: 'Courier New', monospace; }
+            .discount-badge { display: inline-block; background: #667eea; color: white; padding: 10px 20px; border-radius: 25px; font-size: 18px; font-weight: bold; margin-bottom: 15px; }
+            .button { display: inline-block; padding: 15px 40px; background: #667eea; color: white !important; text-decoration: none; border-radius: 5px; margin: 20px 0; font-weight: bold; font-size: 16px; }
+            .button:hover { background: #5a67d8; }
+            .info-box { background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; border-radius: 5px; margin: 20px 0; }
+            .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 14px; border-top: 1px solid #eee; }
+            .highlight { color: #667eea; font-weight: bold; }
+            .greeting { font-size: 18px; margin-bottom: 20px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Welcome to ${process.env.FROM_NAME || 'Our Store'}!</h1>
+              <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for joining us, ${name}!</p>
+            </div>
+            
+            <div class="content">
+              <div class="greeting">
+                <p>Hi <strong>${name}</strong>,</p>
+              </div>
+              
+              <p>We're thrilled to have you with us! As a warm welcome, here's a special discount just for you.</p>
+              
+              <div class="coupon-box">
+                <div class="discount-badge">
+                  ${discountValue}% OFF
+                </div>
+                <p style="margin: 10px 0; font-size: 14px; color: #666;">Your Exclusive Discount Code:</p>
+                <div class="coupon-code">${discountCode}</div>
+                <p style="margin: 15px 0 0 0; font-size: 13px; color: #666;">
+                  <em>Valid until ${validUntilFormatted}</em>
+                </p>
+              </div>
+
+              <div class="info-box">
+                <p style="margin: 0; font-size: 14px;">
+                  <strong>How to use your code:</strong><br/>
+                  1. Browse our amazing products<br/>
+                  2. Add items to your cart<br/>
+                  3. Enter code <strong>${discountCode}</strong> at checkout<br/>
+                  4. Enjoy your ${discountValue}% discount!
+                </p>
+              </div>
+
+              <p style="margin-top: 30px;">
+                This is a <span class="highlight">one-time use code</span>, so make sure to use it wisely on your favorite products!
+              </p>
+
+              <div style="text-align: center; margin-top: 30px;">
+                <a href="${frontendUrl}" class="button">Start Shopping Now</a>
+              </div>
+
+              <p style="margin-top: 30px; font-size: 14px; color: #666;">
+                If you have any questions, feel free to reach out to us at 
+                <a href="mailto:${process.env.CONTACT_EMAIL}" style="color: #667eea;">${process.env.CONTACT_EMAIL}</a>
+              </p>
+
+              <p style="margin-top: 20px;">
+                Happy Shopping!<br/>
+                <strong>The ${process.env.FROM_NAME || 'Store'} Team</strong>
+              </p>
+            </div>
+
+            <div class="footer">
+              <p style="margin: 0 0 10px 0;">You're receiving this email because you signed up for our welcome discount.</p>
+              <p style="margin: 0;">© ${new Date().getFullYear()} ${process.env.FROM_NAME || 'Your Store'}. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Welcome discount email sent successfully:', info.messageId);
+    } catch (error) {
+      console.error('❌ Failed to send welcome discount email:', error);
+      throw new Error('Failed to send welcome discount email');
+    }
+  }
 }
 
 export default new EmailService();

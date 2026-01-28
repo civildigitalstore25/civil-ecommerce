@@ -6,6 +6,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
 import { CartProvider } from "./contexts/CartContext";
 import { AdminThemeProvider } from "./contexts/AdminThemeContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
@@ -47,11 +48,13 @@ import SuperAdminAdminsPage from "./pages/SuperAdminAdminsPage";
 import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
 import MainLayout from "./components/layout/MainLayout";
 import MenuManagement from "./components/admins/MenuManagement";
+import WelcomePopup from "./components/WelcomePopup/WelcomePopup";
 
 const queryClient = new QueryClient();
 
 function AppLayout() {
   const location = useLocation();
+  const [showWelcomePopup, setShowWelcomePopup] = useState(false);
 
   // Define routes where you don't want the Header
   const hideHeaderRoutes = [
@@ -69,10 +72,47 @@ function AppLayout() {
       location.pathname.startsWith("/reset-password/"),
   );
 
+  // Check if user is logged in
+  const isLoggedIn = () => {
+    try {
+      const token = localStorage.getItem('token');
+      return !!token;
+    } catch {
+      return false;
+    }
+  };
+
+  // Show welcome popup logic
+  useEffect(() => {
+    const hasSubmitted = localStorage.getItem('welcomePopupCompleted');
+    const userIsLoggedIn = isLoggedIn();
+
+    // Show popup if:
+    // 1. User is not logged in
+    // 2. Haven't submitted the popup before
+    // 3. Not on auth pages
+    if (!userIsLoggedIn && !hasSubmitted && !shouldHideHeader) {
+      // Add a 3 second delay for better UX
+      const timer = setTimeout(() => {
+        setShowWelcomePopup(true);
+      }, 3000); // Show after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [location.pathname, shouldHideHeader]); // Re-run when route changes
+
+  const handleCloseWelcomePopup = () => {
+    setShowWelcomePopup(false);
+  };
+
   return (
     <>
       {!shouldHideHeader && <Header />}
       {/* Removed AdminMenu component as per request - no create admin menu needed below header */}
+      
+      {/* Welcome Popup */}
+      {showWelcomePopup && <WelcomePopup onClose={handleCloseWelcomePopup} />}
+      
       <MainLayout>
         <Routes>
           {/* Superadmin routes */}
