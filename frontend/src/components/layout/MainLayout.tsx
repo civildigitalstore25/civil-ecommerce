@@ -13,6 +13,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   // Routes where sidebar should be hidden
   const hideSidebarRoutes = [
+    "/",
     "/signin",
     "/signup",
     "/forgot-password",
@@ -45,8 +46,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <div className="flex min-h-screen">
       {/* Left Sidebar - Toggleable on both mobile and desktop */}
-      <LeftSidebar 
-        isOpen={isSidebarOpen} 
+      <LeftSidebar
+        isOpen={isSidebarOpen}
         onToggle={() => setIsSidebarOpen(false)}
       />
 
