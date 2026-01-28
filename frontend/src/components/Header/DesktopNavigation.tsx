@@ -32,7 +32,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   const offersButtonRef = useRef<HTMLDivElement>(null);
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  
+
   const handleDropdownToggle = (name: string | null) => {
     setActiveDropdown(name);
   };
@@ -60,7 +60,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'categories' && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('categories')}
               onMouseLeave={() => handleDropdownToggle(null)}
@@ -92,7 +92,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'autodesk' && autodeskButtonRef.current && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('autodesk')}
               onMouseLeave={() => handleDropdownToggle(null)}
@@ -124,7 +124,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'adobe' && adobeButtonRef.current && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('adobe')}
               onMouseLeave={() => handleDropdownToggle(null)}
@@ -133,7 +133,6 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
                 isOpen={true}
                 onClose={() => setActiveDropdown(null)}
                 onNavigate={handleNavigate}
-                buttonRef={adobeButtonRef}
               />
             </div>
           )}
@@ -156,7 +155,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'microsoft' && microsoftButtonRef.current && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('microsoft')}
               onMouseLeave={() => handleDropdownToggle(null)}
@@ -188,7 +187,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'antivirus' && antivirusButtonRef.current && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('antivirus')}
               onMouseLeave={() => handleDropdownToggle(null)}
@@ -220,7 +219,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
             <ChevronDown className="ml-1 w-4 h-4" />
           </button>
           {activeDropdown === 'offers' && offersButtonRef.current && (
-            <div 
+            <div
               className="absolute left-0 z-50"
               onMouseEnter={() => handleDropdownToggle('offers')}
               onMouseLeave={() => handleDropdownToggle(null)}
