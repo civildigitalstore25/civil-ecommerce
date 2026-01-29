@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ChevronRight, ChevronDown, X } from "lucide-react";
+import { ChevronRight, ChevronDown, ChevronLeft, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { getAllMenus, type IMenu } from "../../api/menuApi";
@@ -55,19 +55,41 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
         )}
         <aside
           className={`
-            fixed top-0 left-0 h-full z-50
+            fixed lg:sticky top-0 lg:top-20 left-0 h-full lg:h-[calc(100vh-80px)]
             transition-all duration-300 ease-in-out
-            lg:sticky lg:top-20 lg:h-[calc(100vh-80px)]
-            ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+            ${isOpen ? "translate-x-0 lg:w-80" : "-translate-x-full lg:translate-x-0 lg:w-0"}
             w-80
             overflow-y-auto
             shadow-lg
+            z-50
           `}
           style={{
             backgroundColor: colors.background.primary,
-            borderRight: `1px solid ${colors.border.primary}`,
+            borderRight: isOpen ? `1px solid ${colors.border.primary}` : 'none',
           }}
         >
+          {/* Desktop Toggle Button - Positioned at bottom center */}
+          {isOpen && (
+            <button
+              onClick={onToggle}
+              className="
+                hidden lg:flex
+                absolute bottom-8 left-1/2 -translate-x-1/2
+                w-12 h-12
+                items-center justify-center
+                rounded-full
+                shadow-2xl
+                hover:shadow-2xl
+                hover:scale-110
+                transition-all duration-300
+                z-[60]
+                bg-blue-600 hover:bg-blue-700
+              "
+            >
+              <ChevronLeft className="w-6 h-6 text-white font-bold" strokeWidth={3} />
+            </button>
+          )}
+
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
               <div
@@ -95,34 +117,51 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed top-0 left-0 h-full z-50
+          fixed lg:sticky top-0 lg:top-20 left-0 h-full lg:h-[calc(100vh-80px)]
           transition-all duration-300 ease-in-out
-          lg:sticky lg:top-20 lg:h-[calc(100vh-80px)]
-          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          ${isOpen ? "translate-x-0 lg:w-80" : "-translate-x-full lg:translate-x-0 lg:w-0"}
           w-80
           overflow-y-auto
           shadow-lg
           scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400
+          z-50
         `}
         style={{
           backgroundColor: colors.background.primary,
-          borderRight: `1px solid ${colors.border.primary}`,
+          borderRight: isOpen ? `1px solid ${colors.border.primary}` : 'none',
         }}
       >
+        {/* Desktop Toggle Button - Positioned at bottom center - Only visible when open */}
+        {isOpen && (
+          <button
+            onClick={onToggle}
+            className="
+              hidden lg:flex
+              absolute bottom-8 left-1/2 -translate-x-1/2
+              w-12 h-12
+              items-center justify-center
+              rounded-full
+              shadow-2xl
+              hover:shadow-2xl
+              hover:scale-110
+              transition-all duration-300
+              z-[60]
+              bg-blue-600 hover:bg-blue-700
+            "
+            title="Close sidebar"
+          >
+            <ChevronLeft className="w-6 h-6 text-white font-bold" strokeWidth={3} />
+          </button>
+        )}
+
         {/* Mobile Header */}
         <div
-          className="lg:hidden flex items-center justify-between p-4 border-b"
+          className="lg:hidden flex items-center justify-end p-4 border-b"
           style={{
             borderColor: colors.border.primary,
             backgroundColor: colors.background.secondary,
           }}
         >
-          <h2
-            className="text-lg font-bold"
-            style={{ color: colors.text.primary }}
-          >
-            Categories
-          </h2>
           <button
             onClick={onToggle}
             className="p-2 rounded-lg hover:opacity-80 transition-opacity"
@@ -132,14 +171,17 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
           </button>
         </div>
 
-        {/* Categories List */}
-        <nav className="p-2">
-          {menus.length === 0 ? (
-            <div className="text-center py-8" style={{ color: colors.text.secondary }}>
-              <p>No categories available</p>
-            </div>
-          ) : (
-            menus.map((menu) => (
+
+
+        {/* Categories List - Only show when sidebar is open */}
+        {isOpen && (
+          <nav className="p-2">
+            {menus.length === 0 ? (
+              <div className="text-center py-8" style={{ color: colors.text.secondary }}>
+                <p>No categories available</p>
+              </div>
+            ) : (
+              menus.map((menu) => (
               <div key={menu._id} className="mb-1">
                 {/* Category Header */}
                 <button
@@ -196,8 +238,9 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
                   )}
               </div>
             ))
-          )}
-        </nav>
+            )}
+          </nav>
+        )}
       </aside>
     </>
   );
