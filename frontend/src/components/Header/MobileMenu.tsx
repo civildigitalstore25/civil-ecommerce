@@ -235,28 +235,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
                     <span>Admin Dashboard</span>
                   </button>
                 )}
-                {user && (user.role === "admin" || user.role === "superadmin") && (
-                  <button
-                    onClick={() => onNavigate("/admin/menus")}
-                    className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.color =
-                        colors.interactive.primary;
-                      (e.currentTarget as HTMLElement).style.backgroundColor =
-                        colors.background.secondary;
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.color =
-                        colors.text.secondary;
-                      (e.currentTarget as HTMLElement).style.backgroundColor =
-                        "transparent";
-                    }}
-                  >
-                    <Edit className="w-5 h-5" />
-                    <span>Edit Menus</span>
-                  </button>
-                )}
                 <button
                   onClick={() => onNavigate("/profile")}
                   className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
