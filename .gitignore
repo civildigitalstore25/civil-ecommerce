@@ -87,3 +87,4 @@ Thumbs.db
 deploy.sh
 hooks.json
 nohup.out
+frontend/.env
