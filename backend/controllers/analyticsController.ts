@@ -28,13 +28,18 @@ export const getSalesAnalytics = async (
 ): Promise<void> => {
   try {
     const { period = "monthly" } = req.query; // weekly, monthly, yearly
+    
+    console.log(`[Analytics] Fetching sales analytics for period: ${period}`);
 
     // Get all paid orders
     const orders = await Order.find({ paymentStatus: "paid" }).sort({
       createdAt: 1,
     });
 
+    console.log(`[Analytics] Found ${orders.length} paid orders`);
+
     if (!orders || orders.length === 0) {
+      console.log("[Analytics] No paid orders found, returning empty data");
       res.json({
         success: true,
         data: {
@@ -78,6 +83,8 @@ export const getSalesAnalytics = async (
         break;
     }
 
+    console.log(`[Analytics] Generated ${salesData.length} data points`);
+
     // Calculate totals
     const totalRevenue = orders.reduce(
       (sum, order) => sum + order.totalAmount,
@@ -85,6 +92,8 @@ export const getSalesAnalytics = async (
     );
     const totalOrders = orders.length;
     const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+
+    console.log(`[Analytics] Total Revenue: ${totalRevenue}, Total Orders: ${totalOrders}, Avg: ${averageOrderValue}`);
 
     res.json({
       success: true,
@@ -96,7 +105,7 @@ export const getSalesAnalytics = async (
       },
     });
   } catch (error) {
-    console.error("Error fetching sales analytics:", error);
+    console.error("[Analytics] Error fetching sales analytics:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch sales analytics",
