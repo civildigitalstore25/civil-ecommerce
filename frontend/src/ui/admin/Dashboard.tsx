@@ -55,17 +55,19 @@ const Dashboard: React.FC = () => {
   });
 
   // Fetch sales analytics
-  const { data: analyticsData, isLoading: analyticsLoading } = useQuery({
+  const { data: analyticsData, isLoading: analyticsLoading, error: analyticsError } = useQuery({
     queryKey: ["salesAnalytics", period],
     queryFn: () => getSalesAnalytics(period),
     refetchInterval: 30000, // Auto-refresh every 30 seconds
+    retry: 3,
+    retryDelay: 1000,
   });
 
   // Calculate comparison data
   const comparisonData = useMemo(() => {
-    if (!analyticsData || analyticsData.salesData.length < 2) {
+    if (!analyticsData || analyticsData.salesData.length === 0) {
       return {
-        salesData: analyticsData?.salesData || [],
+        salesData: [],
         currentPeriodRevenue: 0,
         currentPeriodOrders: 0,
         previousPeriodRevenue: 0,
@@ -77,11 +79,11 @@ const Dashboard: React.FC = () => {
 
     const salesData = analyticsData.salesData.map((item, index) => {
       const previousItem = analyticsData.salesData[index - 1];
-      const revenueChange = previousItem
-        ? ((item.revenue - previousItem.revenue) / (previousItem.revenue || 1)) * 100
+      const revenueChange = previousItem && previousItem.revenue > 0
+        ? ((item.revenue - previousItem.revenue) / previousItem.revenue) * 100
         : 0;
-      const ordersChange = previousItem
-        ? ((item.orderCount - previousItem.orderCount) / (previousItem.orderCount || 1)) * 100
+      const ordersChange = previousItem && previousItem.orderCount > 0
+        ? ((item.orderCount - previousItem.orderCount) / previousItem.orderCount) * 100
         : 0;
 
       return {
@@ -95,17 +97,17 @@ const Dashboard: React.FC = () => {
 
     // Calculate current period vs previous period totals
     const currentPeriodData = salesData[salesData.length - 1];
-    const previousPeriodData = salesData[salesData.length - 2];
+    const previousPeriodData = salesData.length >= 2 ? salesData[salesData.length - 2] : null;
 
     const currentPeriodRevenue = currentPeriodData?.revenue || 0;
     const currentPeriodOrders = currentPeriodData?.orderCount || 0;
     const previousPeriodRevenue = previousPeriodData?.revenue || 0;
     const previousPeriodOrders = previousPeriodData?.orderCount || 0;
 
-    const revenueChange = previousPeriodRevenue
+    const revenueChange = previousPeriodRevenue > 0
       ? ((currentPeriodRevenue - previousPeriodRevenue) / previousPeriodRevenue) * 100
       : 0;
-    const ordersChange = previousPeriodOrders
+    const ordersChange = previousPeriodOrders > 0
       ? ((currentPeriodOrders - previousPeriodOrders) / previousPeriodOrders) * 100
       : 0;
 
@@ -464,6 +466,29 @@ const Dashboard: React.FC = () => {
                 style={{ borderColor: colors.interactive.primary }}
               ></div>
               <p>Loading analytics data...</p>
+            </div>
+          </div>
+        ) : analyticsError ? (
+          <div
+            className="flex items-center justify-center h-96"
+            style={{ color: colors.status.error }}
+          >
+            <div className="text-center">
+              <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
+              <p className="text-lg font-medium">Error loading analytics data</p>
+              <p className="text-sm mt-2">
+                {analyticsError instanceof Error ? analyticsError.message : "An unexpected error occurred"}
+              </p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-4 px-4 py-2 rounded-lg text-sm font-medium"
+                style={{
+                  backgroundColor: colors.interactive.primary,
+                  color: colors.text.inverse
+                }}
+              >
+                Retry
+              </button>
             </div>
           </div>
         ) : analyticsData && analyticsData.salesData.length > 0 ? (

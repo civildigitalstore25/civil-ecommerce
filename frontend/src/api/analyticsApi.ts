@@ -36,9 +36,12 @@ export const getSalesAnalytics = async (
     const token = localStorage.getItem("token");
 
     if (!token) {
+      console.error("Analytics API: No authentication token found");
       throw new Error("Authentication token not found");
     }
 
+    console.log(`Fetching sales analytics for period: ${period}`);
+    
     const response = await axios.get<AnalyticsResponse>(
       `${API_BASE_URL}/api/analytics/sales`,
       {
@@ -49,18 +52,40 @@ export const getSalesAnalytics = async (
       }
     );
 
+    console.log("Analytics API response:", response.data);
+
     if (!response.data.success) {
+      console.error("Analytics API: Request unsuccessful", response.data);
       throw new Error("Failed to fetch analytics data");
     }
 
+    if (!response.data.data) {
+      console.error("Analytics API: No data in response", response.data);
+      throw new Error("No analytics data received");
+    }
+
+    console.log(`Successfully fetched ${response.data.data.salesData?.length || 0} data points`);
     return response.data.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
-      console.error("Analytics API error:", error.response?.data);
+      console.error("Analytics API axios error:", {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        message: error.message
+      });
+      
+      if (error.response?.status === 401) {
+        throw new Error("Unauthorized: Please login again");
+      } else if (error.response?.status === 403) {
+        throw new Error("Forbidden: Admin access required");
+      }
+      
       throw new Error(
         error.response?.data?.message || "Failed to fetch analytics data"
       );
     }
+    console.error("Analytics API unexpected error:", error);
     throw error;
   }
 };
