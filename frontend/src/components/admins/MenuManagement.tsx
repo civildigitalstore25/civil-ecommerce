@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, ChevronUp, ChevronDown, Save, X } from 'lucide-react';
-import { getAllMenus, createMenu, updateMenu, deleteMenu, reorderMenus } from '../../api/menuApi';
+import { Plus, X } from 'lucide-react';
+import { getAllMenus, createMenu } from '../../api/menuApi';
 import type { IMenu, CreateMenuDTO } from '../../api/menuApi';
 import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
@@ -10,7 +10,6 @@ const MenuManagement: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingMenu, setEditingMenu] = useState<IMenu | null>(null);
   const [formData, setFormData] = useState<CreateMenuDTO>({
     name: '',
     slug: '',
@@ -50,71 +49,16 @@ const MenuManagement: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingMenu) {
-        await updateMenu(editingMenu._id, formData);
-      } else {
-        await createMenu(formData);
-      }
+      await createMenu(formData);
       fetchMenus();
       resetForm();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to save menu');
-      console.error('Error saving menu:', err);
+      setError(err.response?.data?.message || 'Failed to create menu');
+      console.error('Error creating menu:', err);
     }
   };
 
-  const handleEdit = (menu: IMenu) => {
-    setEditingMenu(menu);
-    setFormData({
-      name: menu.name,
-      slug: menu.slug,
-      parentId: menu.parentId,
-      order: menu.order,
-      isActive: menu.isActive,
-      icon: menu.icon || '',
-      type: menu.type,
-    });
-    setShowAddForm(true);
-  };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this menu? This action cannot be undone.')) {
-      return;
-    }
-    try {
-      await deleteMenu(id);
-      fetchMenus();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to delete menu');
-      console.error('Error deleting menu:', err);
-    }
-  };
-
-  const handleReorder = async (menuId: string, direction: 'up' | 'down') => {
-    const flatMenus = flattenMenus(menus);
-    const currentIndex = flatMenus.findIndex((m) => m._id === menuId);
-    if (currentIndex === -1) return;
-
-    const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= flatMenus.length) return;
-
-    // Swap orders
-    const reordered = [...flatMenus];
-    const temp = reordered[currentIndex].order;
-    reordered[currentIndex].order = reordered[newIndex].order;
-    reordered[newIndex].order = temp;
-
-    try {
-      await reorderMenus([
-        { id: reordered[currentIndex]._id, order: reordered[currentIndex].order },
-        { id: reordered[newIndex]._id, order: reordered[newIndex].order },
-      ]);
-      fetchMenus();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to reorder menus');
-      console.error('Error reordering menus:', err);
-    }
-  };
 
   const resetForm = () => {
     setFormData({
@@ -126,7 +70,6 @@ const MenuManagement: React.FC = () => {
       icon: '',
       type: 'category',
     });
-    setEditingMenu(null);
     setShowAddForm(false);
   };
 
@@ -152,22 +95,6 @@ const MenuManagement: React.FC = () => {
           }}
         >
           <div className="flex items-center gap-3 flex-1">
-            <div className="flex flex-col gap-1">
-              <button
-                onClick={() => handleReorder(menu._id, 'up')}
-                className="p-1 rounded hover:bg-gray-200 transition-colors"
-                disabled={level === 0 && menuList.indexOf(menu) === 0}
-              >
-                <ChevronUp size={16} />
-              </button>
-              <button
-                onClick={() => handleReorder(menu._id, 'down')}
-                className="p-1 rounded hover:bg-gray-200 transition-colors"
-                disabled={level === 0 && menuList.indexOf(menu) === menuList.length - 1}
-              >
-                <ChevronDown size={16} />
-              </button>
-            </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3
@@ -199,22 +126,6 @@ const MenuManagement: React.FC = () => {
                 Slug: {menu.slug} | Order: {menu.order}
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleEdit(menu)}
-              className="p-2 rounded hover:bg-gray-200 transition-colors"
-              style={{ color: colors.interactive.primary }}
-            >
-              <Edit2 size={18} />
-            </button>
-            <button
-              onClick={() => handleDelete(menu._id)}
-              className="p-2 rounded hover:bg-red-100 transition-colors"
-              style={{ color: '#ef4444' }}
-            >
-              <Trash2 size={18} />
-            </button>
           </div>
         </div>
         {menu.children && menu.children.length > 0 && renderMenuTree(menu.children, level + 1)}
@@ -279,7 +190,7 @@ const MenuManagement: React.FC = () => {
           <div className="mb-6 p-6 rounded-lg border" style={{ backgroundColor: colors.background.secondary, borderColor: colors.border.primary }}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold" style={{ color: colors.text.primary }}>
-                {editingMenu ? 'Edit Menu' : 'Add New Menu'}
+                Add New Menu
               </h2>
               <button onClick={resetForm} className="p-2 hover:bg-gray-200 rounded transition-colors">
                 <X size={20} />
@@ -401,14 +312,13 @@ const MenuManagement: React.FC = () => {
               <div className="flex gap-2 md:col-span-2">
                 <button
                   type="submit"
-                  className="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors"
+                  className="px-4 py-2 rounded-lg font-semibold transition-colors"
                   style={{
                     backgroundColor: colors.interactive.primary,
                     color: '#fff',
                   }}
                 >
-                  <Save size={18} />
-                  {editingMenu ? 'Update Menu' : 'Create Menu'}
+                  Create Menu
                 </button>
                 <button
                   type="button"

@@ -1819,7 +1819,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                   
                   {/* Mobile Sticky Buttons - Above bottom navigation */}
-                  <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-4 py-3 border-t shadow-lg"
+                  <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-2 py-3 border-t shadow-lg"
                     style={{
                       backgroundColor: colors.background.secondary,
                       borderColor: colors.border.primary,
@@ -1829,10 +1829,10 @@ const ProductDetail: React.FC = () => {
                       right: 0,
                     }}
                   >
-                    <div className="flex gap-2">
+                    <div className="flex gap-1.5">
                       <button
                         onClick={handleAddToCart}
-                        className="flex-1 font-bold py-3 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+                        className="flex-1 font-bold py-2.5 rounded-lg text-xs transition-colors duration-200 flex items-center justify-center gap-1"
                         style={{
                           background: colors.interactive.primary,
                           color: '#fff',
@@ -1840,13 +1840,13 @@ const ProductDetail: React.FC = () => {
                           boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                         }}
                       >
-                        <LucideIcons.ShoppingCart size={18} />
-                        {isInCart ? 'In Cart' : 'Add to cart'}
+                        <LucideIcons.ShoppingCart size={16} />
+                        <span className="whitespace-nowrap">{isInCart ? 'In Cart' : 'Add'}</span>
                       </button>
 
                       <button
                         onClick={handleBuyNow}
-                        className="flex-1 font-bold py-3 rounded-lg text-sm transition-colors duration-200 flex items-center justify-center gap-2"
+                        className="flex-1 font-bold py-2.5 rounded-lg text-xs transition-colors duration-200 flex items-center justify-center gap-1"
                         style={{
                           background: colors.interactive.primary,
                           color: '#fff',
@@ -1854,7 +1854,22 @@ const ProductDetail: React.FC = () => {
                           boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
                         }}
                       >
-                        Buy it now
+                        <LucideIcons.Zap size={16} />
+                        <span className="whitespace-nowrap">Buy Now</span>
+                      </button>
+
+                      <button
+                        onClick={() => setShowSiteEnquiryModal(true)}
+                        className="flex-1 font-bold py-2.5 rounded-lg text-xs transition-colors duration-200 flex items-center justify-center gap-1"
+                        style={{
+                          background: colors.interactive.primary,
+                          color: '#fff',
+                          border: `1.5px solid ${colors.interactive.primary}`,
+                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                        }}
+                      >
+                        <LucideIcons.MessageSquare size={16} />
+                        <span className="whitespace-nowrap">Enquiry</span>
                       </button>
                     </div>
                   </div>
@@ -1920,7 +1935,7 @@ const ProductDetail: React.FC = () => {
 
           {/* Sticky WhatsApp button - Always visible, Buy Now only on desktop */}
           {!product.isOutOfStock && (
-            <div className="fixed bottom-3 right-3 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 z-[9999] flex flex-col-reverse md:flex-row gap-2 md:gap-3 items-end">
+            <div className="fixed right-3 top-1/2 -translate-y-1/2 md:top-auto md:translate-y-0 md:bottom-4 md:right-4 lg:bottom-6 lg:right-6 z-[9999] flex flex-col-reverse md:flex-row gap-2 md:gap-3 items-end">
               {/* Buy Now Button - Hidden on mobile, visible on desktop only */}
               <button
                 onClick={handleBuyNow}

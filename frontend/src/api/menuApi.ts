@@ -26,13 +26,6 @@ export interface CreateMenuDTO {
   type?: 'category' | 'subcategory' | 'brand';
 }
 
-export interface UpdateMenuDTO extends Partial<CreateMenuDTO> {}
-
-export interface ReorderMenuDTO {
-  id: string;
-  order: number;
-}
-
 // Get all menus in hierarchical structure
 export const getAllMenus = async (includeInactive: boolean = false) => {
   const response = await axios.get(`${API_URL}/api/menus`, {
@@ -63,42 +56,5 @@ export const createMenu = async (menuData: CreateMenuDTO) => {
       Authorization: `Bearer ${token}`,
     },
   });
-  return response.data;
-};
-
-// Update menu (admin only)
-export const updateMenu = async (id: string, menuData: UpdateMenuDTO) => {
-  const token = localStorage.getItem('token');
-  const response = await axios.put(`${API_URL}/api/menus/${id}`, menuData, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-// Delete menu (admin only)
-export const deleteMenu = async (id: string) => {
-  const token = localStorage.getItem('token');
-  const response = await axios.delete(`${API_URL}/api/menus/${id}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response.data;
-};
-
-// Reorder menus (admin only)
-export const reorderMenus = async (menuOrders: ReorderMenuDTO[]) => {
-  const token = localStorage.getItem('token');
-  const response = await axios.patch(
-    `${API_URL}/api/menus/reorder`,
-    { menuOrders },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
   return response.data;
 };
