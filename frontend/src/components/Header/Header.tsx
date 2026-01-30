@@ -9,7 +9,6 @@ import {
   Package,
   ChevronDown,
   Mail,
-  Edit,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import DesktopNavigation from "./DesktopNavigation";

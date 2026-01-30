@@ -7,7 +7,6 @@ import {
   User,
   Settings,
   Package,
-  Edit,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 // import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
