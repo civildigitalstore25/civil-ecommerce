@@ -133,6 +133,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
                 isOpen={true}
                 onClose={() => setActiveDropdown(null)}
                 onNavigate={handleNavigate}
+                buttonRef={adobeButtonRef}
               />
             </div>
           )}

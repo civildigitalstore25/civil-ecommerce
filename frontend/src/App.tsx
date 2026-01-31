@@ -1,3 +1,4 @@
+import React from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -72,6 +73,11 @@ function AppLayout() {
       location.pathname.startsWith("/reset-password/"),
   );
 
+  // Clear session dismissal on mount/refresh so popup can appear again
+  React.useEffect(() => {
+    sessionStorage.removeItem('welcomePopupDismissed');
+  }, []);
+
   // Check if user is logged in
   const isLoggedIn = () => {
     try {
@@ -82,16 +88,20 @@ function AppLayout() {
     }
   };
 
-  // Show welcome popup logic
+  // Show welcome popup logic - ONLY on landing page
   useEffect(() => {
     const hasSubmitted = localStorage.getItem('welcomePopupCompleted');
+    const hasDismissed = sessionStorage.getItem('welcomePopupDismissed'); // Use sessionStorage
     const userIsLoggedIn = isLoggedIn();
 
-    // Show popup if:
+    // Show popup ONLY if:
     // 1. User is not logged in
-    // 2. Haven't submitted the popup before
-    // 3. Not on auth pages
-    if (!userIsLoggedIn && !hasSubmitted && !shouldHideHeader) {
+    // 2. Haven't submitted the popup permanently
+    // 3. Haven't dismissed in current session
+    // 4. Currently on the landing page ("/")
+    const isOnLandingPage = location.pathname === '/';
+
+    if (!userIsLoggedIn && !hasSubmitted && !hasDismissed && isOnLandingPage) {
       // Add a 3 second delay for better UX
       const timer = setTimeout(() => {
         setShowWelcomePopup(true);
@@ -99,10 +109,12 @@ function AppLayout() {
 
       return () => clearTimeout(timer);
     }
-  }, [location.pathname, shouldHideHeader]); // Re-run when route changes
+  }, [location.pathname]); // Re-run when route changes
 
   const handleCloseWelcomePopup = () => {
     setShowWelcomePopup(false);
+    // Mark as dismissed for this session only (resets on page refresh)
+    sessionStorage.setItem('welcomePopupDismissed', 'true');
   };
 
   return (

@@ -13,8 +13,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
 
-  // Routes where sidebar should be completely hidden (auth pages, special landing pages)
+  // Routes where sidebar should be completely hidden (auth pages, special landing pages, and homepage)
   const hideSidebarRoutes = [
+    "/",
     "/signin",
     "/signup",
     "/forgot-password",
@@ -74,7 +75,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       )}
 
       {/* Main Content - Adapts width based on sidebar state */}
-      <main 
+      <main
         className={`
           flex-1 w-full transition-all duration-300 pb-16 lg:pb-0
           ${isSidebarOpen ? 'lg:ml-0' : 'lg:ml-0'}
