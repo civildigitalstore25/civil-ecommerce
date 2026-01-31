@@ -398,7 +398,7 @@ const Footer = () => {
         >
           Civil Digital Store
         </span>
-        . All rights reserved 2025.
+        . All rights reserved 2016.
       </div>
 
     </footer>
