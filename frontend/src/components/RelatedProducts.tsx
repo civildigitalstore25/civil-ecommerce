@@ -98,9 +98,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
       {related.slice(0, limit).map((product) => (
         <div
           key={product._id}
-          className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
+          className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] border"
           style={{
             backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
           }}
         >
           {/* Image */}
