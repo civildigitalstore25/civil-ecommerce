@@ -109,6 +109,14 @@ const navigationCategories: Category[] = [
     ],
   },
   {
+    id: "billing-software",
+    name: "Billing Software",
+    href: "/category?brand=billing-software",
+    subcategories: [
+      { id: "tally", name: "Tally", href: "/category?brand=billing-software&category=tally" },
+    ],
+  },
+  {
     id: "ebook",
     name: "Ebook",
     href: "/category?brand=ebook",

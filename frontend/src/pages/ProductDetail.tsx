@@ -1243,28 +1243,30 @@ const ProductDetail: React.FC = () => {
               </span>
             </div>
 
-            {/* Product Title */}
-            <h1
-              className="text-2xl lg:text-4xl font-bold"
-              style={{ color: colors.text.primary }}
-            >
-              {product.name}
-            </h1>
-
-            {/* Rating */}
-            <div className="flex items-center gap-2">
-              <div className="flex text-yellow-400">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <LucideIcons.Star
-                    key={i}
-                    size={16}
-                    fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
-                  />
-                ))}
+            {/* Product Title and Rating */}
+            <div className="flex items-center justify-between gap-4 flex-wrap">
+              <h1
+                className="text-2xl lg:text-4xl font-bold flex-1"
+                style={{ color: colors.text.primary }}
+              >
+                {product.name}
+              </h1>
+              
+              {/* Rating - Right Side */}
+              <div className="flex items-center gap-2">
+                <div className="flex text-yellow-400">
+                  {Array.from({ length: 5 }, (_, i) => (
+                    <LucideIcons.Star
+                      key={i}
+                      size={16}
+                      fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
+                    />
+                  ))}
+                </div>
+                <span style={{ color: colors.text.primary }}>
+                  {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"} ({reviewStats?.totalReviews || 0})
+                </span>
               </div>
-              <span style={{ color: colors.text.primary }}>
-                {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"} ({reviewStats?.totalReviews || 0})
-              </span>
             </div>
 
             {/* Social Share Buttons */}

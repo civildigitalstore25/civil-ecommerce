@@ -15,6 +15,7 @@ const brands = [
   { value: "antivirus", label: "Antivirus" },
   { value: "structural-softwares", label: "Structural Softwares" },
   { value: "architectural-softwares", label: "Architectural Softwares" },
+  { value: "billing-software", label: "Billing Software" },
   { value: "ebook", label: "Ebook" },
   { value: "others", label: "Others" },
 ];
@@ -75,6 +76,9 @@ const brandCategories: Record<string, { value: string; label: string }[]> = {
     { value: "twin-motion", label: "Twin Motion" },
     { value: "d5-render", label: "D5 Render" },
     { value: "archi-cad", label: "Archi CAD" },
+  ],
+  "billing-software": [
+    { value: "tally", label: "Tally" },
   ],
   ebook: [],
   others: [],

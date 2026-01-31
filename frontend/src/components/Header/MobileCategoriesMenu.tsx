@@ -89,6 +89,12 @@ const brandCategories: Record<
       { value: "archi-cad", label: "Archi CAD" },
     ],
   },
+  "billing-software": {
+    label: "Billing Software",
+    categories: [
+      { value: "tally", label: "Tally" },
+    ],
+  },
   ebook: {
     label: "Ebook",
     categories: [],

@@ -17,6 +17,7 @@ const brandLabels: Record<string, string> = {
   antivirus: "Antivirus",
   "structural-softwares": "Structural Softwares",
   "architectural-softwares": "Architectural Softwares",
+  "billing-software": "Billing Software",
   ebook: "Ebook",
 };
 
@@ -63,6 +64,7 @@ const categoryLabels: Record<string, string> = {
   "twin-motion": "Twin Motion",
   "d5-render": "D5 Render",
   "archi-cad": "Archi CAD",
+  tally: "Tally",
 };
 
 const BrandCategoryListing: React.FC = () => {

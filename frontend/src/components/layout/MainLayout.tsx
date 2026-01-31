@@ -9,8 +9,8 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  // Sidebar is open by default on desktop, closed on mobile
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Sidebar is closed by default - user can open it if needed
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
 
   // Routes where sidebar should be completely hidden (auth pages, special landing pages, and homepage)
