@@ -1,6 +1,5 @@
 import React from "react";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { Button } from "../components/common/Button";
 import { useProducts } from "../api/productApi";
 import type { Product } from "../api/types/productTypes";
 import { useNavigate } from "react-router-dom";
@@ -153,7 +152,10 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
                 color: colors.text.secondary,
               }}
             >
-              {(product.company || product.brand) ? (product.company || product.brand).charAt(0).toUpperCase() + (product.company || product.brand).slice(1) : ""}
+              {(() => {
+                const brandOrCompany = product.company || product.brand || "";
+                return brandOrCompany ? brandOrCompany.charAt(0).toUpperCase() + brandOrCompany.slice(1) : "";
+              })()}
             </span>
           </div>
 
