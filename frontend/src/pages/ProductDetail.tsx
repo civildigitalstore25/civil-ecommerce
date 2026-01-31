@@ -1251,7 +1251,7 @@ const ProductDetail: React.FC = () => {
               >
                 {product.name}
               </h1>
-              
+
               {/* Rating - Right Side */}
               <div className="flex items-center gap-2">
                 <div className="flex text-yellow-400">
@@ -1819,7 +1819,7 @@ const ProductDetail: React.FC = () => {
                       Enquiry
                     </button>
                   </div>
-                  
+
                   {/* Mobile Sticky Buttons - Above bottom navigation */}
                   <div className="lg:hidden fixed bottom-16 left-0 right-0 z-40 px-2 py-3 border-t shadow-lg"
                     style={{
