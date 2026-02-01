@@ -50,6 +50,7 @@ import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
 import MainLayout from "./components/layout/MainLayout";
 import MenuManagement from "./components/admins/MenuManagement";
 import WelcomePopup from "./components/WelcomePopup/WelcomePopup";
+import SitemapPage from "./pages/SitemapPage";
 
 const queryClient = new QueryClient();
 
@@ -334,6 +335,7 @@ function AppLayout() {
             }
           />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/payment-status" element={<PaymentStatusPage />} />
           <Route path="/payment/callback" element={<PaymentCallback />} />
 

@@ -131,6 +131,11 @@ const navigationCategories: Category[] = [
     name: "Contact",
     href: "/contact",
   },
+  {
+    id: "sitemap",
+    name: "Site Map",
+    href: "/sitemap",
+  },
 ];
 
 const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {

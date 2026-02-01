@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+// import { useLocation } from "react-router-dom"; // Removed unused import
 import { ChevronRight } from "lucide-react";
 import LeftSidebar from "../LeftSidebar";
 import MobileBottomNav from "../MobileBottomNav/MobileBottomNav";
@@ -9,52 +9,34 @@ interface MainLayoutProps {
 }
 
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
-  // Sidebar is closed by default - user can open it if needed
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation();
+  // Initialize sidebar state from localStorage, default to false (closed)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    const savedState = localStorage.getItem('sidebarOpen');
+    return savedState === 'true';
+  });
+  // const location = useLocation(); // Removed unused variable
 
-  // Routes where sidebar should be completely hidden (auth pages, special landing pages, and homepage)
-  const hideSidebarRoutes = [
-    "/",
-    "/signin",
-    "/signup",
-    "/forgot-password",
-    "/scrm",
-    "/adobe-cloud",
-  ];
+  // Persist sidebar state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('sidebarOpen', String(isSidebarOpen));
+  }, [isSidebarOpen]);
 
-  const shouldHideSidebar = hideSidebarRoutes.some(
-    (route) =>
-      location.pathname === route ||
-      location.pathname.startsWith("/reset-password/")
-  );
-
-  // For pages without sidebar (auth pages), still show mobile nav
-  if (shouldHideSidebar) {
-    return (
-      <>
-        {/* Main Content - Add bottom padding on mobile for nav bar */}
-        <div className="pb-16 lg:pb-0">
-          {children}
-        </div>
-        {/* Mobile Bottom Navigation - Always visible */}
-        <MobileBottomNav onMenuToggle={() => setIsSidebarOpen(true)} />
-      </>
-    );
-  }
+  const toggleSidebar = () => {
+    setIsSidebarOpen(prev => !prev);
+  };
 
   return (
     <div className="flex min-h-screen relative">
-      {/* Left Sidebar - Visible by default, toggleable */}
+      {/* Left Sidebar - Available on all pages, closed by default */}
       <LeftSidebar
         isOpen={isSidebarOpen}
-        onToggle={() => setIsSidebarOpen(!isSidebarOpen)}
+        onToggle={toggleSidebar}
       />
 
       {/* Floating Toggle Button - Only visible on desktop when sidebar is closed */}
       {!isSidebarOpen && (
         <button
-          onClick={() => setIsSidebarOpen(true)}
+          onClick={toggleSidebar}
           className="
             hidden lg:flex
             fixed bottom-8 left-8
@@ -88,7 +70,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <MobileBottomNav onMenuToggle={() => setIsSidebarOpen(true)} />
+      <MobileBottomNav onMenuToggle={toggleSidebar} />
     </div>
   );
 };
