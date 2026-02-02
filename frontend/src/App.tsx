@@ -28,6 +28,7 @@ import AuthGuard from "./components/Auth/AuthGuard";
 import PublicRoute from "./components/Auth/PublicRoute";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import PasswordResetPage from "./pages/auth/PasswordResetPage";
+import { usePageTracking } from "./hooks/usePageTracking";
 import Footer from "./components/Footer/Footer";
 import HomePage from "./pages/HomePage";
 import Disclaimer from "./ui/policy/Disclaimer";
@@ -57,6 +58,9 @@ const queryClient = new QueryClient();
 function AppLayout() {
   const location = useLocation();
   const [showWelcomePopup, setShowWelcomePopup] = useState(false);
+
+  // Track page views with Google Analytics
+  usePageTracking();
 
   // Define routes where you don't want the Header
   const hideHeaderRoutes = [
