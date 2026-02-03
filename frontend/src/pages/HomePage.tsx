@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 // import ExclusiveOffers from "../ui/home/ExclusiveOffers";
 import HeroSection from "../ui/home/HeroSection";
 import HomeProducts from "../ui/home/HomeProducts";
@@ -7,19 +8,32 @@ import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 import { MobileShopByCategory } from "../components/Header";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { getHomeSEO } from "../utils/seo";
 
 const HomePage: React.FC = () => {
   const { colors } = useAdminTheme();
+  const seoData = getHomeSEO();
 
   return (
-    <div
-      className="flex flex-col min-h-screen transition-colors duration-200"
-      style={{ backgroundColor: colors.background.primary }}
-    >
-      {/* Header */}
+    <>
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta property="og:title" content={seoData.ogTitle} />
+        <meta property="og:description" content={seoData.ogDescription} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      
+      <div
+        className="flex flex-col min-h-screen transition-colors duration-200"
+        style={{ backgroundColor: colors.background.primary }}
+      >
+        {/* Header */}
 
-      {/* Main Content */}
-      <main className="flex-grow pt-20">
+        {/* Main Content */}
+        <main className="flex-grow pt-20">
         <section className="px-4 sm:px-6 lg:px-8">
           <MarqueeBanner />
         </section>
@@ -63,6 +77,7 @@ const HomePage: React.FC = () => {
         </section>
       </main>
     </div>
+    </>
   );
 };
 

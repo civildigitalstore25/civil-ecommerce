@@ -1,9 +1,11 @@
 import React from "react";
 import { Controller } from "react-hook-form";
+import { Helmet } from "react-helmet";
 import { useAppForm } from "../hooks/useAppForm";
 import { useSubmitContactForm } from "../api/contactApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { getContactSEO } from "../utils/seo";
 
 interface ContactFormData {
   name: string;
@@ -15,6 +17,7 @@ interface ContactFormData {
 const ContactPage: React.FC = () => {
   const submitContactForm = useSubmitContactForm();
   const { colors, theme } = useAdminTheme();
+  const seoData = getContactSEO();
 
   const {
     handleSubmit,
@@ -42,12 +45,22 @@ const ContactPage: React.FC = () => {
     "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d250875.31940063165!2d79.082117!3d10.74012!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3baabee185555555%3A0xcbb0bd1ecb02b6ec!2sCivil%20DigitalStore!5e0!3m2!1sen!2sin!4v1758196477578!5m2!1sen!2sin";
 
   return (
-    <div
-      className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
-      style={{
-        backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.primary,
-      }}
-    >
+    <>
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta property="og:title" content={seoData.title} />
+        <meta property="og:description" content={seoData.description} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      <div
+        className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
+        style={{
+          backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.primary,
+        }}
+      >
       <div
         className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
         style={{
@@ -473,6 +486,7 @@ const ContactPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

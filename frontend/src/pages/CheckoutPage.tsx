@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { useUser } from "../api/userQueries";
 import { useAppForm } from "../hooks/useAppForm";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
@@ -7,6 +8,7 @@ import { useCurrency } from "../contexts/CurrencyContext";
 import { useCartContext } from "../contexts/CartContext";
 import { toast } from "react-hot-toast";
 import Swal from "sweetalert2";
+import { getCheckoutSEO } from "../utils/seo";
 import BillingForm from "../ui/checkout/BillingForm";
 import OrderSummary from "../ui/checkout/OrderSummary";
 import { 
@@ -51,6 +53,8 @@ const CheckoutPage: React.FC = () => {
   const { formatPriceWithSymbol } = useCurrency();
   const { clearCart } = useCartContext();
   const { data: user } = useUser();
+  
+  const seoData = getCheckoutSEO();
 
   // React Hook Form setup
   const {
@@ -611,10 +615,18 @@ const applyCoupon = async () => {
 };
 
 return (
-  <div
-    className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
-    style={{ backgroundColor: colors.background.primary }}
-  >
+  <>
+    <Helmet>
+      <title>{seoData.title}</title>
+      <meta name="description" content={seoData.description} />
+      <meta name="keywords" content={seoData.keywords} />
+      <meta name="robots" content="noindex, nofollow" />
+      <link rel="canonical" href={window.location.href} />
+    </Helmet>
+    <div
+      className="min-h-screen py-10 px-4 sm:px-6 md:px-12 pt-20"
+      style={{ backgroundColor: colors.background.primary }}
+    >
     <h1
       className="text-3xl font-bold mb-8 text-center mt-5"
       style={{ color: colors.text.primary }}
@@ -776,6 +788,7 @@ return (
       />
     </form>
   </div>
+  </>
 );
 };
 

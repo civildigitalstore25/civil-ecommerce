@@ -1,10 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import { useCartContext } from "../contexts/CartContext";
 import { CartItem, CartSummary, CartEmpty } from "../ui/Cart";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import RelatedProducts from "../components/RelatedProducts";
 import Swal from "sweetalert2";
+import { getCartSEO } from "../utils/seo";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
@@ -57,13 +59,20 @@ const CartPage: React.FC = () => {
       removeItem(itemId);
     }
   };
+  
+  const seoData = getCartSEO();
 
   if (isLoading) {
     return (
-      <div
-        className="min-h-screen transition-colors duration-200"
-        style={{ backgroundColor: colors.background.secondary }}
-      >
+      <>
+        <Helmet>
+          <title>{seoData.title}</title>
+          <meta name="description" content={seoData.description} />
+        </Helmet>
+        <div
+          className="min-h-screen transition-colors duration-200"
+          style={{ backgroundColor: colors.background.secondary }}
+        >
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="text-center py-20">
             <div
@@ -79,11 +88,20 @@ const CartPage: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div
+    <>
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      <div
       className="min-h-screen transition-colors duration-200 pt-16 sm:pt-20"
       style={{ backgroundColor: colors.background.secondary }}
     >
@@ -183,6 +201,7 @@ const CartPage: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

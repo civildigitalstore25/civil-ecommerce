@@ -1,16 +1,29 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { getAboutSEO } from "../utils/seo";
 
 const AboutPage: React.FC = () => {
     const { colors, theme } = useAdminTheme();
+    const seoData = getAboutSEO();
 
     return (
-        <div
-            className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
-            style={{
-                backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.primary,
-            }}
-        >
+        <>
+            <Helmet>
+                <title>{seoData.title}</title>
+                <meta name="description" content={seoData.description} />
+                <meta name="keywords" content={seoData.keywords} />
+                <meta property="og:title" content={seoData.title} />
+                <meta property="og:description" content={seoData.description} />
+                <meta property="og:type" content="website" />
+                <link rel="canonical" href={window.location.href} />
+            </Helmet>
+            <div
+                className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
+                style={{
+                    backgroundColor: theme === "light" ? "#F5F7FA" : colors.background.primary,
+                }}
+            >
             <div
                 className="mx-auto max-w-6xl rounded-xl shadow-xl overflow-hidden"
                 style={{
@@ -76,6 +89,7 @@ const AboutPage: React.FC = () => {
                
             </div>
         </div>
+        </>
     );
 };
 

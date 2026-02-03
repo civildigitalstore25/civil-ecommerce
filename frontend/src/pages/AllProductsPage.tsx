@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, Package } from "lucide-react";
+import { Helmet } from "react-helmet";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { getCategoryListingSEO } from "../utils/seo";
 
 // Brand-Category structure (same as AllCategoriesDropdown)
 const brandCategories: Record<
@@ -98,6 +100,9 @@ const AllProductsPage: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const [expandedBrand, setExpandedBrand] = useState<string | null>(null);
+  
+  // Generate SEO metadata for all products page
+  const seoData = getCategoryListingSEO({});
 
   const handleCategoryClick = (brand: string, category: string) => {
     navigate(`/category?brand=${brand}&category=${category}`);
@@ -112,10 +117,21 @@ const AllProductsPage: React.FC = () => {
   };
 
   return (
-    <div
-      className="min-h-screen pt-20 transition-colors duration-200"
-      style={{ backgroundColor: colors.background.secondary }}
-    >
+    <>
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta property="og:title" content={seoData.ogTitle} />
+        <meta property="og:description" content={seoData.ogDescription} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      
+      <div
+        className="min-h-screen pt-20 transition-colors duration-200"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
       <div className="max-w-7xl mx-auto py-8 px-4">
         {/* Breadcrumb */}
         <div
@@ -428,6 +444,7 @@ const AllProductsPage: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

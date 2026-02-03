@@ -1,11 +1,13 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Star, Package } from "lucide-react";
+import { Helmet } from "react-helmet";
 import { useProducts } from "../api/productApi";
 import { useUser } from "../api/userQueries";
 import { useCartContext } from "../contexts/CartContext";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
+import { getCategoryListingSEO } from "../utils/seo";
 
 
 // Brand-Category mapping for display names
@@ -72,6 +74,9 @@ const BrandCategoryListing: React.FC = () => {
   const params = new URLSearchParams(search);
   const brand = params.get("brand") || "";
   const category = params.get("category") || "";
+  
+  // Generate SEO metadata
+  const seoData = getCategoryListingSEO({ brand, category });
 
   // Build query based on brand and category
   const queryParams: any = {};
@@ -146,10 +151,21 @@ const BrandCategoryListing: React.FC = () => {
   };
 
   return (
-    <div
-      className="min-h-screen transition-colors duration-200 pt-20"
-      style={{ backgroundColor: colors.background.secondary }}
-    >
+    <>
+      <Helmet>
+        <title>{seoData.title}</title>
+        <meta name="description" content={seoData.description} />
+        <meta name="keywords" content={seoData.keywords} />
+        <meta property="og:title" content={seoData.ogTitle} />
+        <meta property="og:description" content={seoData.ogDescription} />
+        <meta property="og:type" content="website" />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      
+      <div
+        className="min-h-screen transition-colors duration-200 pt-20"
+        style={{ backgroundColor: colors.background.secondary }}
+      >
       <div className="max-w-7xl mx-auto py-8 px-4">
         {/* Breadcrumb */}
         <div
@@ -364,6 +380,7 @@ const BrandCategoryListing: React.FC = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 

@@ -24,6 +24,7 @@ import { Helmet } from "react-helmet";
 import * as LucideIcons from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
 import AddProductModal from "../ui/admin/products/AddProductModal";
+import { getProductSEO } from "../utils/seo";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -1053,6 +1054,16 @@ const ProductDetail: React.FC = () => {
   const cartQuantity = product
     ? getItemQuantity(product._id!, cartLicenseType)
     : 0;
+    
+  // Generate SEO metadata
+  const seoData = product ? getProductSEO({
+    name: product.name,
+    category: product.category,
+    company: product.company,
+    shortDescription: product.shortDescription || product.description?.substring(0, 155),
+    price: selectedOption?.priceINR || product.price1INR || product.price || 0,
+  }) : null;
+  
   return (
     <div
       className="min-h-screen transition-colors duration-200 pt-20"
@@ -1062,17 +1073,25 @@ const ProductDetail: React.FC = () => {
       }}
     >
       <Helmet>
-        <title>{product ? `${product.name} - SoftCart Ecommerce` : 'Product Detail - SoftCart Ecommerce'}</title>
-        <meta name="description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
-        <meta property="og:title" content={product ? product.name : 'Product Detail'} />
-        <meta property="og:description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
+        <title>{seoData?.title || 'Product Detail - Softzcart'}</title>
+        <meta name="description" content={seoData?.description || 'Discover premium software products with genuine licenses and instant delivery.'} />
+        <meta name="keywords" content={seoData?.keywords || 'software, buy online, genuine license'} />
+        <meta property="og:title" content={seoData?.ogTitle || seoData?.title || 'Product Detail'} />
+        <meta property="og:description" content={seoData?.ogDescription || seoData?.description || 'Discover premium software products.'} />
         <meta property="og:image" content={product ? (product.imageUrl || product.image) : ''} />
         <meta property="og:url" content={window.location.href} />
         <meta property="og:type" content="product" />
+        {product && (selectedOption?.priceINR || product.price1INR || product.price) && (
+          <meta property="product:price:amount" content={(selectedOption?.priceINR || product.price1INR || product.price || 0).toString()} />
+        )}
+        {product && (selectedOption?.priceINR || product.price1INR || product.price) && (
+          <meta property="product:price:currency" content="INR" />
+        )}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={product ? product.name : 'Product Detail'} />
-        <meta name="twitter:description" content={product ? product.description || `Buy ${product.name} online. ${product.category} software with lifetime support.` : 'Discover premium software products with lifetime support.'} />
+        <meta name="twitter:title" content={seoData?.ogTitle || seoData?.title || 'Product Detail'} />
+        <meta name="twitter:description" content={seoData?.ogDescription || seoData?.description || 'Discover premium software products.'} />
         <meta name="twitter:image" content={product ? (product.imageUrl || product.image) : ''} />
+        <link rel="canonical" href={window.location.href} />
       </Helmet>
       {/* Back Button and Breadcrumb */}
       <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
