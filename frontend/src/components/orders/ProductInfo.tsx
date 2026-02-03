@@ -34,57 +34,70 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
       }
 
       setIsDownloading(true);
+      const loadingToast = toast.loading('Preparing download...');
+
       try {
         const response = await getProductDownloadUrl(order._id!, product.productId);
-        
+
         if (response.success && response.data) {
           // Get auth token
           const token = localStorage.getItem('token');
-          
-          // Create a hidden link and trigger secure download
-          const link = document.createElement('a');
-          link.href = response.data.downloadUrl;
-          
-          // Add authorization header by fetching as blob first
+
+          if (!token) {
+            throw new Error('Please login to download');
+          }
+
+          toast.loading('Downloading file...', { id: loadingToast });
+
+          // Fetch with authorization header
           const downloadResponse = await fetch(response.data.downloadUrl, {
+            method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`
-            }
+            },
+            credentials: 'include'
           });
 
           if (!downloadResponse.ok) {
-            throw new Error('Download failed. Please try again.');
+            if (downloadResponse.status === 401) {
+              throw new Error('Session expired. Please login again.');
+            } else if (downloadResponse.status === 403) {
+              throw new Error('Order must be paid before downloading.');
+            } else {
+              throw new Error('Download failed. Please try again.');
+            }
           }
 
           // Create blob URL and trigger download
           const blob = await downloadResponse.blob();
           const blobUrl = window.URL.createObjectURL(blob);
-          
+
+          const link = document.createElement('a');
           link.href = blobUrl;
           link.download = product.name || 'download';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          
+
           // Clean up blob URL
           setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
-          
-          toast.success('Download started! Your file will be saved shortly.');
+
+          toast.success('Download completed successfully!', { id: loadingToast });
         } else {
-          toast.error(response.message || 'Failed to get download link');
+          toast.error(response.message || 'Failed to get download link', { id: loadingToast });
         }
       } catch (error: any) {
         console.error('Download error:', error);
-        toast.error(error.message || 'Failed to download product');
+        toast.error(error.message || 'Failed to download product', { id: loadingToast });
       } finally {
         setIsDownloading(false);
       }
     };
 
     // Check if the product has a download link and order is paid/delivered
-    const canDownload = product?.driveLink && 
-                       (order.paymentStatus?.toLowerCase() === 'paid' || 
-                        order.orderStatus?.toLowerCase() === 'delivered');
+    const canDownload = product?.driveLink &&
+      (order.paymentStatus?.toLowerCase() === 'paid' ||
+        order.orderStatus?.toLowerCase() === 'delivered');
 
     // Debug logging
     console.log('ProductInfo Debug:', {
@@ -108,8 +121,8 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
             }}
           >
             {product?.image &&
-            product.image !== "null" &&
-            product.image.trim() !== "" ? (
+              product.image !== "null" &&
+              product.image.trim() !== "" ? (
               <img
                 src={product.image}
                 alt={product.name}
@@ -172,16 +185,25 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
               <button
                 onClick={handleDownload}
                 disabled={isDownloading || !canDownload}
-                className="px-4 py-2 rounded text-xs sm:text-sm font-semibold border transition-colors duration-200 w-full sm:w-auto flex items-center justify-center gap-2"
+                className="px-4 py-2 rounded text-xs sm:text-sm font-semibold border transition-colors duration-200 w-full sm:w-auto flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
-                backgroundColor: colors.background.secondary,
-                color: colors.text.primary,
-                borderColor: colors.border.primary,
-              }}
+                  backgroundColor: colors.background.secondary,
+                  color: colors.text.primary,
+                  borderColor: colors.border.primary,
+                }}
                 title={!canDownload ? 'Download available after payment confirmation' : 'Download product'}
               >
-                <Download className="w-4 h-4" />
-                {isDownloading ? 'DOWNLOADING...' : canDownload ? 'DOWNLOAD' : 'DOWNLOAD (Pending Payment)'}
+                {isDownloading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                    <span>DOWNLOADING...</span>
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    <span>{canDownload ? 'DOWNLOAD' : 'DOWNLOAD (Pending Payment)'}</span>
+                  </>
+                )}
               </button>
             )}
           </div>
