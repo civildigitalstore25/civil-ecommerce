@@ -72,15 +72,13 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
               }}
             >
               <Icon
-                className={`w-6 h-6 transition-all duration-200 ${
-                  active ? "scale-110" : ""
-                }`}
+                className={`w-6 h-6 transition-all duration-200 ${active ? "scale-110" : ""
+                  }`}
                 strokeWidth={active ? 2.5 : 2}
               />
               <span
-                className={`text-xs font-medium ${
-                  active ? "font-semibold" : ""
-                }`}
+                className={`text-xs font-medium ${active ? "font-semibold" : ""
+                  }`}
               >
                 {item.label}
               </span>

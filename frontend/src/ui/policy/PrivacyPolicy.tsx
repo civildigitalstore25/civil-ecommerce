@@ -66,7 +66,7 @@ const PrivacyPolicy: React.FC = () => {
                                 <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
                                     2. What personal data we collect and why we collect it
                                 </h3>
-                                
+
                                 <h4 className="font-semibold mt-3" style={{ color: colors.text.primary }}>Comments</h4>
                                 <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
                                     When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor's IP address and browser user agent string to help spam detection.
@@ -144,4 +144,3 @@ const PrivacyPolicy: React.FC = () => {
 };
 
 export default PrivacyPolicy;
-    

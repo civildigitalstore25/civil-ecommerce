@@ -99,7 +99,7 @@ const ContactPage: React.FC = () => {
                   className="flex gap-4 rounded-lg border-l-4 p-5"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
-                    border:theme==="light"? `1px solid #384354`: `2px solid #384354`,
+                    border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
                     color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                   }}
                 >
@@ -115,7 +115,7 @@ const ContactPage: React.FC = () => {
                   <div>
                     <h3
                       className="text-lg font-semibold"
-                     style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       Call to Us:
                     </h3>
@@ -124,9 +124,9 @@ const ContactPage: React.FC = () => {
                     </p>
                     <p
                       className="font-semibold"
-                     style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      <a href="tel:+919042993986" className="hover:underline"style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
+                      <a href="tel:+919042993986" className="hover:underline" style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
                         +91 9042993986
                       </a>
                     </p>
@@ -137,7 +137,7 @@ const ContactPage: React.FC = () => {
                   className="flex gap-4 rounded-lg border-l-4 p-5"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
-                    border:theme==="light"? `1px solid #384354`: `2px solid #384354`,
+                    border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
                     color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                   }}
                 >
@@ -162,7 +162,7 @@ const ContactPage: React.FC = () => {
                     </p>
                     <p
                       className="font-semibold"
-                     style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       softzcart@gmail.com
                     </p>
@@ -173,7 +173,7 @@ const ContactPage: React.FC = () => {
                   className="flex gap-4 rounded-lg border-l-4 p-5"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
-                    border:theme==="light"? `1px solid #384354`: `2px solid #384354`,
+                    border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
                     color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                   }}
                 >
@@ -189,7 +189,7 @@ const ContactPage: React.FC = () => {
                   <div>
                     <h3
                       className="text-lg font-semibold"
-                    style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       Business Hours:
                     </h3>
@@ -203,7 +203,7 @@ const ContactPage: React.FC = () => {
                   className="flex gap-4 rounded-lg border-l-4 p-5"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
-                    border:theme==="light"? `1px solid #384354`: `2px solid #384354`,
+                    border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
                     color: theme === "light" ? "#0A2A6B" : colors.text.primary,
                   }}
                 >
