@@ -154,6 +154,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
   const handleNavigation = (href: string) => {
     navigate(href);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Hide sidebar only in mobile view
+    if (window.innerWidth < 1024) {
+      onToggle();
+    }
   };
 
   return (
@@ -232,7 +236,13 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
               <div key={category.id} className="mb-1">
                 {/* Category Header */}
                 <button
-                  onClick={() => category.subcategories && category.subcategories.length > 0 ? toggleCategory(category.id) : handleNavigation(category.href || '/')}
+                  onClick={() => {
+                    if (category.subcategories && category.subcategories.length > 0) {
+                      toggleCategory(category.id);
+                    } else {
+                      handleNavigation(category.href || '/');
+                    }
+                  }}
                   className="w-full flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:shadow-md group"
                   style={{
                     backgroundColor: expandedCategories.includes(category.id)

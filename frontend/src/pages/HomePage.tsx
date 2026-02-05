@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
         </section>
 
         {/* Shop by Category - Mobile Only (commented out for now, will be used later) */}
-        <section
+        {/* <section
           className="px-2 sm:px-6 lg:hidden py-6 transition-colors duration-200"
           style={{
             background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
@@ -57,7 +57,7 @@ const HomePage: React.FC = () => {
           >
             <MobileShopByCategory />
           </div>
-        </section>
+        </section> */}
 
 
         <section className="px-4 sm:px-6 lg:px-8">
