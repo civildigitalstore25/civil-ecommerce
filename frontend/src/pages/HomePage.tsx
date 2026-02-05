@@ -6,7 +6,6 @@ import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
 import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
-import { MobileShopByCategory } from "../components/Header";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getHomeSEO } from "../utils/seo";
 

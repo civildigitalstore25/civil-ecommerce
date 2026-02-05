@@ -1,14 +1,9 @@
 import React from "react";
 import {
-  Phone,
-  UserCheck,
-  Shield,
   LogOut,
   User,
-  Settings,
   Package,
 } from "lucide-react";
-import { headerConfig } from "./HeaderConfig";
 // import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
 // import MobileCategoriesMenu from "./MobileCategoriesMenu";
 // import MobileShopByCategory from "./MobileShopByCategory";
@@ -26,7 +21,6 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,
   onClose,
   onNavigate,
-  user,
   onLogout,
 }) => {
   const { colors } = useAdminTheme();
