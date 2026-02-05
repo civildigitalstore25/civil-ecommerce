@@ -12,11 +12,16 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
   const location = useLocation();
   const { colors } = useAdminTheme();
 
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const navItems = [
     {
       icon: User,
       label: "Profile",
-      onClick: () => navigate("/profile"),
+      onClick: () => handleNavigate("/profile"),
       path: "/profile",
     },
     {
@@ -28,13 +33,13 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
     {
       icon: Package,
       label: "Orders",
-      onClick: () => navigate("/my-orders"),
+      onClick: () => handleNavigate("/my-orders"),
       path: "/my-orders",
     },
     {
       icon: MessageSquare,
       label: "Enquiries",
-      onClick: () => navigate("/my-enquiries"),
+      onClick: () => handleNavigate("/my-enquiries"),
       path: "/my-enquiries",
     },
   ];

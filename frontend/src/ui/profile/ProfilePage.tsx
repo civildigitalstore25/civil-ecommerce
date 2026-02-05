@@ -151,7 +151,7 @@ export default function ProfilePage() {
           <div
             className="p-6 transition-colors duration-200 flex flex-col sm:flex-row items-center sm:items-center sm:justify-between gap-4"
             style={{
-              background: `linear-gradient(90deg, ${colors.interactive.primary} 0%, ${colors.interactive.secondary} 100%)`,
+              backgroundColor: colors.interactive.primary,
             }}
           >
             <div className="flex items-center gap-4 w-full sm:w-auto">
