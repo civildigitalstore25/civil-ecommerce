@@ -129,6 +129,22 @@ const Footer = () => {
                     Privacy Policy
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    to="/sitemap"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: colors.text.secondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = colors.text.primary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = colors.text.secondary;
+                    }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    Site Map
+                  </Link>
+                </li>
               </ul>
             </div>
 

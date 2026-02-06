@@ -136,6 +136,42 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
 
     console.log('✅ Admin order created:', orderId, 'for email:', email);
 
+    // Send purchase confirmation email to customer if email provided
+    if (email && email !== 'Admin Created' && email.includes('@')) {
+      try {
+        const customerOrderDetails = {
+          orderId: order.orderId,
+          orderNumber: order.orderNumber,
+          customerName: email.split('@')[0], // Use part before @ as name if no proper name
+          customerEmail: email,
+          items: itemsWithDriveLink.map((item: any) => ({
+            productId: item.productId || null,
+            name: item.name,
+            version: item.version || null,
+            pricingPlan: item.pricingPlan || null,
+            quantity: item.quantity,
+            price: item.price,
+            driveLink: item.driveLink || null
+          })),
+          subtotal,
+          discount,
+          totalAmount,
+          purchaseDate: order.createdAt || new Date(),
+          downloadLinks: itemsWithDriveLink.map((item: any) => ({
+            name: item.name,
+            driveLink: item.driveLink
+          }))
+        };
+        
+        await emailService.sendPurchaseConfirmationEmail(customerOrderDetails);
+        console.log('✅ Admin-created order: Customer purchase confirmation email sent to:', email);
+      } catch (emailError: any) {
+        console.error('❌ Failed to send customer confirmation email for admin order:', emailError.message);
+      }
+    } else {
+      console.log('ℹ️ Invalid or missing email for admin order, skipping customer confirmation');
+    }
+
     res.status(201).json({
       success: true,
       message: 'Order created successfully by admin',
@@ -402,16 +438,27 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
     // Send order confirmation notifications
     try {
       console.log('📧 Preparing to send notifications...');
-
-      // Populate order with product details for better email/WhatsApp content
-      await order.populate('userId', 'name email');
+      
+      // Get the authenticated user's email (this is the logged-in user)
+      const authenticatedUser = (req as any).user;
+      let customerEmail = 'N/A';
+      
+      if (authenticatedUser && authenticatedUser.email) {
+        customerEmail = authenticatedUser.email;
+        console.log('✅ Using authenticated user email for confirmation:', customerEmail);
+      } else {
+        // Fallback: try to populate order with user details
+        await order.populate('userId', 'name email');
+        customerEmail = (order as any).userId?.email || order.notes?.replace('Email: ', '') || 'N/A';
+        console.log('⚠️ Using fallback email method:', customerEmail);
+      }
 
       const orderDetails = {
         orderId: order.orderId,
         orderNumber: order.orderNumber,
         customerName: order.shippingAddress.fullName,
         customerPhone: order.shippingAddress.phoneNumber,
-        customerEmail: (order as any).userId?.email || order.notes?.replace('Email: ', '') || 'N/A',
+        customerEmail: customerEmail,
         items: order.items.map((item: any) => {
           console.log('📦 Order Item from DB:', {
             name: item.name,
@@ -445,21 +492,43 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
         console.error('❌ Failed to send admin email:', emailError.message);
       }
 
-    } catch (notificationError: any) {
-      console.error('❌ Error sending notifications:', notificationError.message);
-      // Don't fail the payment verification if notifications fail
-    }
+        // Send purchase confirmation email to customer
+        try {
+          const customerOrderDetails = {
+            ...orderDetails,
+            purchaseDate: order.createdAt || new Date(),
+            downloadLinks: order.items.map((item: any) => ({
+              name: item.name,
+              driveLink: item.driveLink
+            }))
+          };
+          
+          // Ensure we have a valid email before sending
+          if (customerEmail && customerEmail !== 'N/A' && customerEmail.includes('@')) {
+            await emailService.sendPurchaseConfirmationEmail(customerOrderDetails);
+            console.log('✅ Customer purchase confirmation email sent to:', customerEmail);
+          } else {
+            console.log('❌ Invalid customer email, skipping confirmation email:', customerEmail);
+          }
+        } catch (emailError: any) {
+          console.error('❌ Failed to send customer confirmation email:', emailError.message);
+        }
 
-    res.status(200).json({
-      success: true,
-      message: 'Payment verified successfully',
-      data: {
-        orderId: order.orderId,
-        orderStatus: order.orderStatus,
-        paymentStatus: order.paymentStatus
+      } catch (notificationError: any) {
+        console.error('❌ Error sending notifications:', notificationError.message);
+        // Don't fail the payment verification if notifications fail
       }
-    });
-  } catch (error: any) {
+
+      res.status(200).json({
+        success: true,
+        message: 'Payment verified successfully',
+        data: {
+          orderId: order.orderId,
+          orderStatus: order.orderStatus,
+          paymentStatus: order.paymentStatus
+        }
+      });
+    } catch (error: any) {
     console.error('❌ Verify payment error:', error);
     res.status(500).json({
       success: false,

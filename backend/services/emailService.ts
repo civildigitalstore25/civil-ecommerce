@@ -541,6 +541,192 @@ class EmailService {
       throw new Error('Failed to send welcome discount email');
     }
   }
+
+  /**
+   * Send purchase confirmation email to customer
+   */
+  async sendPurchaseConfirmationEmail(orderDetails: any): Promise<void> {
+    const {
+      orderId,
+      orderNumber,
+      customerName,
+      customerEmail,
+      items,
+      subtotal,
+      discount,
+      totalAmount,
+      purchaseDate,
+      downloadLinks
+    } = orderDetails;
+
+    // Format items list for customer
+    const itemsList = items.map((item: any) => {
+      const downloadLink = item.driveLink ? 
+        `<br><a href="${item.driveLink}" style="color: #10b981; text-decoration: none; font-weight: bold;">📥 Download Now</a>` : 
+        '';
+      
+      return `
+        <tr style="border-bottom: 1px solid #e5e7eb;">
+          <td style="padding: 15px; text-align: left;">
+            <strong style="color: #1f2937;">${item.name}</strong>
+            ${item.version ? `<br><span style="color: #6b7280; font-size: 14px;">Version: ${item.version}</span>` : ''}
+            ${downloadLink}
+          </td>
+          <td style="padding: 15px; text-align: center; color: #374151;">${item.quantity}</td>
+          <td style="padding: 15px; text-align: right; font-weight: bold; color: #1f2937;">₹${(Number(item.price) * Number(item.quantity)).toLocaleString()}</td>
+        </tr>
+      `;
+    }).join('');
+
+    const mailOptions = {
+      from: {
+        name: process.env.FROM_NAME || 'SoftZcart',
+        address: process.env.FROM_EMAIL || 'noreply@softzcart.com'
+      },
+      to: customerEmail,
+      subject: `Purchase Confirmation - Order #${orderNumber}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Purchase Confirmation</title>
+          <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background-color: #f8fafc; margin: 0; padding: 0; }
+            .container { max-width: 650px; margin: 20px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 30px; text-align: center; }
+            .header h1 { margin: 0; font-size: 32px; font-weight: bold; }
+            .header p { margin: 10px 0 0 0; font-size: 18px; opacity: 0.9; }
+            .success-badge { background: rgba(255,255,255,0.2); display: inline-block; padding: 8px 20px; border-radius: 25px; margin-top: 15px; }
+            .content { padding: 40px 30px; }
+            .order-info { background: #f8fafc; padding: 25px; border-radius: 8px; margin-bottom: 30px; border-left: 4px solid #10b981; }
+            .order-info h3 { margin: 0 0 15px 0; color: #1f2937; font-size: 18px; }
+            .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+            .info-item strong { color: #374151; display: block; margin-bottom: 5px; }
+            .info-item span { color: #6b7280; }
+            table { width: 100%; border-collapse: collapse; margin: 25px 0; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
+            th { background: #f9fafb; padding: 15px; text-align: left; font-weight: bold; color: #374151; border-bottom: 1px solid #e5e7eb; }
+            .summary { background: linear-gradient(135deg, #f0f9f4 0%, #ecfdf5 100%); padding: 25px; border-radius: 8px; margin: 25px 0; }
+            .summary-row { display: flex; justify-content: space-between; padding: 8px 0; color: #374151; }
+            .summary-row.total { font-size: 20px; font-weight: bold; color: #10b981; border-top: 2px solid #d1fae5; padding-top: 15px; margin-top: 10px; }
+            .download-section { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; }
+            .download-section h3 { color: #1e40af; margin-bottom: 15px; }
+            .download-section p { color: #1e40af; margin-bottom: 20px; }
+            .support-section { background: #fefce8; border: 1px solid #fde047; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center; }
+            .support-section h4 { color: #a16207; margin-bottom: 10px; }
+            .footer { background: #f9fafb; padding: 30px; text-align: center; color: #6b7280; border-top: 1px solid #e5e7eb; }
+            .footer h4 { color: #374151; margin-bottom: 15px; }
+            @media (max-width: 600px) {
+              .container { margin: 10px; border-radius: 8px; }
+              .content, .header { padding: 20px; }
+              .info-grid { grid-template-columns: 1fr; }
+              .summary-row { font-size: 14px; }
+              .summary-row.total { font-size: 18px; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🎉 Purchase Successful!</h1>
+              <p>Thank you for your purchase from SoftZcart.com</p>
+              <div class="success-badge">
+                ✅ Order Confirmed
+              </div>
+            </div>
+            
+            <div class="content">
+              <div class="order-info">
+                <h3>📋 Order Details</h3>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <strong>Order ID:</strong>
+                    <span>#${orderNumber}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Purchase Date:</strong>
+                    <span>${new Date(purchaseDate).toLocaleDateString('en-IN', { 
+                      day: 'numeric', 
+                      month: 'long', 
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Customer Name:</strong>
+                    <span>${customerName}</span>
+                  </div>
+                  <div class="info-item">
+                    <strong>Email:</strong>
+                    <span>${customerEmail}</span>
+                  </div>
+                </div>
+              </div>
+
+              <h3 style="color: #1f2937; margin-bottom: 15px;">🛍️ Purchased Products</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product Details</th>
+                    <th style="text-align: center;">Quantity</th>
+                    <th style="text-align: right;">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${itemsList}
+                </tbody>
+              </table>
+
+              <div class="summary">
+                <div class="summary-row">
+                  <span>Subtotal:</span>
+                  <span>₹${Number(subtotal).toLocaleString()}</span>
+                </div>
+                ${discount > 0 ? `
+                <div class="summary-row">
+                  <span>Discount:</span>
+                  <span style="color: #dc2626;">-₹${Number(discount).toLocaleString()}</span>
+                </div>` : ''}
+                <div class="summary-row total">
+                  <span>Total Amount Paid:</span>
+                  <span>₹${Number(totalAmount).toLocaleString()}</span>
+                </div>
+              </div>
+
+              <div class="download-section">
+                <h3>📥 Your Digital Products Are Ready!</h3>
+                <p>Your digital products are now available for download. Click the download links in the products table above to access your files anytime.</p>
+                <p><strong>Note:</strong> Download links are valid indefinitely and can be accessed anytime from your account.</p>
+              </div>
+
+              <div class="support-section">
+                <h4>Need Help? We're Here for You!</h4>
+                <p style="color: #a16207; margin: 10px 0;">Should you have any questions or need assistance, feel free to reach out to our support team at <strong>softzcart@gmail.com</strong></p>
+              </div>
+            </div>
+
+            <div class="footer">
+              <h4>Thank You for Choosing SoftZcart!</h4>
+              <p>We appreciate your business and hope you enjoy your digital products.</p>
+              <p style="margin-top: 15px;">© ${new Date().getFullYear()} SoftZcart. All rights reserved.</p>
+              <p style="font-size: 12px; margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `
+    };
+
+    try {
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('✅ Purchase confirmation email sent successfully to customer:', customerEmail, info.messageId);
+    } catch (error) {
+      console.error('❌ Failed to send purchase confirmation email:', error);
+      throw new Error('Failed to send purchase confirmation email');
+    }
+  }
 }
 
 export default new EmailService();
