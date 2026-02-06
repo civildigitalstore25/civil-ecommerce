@@ -38,7 +38,7 @@ export const userApi = {
     email: string;
     fullName: string;
     phoneNumber?: string;
-    role: "user" | "admin";
+    role: "user" | "admin" | "superadmin";
     password: string;
   }): Promise<User> => {
     const response = await api.post("/", userData);
@@ -47,7 +47,7 @@ export const userApi = {
 
   updateUser: async (
     id: string,
-    data: { role?: string; isActive?: boolean },
+    data: { role?: "user" | "admin" | "superadmin" | string; isActive?: boolean },
   ): Promise<User> => {
     const response = await api.put(`/${id}`, data);
     return response.data;
@@ -103,7 +103,7 @@ export const useCreateUser = () => {
       email: string;
       fullName: string;
       phoneNumber?: string;
-      role: "user" | "admin";
+      role: "user" | "admin" | "superadmin";
       password: string;
     }) => userApi.createUser(userData),
     onSuccess: () => {

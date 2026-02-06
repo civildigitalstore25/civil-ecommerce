@@ -484,7 +484,7 @@ export const downloadSalesPDF = async (
         3: { cellWidth: 50, halign: "right" },
       },
       margin: { left: 20, right: 20 },
-    });
+    } as any);
 
     // Add footer
     const pageCount = doc.getNumberOfPages();

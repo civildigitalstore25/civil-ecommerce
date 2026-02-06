@@ -89,7 +89,7 @@ const Products: React.FC = () => {
       Swal.fire("Error", "Failed to export products", "error");
     }
   };
-  const { colors, theme } = useAdminTheme();
+  const { colors } = useAdminTheme();
   // Removed unused viewMode state
   const [modalOpen, setModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
