@@ -362,8 +362,7 @@ export default function SignupPage() {
                       searchPlaceholder="Search country"
                       specialLabel=""
                       countryCodeEditable={false}
-                      enableAreaCodes={true}
-                      masks={{ in: "+.. ........." }}
+                      enableAreaCodes={false}
                     />
                   </div>
                 )}

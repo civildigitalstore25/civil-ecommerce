@@ -410,23 +410,40 @@ export const downloadSalesPDF = async (
     // Create PDF
     const doc = new jsPDF();
 
-    // Add title
-    doc.setFontSize(18);
-    doc.text("Sales Analytics Report", 14, 20);
+    // Add title with better styling
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Sales Analytics Report", 105, 22, { align: "center" });
+    
+    // Add a separator line
+    doc.setLineWidth(0.5);
+    doc.setDrawColor(41, 128, 185);
+    doc.line(20, 28, 190, 28);
 
-    // Add metadata
-    doc.setFontSize(10);
+    // Add metadata with better spacing
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80, 80, 80);
     const periodStr = String(period);
-    doc.text(`Period: ${periodStr.charAt(0).toUpperCase() + periodStr.slice(1)}`, 14, 30);
-    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 36);
+    doc.text(`Period: ${periodStr.charAt(0).toUpperCase() + periodStr.slice(1)}`, 20, 38);
+    doc.text(`Generated: ${new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}`, 20, 44);
 
-    // Add summary
-    doc.setFontSize(12);
-    doc.text("Summary", 14, 46);
-    doc.setFontSize(10);
-    doc.text(`Total Revenue: ₹${totalRevenue.toLocaleString("en-IN")}`, 14, 54);
-    doc.text(`Total Orders: ${totalOrders}`, 14, 60);
-    doc.text(`Average Order Value: ₹${Math.round(avgOrderValue).toLocaleString("en-IN")}`, 14, 66);
+    // Add summary section with styling
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
+    doc.text("Summary", 20, 56);
+    
+    // Summary box
+    doc.setFillColor(240, 248, 255);
+    doc.roundedRect(20, 60, 170, 24, 3, 3, "F");
+    
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(40, 40, 40);
+    doc.text(`Total Revenue: ₹${totalRevenue.toLocaleString("en-IN")}`, 25, 68);
+    doc.text(`Total Orders: ${totalOrders}`, 25, 74);
+    doc.text(`Average Order Value: ₹${Math.round(avgOrderValue).toLocaleString("en-IN")}`, 25, 80);
 
     // Prepare table data
     const tableData = salesData.map((item) => [
@@ -438,21 +455,45 @@ export const downloadSalesPDF = async (
         : "₹0",
     ]);
 
-    // Add table
+    // Add table with better styling
     autoTable(doc, {
-      startY: 75,
+      startY: 92,
       head: [["Period", "Total Orders", "Total Revenue", "Avg Order Value"]],
       body: tableData,
-      theme: "grid",
-      headStyles: { fillColor: [41, 128, 185] },
-      styles: { fontSize: 9 },
+      theme: "striped",
+      headStyles: { 
+        fillColor: [41, 128, 185],
+        textColor: [255, 255, 255],
+        fontStyle: "bold",
+        fontSize: 11,
+        halign: "center",
+        cellPadding: 5
+      },
+      bodyStyles: {
+        fontSize: 10,
+        cellPadding: 4,
+        textColor: [40, 40, 40]
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250]
+      },
       columnStyles: {
-        0: { cellWidth: 40 },
-        1: { cellWidth: 35, halign: "center" },
+        0: { cellWidth: 45, halign: "left" },
+        1: { cellWidth: 40, halign: "center" },
         2: { cellWidth: 50, halign: "right" },
         3: { cellWidth: 50, halign: "right" },
       },
+      margin: { left: 20, right: 20 },
     });
+
+    // Add footer
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFontSize(9);
+      doc.setTextColor(128, 128, 128);
+      doc.text(`Page ${i} of ${pageCount}`, 105, 285, { align: "center" });
+    }
 
     // Generate PDF buffer
     const pdfBuffer = Buffer.from(doc.output("arraybuffer"));

@@ -205,8 +205,7 @@ const BillingForm: React.FC<BillingFormProps> = ({
                 searchPlaceholder="Search country"
                 specialLabel=""
                 countryCodeEditable={false}
-                enableAreaCodes={true}
-                masks={{ in: "+.. ........." }}
+                enableAreaCodes={false}
               />
             </div>
           )}

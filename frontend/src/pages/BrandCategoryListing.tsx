@@ -313,7 +313,7 @@ const BrandCategoryListing: React.FC = () => {
 
                 {/* Name */}
                 <h2
-                  className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2"
+                  className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] md:min-h-[3rem]"
                   style={{ color: colors.text.primary }}
                 >
                   {product.name}

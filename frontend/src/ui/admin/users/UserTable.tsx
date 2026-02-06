@@ -6,7 +6,7 @@ import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 interface Props {
   users: User[];
-  handleRoleChange: (userId: string, newRole: "user" | "admin") => void;
+  handleRoleChange: (userId: string, newRole: "user" | "admin" | "superadmin") => void;
   handleDeleteUser: (userId: string, userEmail: string) => void;
   selectedUsers: string[];
   handleSelectAll: () => void;
@@ -154,14 +154,15 @@ const UserTable: React.FC<Props> = ({
                     onChange={(e) => handleRoleSelect(user._id, e.target.value)}
                     className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
                     style={{
-                      background: '#fff',
-                      color: 'black',
+                      backgroundColor: colors.background.secondary,
+                      color: colors.text.primary,
                       border: `1px solid ${colors.border.primary}`,
-                      minWidth: 80,
+                      minWidth: 110,
                     }}
                   >
-                    <option value="user" style={{ color: 'black' }}>User</option>
-                    <option value="admin" style={{ color: 'black' }}>Admin</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
                   </select>
                   {editedRoles[user._id] &&
                     editedRoles[user._id] !== user.role && (
@@ -169,7 +170,7 @@ const UserTable: React.FC<Props> = ({
                         onClick={() =>
                           handleRoleChange(
                             user._id,
-                            editedRoles[user._id] as "user" | "admin",
+                            editedRoles[user._id] as "user" | "admin" | "superadmin",
                           )
                         }
                         className="text-sm transition-colors duration-200 border rounded px-2 py-1 ml-1"

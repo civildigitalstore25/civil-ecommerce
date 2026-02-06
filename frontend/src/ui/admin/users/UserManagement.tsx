@@ -69,7 +69,7 @@ const UserManagement: React.FC = () => {
 
   const handleRoleChange = async (
     userId: string,
-    newRole: "user" | "admin",
+    newRole: "user" | "admin" | "superadmin",
   ) => {
     try {
       await updateUserMutation.mutateAsync({
@@ -172,7 +172,6 @@ const UserManagement: React.FC = () => {
       email: u.email,
       phoneNumber: u.phoneNumber || "",
       role: u.role,
-      isActive: u.isActive ? "Active" : "Inactive",
       createdAt: u.createdAt,
       updatedAt: u.updatedAt,
     }));
@@ -244,8 +243,8 @@ const UserManagement: React.FC = () => {
           <button
             className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 gap-2 shadow-md"
             style={{
-              background: '#00BEF5',
-              color: colors.text.inverse,
+              background: '#0068ff',
+              color: '#fff',
               border: 'none',
             }}
             onClick={() => setIsAddUserModalOpen(true)}

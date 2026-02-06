@@ -16,7 +16,7 @@ interface UserFormData {
   email: string;
   fullName: string;
   phoneNumber: string;
-  role: "user" | "admin";
+  role: "user" | "admin" | "superadmin";
   password: string;
   confirmPassword: string;
 }
@@ -243,7 +243,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
               <select
                 value={formData.role}
                 onChange={(e) =>
-                  handleChange("role", e.target.value as "user" | "admin")
+                  handleChange("role", e.target.value as "user" | "admin" | "superadmin")
                 }
                 className="w-full border rounded p-2 pl-10 transition-all duration-200 focus:ring-2 focus:outline-none"
                 style={{
@@ -262,6 +262,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
+                <option value="superadmin">Super Admin</option>
               </select>
               <div className="absolute left-3 top-2 pointer-events-none">
                 <Shield
