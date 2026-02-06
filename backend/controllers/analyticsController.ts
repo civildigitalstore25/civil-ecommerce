@@ -28,7 +28,7 @@ export const getSalesAnalytics = async (
 ): Promise<void> => {
   try {
     const { period = "monthly" } = req.query; // weekly, monthly, yearly
-    
+
     console.log(`[Analytics] Fetching sales analytics for period: ${period}`);
 
     // Get all paid orders
@@ -314,7 +314,7 @@ export const downloadSalesExcel = async (
       Period: item.period,
       "Total Orders": item.orderCount,
       "Total Revenue": `₹${item.revenue.toLocaleString("en-IN")}`,
-      "Avg Order Value": item.orderCount > 0 
+      "Avg Order Value": item.orderCount > 0
         ? `₹${Math.round(item.revenue / item.orderCount).toLocaleString("en-IN")}`
         : "₹0",
     }));
@@ -414,7 +414,7 @@ export const downloadSalesPDF = async (
     doc.setFontSize(22);
     doc.setFont("helvetica", "bold");
     doc.text("Sales Analytics Report", 105, 22, { align: "center" });
-    
+
     // Add a separator line
     doc.setLineWidth(0.5);
     doc.setDrawColor(41, 128, 185);
@@ -433,11 +433,11 @@ export const downloadSalesPDF = async (
     doc.setFont("helvetica", "bold");
     doc.setTextColor(0, 0, 0);
     doc.text("Summary", 20, 56);
-    
+
     // Summary box
     doc.setFillColor(240, 248, 255);
     doc.roundedRect(20, 60, 170, 24, 3, 3, "F");
-    
+
     doc.setFontSize(11);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(40, 40, 40);
@@ -461,7 +461,7 @@ export const downloadSalesPDF = async (
       head: [["Period", "Total Orders", "Total Revenue", "Avg Order Value"]],
       body: tableData,
       theme: "striped",
-      headStyles: { 
+      headStyles: {
         fillColor: [41, 128, 185],
         textColor: [255, 255, 255],
         fontStyle: "bold",
