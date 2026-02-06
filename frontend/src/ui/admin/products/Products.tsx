@@ -693,20 +693,10 @@ const Products: React.FC = () => {
             <button
               className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200"
               style={{
-                background: theme === "dark"
-                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-                color: colors.text.inverse,
+                background: '#0068ff',
+                color: '#fff',
                 border: 'none',
               }}
-              onMouseEnter={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                colors.interactive.primaryHover)
-              }
-              onMouseLeave={(e) =>
-              (e.currentTarget.style.backgroundColor =
-                colors.interactive.primary)
-              }
               onClick={() => {
                 setEditingProduct(null);
                 setModalOpen(true);
@@ -911,7 +901,10 @@ const Products: React.FC = () => {
                       <td className="py-4 px-4">
                         <span
                           className="inline-block text-xs px-2 py-1 rounded-full font-medium"
-
+                          style={{
+                            backgroundColor: colors.background.accent,
+                            color: colors.text.primary,
+                          }}
                         >
                           {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ""}
                         </span>

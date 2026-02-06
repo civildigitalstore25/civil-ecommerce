@@ -203,10 +203,8 @@ const Coupons: React.FC = () => {
             onClick={fetchCoupons}
             className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
             style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
+              background: '#0068ff',
+              color: '#fff',
               border: 'none',
             }}
             title="Refresh coupons"
@@ -219,12 +217,10 @@ const Coupons: React.FC = () => {
               setEditingCoupon(null);
               setShowForm(true);
             }}
-            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition border-2"
+            className="flex items-center gap-2 px-4 py-2 rounded font-medium hover:opacity-90 transition"
             style={{
-              background: theme === "dark"
-                ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-              color: colors.text.inverse,
+              background: '#0068ff',
+              color: '#fff',
               border: 'none',
             }}
           >

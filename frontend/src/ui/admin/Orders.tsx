@@ -347,7 +347,7 @@ const Orders: React.FC = () => {
         <div className="flex items-center space-x-3">
           <button
             className="px-4 py-2 rounded-lg font-medium"
-            style={{ background: colors.interactive.primary, color: colors.text.inverse }}
+            style={{ background: '#0068ff', color: '#fff' }}
             onClick={() => setShowCreateForm((v) => !v)}
           >
             {showCreateForm ? "Close" : "Create Order"}
@@ -428,50 +428,83 @@ const Orders: React.FC = () => {
             <h4 className="font-medium mb-2" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Order Items</h4>
             {orderForm.items.length === 0 && <div className="text-sm" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>No products added.</div>}
             {orderForm.items.map((item) => (
-              <div key={item.productId} className="flex items-center gap-2 mb-2">
-                <input className="input w-36 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                <input className="input w-40 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                <input type="number" className="input w-24 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                <input type="number" className="input w-28 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount (optional)" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                <button className="text-red-500 ml-2" onClick={() => handleRemoveOrderItem(item.productId)}>Remove</button>
+              <div key={item.productId} className="grid grid-cols-12 gap-2 mb-2 items-center">
+                <div className="col-span-3">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product ID</label>
+                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-3">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product Name</label>
+                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Qty</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Price</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Discount</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <button className="text-red-500 ml-2 col-span-1 mt-4" onClick={() => handleRemoveOrderItem(item.productId)}>Remove</button>
               </div>
             ))}
             {/* Add new product row */}
-            <div className="flex items-center gap-2 mt-2">
-              <input className="input w-32 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-              <input className="input w-32 border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-              <input type="number" className="input w-16 border rounded-lg px-2 py-1 focus:outline-none transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-              <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-              <input type="number" className="input w-20 border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount (optional)" id="newProductDiscount" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-              <button className="text-green-600 ml-2" onClick={() => {
-                const productId = (document.getElementById("newProductId") as HTMLInputElement).value;
-                const name = (document.getElementById("newProductName") as HTMLInputElement).value;
-                const quantity = Number((document.getElementById("newProductQty") as HTMLInputElement).value);
-                const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
-                const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
-                const discount = discountValue === '' ? undefined : Number(discountValue);
-                if (productId && name && quantity > 0) {
-                  handleAddProductToOrder({ productId, name, quantity, price, discount });
-                  (document.getElementById("newProductId") as HTMLInputElement).value = "";
-                  (document.getElementById("newProductName") as HTMLInputElement).value = "";
-                  (document.getElementById("newProductQty") as HTMLInputElement).value = "1";
-                  (document.getElementById("newProductPrice") as HTMLInputElement).value = "0";
-                  (document.getElementById("newProductDiscount") as HTMLInputElement).value = "";
-                }
-              }}>Add</button>
+            <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: colors.background.accent }}>
+              <h5 className="text-sm font-medium mb-2" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Add Product</h5>
+              <div className="grid grid-cols-12 gap-2 items-end">
+                <div className="col-span-3">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product ID*</label>
+                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-3">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product Name*</label>
+                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Quantity*</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Price*</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Discount</label>
+                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="0" id="newProductDiscount" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+                </div>
+                <button className="px-6 py-2 rounded-lg font-medium col-span-12 mt-2 w-auto" style={{ background: '#0068ff', color: '#fff' }} onClick={() => {
+                  const productId = (document.getElementById("newProductId") as HTMLInputElement).value;
+                  const name = (document.getElementById("newProductName") as HTMLInputElement).value;
+                  const quantity = Number((document.getElementById("newProductQty") as HTMLInputElement).value);
+                  const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
+                  const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
+                  const discount = discountValue === '' ? undefined : Number(discountValue);
+                  if (productId && name && quantity > 0) {
+                    handleAddProductToOrder({ productId, name, quantity, price, discount });
+                    (document.getElementById("newProductId") as HTMLInputElement).value = "";
+                    (document.getElementById("newProductName") as HTMLInputElement).value = "";
+                    (document.getElementById("newProductQty") as HTMLInputElement).value = "1";
+                    (document.getElementById("newProductPrice") as HTMLInputElement).value = "0";
+                    (document.getElementById("newProductDiscount") as HTMLInputElement).value = "";
+                  }
+                }}>Add Product</button>
+              </div>
             </div>
           </div>
           {/* Discount, Notes */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div>
-              <label className="block text-sm mb-1" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total Discount (optional)</label>
-              <input type="number" className="input border rounded-lg px-3 py-2 focus:outline-none transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+              <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total Discount (optional)</label>
+              <input type="number" className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
             </div>
           </div>
           <div className="mt-4">
-            <label className="block text-sm mb-1" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Notes</label>
-            <textarea className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
+            <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Notes (optional)</label>
+            <textarea className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" placeholder="Add any notes for this order..." rows={3} value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
           </div>
           {/* Totals */}
           <div className="mt-4 flex gap-6">
@@ -481,7 +514,7 @@ const Orders: React.FC = () => {
           <div className="mt-6 flex gap-4">
             <button
               className="px-6 py-2 rounded-lg font-medium"
-              style={{ background: colors.interactive.primary, color: colors.text.inverse }}
+              style={{ background: '#0068ff', color: '#fff' }}
               onClick={() => createOrderMutation.mutate(orderForm)}
               disabled={createOrderMutation.status === "pending"}
             >
@@ -489,7 +522,7 @@ const Orders: React.FC = () => {
             </button>
             <button
               className="px-6 py-2 rounded-lg font-medium border"
-              style={{ borderColor: colors.border.primary, color: theme === 'dark' ? '#fff' : colors.text.primary }}
+              style={{ borderColor: colors.border.primary, color: theme === 'dark' ? '#fff' : colors.text.primary, backgroundColor: 'transparent' }}
               onClick={() => setShowCreateForm(false)}
             >Cancel</button>
           </div>
@@ -690,14 +723,14 @@ const Orders: React.FC = () => {
                         onChange={(e) =>
                           handleStatusSelect(getOrderId(order), e.target.value)
                         }
-                        className="border rounded px-2 py-1 text-sm transition-colors duration-200"
+                        className="border rounded-lg px-3 py-2 focus:ring-2 text-sm transition-colors duration-200"
                         style={{
-                          backgroundColor: theme === "dark" ? "#fff" : "#fff",
+                          backgroundColor: colors.background.secondary,
                           borderColor: colors.border.primary,
-                          color: theme === "dark" ? "#222" : colors.text.primary,
+                          color: colors.text.primary,
                         }}
                       >
-                        <option value="processing" style={{ color: '#222', background: '#fff' }}>Processing</option>
+                        <option value="processing">Processing</option>
                         <option value="delivered" style={{ color: '#222', background: '#fff' }}>Success</option>
                         <option value="cancelled" style={{ color: '#222', background: '#fff' }}>Cancelled</option>
                       </select>

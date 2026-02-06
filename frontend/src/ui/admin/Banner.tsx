@@ -121,12 +121,10 @@ const BannerManagement: React.FC = () => {
             setEditingBanner(null);
             setShowForm(true);
           }}
-          className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center border-2"
+          className="flex items-center gap-2 px-4 sm:px-6 py-2 rounded-lg font-medium hover:shadow-md transition w-full sm:w-auto justify-center"
           style={{
-            background: theme === "dark"
-              ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-              : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-            color: colors.text.inverse,
+            background: '#0068ff',
+            color: '#fff',
             border: 'none',
           }}
         >
@@ -226,9 +224,9 @@ const BannerManagement: React.FC = () => {
                   <span
                     className="font-mono font-semibold px-3 py-1 rounded-full text-sm border"
                     style={{
-                      backgroundColor: colors.background.tertiary,
-                      color: colors.text.primary,
-                      borderColor: colors.border.primary,
+                      backgroundColor: b.status === 'Active' ? (theme === 'light' ? '#10b981' : colors.status.success) : colors.background.tertiary,
+                      color: b.status === 'Active' ? '#fff' : colors.text.primary,
+                      borderColor: b.status === 'Active' ? (theme === 'light' ? '#10b981' : colors.status.success) : colors.border.primary,
                     }}
                   >
                     {b.status}

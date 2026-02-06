@@ -16,6 +16,7 @@ import {
   HelpCircle,
   Monitor,
   Zap,
+  ExternalLink,
 } from "lucide-react";
 import type { ProductViewModalProps } from "./types/ProductViewModal";
 import FormButton from "../../../components/Button/FormButton";
@@ -307,6 +308,42 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({
                       }}
                     >
                       {product.category ? product.category.charAt(0).toUpperCase() + product.category.slice(1) : ""}
+                    </span>
+                  </div>
+                  {product.driveLink && (
+                    <div>
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: 'gray' }}
+                      >
+                        Download Link:
+                      </span>
+                      <a
+                        href={product.driveLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 text-blue-500 hover:underline inline-flex items-center"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-1" />
+                        View Drive Link
+                      </a>
+                    </div>
+                  )}
+                  <div>
+                    <span
+                      className="text-sm font-medium"
+                      style={{ color: 'gray' }}
+                    >
+                      Stock Status:
+                    </span>
+                    <span
+                      className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
+                      style={{
+                        backgroundColor: product.isOutOfStock ? '#fee2e2' : '#d1fae5',
+                        color: product.isOutOfStock ? '#991b1b' : '#065f46',
+                      }}
+                    >
+                      {product.isOutOfStock ? 'Out of Stock' : 'In Stock'}
                     </span>
                   </div>
                 </div>
