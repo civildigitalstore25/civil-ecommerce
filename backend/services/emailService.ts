@@ -211,8 +211,8 @@ class EmailService {
             </div>
           </div>
           ${buildCommonEmailFooter({
-            topNoteHtml: `This message was submitted via the contact form on <strong>${process.env.FROM_NAME || 'Softzcart'}</strong>.`,
-          })}
+        topNoteHtml: `This message was submitted via the contact form on <strong>${process.env.FROM_NAME || 'Softzcart'}</strong>.`,
+      })}
         </div>
       </body>
       </html>
@@ -390,8 +390,8 @@ class EmailService {
             </div>
 
             ${buildCommonEmailFooter({
-              topNoteHtml: `Order received at <strong>${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</strong>.`,
-            })}
+        topNoteHtml: `Order received at <strong>${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</strong>.`,
+      })}
           </div>
         </body>
         </html>
@@ -419,17 +419,17 @@ class EmailService {
 
   // Send welcome discount email to new lead
   async sendWelcomeDiscountEmail(
-    to: string, 
-    name: string, 
-    discountCode: string, 
+    to: string,
+    name: string,
+    discountCode: string,
     discountValue: number,
     validUntil: Date
   ): Promise<void> {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
-    const validUntilFormatted = validUntil.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const validUntilFormatted = validUntil.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
 
     const mailOptions = {
@@ -518,9 +518,9 @@ class EmailService {
             </div>
 
             ${buildCommonEmailFooter({
-              topNoteHtml:
-                "You're receiving this email because you signed up for our welcome discount.",
-            })}
+        topNoteHtml:
+          "You're receiving this email because you signed up for our welcome discount.",
+      })}
           </div>
         </body>
         </html>

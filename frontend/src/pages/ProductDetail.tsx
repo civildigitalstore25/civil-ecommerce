@@ -1055,7 +1055,7 @@ const ProductDetail: React.FC = () => {
   const cartQuantity = product
     ? getItemQuantity(product._id!, cartLicenseType)
     : 0;
-    
+
   // Generate SEO metadata
   const seoData = product ? getProductSEO({
     name: product.name,
@@ -1064,7 +1064,7 @@ const ProductDetail: React.FC = () => {
     shortDescription: product.shortDescription || product.description?.substring(0, 155),
     price: selectedOption?.priceINR || product.price1INR || product.price || 0,
   }) : null;
-  
+
   return (
     <div
       className="min-h-screen transition-colors duration-200 pt-20"
@@ -2710,7 +2710,7 @@ const ProductDetail: React.FC = () => {
                         {[5, 4, 3, 2, 1].map((star) => {
                           const count =
                             reviewStats.ratingDistribution[
-                              star as keyof typeof reviewStats.ratingDistribution
+                            star as keyof typeof reviewStats.ratingDistribution
                             ];
                           const pct =
                             reviewStats.totalReviews > 0

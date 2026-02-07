@@ -44,15 +44,15 @@ const Products: React.FC = () => {
     const subscriptionDurationLines: PricingLine[] =
       product.subscriptionDurations && product.subscriptionDurations.length > 0
         ? product.subscriptionDurations
-            .map((sd: any, idx: number) => {
-              const price = pickFirstPositive(sd?.priceINR, sd?.price, 0);
-              if (!price) return null;
-              return {
-                label: sd?.duration || `Option ${idx + 1}`,
-                price,
-              };
-            })
-            .filter(isPricingLine)
+          .map((sd: any, idx: number) => {
+            const price = pickFirstPositive(sd?.priceINR, sd?.price, 0);
+            if (!price) return null;
+            return {
+              label: sd?.duration || `Option ${idx + 1}`,
+              price,
+            };
+          })
+          .filter(isPricingLine)
         : [];
 
     if (subscriptionDurationLines.length > 0) {
@@ -100,15 +100,15 @@ const Products: React.FC = () => {
     const adminSubscriptionLines: PricingLine[] =
       (product as any).subscriptions && Array.isArray((product as any).subscriptions)
         ? (product as any).subscriptions
-            .map((sub: any, idx: number) => {
-              const price = pickFirstPositive(sub?.priceINR, sub?.price, 0);
-              if (!price) return null;
-              return {
-                label: sub?.duration || `Plan ${idx + 1}`,
-                price,
-              };
-            })
-            .filter(isPricingLine)
+          .map((sub: any, idx: number) => {
+            const price = pickFirstPositive(sub?.priceINR, sub?.price, 0);
+            if (!price) return null;
+            return {
+              label: sub?.duration || `Plan ${idx + 1}`,
+              price,
+            };
+          })
+          .filter(isPricingLine)
         : [];
     if (adminSubscriptionLines.length > 0) {
       groups.push({ title: "Subscription Plans", lines: adminSubscriptionLines });

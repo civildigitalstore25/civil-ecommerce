@@ -461,15 +461,15 @@ const Coupons: React.FC = () => {
 
                   {/* Details Row */}
 
-              {coupons.length > 0 && (
-                <AdminPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={setCurrentPage}
-                  pageSize={pageSize}
-                  onPageSizeChange={setPageSize}
-                />
-              )}
+                  {coupons.length > 0 && (
+                    <AdminPagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={setCurrentPage}
+                      pageSize={pageSize}
+                      onPageSizeChange={setPageSize}
+                    />
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                     {/* Validity */}
                     <div className="flex items-center gap-2">
