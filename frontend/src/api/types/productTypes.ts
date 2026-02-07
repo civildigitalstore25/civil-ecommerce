@@ -38,11 +38,14 @@ export interface Product {
   company: string; // Backward compatibility
   brand?: string; // New field
   price1?: number | undefined; // Backward compatibility
+  price2?: number | undefined; // Backward compatibility
   price3?: number | undefined; // Backward compatibility
   priceLifetime?: number | undefined; // Backward compatibility
   // Dual currency pricing
   price1INR?: number;
   price1USD?: number;
+  price2INR?: number;
+  price2USD?: number;
   price3INR?: number;
   price3USD?: number;
   priceLifetimeINR?: number;
@@ -58,6 +61,7 @@ export interface Product {
   membershipPriceINR?: number;
   membershipPriceUSD?: number;
   oldPrice1?: number;
+  oldPrice2?: number;
   oldPrice3?: number;
   oldPriceLifetime?: number;
   rating?: number;

@@ -4,6 +4,7 @@ import BannerForm from "./BannerForm";
 import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import type { Banner } from "../../types/Banner";
+import AdminPagination from "./components/AdminPagination";
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -17,6 +18,18 @@ const BannerManagement: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const { colors, theme } = useAdminTheme();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, banners.length]);
+
+  const totalPages = Math.max(1, Math.ceil(banners.length / pageSize));
+  const paginatedBanners = banners.slice(
+    (currentPage - 1) * pageSize,
+    (currentPage - 1) * pageSize + pageSize,
+  );
 
   useEffect(() => {
     fetchBanners();
@@ -196,7 +209,7 @@ const BannerManagement: React.FC = () => {
             </div>
           </div>
         ) : (
-          banners.map((b, idx) => {
+          paginatedBanners.map((b, idx) => {
             return (
               <div
                 key={b._id}
@@ -308,6 +321,16 @@ const BannerManagement: React.FC = () => {
           })
         )}
       </div>
+
+      {banners.length > 0 && (
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
+      )}
     </div>
   );
 };

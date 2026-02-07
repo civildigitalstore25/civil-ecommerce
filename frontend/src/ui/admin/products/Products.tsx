@@ -21,12 +21,102 @@ import {
 import type { Product } from "../../../api/types/productTypes.ts";
 import AddProductModal from "./AddProductModal";
 import ProductViewModal from "./ProductViewModal";
-import Pagination from "./Pagination";
+import AdminPagination from "../components/AdminPagination";
 import Swal from "sweetalert2";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
 const Products: React.FC = () => {
   const [exportOpen, setExportOpen] = useState(false);
+
+  type PricingLine = { label: string; price: number };
+  type PricingGroup = { title: string; lines: PricingLine[] };
+
+  const isPricingLine = (value: PricingLine | null): value is PricingLine =>
+    value !== null;
+
+  const pickFirstPositive = (...values: Array<number | undefined | null>) =>
+    values.find((v) => typeof v === "number" && Number.isFinite(v) && v > 0) ??
+    null;
+
+  const buildPricingGroups = (product: Product): PricingGroup[] => {
+    const groups: PricingGroup[] = [];
+
+    const subscriptionDurationLines: PricingLine[] =
+      product.subscriptionDurations && product.subscriptionDurations.length > 0
+        ? product.subscriptionDurations
+            .map((sd: any, idx: number) => {
+              const price = pickFirstPositive(sd?.priceINR, sd?.price, 0);
+              if (!price) return null;
+              return {
+                label: sd?.duration || `Option ${idx + 1}`,
+                price,
+              };
+            })
+            .filter(isPricingLine)
+        : [];
+
+    if (subscriptionDurationLines.length > 0) {
+      groups.push({ title: "Subscription Pricing", lines: subscriptionDurationLines });
+    } else {
+      const legacyLines: PricingLine[] = [];
+      if (typeof product.price1 === "number" && product.price1 > 0) {
+        legacyLines.push({ label: "Price 1", price: product.price1 });
+      }
+      if (typeof product.price2 === "number" && product.price2 > 0) {
+        legacyLines.push({ label: "Price 2", price: product.price2 });
+      }
+      if (typeof product.price3 === "number" && product.price3 > 0) {
+        legacyLines.push({ label: "Price 3", price: product.price3 });
+      }
+      if (legacyLines.length > 0) {
+        groups.push({ title: "Legacy Pricing", lines: legacyLines });
+      }
+    }
+
+    const lifetimePrice = pickFirstPositive(
+      (product as any).lifetimePriceINR,
+      (product as any).priceLifetimeINR,
+      (product as any).priceLifetime,
+      (product as any).lifetimePrice,
+    );
+    if (lifetimePrice) {
+      groups.push({
+        title: "Lifetime Pricing",
+        lines: [{ label: "Lifetime", price: lifetimePrice }],
+      });
+    }
+
+    const membershipPrice = pickFirstPositive(
+      (product as any).membershipPriceINR,
+      (product as any).membershipPrice,
+    );
+    if (membershipPrice) {
+      groups.push({
+        title: "Membership Pricing",
+        lines: [{ label: "Membership", price: membershipPrice }],
+      });
+    }
+
+    const adminSubscriptionLines: PricingLine[] =
+      (product as any).subscriptions && Array.isArray((product as any).subscriptions)
+        ? (product as any).subscriptions
+            .map((sub: any, idx: number) => {
+              const price = pickFirstPositive(sub?.priceINR, sub?.price, 0);
+              if (!price) return null;
+              return {
+                label: sub?.duration || `Plan ${idx + 1}`,
+                price,
+              };
+            })
+            .filter(isPricingLine)
+        : [];
+    if (adminSubscriptionLines.length > 0) {
+      groups.push({ title: "Subscription Plans", lines: adminSubscriptionLines });
+    }
+
+    return groups;
+  };
+
   // Export handlers
   const getExportData = () => {
     // Only export visible/filtered products with key fields
@@ -104,7 +194,7 @@ const Products: React.FC = () => {
   const [showBestSellers, setShowBestSellers] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -117,7 +207,7 @@ const Products: React.FC = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearch, selectedCategory, selectedCompany, selectedStatus, showBestSellers]);
+  }, [debouncedSearch, selectedCategory, selectedCompany, selectedStatus, showBestSellers, pageSize]);
 
   // Build query params
   const queryParams = {
@@ -219,9 +309,9 @@ const Products: React.FC = () => {
   });
 
   // Pagination calculations
-  const totalPages = Math.ceil(allFilteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(allFilteredProducts.length / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
   const products = allFilteredProducts.slice(startIndex, endIndex);
 
   const handleSaveProduct = (productData: any) => {
@@ -934,55 +1024,50 @@ const Products: React.FC = () => {
                         )}
                       </td>
                       <td className="py-4 px-4">
-                        <div className="space-y-1">
-                          {/* Show subscription pricing if available, otherwise show legacy pricing */}
-                          {product.subscriptionDurations &&
-                            product.subscriptionDurations.length > 0 ? (
-                            <div>
-                              <div
-                                className="font-medium text-sm"
-                                style={{ color: colors.text.primary }}
-                              >
-                                ₹
-                                {product.subscriptionDurations[0].price?.toLocaleString()}
-                              </div>
-                              {/* <div
-                                className="text-xs"
-                                style={{ color: colors.text.secondary }}
-                              >
-                                {product.subscriptionDurations[0].duration}
-                              </div> */}
-                              {/* {product.subscriptionDurations.length > 1 && (
+                        <div className="space-y-2">
+                          {(() => {
+                            const groups = buildPricingGroups(product);
+                            if (groups.length === 0) {
+                              return (
                                 <div
                                   className="text-xs"
-                                  style={{ color: colors.interactive.primary }}
+                                  style={{ color: colors.text.secondary }}
                                 >
-                                  +{product.subscriptionDurations.length - 1} more
+                                  —
                                 </div>
-                              )} */}
-                            </div>
-                          ) : (
-                            <div>
-                              <div
-                                className="font-medium text-sm"
-                                style={{ color: colors.text.primary }}
-                              >
-                                ₹{product.price1?.toLocaleString()}
+                              );
+                            }
+
+                            return groups.map((group) => (
+                              <div key={group.title} className="space-y-1">
+                                <div
+                                  className="text-[11px] font-semibold"
+                                  style={{ color: colors.text.secondary }}
+                                >
+                                  {group.title}
+                                </div>
+                                {group.lines.map((line) => (
+                                  <div
+                                    key={`${group.title}-${line.label}`}
+                                    className="flex items-center justify-between gap-3"
+                                  >
+                                    <div
+                                      className="text-xs"
+                                      style={{ color: colors.text.secondary }}
+                                    >
+                                      {line.label}
+                                    </div>
+                                    <div
+                                      className="font-medium text-sm"
+                                      style={{ color: colors.text.primary }}
+                                    >
+                                      ₹{line.price.toLocaleString()}
+                                    </div>
+                                  </div>
+                                ))}
                               </div>
-                              {/* <div
-                                className="text-xs"
-                                style={{ color: colors.text.secondary }}
-                              >
-                                1-year
-                              </div> */}
-                            </div>
-                          )}
-                          {/* {product.hasLifetime && product.lifetimePrice && (
-                            <div className="text-xs text-green-400">Lifetime: ₹{product.lifetimePrice.toLocaleString()}</div>
-                          )}
-                          {product.hasMembership && product.membershipPrice && (
-                            <div className="text-xs text-purple-400">Membership: ₹{product.membershipPrice.toLocaleString()}</div>
-                          )} */}
+                            ));
+                          })()}
                         </div>
                       </td>
                       {/* <td className="py-4 px-4">
@@ -1101,10 +1186,14 @@ const Products: React.FC = () => {
 
         {/* Pagination */}
         {!isLoading && !error && (
-          <Pagination
+          <AdminPagination
             currentPage={currentPage}
             totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
+            onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+            }}
           />
         )}
 

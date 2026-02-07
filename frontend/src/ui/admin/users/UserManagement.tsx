@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useUsers, useUpdateUser, useDeleteUser, userApi } from "../../../api/userApi";
 import type { User } from "../../../api/types/userTypes";
 import Swal from "sweetalert2";
 import { Plus, ChevronDown } from "lucide-react";
 import UserFilters from "./UserFilter";
 import UserTable from "./UserTable";
-import Pagination from "./Pagination";
+import AdminPagination from "../components/AdminPagination";
 import AddUserModal from "./AddUserModal";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
@@ -15,7 +15,7 @@ const UserManagement: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-  const limit = 10;
+  const [pageSize, setPageSize] = useState(10);
   const [exportOpen, setExportOpen] = useState(false);
   const [dateFilter, setDateFilter] = useState<string>("all");
   const [customStartDate, setCustomStartDate] = useState<string>("");
@@ -28,10 +28,14 @@ const UserManagement: React.FC = () => {
     error,
   } = useUsers({
     page: currentPage,
-    limit,
+    limit: pageSize,
     search: searchTerm,
     role: roleFilter,
   });
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, searchTerm, roleFilter, dateFilter, customStartDate, customEndDate]);
 
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
@@ -405,10 +409,12 @@ const UserManagement: React.FC = () => {
             handleSelectAll={handleSelectAll}
             handleSelectUser={handleSelectUser}
           />
-          <Pagination
+          <AdminPagination
             currentPage={currentPage}
             totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
+            onPageChange={setCurrentPage}
+            pageSize={pageSize}
+            onPageSizeChange={setPageSize}
           />
         </>
       )}

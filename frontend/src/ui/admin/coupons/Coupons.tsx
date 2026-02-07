@@ -10,6 +10,7 @@ import {
   Package,
 } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import AdminPagination from "../components/AdminPagination";
 import Swal from "sweetalert2";
 
 interface Coupon {
@@ -37,6 +38,18 @@ const Coupons: React.FC = () => {
   const [editingCoupon, setEditingCoupon] = useState<Coupon | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize, coupons.length]);
+
+  const totalPages = Math.max(1, Math.ceil(coupons.length / pageSize));
+  const paginatedCoupons = coupons.slice(
+    (currentPage - 1) * pageSize,
+    (currentPage - 1) * pageSize + pageSize,
+  );
 
   useEffect(() => {
     fetchCoupons();
@@ -379,7 +392,7 @@ const Coupons: React.FC = () => {
               </div>
             </div>
           ) : (
-            coupons.map((coupon) => {
+            paginatedCoupons.map((coupon) => {
               const statusColor = getStatusColor(coupon);
               const statusText = getStatusText(coupon);
               const discountDisplay =
@@ -447,6 +460,16 @@ const Coupons: React.FC = () => {
                   )}
 
                   {/* Details Row */}
+
+              {coupons.length > 0 && (
+                <AdminPagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  pageSize={pageSize}
+                  onPageSizeChange={setPageSize}
+                />
+              )}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
                     {/* Validity */}
                     <div className="flex items-center gap-2">

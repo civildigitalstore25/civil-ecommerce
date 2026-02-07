@@ -157,7 +157,7 @@ export const Footer: React.FC = () => {
         {/* Bottom */}
         <div className="border-t pt-8 space-y-3 text-center" style={{ borderColor: '#E2E8F0' }}>
           <p className="text-sm" style={{ color: '#0A2A6B' }}>
-            © 2016 <span style={{ color: '#00C8FF', fontWeight: 'bold' }}>Softzcart</span> — All Rights Reserved
+            © 2026 <span style={{ color: '#00C8FF', fontWeight: 'bold' }}>Softzcart</span> — All Rights Reserved
           </p>
           <p className="text-xs" style={{ color: '#0A2A6B' }}>
             This is not an official Adobe website. We are an independent reseller of Adobe products.

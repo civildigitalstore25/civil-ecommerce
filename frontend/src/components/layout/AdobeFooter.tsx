@@ -112,7 +112,7 @@ const AdobeFooter: React.FC = () => {
         {/* Bottom */}
         <div className="border-t border-gray-800 pt-8 space-y-3 text-center">
           <p className="text-gray-400 text-sm">
-            © 2016 <span className="text-white font-semibold">Softzcart</span> — All Rights Reserved
+            © 2026 <span className="text-white font-semibold">Softzcart</span> — All Rights Reserved
           </p>
           <p className="text-gray-500 text-xs">
             This is not an official Adobe website. We are an independent reseller of Adobe products.

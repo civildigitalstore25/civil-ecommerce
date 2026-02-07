@@ -13,48 +13,23 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Footer = () => {
   const { colors, theme } = useAdminTheme();
+  const footerBg = "#142952";
+  const footerTextPrimary = colors.text.inverse;
+  const footerTextSecondary = "rgba(255,255,255,0.82)";
+  const footerBorder = "rgba(255,255,255,0.22)";
 
   return (
     <footer
       className="font-light transition-colors duration-200 relative"
       style={{
-        backgroundColor: colors.background.primary,
-        color: colors.text.primary,
+        backgroundColor: footerBg,
+        color: footerTextPrimary,
       }}
     >
-      <div
-        className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 py-8 border-b text-center transition-colors duration-200"
-        style={{ borderColor: colors.border.primary }}
-      >
-        {[
-          { title: "Free Digital Shipping", desc: "5-10 Min Instant Delivery" },
-          { title: "24/7 Customer Support", desc: "Online Help By Our Agents" },
-          {
-            title: "100% Secure Payments",
-            desc: "UPI / Internet Banking / Cards",
-          },
-        ].map((item, i) => (
-          <div key={i}>
-            <p
-              className="font-poppins font-semibold text-xl tracking-wide transition-colors duration-200"
-              style={{ color: colors.text.primary }}
-            >
-              {item.title}
-            </p>
-            <p
-              className="text-base mt-1 font-lato transition-colors duration-200"
-              style={{ color: colors.text.secondary }}
-            >
-              {item.desc}
-            </p>
-          </div>
-        ))}
-      </div>
-
       {/* Main Footer Content */}
       <div
-        className="max-w-7xl mx-auto py-12 px-6 border-b transition-colors duration-200"
-        style={{ borderColor: colors.border.primary }}
+        className="w-full py-12 px-7 border-b transition-colors duration-200"
+        style={{ borderColor: footerBorder }}
       >
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Company Description - Takes 5 columns */}
@@ -65,21 +40,14 @@ const Footer = () => {
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
-              <div className="ml-3">
-                <div className="text-base font-semibold" style={{ color: colors.text.primary }}>
-                  Civil Digital Store
-                </div>
-                <div className="text-sm" style={{ color: colors.text.secondary }}>
-                  (trading as Softzcart)
-                </div>
-              </div>
+
             </div>
             <p
               className="text-base leading-relaxed font-lato transition-colors duration-200"
-              style={{ color: colors.text.secondary }}
+              style={{ color: footerTextSecondary }}
             >
               Softzcart is a user-friendly website offering a vast
-              selection of civil engineering resources, from software to
+              selection of engineering resources, from software to
               educational materials. A valuable platform for professionals and
               students alike.
             </p>
@@ -91,7 +59,7 @@ const Footer = () => {
             <div>
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.text.primary }}
+                style={{ color: footerTextPrimary }}
               >
                 OUR SERVICES
               </h3>
@@ -101,12 +69,12 @@ const Footer = () => {
                   <Link
                     to="/shipping-policy"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -117,12 +85,12 @@ const Footer = () => {
                   <Link
                     to="/privacy-policy"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -136,7 +104,7 @@ const Footer = () => {
             <div>
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.text.primary }}
+                style={{ color: footerTextPrimary }}
               >
                 CUSTOMER POLICIES
               </h3>
@@ -145,12 +113,12 @@ const Footer = () => {
                   <Link
                     to="/terms-and-conditions"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -161,12 +129,12 @@ const Footer = () => {
                   <Link
                     to="/return-policy"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -177,12 +145,12 @@ const Footer = () => {
                   <Link
                     to="/disclaimer"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -196,7 +164,7 @@ const Footer = () => {
             <div className="col-span-2 md:col-span-1">
               <h3
                 className="font-poppins font-semibold mb-4 tracking-wide transition-colors duration-200 text-base md:text-lg"
-                style={{ color: colors.text.primary }}
+                style={{ color: footerTextPrimary }}
               >
                 SOFTWARE
               </h3>
@@ -205,12 +173,12 @@ const Footer = () => {
                   <Link
                     to="/category?brand=autodesk&category=autocad"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -221,12 +189,12 @@ const Footer = () => {
                   <Link
                     to="/category?brand=architectural-softwares&category=lumion"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -237,12 +205,12 @@ const Footer = () => {
                   <Link
                     to="/category?brand=microsoft&category=microsoft-365"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -253,12 +221,12 @@ const Footer = () => {
                   <Link
                     to="/category?brand=structural-softwares&category=tekla"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -269,12 +237,12 @@ const Footer = () => {
                   <Link
                     to="/category?brand=autodesk&category=revit"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
@@ -289,39 +257,39 @@ const Footer = () => {
 
       {/* Contact + Social Icons */}
       <div
-        className="max-w-7xl mx-auto px-6 py-6 border-t flex flex-col md:flex-row justify-between items-center gap-6 transition-colors duration-200"
-        style={{ borderColor: colors.border.primary }}
+        className="w-full px-6 py-6 border-t flex flex-col md:flex-row justify-between items-center gap-6 transition-colors duration-200"
+        style={{ borderColor: footerBorder }}
       >
         {/* Contact Info */}
         <div
           className="flex flex-col md:flex-row md:items-center md:gap-8 text-base font-lato transition-colors duration-200"
-          style={{ color: colors.text.secondary }}
+          style={{ color: footerTextSecondary }}
         >
           <p
             className="flex items-center gap-2 border-b md:border-b-0 md:border-r pb-2 md:pb-0 md:pr-6 transition-colors duration-200"
-            style={{ borderColor: colors.border.secondary }}
+            style={{ borderColor: footerBorder }}
           >
-            <FaPhoneAlt style={{ color: colors.interactive.primary }} />
+            <FaPhoneAlt style={{ color: "rgba(255,255,255,0.95)" }} />
             <a
               href="tel:+919042993986"
               className="mr-4 transition-colors duration-200"
-              style={{ color: colors.text.primary }}
-              onMouseEnter={e => { e.currentTarget.style.color = colors.interactive.primary; }}
-              onMouseLeave={e => { e.currentTarget.style.color = colors.text.primary; }}
+              style={{ color: footerTextPrimary }}
+              onMouseEnter={e => { e.currentTarget.style.color = "rgba(255,255,255,0.90)"; }}
+              onMouseLeave={e => { e.currentTarget.style.color = footerTextPrimary; }}
             >
               +91 9042993986
             </a>
           </p>
           <p
             className="flex items-center gap-2 border-b md:border-b-0 md:border-r pb-2 md:pb-0 md:pr-6 transition-colors duration-200"
-            style={{ borderColor: colors.border.secondary }}
+            style={{ borderColor: footerBorder }}
           >
-            <FaEnvelope style={{ color: colors.interactive.primary }} />{" "}
-            softzcart@gmail.com
+            <FaEnvelope style={{ color: "rgba(255,255,255,0.95)" }} />{" "}
+            <span style={{ color: footerTextPrimary }}>softzcart@gmail.com</span>
           </p>
           <p className="flex items-center gap-2">
-            <FaClock style={{ color: colors.interactive.primary }} /> 24x7
-            Service Available in India
+            <FaClock style={{ color: "rgba(255,255,255,0.95)" }} /> 24x7
+            <span style={{ color: footerTextPrimary }}>Service Available in India</span>
           </p>
         </div>
 
@@ -387,18 +355,18 @@ const Footer = () => {
       <div
         className="text-center text-sm py-4 border-t font-lato transition-colors duration-200"
         style={{
-          color: colors.text.secondary,
-          borderColor: colors.border.secondary,
+          color: footerTextSecondary,
+          borderColor: footerBorder,
         }}
       >
         ©{" "}
         <span
           className="font-poppins font-semibold transition-colors duration-200"
-          style={{ color: colors.text.primary }}
+          style={{ color: footerTextPrimary }}
         >
-          Civil Digital Store
+          softzcart
         </span>
-        . All rights reserved 2016.
+        . All rights reserved 2026.
       </div>
 
     </footer>

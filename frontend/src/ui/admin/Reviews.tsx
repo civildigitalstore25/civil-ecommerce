@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import AdminPagination from "./components/AdminPagination";
 import { useUser } from "../../api/userQueries";
 import {
   getAllReviews,
@@ -17,6 +18,18 @@ const Reviews: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [editForm, setEditForm] = useState({ rating: 5, comment: "" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [pageSize]);
+
+  const totalPages = Math.max(1, Math.ceil(reviews.length / pageSize));
+  const paginatedReviews = reviews.slice(
+    (currentPage - 1) * pageSize,
+    (currentPage - 1) * pageSize + pageSize,
+  );
 
   useEffect(() => {
     loadReviews();
@@ -322,7 +335,7 @@ const Reviews: React.FC = () => {
                   </td>
                 </tr>
               ) : (
-                reviews.map((review) => (
+                paginatedReviews.map((review) => (
                   <tr
                     key={review._id}
                     className="transition-colors duration-200"
@@ -423,6 +436,16 @@ const Reviews: React.FC = () => {
           </table>
         </div>
       </div>
+
+      {reviews.length > 0 && (
+        <AdminPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
+      )}
     </div>
   );
 };

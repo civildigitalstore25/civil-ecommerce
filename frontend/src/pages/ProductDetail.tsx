@@ -25,6 +25,7 @@ import * as LucideIcons from "lucide-react";
 import EnquiryModal from "../components/EnquiryModal";
 import AddProductModal from "../ui/admin/products/AddProductModal";
 import { getProductSEO } from "../utils/seo";
+import { PRODUCT_TRUST_BADGES } from "../constants/productTrustBadges";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -1325,6 +1326,53 @@ const ProductDetail: React.FC = () => {
               })()}
             </div>
 
+            {/* Trust Badges (moved from footer) */}
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {PRODUCT_TRUST_BADGES.map((badge) => {
+                const Icon =
+                  badge.icon === "truck"
+                    ? LucideIcons.Truck
+                    : badge.icon === "support"
+                      ? LucideIcons.Headphones
+                      : LucideIcons.ShieldCheck;
+
+                return (
+                  <div
+                    key={badge.title}
+                    className="flex items-start gap-3 rounded-xl border p-3 lg:p-4 transition-colors duration-200"
+                    style={{
+                      backgroundColor: colors.background.secondary,
+                      borderColor: colors.border.primary,
+                    }}
+                  >
+                    <div
+                      className="mt-0.5 rounded-lg p-2"
+                      style={{
+                        backgroundColor: colors.background.primary,
+                        color: colors.interactive.primary,
+                      }}
+                    >
+                      <Icon size={18} />
+                    </div>
+                    <div>
+                      <div
+                        className="text-sm font-bold"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {badge.title}
+                      </div>
+                      <div
+                        className="text-xs lg:text-sm"
+                        style={{ color: colors.text.secondary }}
+                      >
+                        {badge.desc}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
             {/* Description as Accordion (desktop only) */}
             <div className="hidden lg:block">
               <div
@@ -2585,117 +2633,121 @@ const ProductDetail: React.FC = () => {
                     className="rounded-2xl p-6 mb-8 transition-colors duration-200"
                     style={{ backgroundColor: colors.background.secondary }}
                   >
-                    <div className="flex items-center gap-6 mb-4">
-                      <div className="text-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+                      <div className="text-center lg:text-left">
                         <div
-                          className="text-3xl font-bold"
+                          className="text-4xl font-extrabold"
                           style={{ color: colors.interactive.primary }}
                         >
                           {reviewStats.averageRating.toFixed(1)}
                         </div>
-                        <div className="flex text-yellow-400 mb-1">
-                          {"★".repeat(Math.floor(reviewStats.averageRating))}
-                          {"☆".repeat(
-                            5 - Math.floor(reviewStats.averageRating),
-                          )}
+                        <div className="flex justify-center lg:justify-start text-yellow-400 mt-1">
+                          {Array.from({ length: 5 }, (_, i) => (
+                            <LucideIcons.Star
+                              key={i}
+                              size={18}
+                              fill={i < Math.round(reviewStats.averageRating) ? "currentColor" : "none"}
+                            />
+                          ))}
                         </div>
                         <div
-                          className="text-sm"
+                          className="text-sm mt-1"
                           style={{ color: colors.text.secondary }}
                         >
                           {reviewStats.totalReviews} reviews
                         </div>
-                      </div>
-                      <div className="flex-1">
-                        {[5, 4, 3, 2, 1].map((star) => (
-                          <div
-                            key={star}
-                            className="flex items-center gap-2 mb-1"
-                          >
-                            <span className="text-sm w-8">{star}★</span>
-                            <div className="flex-1 bg-gray-700 rounded-full h-2">
-                              <div
-                                className="h-2 rounded-full"
-                                style={{
-                                  width: `${reviewStats.totalReviews > 0 ? (reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution] / reviewStats.totalReviews) * 100 : 0}%`,
-                                  backgroundColor: colors.interactive.primary,
-                                }}
-                              ></div>
-                            </div>
-                            <span className="text-sm w-8">
-                              {reviewStats.ratingDistribution[star as keyof typeof reviewStats.ratingDistribution]}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
 
-                    {/* Write a Review Button */}
-                    {!showReviewForm && (
-                      <div className="mb-8">
-                        {user || isAuthenticated() ? (
-                          <button
-                            onClick={() => setShowReviewForm(true)}
-                            className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                            style={{
-                              background: colors.interactive.primary,
-                              color: '#fff',
-                              border: `1.5px solid ${colors.interactive.primary}`,
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-                            }}
-                            onMouseEnter={(e) => {
-                              (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
-                              (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                            }}
-                            onMouseLeave={(e) => {
-                              (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                              (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                            }}
-                          >
-                            Write a Review
-                          </button>
-                        ) : (
-                          <div
-                            className="rounded-2xl p-6 transition-colors duration-200"
-                            style={{ backgroundColor: colors.background.secondary }}
-                          >
-                            <h4
-                              className="text-xl font-bold mb-4"
-                              style={{ color: colors.text.primary }}
-                            >
-                              Write a Review
-                            </h4>
-                            <p
-                              className="mb-4"
-                              style={{ color: colors.text.secondary }}
-                            >
-                              Please login to share your experience with this
-                              product.
-                            </p>
-                            <button
-                              onClick={() => navigate("/signin")}
-                              className="w-36 lg:w-40 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                              style={{
-                                background: colors.interactive.primary,
-                                color: '#fff',
-                                border: `1.5px solid ${colors.interactive.primary}`,
-                                boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
-                              }}
-                              onMouseEnter={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
-                                (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                              }}
-                              onMouseLeave={(e) => {
-                                (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                                (e.currentTarget as HTMLButtonElement).style.color = '#fff';
-                              }}
-                            >
-                              Login to Review
-                            </button>
+                        {!showReviewForm && (
+                          <div className="mt-4">
+                            {user || isAuthenticated() ? (
+                              <button
+                                onClick={() => setShowReviewForm(true)}
+                                className="w-1/2 font-bold py-2.5 rounded-lg text-sm lg:text-base transition-colors duration-200 shadow"
+                                style={{
+                                  background: colors.interactive.primary,
+                                  color: "#fff",
+                                  border: `1.5px solid ${colors.interactive.primary}`,
+                                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                                }}
+                                onMouseEnter={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.background =
+                                    colors.interactive.primaryHover || colors.interactive.primary;
+                                }}
+                                onMouseLeave={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.background =
+                                    colors.interactive.primary;
+                                }}
+                              >
+                                Write a Review
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => navigate("/signin")}
+                                className="w-full font-bold py-2.5 rounded-lg text-sm lg:text-base transition-colors duration-200 shadow"
+                                style={{
+                                  background: colors.interactive.primary,
+                                  color: "#fff",
+                                  border: `1.5px solid ${colors.interactive.primary}`,
+                                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
+                                }}
+                                onMouseEnter={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.background =
+                                    colors.interactive.primaryHover || colors.interactive.primary;
+                                }}
+                                onMouseLeave={(e) => {
+                                  (e.currentTarget as HTMLButtonElement).style.background =
+                                    colors.interactive.primary;
+                                }}
+                              >
+                                Login to Review
+                              </button>
+                            )}
                           </div>
                         )}
                       </div>
-                    )}
+
+                      <div className="lg:col-span-2">
+                        {[5, 4, 3, 2, 1].map((star) => {
+                          const count =
+                            reviewStats.ratingDistribution[
+                              star as keyof typeof reviewStats.ratingDistribution
+                            ];
+                          const pct =
+                            reviewStats.totalReviews > 0
+                              ? (count / reviewStats.totalReviews) * 100
+                              : 0;
+
+                          return (
+                            <div key={star} className="flex items-center gap-3 mb-2">
+                              <span
+                                className="text-sm w-10"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                {star}★
+                              </span>
+                              <div
+                                className="flex-1 rounded-full h-2.5 overflow-hidden"
+                                style={{ backgroundColor: colors.background.primary }}
+                              >
+                                <div
+                                  className="h-2.5 rounded-full"
+                                  style={{
+                                    width: `${pct}%`,
+                                    backgroundColor: colors.interactive.primary,
+                                  }}
+                                />
+                              </div>
+                              <span
+                                className="text-sm w-10 text-right"
+                                style={{ color: colors.text.secondary }}
+                              >
+                                {count}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
 
                     {/* Review Form */}
                     {showReviewForm && user && (
@@ -2844,8 +2896,11 @@ const ProductDetail: React.FC = () => {
                         reviews.map((review) => (
                           <div
                             key={review._id}
-                            className="rounded-2xl p-6 transition-colors duration-200"
-                            style={{ backgroundColor: colors.background.secondary }}
+                            className="rounded-2xl p-6 transition-colors duration-200 border"
+                            style={{
+                              backgroundColor: colors.background.secondary,
+                              borderColor: colors.border.primary,
+                            }}
                           >
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-4">

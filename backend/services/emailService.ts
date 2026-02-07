@@ -1,4 +1,6 @@
 import nodemailer from 'nodemailer';
+import { EMAIL_BRAND } from '../constants/email';
+import { buildCommonEmailFooter } from '../utils/emailTemplate';
 
 class EmailService {
   private transporter: nodemailer.Transporter;
@@ -37,8 +39,8 @@ class EmailService {
 
     const mailOptions = {
       from: {
-        name: process.env.FROM_NAME || 'Your App',
-        address: process.env.FROM_EMAIL || 'noreply@yourapp.com'
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail
       },
       to: to,
       subject: 'Password Reset Request',
@@ -79,12 +81,9 @@ class EmailService {
                   <div class="warning">
                     <strong>Important:</strong> For security reasons, this link will expire in 10 minutes.
                   </div>
-                  <p>If you require assistance, please contact our support team at <a href="mailto:${process.env.CONTACT_EMAIL}">${process.env.CONTACT_EMAIL}</a>.</p>
+                  <p>If you require assistance, please contact our support team at <a href="mailto:${EMAIL_BRAND.supportEmail}">${EMAIL_BRAND.supportEmail}</a>.</p>
                 </div>
-                <div class="footer">
-                  <p>Regards,<br/>${process.env.FROM_NAME || 'Support Team'}</p>
-                  <p>Please do not reply to this automated message.</p>
-                </div>
+                ${buildCommonEmailFooter()}
               </div>
         </body>
         </html>
@@ -103,8 +102,8 @@ class EmailService {
   async sendPasswordChangeConfirmation(to: string): Promise<void> {
     const mailOptions = {
       from: {
-        name: process.env.FROM_NAME || 'Your App',
-        address: process.env.FROM_EMAIL || 'noreply@yourapp.com'
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail
       },
       to: to,
       subject: 'Password Changed Successfully',
@@ -134,7 +133,7 @@ class EmailService {
               <div class="success">
                 <p><strong>Your password has been changed successfully.</strong></p>
               </div>
-              <p>If you did not authorize this change, please contact our support team immediately at <a href="mailto:${process.env.CONTACT_EMAIL}">${process.env.CONTACT_EMAIL}</a>.</p>
+              <p>If you did not authorize this change, please contact our support team immediately at <a href="mailto:${EMAIL_BRAND.supportEmail}">${EMAIL_BRAND.supportEmail}</a>.</p>
               <p>For your account security, we recommend the following:</p>
               <ul>
                 <li>Use a strong, unique password that you do not share with others.</li>
@@ -142,10 +141,7 @@ class EmailService {
                 <li>Contact support if you notice any suspicious activity on your account.</li>
               </ul>
             </div>
-            <div class="footer">
-              <p>Regards,<br/>${process.env.FROM_NAME || 'Support Team'}</p>
-              <p>Please do not reply to this automated message.</p>
-            </div>
+            ${buildCommonEmailFooter()}
           </div>
         </body>
         </html>
@@ -163,8 +159,8 @@ class EmailService {
   async sendContactFormEmail(name: string, email: string, subject: string, message: string): Promise<void> {
     const mailOptions = {
       from: {
-        name: process.env.FROM_NAME || 'Softzcart',
-        address: process.env.FROM_EMAIL || 'noreply@softzcart@gmail.com'
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail
       },
       to: process.env.CONTACT_EMAIL || 'softzcart@gmail.com',
       subject: `New Contact Form: ${subject}`,
@@ -214,10 +210,9 @@ class EmailService {
               <div class="field-value">${new Date().toLocaleString()}</div>
             </div>
           </div>
-          <div class="footer">
-            <p>This message was submitted via the contact form on ${process.env.FROM_NAME || 'Softzcart'}.</p>
-            <p>To respond to the sender, reply to this message or use the Reply-To address provided.</p>
-          </div>
+          ${buildCommonEmailFooter({
+            topNoteHtml: `This message was submitted via the contact form on <strong>${process.env.FROM_NAME || 'Softzcart'}</strong>.`,
+          })}
         </div>
       </body>
       </html>
@@ -265,8 +260,8 @@ class EmailService {
 
     const mailOptions = {
       from: {
-        name: process.env.FROM_NAME || 'Your Store',
-        address: process.env.FROM_EMAIL || 'noreply@yourstore.com'
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail
       },
       to: process.env.CONTACT_EMAIL || 'softzcart@gmail.com',
       subject: `New Order Received - #${orderNumber}`,
@@ -394,10 +389,9 @@ class EmailService {
               </div>
             </div>
 
-            <div class="footer">
-              <p>Regards,<br/>${process.env.FROM_NAME || 'Order Notifications'}</p>
-              <p>Order received at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</p>
-            </div>
+            ${buildCommonEmailFooter({
+              topNoteHtml: `Order received at <strong>${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}</strong>.`,
+            })}
           </div>
         </body>
         </html>
@@ -440,8 +434,8 @@ class EmailService {
 
     const mailOptions = {
       from: {
-        name: process.env.FROM_NAME || 'Your Store',
-        address: process.env.FROM_EMAIL || 'noreply@yourstore.com'
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail
       },
       to: to,
       subject: `Welcome! Your ${discountValue}% Discount Code Inside`,
@@ -472,7 +466,7 @@ class EmailService {
         <body>
           <div class="container">
             <div class="header">
-              <h1>Welcome to ${process.env.FROM_NAME || 'Our Store'}!</h1>
+              <h1>Welcome to ${EMAIL_BRAND.brandName}!</h1>
               <p style="margin: 10px 0 0 0; font-size: 16px;">Thank you for joining us, ${name}!</p>
             </div>
             
@@ -514,19 +508,19 @@ class EmailService {
 
               <p style="margin-top: 30px; font-size: 14px; color: #666;">
                 If you have any questions, feel free to reach out to us at 
-                <a href="mailto:${process.env.CONTACT_EMAIL}" style="color: #667eea;">${process.env.CONTACT_EMAIL}</a>
+                <a href="mailto:${EMAIL_BRAND.supportEmail}" style="color: #667eea;">${EMAIL_BRAND.supportEmail}</a>
               </p>
 
               <p style="margin-top: 20px;">
                 Happy Shopping!<br/>
-                <strong>The ${process.env.FROM_NAME || 'Store'} Team</strong>
+                <strong>The ${EMAIL_BRAND.brandName} Team</strong>
               </p>
             </div>
 
-            <div class="footer">
-              <p style="margin: 0 0 10px 0;">You're receiving this email because you signed up for our welcome discount.</p>
-              <p style="margin: 0;">© ${new Date().getFullYear()} ${process.env.FROM_NAME || 'Your Store'}. All rights reserved.</p>
-            </div>
+            ${buildCommonEmailFooter({
+              topNoteHtml:
+                "You're receiving this email because you signed up for our welcome discount.",
+            })}
           </div>
         </body>
         </html>
