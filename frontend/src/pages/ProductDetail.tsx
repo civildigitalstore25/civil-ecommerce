@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaWhatsapp } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProductDetail, useUpdateProduct } from "../api/productApi";
+import { useProductDetail, useUpdateProduct, trackProductViewer, getProductViewerCount, removeProductViewer } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
 import { isAuthenticated } from "../utils/auth";
@@ -26,6 +26,7 @@ import EnquiryModal from "../components/EnquiryModal";
 import AddProductModal from "../ui/admin/products/AddProductModal";
 import { getProductSEO } from "../utils/seo";
 import { PRODUCT_TRUST_BADGES } from "../constants/productTrustBadges";
+import { getViewerId } from "../utils/viewerUtils";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -198,6 +199,10 @@ const ProductDetail: React.FC = () => {
   // Ref for the pricing section
   const pricingRef = useRef<HTMLDivElement | null>(null);
 
+  // Viewer tracking state
+  const [viewerCount, setViewerCount] = useState<number>(0);
+  const viewerIdRef = useRef<string>(getViewerId());
+
   // Update product mutation
   const updateProductMutation = useUpdateProduct();
 
@@ -333,6 +338,52 @@ const ProductDetail: React.FC = () => {
       setActiveTab(tabs[0]);
     }
   }, [product, activeTab]);
+
+  // Viewer tracking - Track this viewer and poll for count updates
+  useEffect(() => {
+    if (!product?._id) return;
+
+    const productId = product._id;
+    const viewerId = viewerIdRef.current;
+
+    // Initial tracking - register this viewer
+    const trackViewer = async () => {
+      try {
+        const result = await trackProductViewer(productId, viewerId);
+        setViewerCount(result.viewerCount);
+      } catch (error) {
+        console.error("Error tracking viewer:", error);
+      }
+    };
+
+    // Poll for viewer count updates
+    const pollViewerCount = async () => {
+      try {
+        const count = await getProductViewerCount(productId);
+        setViewerCount(count);
+      } catch (error) {
+        console.error("Error getting viewer count:", error);
+      }
+    };
+
+    // Track viewer immediately
+    trackViewer();
+
+    // Update viewer tracking every 10 seconds to keep this viewer active
+    const trackInterval = setInterval(trackViewer, 10000);
+
+    // Poll for viewer count updates every 15 seconds
+    const pollInterval = setInterval(pollViewerCount, 15000);
+
+    // Cleanup on unmount
+    return () => {
+      clearInterval(trackInterval);
+      clearInterval(pollInterval);
+      
+      // Remove viewer when leaving (fire and forget)
+      removeProductViewer(productId, viewerId).catch(console.error);
+    };
+  }, [product?._id]);
 
   // Load reviews for the product
   const loadReviews = async (productId: string) => {
@@ -1288,6 +1339,33 @@ const ProductDetail: React.FC = () => {
                 </span>
               </div>
             </div>
+
+            {/* Viewer Count - Real-time Social Proof */}
+            {viewerCount > 0 && (
+              <div className="flex items-center gap-2 mt-3 animate-pulse">
+                <div
+                  className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.interactive.primary + "40",
+                    color: colors.text.primary,
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    <LucideIcons.Eye
+                      size={18}
+                      style={{ color: colors.interactive.primary }}
+                    />
+                    <span className="font-semibold" style={{ color: colors.interactive.primary }}>
+                      {viewerCount}
+                    </span>
+                  </div>
+                  <span className="text-sm" style={{ color: colors.text.secondary }}>
+                    {viewerCount === 1 ? "person is" : "people are"} viewing this product right now
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Social Share Buttons */}
             <div className="flex items-center gap-2 mt-3">

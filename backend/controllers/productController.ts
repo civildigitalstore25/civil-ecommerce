@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import Product, { IProduct } from '../models/Product';
+import viewerTracker from '../services/viewerTracker';
 
 // Create new product
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
@@ -421,6 +422,81 @@ export const deleteProduct = async (req: Request, res: Response): Promise<void> 
     }
     res.json({ message: 'Product deleted' });
   } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Track product viewer
+export const trackProductViewer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+    const { viewerId } = req.body;
+
+    if (!viewerId) {
+      res.status(400).json({ message: 'Viewer ID is required' });
+      return;
+    }
+
+    // Track the viewer
+    viewerTracker.trackViewer(productId, viewerId);
+
+    // Get updated count
+    const count = viewerTracker.getViewerCount(productId);
+
+    res.json({ 
+      success: true, 
+      viewerCount: count,
+      message: 'Viewer tracked successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Track viewer error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get product viewer count
+export const getProductViewerCount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+
+    // Get current viewer count
+    const count = viewerTracker.getViewerCount(productId);
+
+    res.json({ 
+      success: true, 
+      viewerCount: count,
+      productId
+    });
+  } catch (error: any) {
+    console.error('❌ Get viewer count error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Remove product viewer (optional - called when user explicitly leaves)
+export const removeProductViewer = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+    const { viewerId } = req.body;
+
+    if (!viewerId) {
+      res.status(400).json({ message: 'Viewer ID is required' });
+      return;
+    }
+
+    // Remove the viewer
+    viewerTracker.removeViewer(productId, viewerId);
+
+    // Get updated count
+    const count = viewerTracker.getViewerCount(productId);
+
+    res.json({ 
+      success: true, 
+      viewerCount: count,
+      message: 'Viewer removed successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Remove viewer error:', error);
     res.status(500).json({ message: error.message });
   }
 };

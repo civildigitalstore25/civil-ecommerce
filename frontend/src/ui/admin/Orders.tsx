@@ -11,6 +11,9 @@ import {
   Mail,
   User,
   Trash2,
+  ShoppingCart,
+  FileText,
+  Plus,
 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import {
@@ -395,136 +398,487 @@ const Orders: React.FC = () => {
         />
       </div>
 
-      {/* Admin Order Creation Form */}
+      {/* Admin Order Creation Modal */}
       {showCreateForm && (
-        <div className="border rounded-lg p-6 mb-6 create-order-panel" style={{ background: colors.background.secondary, borderColor: colors.border.primary }}>
-          <style>{`
-            .create-order-panel input::placeholder,
-            .create-order-panel textarea::placeholder {
-              color: ${theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(107,114,128,1)'} !important;
-            }
-            .create-order-panel .text-sm.helper {
-              color: ${theme === 'dark' ? 'rgba(255,255,255,0.9)' : 'rgba(107,114,128,1)'} !important;
-            }
-          `}</style>
-          <h3 className="text-lg font-semibold mb-4" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Create New Order</h3>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          onClick={() => setShowCreateForm(false)}
+        >
+          <div
+            className="rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto create-order-panel"
+            style={{ backgroundColor: colors.background.secondary }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <style>{`
+              .create-order-panel input::placeholder,
+              .create-order-panel textarea::placeholder {
+                color: ${theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(107,114,128,0.6)'} !important;
+              }
+              .create-order-panel input:focus,
+              .create-order-panel textarea:focus,
+              .create-order-panel select:focus {
+                border-color: #0068ff !important;
+                box-shadow: 0 0 0 3px rgba(0, 104, 255, 0.1) !important;
+              }
+              .create-order-panel .product-item-card {
+                transition: all 0.2s ease;
+              }
+              .create-order-panel .product-item-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+              }
+            `}</style>
 
-          {/* Email field for order (manual entry) */}
-          <div className="mb-4">
-            <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>
-              Customer Email
-            </label>
-            <input
-              className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition"
-              type="email"
-              placeholder="Enter customer email"
-              value={orderForm.email || ""}
-              onChange={e => setOrderForm(f => ({ ...f, email: e.target.value }))}
-              style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }}
-            />
-          </div>
-
-          <div className="mb-4">
-            <h4 className="font-medium mb-2" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Order Items</h4>
-            {orderForm.items.length === 0 && <div className="text-sm" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>No products added.</div>}
-            {orderForm.items.map((item) => (
-              <div key={item.productId} className="grid grid-cols-12 gap-2 mb-2 items-center">
-                <div className="col-span-3">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product ID</label>
-                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" value={item.productId} onChange={e => handleOrderItemChange(item.productId, 'productId', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-3">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product Name</label>
-                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" value={item.name} onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Qty</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={1} placeholder="Qty" value={item.quantity} onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Price</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Price" value={item.price} onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Discount</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="Discount" value={item.discount === undefined ? '' : item.discount} onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <button className="text-red-500 ml-2 col-span-1 mt-4" onClick={() => handleRemoveOrderItem(item.productId)}>Remove</button>
-              </div>
-            ))}
-            {/* Add new product row */}
-            <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: colors.background.accent }}>
-              <h5 className="text-sm font-medium mb-2" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Add Product</h5>
-              <div className="grid grid-cols-12 gap-2 items-end">
-                <div className="col-span-3">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product ID*</label>
-                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product ID" id="newProductId" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-3">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Product Name*</label>
-                  <input className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" placeholder="Product Name" id="newProductName" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Quantity*</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={1} defaultValue={1} id="newProductQty" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Price*</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} defaultValue={0} id="newProductPrice" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-xs font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.secondary }}>Discount</label>
-                  <input type="number" className="input w-full border rounded-lg px-2 py-1 focus:outline-none transition" min={0} placeholder="0" id="newProductDiscount" style={{ color: colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-                </div>
-                <button className="px-6 py-2 rounded-lg font-medium col-span-12 mt-2 w-auto" style={{ background: '#0068ff', color: '#fff' }} onClick={() => {
-                  const productId = (document.getElementById("newProductId") as HTMLInputElement).value;
-                  const name = (document.getElementById("newProductName") as HTMLInputElement).value;
-                  const quantity = Number((document.getElementById("newProductQty") as HTMLInputElement).value);
-                  const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
-                  const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
-                  const discount = discountValue === '' ? undefined : Number(discountValue);
-                  if (productId && name && quantity > 0) {
-                    handleAddProductToOrder({ productId, name, quantity, price, discount });
-                    (document.getElementById("newProductId") as HTMLInputElement).value = "";
-                    (document.getElementById("newProductName") as HTMLInputElement).value = "";
-                    (document.getElementById("newProductQty") as HTMLInputElement).value = "1";
-                    (document.getElementById("newProductPrice") as HTMLInputElement).value = "0";
-                    (document.getElementById("newProductDiscount") as HTMLInputElement).value = "";
-                  }
-                }}>Add Product</button>
-              </div>
-            </div>
-          </div>
-          {/* Discount, Notes */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div>
-              <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total Discount (optional)</label>
-              <input type="number" className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" min={0} placeholder="Total Discount (optional)" value={orderForm.discount || ""} onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label className="block text-sm mb-1 font-medium" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Notes (optional)</label>
-            <textarea className="input w-full border rounded-lg px-3 py-2 focus:outline-none transition" placeholder="Add any notes for this order..." rows={3} value={orderForm.notes || ""} onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} style={{ color: theme === 'dark' ? '#fff' : colors.text.primary, background: colors.background.primary, borderColor: colors.border.primary }} />
-          </div>
-          {/* Totals */}
-          <div className="mt-4 flex gap-6">
-            <div style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Subtotal: <span className="font-semibold" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>₹{orderForm.subtotal}</span></div>
-            <div style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>Total: <span className="font-semibold" style={{ color: theme === 'dark' ? '#fff' : colors.text.primary }}>₹{orderForm.totalAmount}</span></div>
-          </div>
-          <div className="mt-6 flex gap-4">
-            <button
-              className="px-6 py-2 rounded-lg font-medium"
-              style={{ background: '#0068ff', color: '#fff' }}
-              onClick={() => createOrderMutation.mutate(orderForm)}
-              disabled={createOrderMutation.status === "pending"}
+            {/* Modal Header */}
+            <div 
+              className="sticky top-0 z-10 p-6 border-b flex items-center justify-between"
+              style={{ 
+                backgroundColor: colors.background.secondary,
+                borderColor: colors.border.primary 
+              }}
             >
-              {createOrderMutation.status === "pending" ? "Creating..." : "Create Order"}
-            </button>
-            <button
-              className="px-6 py-2 rounded-lg font-medium border"
-              style={{ borderColor: colors.border.primary, color: theme === 'dark' ? '#fff' : colors.text.primary, backgroundColor: 'transparent' }}
-              onClick={() => setShowCreateForm(false)}
-            >Cancel</button>
+              <div>
+                <h3 className="text-2xl font-bold flex items-center gap-2" style={{ color: colors.text.primary }}>
+                  <Package className="w-6 h-6" style={{ color: '#0068ff' }} />
+                  Create New Order
+                </h3>
+                <p className="text-sm mt-1" style={{ color: colors.text.secondary }}>
+                  Fill in the details below to create a new order manually
+                </p>
+              </div>
+              <button
+                onClick={() => setShowCreateForm(false)}
+                className="p-2 rounded-lg hover:bg-opacity-10 transition-all duration-200"
+                style={{ backgroundColor: colors.background.accent }}
+              >
+                <X className="w-6 h-6" style={{ color: colors.text.primary }} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-6">
+              {/* Customer Information Section */}
+              <div 
+                className="p-5 rounded-xl border"
+                style={{ 
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary 
+                }}
+              >
+                <h4 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ color: colors.text.primary }}>
+                  <User className="w-5 h-5" style={{ color: '#0068ff' }} />
+                  Customer Information
+                </h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                      Customer Email <span style={{ color: '#ef4444' }}>*</span>
+                    </label>
+                    <input
+                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200"
+                      type="email"
+                      placeholder="customer@example.com"
+                      value={orderForm.email || ""}
+                      onChange={e => setOrderForm(f => ({ ...f, email: e.target.value }))}
+                      style={{ 
+                        color: colors.text.primary, 
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary 
+                      }}
+                    />
+                    <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
+                      Enter the customer's email address for order notifications
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Items Section */}
+              <div 
+                className="p-5 rounded-xl border"
+                style={{ 
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary 
+                }}
+              >
+                <h4 className="font-semibold text-lg mb-4 flex items-center justify-between" style={{ color: colors.text.primary }}>
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5" style={{ color: '#0068ff' }} />
+                    Order Items ({orderForm.items.length})
+                  </span>
+                </h4>
+
+                {/* Display Added Items */}
+                {orderForm.items.length === 0 ? (
+                  <div 
+                    className="text-center py-8 rounded-lg border-2 border-dashed"
+                    style={{ 
+                      borderColor: colors.border.primary,
+                      color: colors.text.secondary 
+                    }}
+                  >
+                    <Package className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                    <p>No products added yet. Add products below to continue.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3 mb-4">
+                    {orderForm.items.map((item) => (
+                      <div 
+                        key={item.productId} 
+                        className="product-item-card p-4 rounded-lg border"
+                        style={{ 
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary 
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <div className="md:col-span-2">
+                              <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Product Name</label>
+                              <input 
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                                placeholder="Product Name" 
+                                value={item.name} 
+                                onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} 
+                                style={{ 
+                                  color: colors.text.primary, 
+                                  backgroundColor: colors.background.primary,
+                                  borderColor: colors.border.primary 
+                                }} 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Quantity</label>
+                              <input 
+                                type="number" 
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                                min={1} 
+                                value={item.quantity} 
+                                onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} 
+                                style={{ 
+                                  color: colors.text.primary, 
+                                  backgroundColor: colors.background.primary,
+                                  borderColor: colors.border.primary 
+                                }} 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Price (₹)</label>
+                              <input 
+                                type="number" 
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                                min={0} 
+                                value={item.price} 
+                                onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} 
+                                style={{ 
+                                  color: colors.text.primary, 
+                                  backgroundColor: colors.background.primary,
+                                  borderColor: colors.border.primary 
+                                }} 
+                              />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Discount (₹)</label>
+                              <input 
+                                type="number" 
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                                min={0} 
+                                placeholder="0" 
+                                value={item.discount === undefined ? '' : item.discount} 
+                                onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} 
+                                style={{ 
+                                  color: colors.text.primary, 
+                                  backgroundColor: colors.background.primary,
+                                  borderColor: colors.border.primary 
+                                }} 
+                              />
+                            </div>
+                          </div>
+                          <button 
+                            className="p-2 rounded-lg hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200 mt-6"
+                            onClick={() => handleRemoveOrderItem(item.productId)}
+                            title="Remove item"
+                          >
+                            <Trash2 className="w-4 h-4" style={{ color: '#ef4444' }} />
+                          </button>
+                        </div>
+                        <div className="mt-2 text-xs flex items-center gap-2" style={{ color: colors.text.secondary }}>
+                          <span>Total: ₹{(item.price * item.quantity - (item.discount || 0)).toLocaleString()}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add New Product Form */}
+                <div 
+                  className="mt-4 p-5 rounded-xl border-2 border-dashed"
+                  style={{ 
+                    backgroundColor: colors.background.accent,
+                    borderColor: '#0068ff' + '40' 
+                  }}
+                >
+                  <h5 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: colors.text.primary }}>
+                    <Plus className="w-4 h-4" style={{ color: '#0068ff' }} />
+                    Add Product to Order
+                  </h5>
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3">
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
+                        Product ID <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input 
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                        placeholder="e.g., PROD123" 
+                        id="newProductId" 
+                        style={{ 
+                          color: colors.text.primary, 
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary 
+                        }} 
+                      />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
+                        Product Name <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input 
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                        placeholder="e.g., Software License" 
+                        id="newProductName" 
+                        style={{ 
+                          color: colors.text.primary, 
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary 
+                        }} 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
+                        Quantity <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input 
+                        type="number" 
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                        min={1} 
+                        defaultValue={1} 
+                        id="newProductQty" 
+                        style={{ 
+                          color: colors.text.primary, 
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary 
+                        }} 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
+                        Price (₹) <span style={{ color: '#ef4444' }}>*</span>
+                      </label>
+                      <input 
+                        type="number" 
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                        min={0} 
+                        defaultValue={0} 
+                        id="newProductPrice" 
+                        style={{ 
+                          color: colors.text.primary, 
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary 
+                        }} 
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
+                    <div className="md:col-span-2">
+                      <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>Discount (₹)</label>
+                      <input 
+                        type="number" 
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
+                        min={0} 
+                        placeholder="Optional" 
+                        id="newProductDiscount" 
+                        style={{ 
+                          color: colors.text.primary, 
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary 
+                        }} 
+                      />
+                    </div>
+                    <div className="md:col-span-4 flex items-end">
+                      <button 
+                        className="w-full px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-200" 
+                        style={{ background: '#0068ff', color: '#fff' }} 
+                        onClick={() => {
+                          const productId = (document.getElementById("newProductId") as HTMLInputElement).value.trim();
+                          const name = (document.getElementById("newProductName") as HTMLInputElement).value.trim();
+                          const quantity = Number((document.getElementById("newProductQty") as HTMLInputElement).value);
+                          const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
+                          const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
+                          const discount = discountValue === '' ? undefined : Number(discountValue);
+                          
+                          if (!productId || !name) {
+                            Swal.fire({ icon: 'error', title: 'Required Fields', text: 'Please fill in Product ID and Product Name' });
+                            return;
+                          }
+                          if (quantity <= 0) {
+                            Swal.fire({ icon: 'error', title: 'Invalid Quantity', text: 'Quantity must be greater than 0' });
+                            return;
+                          }
+                          
+                          handleAddProductToOrder({ productId, name, quantity, price, discount });
+                          (document.getElementById("newProductId") as HTMLInputElement).value = "";
+                          (document.getElementById("newProductName") as HTMLInputElement).value = "";
+                          (document.getElementById("newProductQty") as HTMLInputElement).value = "1";
+                          (document.getElementById("newProductPrice") as HTMLInputElement).value = "0";
+                          (document.getElementById("newProductDiscount") as HTMLInputElement).value = "";
+                        }}
+                      >
+                        <Plus className="w-4 h-4" />
+                        Add to Order
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Details Section */}
+              <div 
+                className="p-5 rounded-xl border"
+                style={{ 
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary 
+                }}
+              >
+                <h4 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ color: colors.text.primary }}>
+                  <FileText className="w-5 h-5" style={{ color: '#0068ff' }} />
+                  Additional Details
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                      Total Discount (₹)
+                    </label>
+                    <input 
+                      type="number" 
+                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200" 
+                      min={0} 
+                      placeholder="0" 
+                      value={orderForm.discount || ""} 
+                      onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} 
+                      style={{ 
+                        color: colors.text.primary, 
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary 
+                      }} 
+                    />
+                    <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
+                      Additional discount on the entire order
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                      Order Notes
+                    </label>
+                    <textarea 
+                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200 resize-none" 
+                      placeholder="Add any special notes or instructions..." 
+                      rows={3} 
+                      value={orderForm.notes || ""} 
+                      onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} 
+                      style={{ 
+                        color: colors.text.primary, 
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary 
+                      }} 
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Order Summary */}
+              <div 
+                className="p-5 rounded-xl border-2"
+                style={{ 
+                  backgroundColor: colors.background.accent,
+                  borderColor: '#0068ff' + '40' 
+                }}
+              >
+                <h4 className="font-semibold text-lg mb-4" style={{ color: colors.text.primary }}>
+                  Order Summary
+                </h4>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span style={{ color: colors.text.secondary }}>Subtotal:</span>
+                    <span className="font-semibold text-lg" style={{ color: colors.text.primary }}>
+                      ₹{orderForm.subtotal.toLocaleString()}
+                    </span>
+                  </div>
+                  {orderForm.discount && orderForm.discount > 0 && (
+                    <div className="flex justify-between items-center">
+                      <span style={{ color: colors.text.secondary }}>Discount:</span>
+                      <span className="font-semibold" style={{ color: '#ef4444' }}>
+                        -₹{orderForm.discount.toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="pt-3 border-t flex justify-between items-center" style={{ borderColor: colors.border.primary }}>
+                    <span className="font-semibold text-lg" style={{ color: colors.text.primary }}>Total Amount:</span>
+                    <span className="font-bold text-2xl" style={{ color: '#0068ff' }}>
+                      ₹{orderForm.totalAmount.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div 
+              className="sticky bottom-0 p-6 border-t flex justify-end gap-3"
+              style={{ 
+                backgroundColor: colors.background.secondary,
+                borderColor: colors.border.primary 
+              }}
+            >
+              <button
+                className="px-6 py-3 rounded-xl font-medium border-2 transition-all duration-200 hover:bg-opacity-10"
+                style={{ 
+                  borderColor: colors.border.primary, 
+                  color: colors.text.primary,
+                  backgroundColor: 'transparent' 
+                }}
+                onClick={() => setShowCreateForm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-8 py-3 rounded-xl font-semibold flex items-center gap-2 hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ background: '#0068ff', color: '#fff' }}
+                onClick={() => {
+                  if (!orderForm.email?.trim()) {
+                    Swal.fire({ icon: 'error', title: 'Required Field', text: 'Please enter customer email' });
+                    return;
+                  }
+                  if (orderForm.items.length === 0) {
+                    Swal.fire({ icon: 'error', title: 'No Items', text: 'Please add at least one product to the order' });
+                    return;
+                  }
+                  createOrderMutation.mutate(orderForm);
+                }}
+                disabled={createOrderMutation.status === "pending"}
+              >
+                {createOrderMutation.status === "pending" ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Creating Order...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    Create Order
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

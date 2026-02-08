@@ -19,17 +19,18 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
 
   const navItems = [
     {
-      icon: User,
-      label: "Profile",
-      onClick: () => handleNavigate("/profile"),
-      path: "/profile",
-    },
-    {
       icon: Menu,
       label: "Menu",
       onClick: onMenuToggle,
       path: null, // Special item - doesn't have a route
     },
+    {
+      icon: User,
+      label: "Profile",
+      onClick: () => handleNavigate("/profile"),
+      path: "/profile",
+    },
+    
     {
       icon: Package,
       label: "Orders",

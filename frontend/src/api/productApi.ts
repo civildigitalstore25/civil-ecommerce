@@ -169,3 +169,43 @@ export const useDeleteProduct = () => {
     },
   });
 };
+
+// Viewer tracking API functions
+
+/**
+ * Track a viewer for a product
+ */
+export const trackProductViewer = async (productId: string, viewerId: string): Promise<{ success: boolean; viewerCount: number }> => {
+  try {
+    const { data } = await apiClient.post(`/${productId}/track-viewer`, { viewerId });
+    return data;
+  } catch (error) {
+    console.error("Error tracking viewer:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get the current viewer count for a product
+ */
+export const getProductViewerCount = async (productId: string): Promise<number> => {
+  try {
+    const { data } = await apiClient.get(`/${productId}/viewer-count`);
+    return data.viewerCount || 0;
+  } catch (error) {
+    console.error("Error getting viewer count:", error);
+    return 0; // Return 0 on error to avoid breaking the UI
+  }
+};
+
+/**
+ * Remove a viewer from a product (cleanup when leaving)
+ */
+export const removeProductViewer = async (productId: string, viewerId: string): Promise<void> => {
+  try {
+    await apiClient.post(`/${productId}/remove-viewer`, { viewerId });
+  } catch (error) {
+    console.error("Error removing viewer:", error);
+    // Don't throw - this is a cleanup operation
+  }
+};
