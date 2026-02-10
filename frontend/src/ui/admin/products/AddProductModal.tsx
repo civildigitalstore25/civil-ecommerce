@@ -1441,6 +1441,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                             <option value="1 Year">1 Year</option>
                             <option value="2 Year">2 Year</option>
                             <option value="3 Year">3 Year</option>
+                            <option value="5 Year">5 Year</option>
                             <option value="6 Months">6 Months</option>
                             <option value="Trial Pack">Trial Pack</option>
                             <option value="Monthly">Monthly</option>
