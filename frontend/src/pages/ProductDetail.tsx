@@ -168,6 +168,9 @@ const ProductDetail: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
+  const breadcrumbProductName = (product?.name || "")
+    .replace(/\s*\|+\s*$/, "")
+    .trim();
 
   // Use theme primary color directly for selected background (theme blue).
   const selectedBg =
@@ -379,7 +382,7 @@ const ProductDetail: React.FC = () => {
     return () => {
       clearInterval(trackInterval);
       clearInterval(pollInterval);
-      
+
       // Remove viewer when leaving (fire and forget)
       removeProductViewer(productId, viewerId).catch(console.error);
     };
@@ -1158,8 +1161,8 @@ const ProductDetail: React.FC = () => {
             <span>{product.category.charAt(0).toUpperCase() + product.category.slice(1)}</span>
             <span>{">"}</span>
             <span style={{ color: colors.interactive.primary }}>
-              <span className="hidden md:inline">{product.name}</span>
-              <span className="inline md:hidden">{product.name.length > 15 ? product.name.substring(0, 15).trim() + '...' : product.name}</span>
+              <span className="hidden md:inline">{breadcrumbProductName}</span>
+              <span className="inline md:hidden">{breadcrumbProductName.length > 15 ? breadcrumbProductName.substring(0, 15).trim() + '...' : breadcrumbProductName}</span>
             </span>
           </div>
 
@@ -1873,7 +1876,7 @@ const ProductDetail: React.FC = () => {
                         </span>
                       </div>
                     )}
-                    
+
                     {/* Current Price */}
                     <div className="flex flex-col">
                       {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
@@ -1899,7 +1902,7 @@ const ProductDetail: React.FC = () => {
                         const current = selectedOption.priceINR;
                         const savings = strikethrough - current;
                         const savingsPercent = ((savings / strikethrough) * 100).toFixed(0);
-                        
+
                         if (savings > 0) {
                           return (
                             <div
@@ -1917,7 +1920,7 @@ const ProductDetail: React.FC = () => {
                       })()
                     )}
                   </div>
-                  
+
                   {/* Selected Plan Label */}
                   <div className="mt-3">
                     <span className="text-sm" style={{ color: colors.text.secondary }}>
