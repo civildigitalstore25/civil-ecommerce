@@ -169,7 +169,9 @@ const ProductDetail: React.FC = () => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const breadcrumbProductName = (product?.name || "")
-    .replace(/\s*\|+\s*$/, "")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .replace(/[|\uFF5C]+/g, "")
+    .replace(/\s{2,}/g, " ")
     .trim();
 
   // Use theme primary color directly for selected background (theme blue).
