@@ -12,9 +12,9 @@ import { SiX } from "react-icons/si";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Footer = () => {
-  const { colors, theme } = useAdminTheme();
+  const { theme } = useAdminTheme();
   const footerBg = "#142952";
-  const footerTextPrimary = colors.text.primary;
+  const footerTextPrimary = "#fff";
   const footerTextSecondary = "rgba(255,255,255,0.82)";
   const footerBorder = "rgba(255,255,255,0.22)";
 
