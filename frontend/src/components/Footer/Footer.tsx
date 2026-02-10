@@ -14,7 +14,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 const Footer = () => {
   const { colors, theme } = useAdminTheme();
   const footerBg = "#142952";
-  const footerTextPrimary = colors.text.inverse;
+  const footerTextPrimary = colors.text.primary;
   const footerTextSecondary = "rgba(255,255,255,0.82)";
   const footerBorder = "rgba(255,255,255,0.22)";
 
@@ -101,12 +101,12 @@ const Footer = () => {
                   <Link
                     to="/sitemap"
                     className="transition-colors duration-200 hover:underline"
-                    style={{ color: colors.text.secondary }}
+                    style={{ color: footerTextSecondary }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = colors.text.primary;
+                      e.currentTarget.style.color = footerTextPrimary;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = colors.text.secondary;
+                      e.currentTarget.style.color = footerTextSecondary;
                     }}
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
