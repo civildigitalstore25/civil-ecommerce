@@ -15,7 +15,7 @@ const brands = [
   { value: "antivirus", label: "Antivirus" },
   { value: "structural-softwares", label: "Structural Softwares" },
   { value: "architectural-softwares", label: "Architectural Softwares" },
-  { value: "billing-software", label: "Billing Software" },
+  { value: "accounting-billing", label: "Accounting and Billing" },
   { value: "ebook", label: "Ebook" },
   { value: "others", label: "Others" },
 ];
@@ -77,8 +77,9 @@ const brandCategories: Record<string, { value: string; label: string }[]> = {
     { value: "d5-render", label: "D5 Render" },
     { value: "archi-cad", label: "Archi CAD" },
   ],
-  "billing-software": [
+  "accounting-billing": [
     { value: "tally", label: "Tally" },
+    { value: "vyapar", label: "Vyapar" },
   ],
   ebook: [],
   others: [],
@@ -117,6 +118,8 @@ interface NewProductForm {
   membershipPrice: string;
   membershipPriceINR: string;
   membershipPriceUSD: string;
+  strikethroughPriceINR: string;
+  strikethroughPriceUSD: string;
   imageUrl: string;
   additionalImages: string[];
   videoUrl: string;
@@ -168,6 +171,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     membershipPrice: "",
     membershipPriceINR: "",
     membershipPriceUSD: "",
+    strikethroughPriceINR: "",
+    strikethroughPriceUSD: "",
     imageUrl: "",
     additionalImages: [""] as string[],
     videoUrl: "",
@@ -270,6 +275,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           membershipPrice: product.membershipPrice?.toString() || "",
           membershipPriceINR: product.membershipPriceINR?.toString() || "",
           membershipPriceUSD: product.membershipPriceUSD?.toString() || "",
+          strikethroughPriceINR: product.strikethroughPriceINR?.toString() || "",
+          strikethroughPriceUSD: product.strikethroughPriceUSD?.toString() || "",
           imageUrl: product.imageUrl || product.image || "",
           additionalImages:
             product.additionalImages && product.additionalImages.length > 0
@@ -314,6 +321,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           membershipPrice: "",
           membershipPriceINR: "",
           membershipPriceUSD: "",
+          strikethroughPriceINR: "",
+          strikethroughPriceUSD: "",
           imageUrl: "",
           additionalImages: [""],
           videoUrl: "",
@@ -698,6 +707,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           newProduct.hasMembership && newProduct.membershipPriceUSD
             ? Number(newProduct.membershipPriceUSD)
             : undefined,
+
+        // Strikethrough Price (MRP)
+        strikethroughPriceINR: newProduct.strikethroughPriceINR
+          ? Number(newProduct.strikethroughPriceINR)
+          : undefined,
+        strikethroughPriceUSD: newProduct.strikethroughPriceUSD
+          ? Number(newProduct.strikethroughPriceUSD)
+          : undefined,
 
         // Images
         image: newProduct.imageUrl, // For backward compatibility
@@ -1658,6 +1675,78 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                   )}
                 </>
               )}
+            </div>
+          </div>
+
+          {/* Strikethrough Price (MRP) */}
+          <div className="space-y-4">
+            <h2
+              className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+              style={{
+                color: colors.text.primary,
+                borderBottomColor: colors.border.primary,
+              }}
+            >
+              Strikethrough Price (MRP)
+            </h2>
+            <p className="text-sm" style={{ color: colors.text.secondary }}>
+              Optional: Add a higher original price to display with strikethrough. This shows the discount/savings to customers.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Strikethrough Price INR (₹)
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.strikethroughPriceINR}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "strikethroughPriceINR",
+                      e.target.value,
+                    )
+                  }
+                  placeholder="Enter original/max price in INR"
+                  step="0.01"
+                  min="0"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                />
+              </div>
+              <div>
+                <label
+                  className="block text-sm font-medium mb-1"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Strikethrough Price USD ($)
+                </label>
+                <input
+                  type="number"
+                  value={newProduct.strikethroughPriceUSD}
+                  onChange={(e) =>
+                    handleInputChange(
+                      "strikethroughPriceUSD",
+                      e.target.value,
+                    )
+                  }
+                  placeholder="Enter original/max price in USD"
+                  step="0.01"
+                  min="0"
+                  className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                />
+              </div>
             </div>
           </div>
 

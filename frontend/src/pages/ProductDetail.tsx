@@ -1852,7 +1852,80 @@ const ProductDetail: React.FC = () => {
                 </div>
               )}
 
-              {/* Selected Option Summary removed per UX: price preview not needed */}
+              {/* Selected Option Summary with Strikethrough Price */}
+              {selectedOption && (
+                <div className="mt-4 pt-4 border-t" style={{ borderColor: colors.border.primary }}>
+                  <div className="flex items-baseline gap-3 flex-wrap">
+                    {/* Strikethrough Price (MRP) */}
+                    {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
+                      <div className="flex flex-col">
+                        <span className="text-xs" style={{ color: colors.text.secondary }}>
+                          MRP:
+                        </span>
+                        <span
+                          className="text-lg lg:text-xl font-semibold line-through opacity-60"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          {formatPriceWithSymbol(
+                            product.strikethroughPriceINR || 0,
+                            product.strikethroughPriceUSD || 0
+                          )}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Current Price */}
+                    <div className="flex flex-col">
+                      {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
+                        <span className="text-xs" style={{ color: colors.interactive.primary }}>
+                          Special Price:
+                        </span>
+                      )}
+                      <span
+                        className="text-2xl lg:text-3xl font-bold"
+                        style={{ color: colors.interactive.primary }}
+                      >
+                        {formatPriceWithSymbol(
+                          selectedOption.priceINR,
+                          selectedOption.priceUSD
+                        )}
+                      </span>
+                    </div>
+
+                    {/* Savings Badge */}
+                    {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
+                      (() => {
+                        const strikethrough = product.strikethroughPriceINR || (product.strikethroughPriceUSD || 0) * 83;
+                        const current = selectedOption.priceINR;
+                        const savings = strikethrough - current;
+                        const savingsPercent = ((savings / strikethrough) * 100).toFixed(0);
+                        
+                        if (savings > 0) {
+                          return (
+                            <div
+                              className="px-3 py-1.5 rounded-lg font-bold text-sm"
+                              style={{
+                                backgroundColor: '#10b981',
+                                color: '#fff',
+                              }}
+                            >
+                              Save {savingsPercent}%
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()
+                    )}
+                  </div>
+                  
+                  {/* Selected Plan Label */}
+                  <div className="mt-3">
+                    <span className="text-sm" style={{ color: colors.text.secondary }}>
+                      Selected: <span className="font-semibold" style={{ color: colors.text.primary }}>{selectedOption.label}</span>
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}

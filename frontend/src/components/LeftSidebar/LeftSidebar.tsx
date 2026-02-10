@@ -108,14 +108,15 @@ const navigationCategories: Category[] = [
       { id: "archi-cad", name: "Archi CAD", href: "/category?brand=architectural-softwares&category=archi-cad" },
     ],
   },
-  {
-    id: "billing-software",
-    name: "Billing Software",
-    href: "/category?brand=billing-software",
-    subcategories: [
-      { id: "tally", name: "Tally", href: "/category?brand=billing-software&category=tally" },
-    ],
-  },
+    {
+      id: "accounting-billing",
+      name: "Accounting and Billing",
+      href: "/category?brand=accounting-billing",
+      subcategories: [
+        { id: "tally", name: "Tally", href: "/category?brand=accounting-billing&category=tally" },
+        { id: "vyapar", name: "Vyapar", href: "/category?brand=accounting-billing&category=vyapar" },
+      ],
+    },
   {
     id: "ebook",
     name: "Ebook",

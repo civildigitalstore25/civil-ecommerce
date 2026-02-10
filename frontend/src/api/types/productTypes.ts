@@ -60,6 +60,8 @@ export interface Product {
   membershipPrice?: number;
   membershipPriceINR?: number;
   membershipPriceUSD?: number;
+  strikethroughPriceINR?: number;
+  strikethroughPriceUSD?: number;
   oldPrice1?: number;
   oldPrice2?: number;
   oldPrice3?: number;

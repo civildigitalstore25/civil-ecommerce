@@ -48,6 +48,8 @@ export interface IProduct extends Document {
   price3USD?: number;
   priceLifetimeINR?: number;
   priceLifetimeUSD?: number;
+  strikethroughPriceINR?: number;
+  strikethroughPriceUSD?: number;
   subscriptionDurations?: SubscriptionDuration[];
   subscriptions?: SubscriptionDuration[]; // Separate field for admin subscription plans
   hasLifetime?: boolean;
@@ -122,6 +124,8 @@ const productSchema: Schema = new Schema(
     price3USD: { type: Number },
     priceLifetimeINR: { type: Number },
     priceLifetimeUSD: { type: Number },
+    strikethroughPriceINR: { type: Number },
+    strikethroughPriceUSD: { type: Number },
     subscriptionDurations: [subscriptionDurationSchema],
     subscriptions: [subscriptionDurationSchema], // Separate subscription plans for admin use
     hasLifetime: { type: Boolean, default: false },
