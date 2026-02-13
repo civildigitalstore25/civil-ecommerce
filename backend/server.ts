@@ -68,8 +68,11 @@ app.set('trust proxy', true);
 
 app.use(express.json());
 
-// Serve email footer icons
-app.use("/email-images", express.static(path.join(__dirname, "email-images")));
+// Serve email footer icons (use project root so it works in dist builds)
+app.use(
+  "/email-images",
+  express.static(path.resolve(process.cwd(), "email-images"))
+);
 
 // Add session middleware for Passport
 app.use(session({
