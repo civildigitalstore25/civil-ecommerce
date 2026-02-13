@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();  // Load env before anything else
 import express from "express";
+import path from "path";
 import mongoose from "mongoose";
 import cors from "cors";
 import passport from "passport";
@@ -66,6 +67,9 @@ app.use(
 app.set('trust proxy', true);
 
 app.use(express.json());
+
+// Serve email footer icons
+app.use("/email-images", express.static(path.join(__dirname, "email-images")));
 
 // Add session middleware for Passport
 app.use(session({
