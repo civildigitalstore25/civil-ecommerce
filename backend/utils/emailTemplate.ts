@@ -108,14 +108,14 @@ export const buildCommonEmailFooter = ({ topNoteHtml }: CommonFooterArgs = {}) =
 
     const renderIconImg = (key: SocialKey, label: string) => {
         const iconMap: Record<SocialKey, string> = {
-            facebook: "facebook-color-svgrepo-com.png",
-            instagram: "instagram-1-svgrepo-com.png",
-            linkedin: "linkedin-svgrepo-com.png",
-            youtube: "youtube-color-svgrepo-com.png",
-            x: "twitter-color-svgrepo-com.png",
+            facebook: "facebook-color-svgrepo-com.svg",
+            instagram: "instagram-1-svgrepo-com.svg",
+            linkedin: "linkedin-svgrepo-com.svg",
+            youtube: "youtube-color-svgrepo-com.svg",
+            x: "twitter-color-svgrepo-com.svg",
             whatsapp: "",
             pinterest: "",
-            email: "gmail-svgrepo-com.png",
+            email: "gmail-svgrepo-com.svg",
         };
 
         const fileName = iconMap[key];
