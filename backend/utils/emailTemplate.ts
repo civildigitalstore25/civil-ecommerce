@@ -86,12 +86,12 @@ export const buildCommonEmailFooter = ({ topNoteHtml }: CommonFooterArgs = {}) =
     const fromEmail = EMAIL_BRAND.fromEmail;
     const supportEmail = EMAIL_BRAND.supportEmail;
 
-  const emailAssetBaseUrl = (
-    process.env.EMAIL_ASSET_BASE_URL ||
-    process.env.BACKEND_URL ||
-    process.env.FRONTEND_URL ||
-    "http://localhost:5000"
-  ).replace(/\/$/, "");
+    const emailAssetBaseUrl = (
+        process.env.EMAIL_ASSET_BASE_URL ||
+        process.env.BACKEND_URL ||
+        process.env.FRONTEND_URL ||
+        "http://localhost:5000"
+    ).replace(/\/$/, "");
 
     const privacyUrl = EMAIL_BRAND.footer.privacyPolicyUrl;
     const helpUrl = EMAIL_BRAND.footer.helpCenterUrl;
@@ -107,24 +107,24 @@ export const buildCommonEmailFooter = ({ topNoteHtml }: CommonFooterArgs = {}) =
         | "email";
 
     const renderIconImg = (key: SocialKey, label: string) => {
-      const iconMap: Record<SocialKey, string> = {
-        facebook: "facebook-color-svgrepo-com.svg",
-        instagram: "instagram-1-svgrepo-com.svg",
-        linkedin: "linkedin-svgrepo-com.svg",
-        youtube: "youtube-color-svgrepo-com.svg",
-        x: "twitter-color-svgrepo-com.svg",
-        whatsapp: "",
-        pinterest: "",
-        email: "gmail-svgrepo-com.svg",
-      };
+        const iconMap: Record<SocialKey, string> = {
+            facebook: "facebook-color-svgrepo-com.svg",
+            instagram: "instagram-1-svgrepo-com.svg",
+            linkedin: "linkedin-svgrepo-com.svg",
+            youtube: "youtube-color-svgrepo-com.svg",
+            x: "twitter-color-svgrepo-com.svg",
+            whatsapp: "",
+            pinterest: "",
+            email: "gmail-svgrepo-com.svg",
+        };
 
-      const fileName = iconMap[key];
-      if (!fileName) return "";
+        const fileName = iconMap[key];
+        if (!fileName) return "";
 
-      const src = `${emailAssetBaseUrl}/email-images/${fileName}`;
-      return `<img src="${src}" width="18" height="18" alt="${escapeHtml(
-        label,
-      )}" style="display:block; width:18px; height:18px; margin:9px auto;" />`;
+        const src = `${emailAssetBaseUrl}/email-images/${fileName}`;
+        return `<img src="${src}" width="18" height="18" alt="${escapeHtml(
+            label,
+        )}" style="display:block; width:18px; height:18px; margin:9px auto;" />`;
     };
 
     const socials = (
