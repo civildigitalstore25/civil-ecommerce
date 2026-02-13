@@ -9,10 +9,8 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { SiX } from "react-icons/si";
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const Footer = () => {
-  const { theme } = useAdminTheme();
   const footerBg = "#142952";
   const footerTextPrimary = "#fff";
   const footerTextSecondary = "rgba(255,255,255,0.82)";
@@ -36,7 +34,7 @@ const Footer = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={theme === "dark" ? "/whitelogo.png" : "/softlogo.png"}
+                src={ "/whitelogo.png" }
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
