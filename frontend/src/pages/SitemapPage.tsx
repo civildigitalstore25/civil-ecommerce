@@ -20,7 +20,7 @@ const SitemapPage: React.FC = () => {
 
     activeProducts.forEach((product) => {
       const category = product.category || "Uncategorized";
-      
+
       if (!organized[category]) {
         organized[category] = [];
       }
@@ -39,14 +39,14 @@ const SitemapPage: React.FC = () => {
     const namePart = product.name.toLowerCase().replace(/\s+/g, "-");
     const versionPart = product.version ? `-${product.version.toString().toLowerCase().replace(/\s+/g, "-")}` : "";
     const slug = `${namePart}${versionPart}`;
-    
+
     navigate(`/product/${slug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (isLoading) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{ backgroundColor: colors.background.primary }}
       >
@@ -60,15 +60,15 @@ const SitemapPage: React.FC = () => {
 
   if (error) {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center p-4"
         style={{ backgroundColor: colors.background.primary }}
       >
-        <div 
+        <div
           className="rounded-lg p-6 border"
-          style={{ 
+          style={{
             backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary 
+            borderColor: colors.border.primary
           }}
         >
           <p style={{ color: colors.text.primary }}>Error loading products. Please try again later.</p>
@@ -78,20 +78,20 @@ const SitemapPage: React.FC = () => {
   }
 
   return (
-    <div 
+    <div
       className="min-h-screen pt-24 pb-8 px-4"
       style={{ backgroundColor: colors.background.primary }}
     >
       <div className="max-w-7xl mx-auto">
         {/* Header - Centered */}
         <div className="text-center mb-6">
-          <h1 
+          <h1
             className="text-3xl md:text-4xl font-bold mb-2"
             style={{ color: colors.text.primary }}
           >
             Sitemap
           </h1>
-          <p 
+          <p
             className="text-sm"
             style={{ color: colors.text.secondary }}
           >
@@ -106,11 +106,11 @@ const SitemapPage: React.FC = () => {
             .map((category) => (
               <div key={category} className="space-y-2">
                 {/* Category Header */}
-                <h2 
+                <h2
                   className="text-sm md:text-base font-bold pb-2 border-b-2"
-                  style={{ 
+                  style={{
                     color: colors.text.primary,
-                    borderColor: colors.interactive.primary 
+                    borderColor: colors.interactive.primary
                   }}
                 >
                   {category}
@@ -140,11 +140,11 @@ const SitemapPage: React.FC = () => {
                       <div className="flex items-center justify-between gap-1.5">
                         <span className="truncate font-medium leading-tight">{product.name}</span>
                         {product.version && (
-                          <span 
+                          <span
                             className="text-[9px] px-1 py-0.5 rounded flex-shrink-0"
-                            style={{ 
+                            style={{
                               backgroundColor: colors.interactive.primary + "20",
-                              color: colors.interactive.primary 
+                              color: colors.interactive.primary
                             }}
                           >
                             v{product.version}

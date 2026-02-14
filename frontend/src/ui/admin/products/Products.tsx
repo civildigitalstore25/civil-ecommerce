@@ -277,7 +277,7 @@ const Products: React.FC = () => {
   const allFilteredProducts = rawProducts.filter((product: Product) => {
     // Exclude draft products from main products list (they have their own section)
     if (product.status === "draft") return false;
-    
+
     // Filter by status
     if (selectedStatus !== "All Status") {
       const productStatus = product.status || "active"; // Default to active if no status
