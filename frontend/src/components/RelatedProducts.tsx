@@ -53,6 +53,9 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
   if (isLoading) return <div>Loading related products...</div>;
   if (!data || !data.products) return null;
 
+  // Filter to only show active products (exclude draft and inactive)
+  const activeProducts = data.products.filter((p: any) => p.status === 'active' || !p.status);
+
   // Submenu category logic: show products under the same submenu (brand) and submenu category
   let related: Product[] = [];
   if (brandKey && brandCategoryMap[brandKey]) {
@@ -62,14 +65,14 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
     );
     if (currentSubmenuCat) {
       // Show products in the same submenu category (excluding current)
-      related = data.products.filter(
+      related = activeProducts.filter(
         (p) =>
           p._id !== currentProduct._id &&
           p.category?.toLowerCase().includes(currentSubmenuCat)
       );
     } else {
       // If not found, show all products under the same brand submenu
-      related = data.products.filter(
+      related = activeProducts.filter(
         (p) =>
           p._id !== currentProduct._id &&
           brandCategoryMap[brandKey].some((cat) =>
@@ -79,7 +82,7 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
     }
   } else {
     // fallback: show same category
-    related = data.products.filter(
+    related = activeProducts.filter(
       (p) => p._id !== currentProduct._id && p.category === currentProduct.category
     );
   }

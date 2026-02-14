@@ -9,9 +9,11 @@ import {
   TicketPercent,
   MessageSquare,
   Mail,
+  FileText,
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import Products from "./products/Products";
+import DraftProducts from "./products/DraftProducts";
 import Orders from "./Orders";
 
 import UserManagement from "./users/UserManagement";
@@ -28,6 +30,7 @@ type MenuType =
   | "dashboard"
   | "users"
   | "products"
+  | "draft-products"
   // Removed "categories" and "companies"
   | "orders"
   | "settings"
@@ -57,6 +60,7 @@ const AdminDashboardContent: React.FC = () => {
     { id: "dashboard", label: "Dashboard", icon: BarChart3, permission: "dashboard" },
     { id: "users", label: "Users", icon: Users, permission: "users" },
     { id: "products", label: "Products", icon: Package, permission: "products" },
+    { id: "draft-products", label: "Draft Products", icon: FileText, permission: "products" },
     // Removed Categories and Companies menu items
     { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
     { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
@@ -102,6 +106,8 @@ const AdminDashboardContent: React.FC = () => {
         return <UserManagement />;
       case "products":
         return <Products />;
+      case "draft-products":
+        return <DraftProducts />;
       // Removed Categories and Companies content
       case "orders":
         return <Orders />;

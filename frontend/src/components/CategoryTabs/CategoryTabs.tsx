@@ -34,7 +34,8 @@ const CategoryTabs: React.FC = () => {
       limit: 5,
     });
 
-  const products = data.products || [];
+  // Filter to only show active products (exclude draft and inactive)
+  const products = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
 
   // Filter out 'others' brand
   const visibleProducts = products.filter((p: any) => {

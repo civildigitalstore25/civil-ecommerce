@@ -9,14 +9,16 @@ const SitemapPage: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const { data, isLoading, error } = useProducts({ limit: 10000 });
+  // Filter to only show active products in sitemap (exclude draft and inactive)
+  const activeProducts = (data?.products || []).filter((p: any) => p.status === 'active' || !p.status);
 
   // Organize products by category
   const productsByCategory = useMemo(() => {
-    if (!data?.products) return {};
+    if (!activeProducts || activeProducts.length === 0) return {};
 
     const organized: { [category: string]: Product[] } = {};
 
-    data.products.forEach((product) => {
+    activeProducts.forEach((product) => {
       const category = product.category || "Uncategorized";
       
       if (!organized[category]) {
@@ -31,7 +33,7 @@ const SitemapPage: React.FC = () => {
     });
 
     return organized;
-  }, [data?.products]);
+  }, [activeProducts]);
 
   const handleProductClick = (product: Product) => {
     const namePart = product.name.toLowerCase().replace(/\s+/g, "-");

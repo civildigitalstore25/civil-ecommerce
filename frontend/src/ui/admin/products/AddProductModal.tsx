@@ -3,135 +3,20 @@ import IconPicker from "../../../components/IconPicker/IconPicker";
 import "./AddProductModal.css";
 import type { Product } from "../../../api/types/productTypes";
 import Swal from "sweetalert2";
-import { Plus, X, Save, HelpCircle } from "lucide-react";
+import { Plus, X, Save, HelpCircle, FileText, Clock } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 import RichTextEditor from "../../../components/RichTextEditor/RichTextEditor";
+import {
+  BRANDS,
+  BRAND_CATEGORIES,
+  DEFAULT_PRODUCT_FORM,
+  type ProductForm
+} from "../../../constants/productFormConstants";
+import { useProductFormDraft } from "../../../hooks/useProductFormDraft";
 
-const brands = [
-  { value: "autodesk", label: "Autodesk" },
-  { value: "microsoft", label: "Microsoft" },
-  { value: "adobe", label: "Adobe" },
-  { value: "coreldraw", label: "Coreldraw" },
-  { value: "antivirus", label: "Antivirus" },
-  { value: "structural-softwares", label: "Structural Softwares" },
-  { value: "architectural-softwares", label: "Architectural Softwares" },
-  { value: "accounting-billing", label: "Accounting and Billing" },
-  { value: "ebook", label: "Ebook" },
-  { value: "others", label: "Others" },
-];
-
-const brandCategories: Record<string, { value: string; label: string }[]> = {
-  autodesk: [
-    { value: "autocad", label: "AutoCAD" },
-    { value: "3ds-max", label: "3ds MAX" },
-    { value: "revit", label: "Revit" },
-    { value: "maya", label: "Maya" },
-    { value: "fusion", label: "Fusion" },
-    { value: "navisworks-manage", label: "Navisworks Manage" },
-    { value: "inventor-professional", label: "Inventor Professional" },
-    { value: "autocad-lt", label: "AutoCAD LT" },
-    { value: "aec-collection", label: "AEC Collection" },
-    { value: "civil-3d", label: "Civil 3D" },
-    { value: "map-3d", label: "Map 3D" },
-    { value: "autocad-mechanical", label: "AutoCAD Mechanical" },
-    { value: "autocad-electrical", label: "AutoCAD Electrical" },
-    { value: "autocad-mep", label: "AutoCAD MEP" },
-  ],
-  microsoft: [
-    { value: "microsoft-365", label: "Microsoft 365" },
-    { value: "microsoft-professional", label: "Microsoft Professional" },
-    { value: "microsoft-projects", label: "Microsoft Projects" },
-    { value: "server", label: "Server" },
-    { value: "windows", label: "Windows" },
-  ],
-  adobe: [
-    { value: "adobe-acrobat", label: "Adobe Acrobat" },
-    { value: "photoshop", label: "Photoshop" },
-    { value: "lightroom", label: "Lightroom" },
-    { value: "after-effect", label: "After Effect" },
-    { value: "premier-pro", label: "Premier Pro" },
-    { value: "illustrator", label: "Illustrator" },
-    { value: "adobe-creative-cloud", label: "Adobe Creative Cloud" },
-  ],
-  coreldraw: [
-    { value: "coreldraw-graphics-suite", label: "Coreldraw Graphics Suite" },
-    { value: "coreldraw-technical-suite", label: "Coreldraw Technical Suite" },
-  ],
-  antivirus: [
-    { value: "k7-security", label: "K7 Security" },
-    { value: "quick-heal", label: "Quick Heal" },
-    { value: "hyper-say", label: "Hyper Say" },
-    { value: "norton", label: "Norton" },
-    { value: "mcafee", label: "McAfee" },
-    { value: "eset", label: "ESET" },
-  ],
-  "structural-softwares": [
-    { value: "e-tab", label: "E-Tab" },
-    { value: "safe", label: "Safe" },
-    { value: "sap-2000", label: "Sap 2000" },
-    { value: "tekla", label: "Tekla" },
-  ],
-  "architectural-softwares": [
-    { value: "lumion", label: "Lumion" },
-    { value: "twin-motion", label: "Twin Motion" },
-    { value: "d5-render", label: "D5 Render" },
-    { value: "archi-cad", label: "Archi CAD" },
-  ],
-  "accounting-billing": [
-    { value: "tally", label: "Tally" },
-    { value: "vyapar", label: "Vyapar" },
-  ],
-  ebook: [],
-  others: [],
-};
-
-interface SubscriptionDuration {
-  duration: string;
-  price: string;
-  priceINR: string;
-  priceUSD: string;
-  trialDays?: string;
-}
-
-interface FAQ {
-  question: string;
-  answer: string;
-}
-
-interface NewProductForm {
-  name: string;
-  version: string;
-  longDescription: string;
-  detailsDescription: string;
-  category: string;
-  brand: string;
-  subscriptionDurations: SubscriptionDuration[];
-  // ebook simple price fields
-  ebookPriceINR: string;
-  ebookPriceUSD: string;
-  subscriptions: SubscriptionDuration[];
-  hasLifetime: boolean;
-  lifetimePrice: string;
-  lifetimePriceINR: string;
-  lifetimePriceUSD: string;
-  hasMembership: boolean;
-  membershipPrice: string;
-  membershipPriceINR: string;
-  membershipPriceUSD: string;
-  strikethroughPriceINR: string;
-  strikethroughPriceUSD: string;
-  imageUrl: string;
-  additionalImages: string[];
-  videoUrl: string;
-  activationVideoUrl: string;
-  driveLink: string;
-  status: string;
-  isBestSeller: boolean;
-  isOutOfStock: boolean;
-  faqs: FAQ[];
-  keyFeatures: { icon: string; title: string; description: string }[];
-  systemRequirements: { icon: string; title: string; description: string }[];
-}
+// Use imported constants
+const brands = BRANDS;
+const brandCategories = BRAND_CATEGORIES;
 
 interface AddProductModalProps {
   open: boolean;
@@ -147,48 +32,25 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   product,
 }) => {
   const { colors, theme } = useAdminTheme();
-  const [newProduct, setNewProduct] = useState<NewProductForm>({
-    name: "",
-    version: "",
-    longDescription: "",
-    detailsDescription: "",
-    category: "",
-    brand: brands[0].value,
-    subscriptionDurations: [
-      { duration: "1 Year", price: "", trialDays: "" },
-    ] as SubscriptionDuration[],
-    // Simple price fields for ebook brand
-    ebookPriceINR: "",
-    ebookPriceUSD: "",
-    subscriptions: [
-      { duration: "Monthly", price: "" },
-    ] as SubscriptionDuration[],
-    hasLifetime: false,
-    lifetimePrice: "",
-    lifetimePriceINR: "",
-    lifetimePriceUSD: "",
-    hasMembership: false,
-    membershipPrice: "",
-    membershipPriceINR: "",
-    membershipPriceUSD: "",
-    strikethroughPriceINR: "",
-    strikethroughPriceUSD: "",
-    imageUrl: "",
-    additionalImages: [""] as string[],
-    videoUrl: "",
-    activationVideoUrl: "",
-    driveLink: "",
-    status: "active",
-    isBestSeller: false,
-    isOutOfStock: false,
-    faqs: [] as FAQ[],
-    keyFeatures: [] as { icon: string; title: string; description: string }[],
-    systemRequirements: [] as {
-      icon: string;
-      title: string;
-      description: string;
-    }[],
-  });
+  const [newProduct, setNewProduct] = useState<ProductForm>({ ...DEFAULT_PRODUCT_FORM });
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Auto-save hook
+  const { clearDraft } = useProductFormDraft(
+    newProduct,
+    !!product
+  );
+
+  // Update last saved time when form changes
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        setLastSaved(new Date());
+      }, 3100); // Slightly after auto-save interval
+
+      return () => clearTimeout(timer);
+    }
+  }, [newProduct, open]);
 
   useEffect(() => {
     if (open) {
@@ -549,18 +411,30 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     }));
   };
 
-  const handleAddProduct = async (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent, asDraft: boolean = false) => {
     e.preventDefault();
+
+    // If saving as draft, skip confirmation
+    if (asDraft) {
+      await saveProductData('draft');
+      return;
+    }
+
+    // When clicking "Add Product" button, show appropriate message
+    const isDraftBeingPublished = product?.status === 'draft';
+
     const result = await Swal.fire({
-      title: product ? "Update Product?" : "Create New Product?",
-      text: product
-        ? `Are you sure you want to update "${newProduct.name}"?`
-        : `Are you sure you want to create "${newProduct.name}"?`,
+      title: isDraftBeingPublished ? "Publish Draft Product?" : (product ? "Update Product?" : "Create New Product?"),
+      text: isDraftBeingPublished
+        ? `Are you sure you want to publish "${newProduct.name}" to Products?`
+        : product
+          ? `Are you sure you want to update "${newProduct.name}"?`
+          : `Are you sure you want to create "${newProduct.name}"?`,
       icon: "question",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: product ? "Yes, update it!" : "Yes, create it!",
+      confirmButtonText: isDraftBeingPublished ? "Yes, publish it!" : (product ? "Yes, update it!" : "Yes, create it!"),
       cancelButtonText: "Cancel",
       reverseButtons: true,
       customClass: {
@@ -571,240 +445,256 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     });
 
     if (result.isConfirmed) {
-      // Generate slug from name and version
-      const slug = `${newProduct.name.replace(/\s+/g, "-").toLowerCase()}${newProduct.version ? `-${newProduct.version.toString().toLowerCase()}` : ""}`;
-      // If the brand has no categories (e.g., 'ebook'), use the brand as category
-      const brandHasCategories = (brandCategories[newProduct.brand] || []).length > 0;
-      const categoryValue = brandHasCategories ? newProduct.category : newProduct.brand;
+      // When clicking "Add Product", always set status to 'active' (not draft)
+      await saveProductData('active');
+    }
+  };
 
-      // Preserve the raw HTML from the Rich Text Editor for exact display
-      const htmlDescription = newProduct.longDescription || "";
-      const htmlDetailsDescription = newProduct.detailsDescription || "";
-      // Also generate Markdown (kept for reference / compatibility)
+  const saveProductData = async (status: string) => {
+    const isDraft = status === 'draft';
 
-      // Transform new product structure to match current backend expectations
-      const productData = {
-        // Basic Information
-        name: newProduct.name,
-        version: newProduct.version,
-        slug,
-        // Store raw HTML so product detail page can render exactly what was entered
-        shortDescription: htmlDescription,
-        description: htmlDescription,
-        detailsDescription: htmlDetailsDescription,
-        category: categoryValue,
+    // For drafts, provide default values for required fields to avoid backend validation errors
+    const defaultName = newProduct.name || (isDraft ? `Draft Product ${Date.now()}` : '');
+    const defaultImage = newProduct.imageUrl || (isDraft ? 'https://via.placeholder.com/400x300?text=No+Image' : '');
+    const defaultDescription = newProduct.longDescription || (isDraft ? 'Draft description' : '');
+    const defaultBrand = newProduct.brand || brands[0].value;
 
-        // Brand/Company (backward compatibility)
-        company: newProduct.brand, // For backward compatibility
-        brand: newProduct.brand, // New field
+    // Generate slug from name and version
+    const slug = `${defaultName.replace(/\s+/g, "-").toLowerCase()}${newProduct.version ? `-${newProduct.version.toString().toLowerCase()}` : ""}`;
+    // If the brand has no categories (e.g., 'ebook'), use the brand as category
+    const brandHasCategories = (brandCategories[defaultBrand] || []).length > 0;
+    const categoryValue = brandHasCategories ? (newProduct.category || (brandCategories[defaultBrand]?.[0]?.value || defaultBrand)) : defaultBrand;
 
-        // Pricing handling
-        // For ebook brand, prefer the simple ebook price fields
-        price1:
-          newProduct.brand === "ebook"
-            ? newProduct.ebookPriceINR
-              ? Number(newProduct.ebookPriceINR)
-              : 0
-            : newProduct.subscriptionDurations[0]?.price
-              ? Number(newProduct.subscriptionDurations[0].price)
-              : 0,
-        price3: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.price
-          ? Number(newProduct.subscriptionDurations[1].price)
-          : undefined,
-        priceLifetime:
-          newProduct.brand === "ebook"
-            ? undefined
-            : newProduct.hasLifetime && newProduct.lifetimePrice
-              ? Number(newProduct.lifetimePrice)
-              : undefined,
+    // Preserve the raw HTML from the Rich Text Editor for exact display
+    const htmlDescription = defaultDescription;
+    const htmlDetailsDescription = newProduct.detailsDescription || (isDraft ? '' : '');
+    // Also generate Markdown (kept for reference / compatibility)
 
-        // Dual currency pricing
-        price1INR: newProduct.brand === "ebook"
+    // Transform new product structure to match current backend expectations
+    const productData = {
+      // Basic Information
+      name: defaultName,
+      version: newProduct.version,
+      slug,
+      // Store raw HTML so product detail page can render exactly what was entered
+      shortDescription: htmlDescription,
+      description: htmlDescription,
+      detailsDescription: htmlDetailsDescription,
+      category: categoryValue,
+
+      // Brand/Company (backward compatibility)
+      company: defaultBrand, // For backward compatibility
+      brand: defaultBrand, // New field
+
+      // Pricing handling
+      // For ebook brand, prefer the simple ebook price fields
+      // For drafts, default to 0 if no price is provided
+      price1:
+        defaultBrand === "ebook"
           ? newProduct.ebookPriceINR
             ? Number(newProduct.ebookPriceINR)
-            : undefined
-          : newProduct.subscriptionDurations[0]?.priceINR
-            ? Number(newProduct.subscriptionDurations[0].priceINR)
-            : undefined,
-        price1USD: newProduct.brand === "ebook"
-          ? newProduct.ebookPriceUSD
-            ? Number(newProduct.ebookPriceUSD)
-            : undefined
-          : newProduct.subscriptionDurations[0]?.priceUSD
-            ? Number(newProduct.subscriptionDurations[0].priceUSD)
-            : undefined,
-        price3INR: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceINR
-          ? Number(newProduct.subscriptionDurations[1].priceINR)
-          : undefined,
-        price3USD: newProduct.brand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceUSD
-          ? Number(newProduct.subscriptionDurations[1].priceUSD)
-          : undefined,
-        priceLifetimeINR: newProduct.brand === "ebook" ? undefined : newProduct.lifetimePriceINR
-          ? Number(newProduct.lifetimePriceINR)
-          : undefined,
-        priceLifetimeUSD: newProduct.brand === "ebook" ? undefined : newProduct.lifetimePriceUSD
-          ? Number(newProduct.lifetimePriceUSD)
-          : undefined,
-
-        // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
-        subscriptionDurations: newProduct.brand === "ebook" ? [] : newProduct.subscriptionDurations
-          .map((sub) => ({
-            duration: sub.duration,
-            price: sub.price ? Number(sub.price) : 0,
-            priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
-            priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
-            trialDays: sub.trialDays ? Number(sub.trialDays) : undefined,
-          }))
-          .filter(
-            (sub) =>
-              sub.price > 0 ||
-              (sub.priceINR && sub.priceINR > 0) ||
-              (sub.priceUSD && sub.priceUSD > 0),
-          ),
-
-        // Keep subscriptions separate (for future use, not displayed in pricing)
-        subscriptions: newProduct.subscriptions
-          .map((sub) => ({
-            duration: sub.duration,
-            price: sub.price ? Number(sub.price) : 0,
-            priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
-            priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
-          }))
-          .filter(
-            (sub) =>
-              sub.price > 0 ||
-              (sub.priceINR && sub.priceINR > 0) ||
-              (sub.priceUSD && sub.priceUSD > 0),
-          ),
-
-        // Lifetime pricing
-        hasLifetime: newProduct.hasLifetime,
-        lifetimePrice: newProduct.lifetimePriceINR
-          ? Number(newProduct.lifetimePriceINR)
-          : newProduct.lifetimePrice
+            : (isDraft ? 0 : 0)
+          : newProduct.subscriptionDurations[0]?.price
+            ? Number(newProduct.subscriptionDurations[0].price)
+            : (isDraft ? 0 : 0),
+      price3: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.price
+        ? Number(newProduct.subscriptionDurations[1].price)
+        : undefined,
+      priceLifetime:
+        defaultBrand === "ebook"
+          ? undefined
+          : newProduct.hasLifetime && newProduct.lifetimePrice
             ? Number(newProduct.lifetimePrice)
-            : undefined, // Backward compatibility fallback
-        lifetimePriceINR: newProduct.lifetimePriceINR
-          ? Number(newProduct.lifetimePriceINR)
-          : undefined,
-        lifetimePriceUSD: newProduct.lifetimePriceUSD
-          ? Number(newProduct.lifetimePriceUSD)
-          : undefined,
-
-        // Membership pricing
-        hasMembership: newProduct.hasMembership,
-        membershipPrice:
-          newProduct.hasMembership && newProduct.membershipPriceINR
-            ? Number(newProduct.membershipPriceINR)
-            : newProduct.hasMembership && newProduct.membershipPrice
-              ? Number(newProduct.membershipPrice)
-              : undefined, // Backward compatibility fallback
-        membershipPriceINR:
-          newProduct.hasMembership && newProduct.membershipPriceINR
-            ? Number(newProduct.membershipPriceINR)
-            : undefined,
-        membershipPriceUSD:
-          newProduct.hasMembership && newProduct.membershipPriceUSD
-            ? Number(newProduct.membershipPriceUSD)
             : undefined,
 
-        // Strikethrough Price (MRP)
-        strikethroughPriceINR: newProduct.strikethroughPriceINR
-          ? Number(newProduct.strikethroughPriceINR)
+      // Dual currency pricing
+      price1INR: defaultBrand === "ebook"
+        ? newProduct.ebookPriceINR
+          ? Number(newProduct.ebookPriceINR)
+          : undefined
+        : newProduct.subscriptionDurations[0]?.priceINR
+          ? Number(newProduct.subscriptionDurations[0].priceINR)
           : undefined,
-        strikethroughPriceUSD: newProduct.strikethroughPriceUSD
-          ? Number(newProduct.strikethroughPriceUSD)
+      price1USD: defaultBrand === "ebook"
+        ? newProduct.ebookPriceUSD
+          ? Number(newProduct.ebookPriceUSD)
+          : undefined
+        : newProduct.subscriptionDurations[0]?.priceUSD
+          ? Number(newProduct.subscriptionDurations[0].priceUSD)
           : undefined,
+      price3INR: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceINR
+        ? Number(newProduct.subscriptionDurations[1].priceINR)
+        : undefined,
+      price3USD: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceUSD
+        ? Number(newProduct.subscriptionDurations[1].priceUSD)
+        : undefined,
+      priceLifetimeINR: defaultBrand === "ebook" ? undefined : newProduct.lifetimePriceINR
+        ? Number(newProduct.lifetimePriceINR)
+        : undefined,
+      priceLifetimeUSD: defaultBrand === "ebook" ? undefined : newProduct.lifetimePriceUSD
+        ? Number(newProduct.lifetimePriceUSD)
+        : undefined,
 
-        // Images
-        image: newProduct.imageUrl, // For backward compatibility
-        imageUrl: newProduct.imageUrl, // New field
-        additionalImages: newProduct.additionalImages.filter(
-          (img) => img.trim() !== "",
+      // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
+      subscriptionDurations: defaultBrand === "ebook" ? [] : newProduct.subscriptionDurations
+        .map((sub) => ({
+          duration: sub.duration,
+          price: sub.price ? Number(sub.price) : 0,
+          priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+          priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+          trialDays: sub.trialDays ? Number(sub.trialDays) : undefined,
+        }))
+        .filter(
+          (sub) =>
+            sub.price > 0 ||
+            (sub.priceINR && sub.priceINR > 0) ||
+            (sub.priceUSD && sub.priceUSD > 0),
         ),
 
-        // Videos
-        videoUrl: newProduct.videoUrl,
-        activationVideoUrl: newProduct.activationVideoUrl,
+      // Keep subscriptions separate (for future use, not displayed in pricing)
+      subscriptions: newProduct.subscriptions
+        .map((sub) => ({
+          duration: sub.duration,
+          price: sub.price ? Number(sub.price) : 0,
+          priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+          priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+        }))
+        .filter(
+          (sub) =>
+            sub.price > 0 ||
+            (sub.priceINR && sub.priceINR > 0) ||
+            (sub.priceUSD && sub.priceUSD > 0),
+        ),
 
-        // Drive Link for downloadable product
-        driveLink: newProduct.driveLink,
+      // Lifetime pricing
+      hasLifetime: newProduct.hasLifetime,
+      lifetimePrice: newProduct.lifetimePriceINR
+        ? Number(newProduct.lifetimePriceINR)
+        : newProduct.lifetimePrice
+          ? Number(newProduct.lifetimePrice)
+          : undefined, // Backward compatibility fallback
+      lifetimePriceINR: newProduct.lifetimePriceINR
+        ? Number(newProduct.lifetimePriceINR)
+        : undefined,
+      lifetimePriceUSD: newProduct.lifetimePriceUSD
+        ? Number(newProduct.lifetimePriceUSD)
+        : undefined,
 
-        // Status and flags
-        status: newProduct.status,
-        isBestSeller: newProduct.isBestSeller,
-        isOutOfStock: newProduct.isOutOfStock,
+      // Membership pricing
+      hasMembership: newProduct.hasMembership,
+      membershipPrice:
+        newProduct.hasMembership && newProduct.membershipPriceINR
+          ? Number(newProduct.membershipPriceINR)
+          : newProduct.hasMembership && newProduct.membershipPrice
+            ? Number(newProduct.membershipPrice)
+            : undefined, // Backward compatibility fallback
+      membershipPriceINR:
+        newProduct.hasMembership && newProduct.membershipPriceINR
+          ? Number(newProduct.membershipPriceINR)
+          : undefined,
+      membershipPriceUSD:
+        newProduct.hasMembership && newProduct.membershipPriceUSD
+          ? Number(newProduct.membershipPriceUSD)
+          : undefined,
 
-        // FAQs
-        faqs: newProduct.faqs,
+      // Strikethrough Price (MRP)
+      strikethroughPriceINR: newProduct.strikethroughPriceINR
+        ? Number(newProduct.strikethroughPriceINR)
+        : undefined,
+      strikethroughPriceUSD: newProduct.strikethroughPriceUSD
+        ? Number(newProduct.strikethroughPriceUSD)
+        : undefined,
 
-        // Structured Features and Requirements
-        keyFeatures: newProduct.keyFeatures,
-        systemRequirements: newProduct.systemRequirements,
-      };
+      // Images
+      image: defaultImage, // For backward compatibility
+      imageUrl: defaultImage, // New field
+      additionalImages: newProduct.additionalImages.filter(
+        (img) => img.trim() !== "",
+      ),
 
-      // Validation
-      if (!productData.name || productData.name.trim() === "") {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Product Name is required",
-          icon: "error",
-        });
-        return;
-      }
+      // Videos
+      videoUrl: newProduct.videoUrl,
+      activationVideoUrl: newProduct.activationVideoUrl,
 
-      // `version` is optional now; no validation required
+      // Drive Link for downloadable product
+      driveLink: newProduct.driveLink,
 
-      if (
-        !productData.shortDescription ||
-        productData.shortDescription.trim() === ""
-      ) {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Product Description is required",
-          icon: "error",
-        });
-        return;
-      }
+      // Status and flags
+      status: status, // Use the status parameter (either 'active' or 'draft')
+      isBestSeller: newProduct.isBestSeller,
+      isOutOfStock: newProduct.isOutOfStock,
 
-      if (!productData.brand || productData.brand.trim() === "") {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Product Brand is required",
-          icon: "error",
-        });
-        return;
-      }
+      // FAQs
+      faqs: newProduct.faqs,
 
-      // Only require category if the brand actually provides categories
-      if (brandHasCategories && (!productData.category || productData.category.trim() === "")) {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Product Category is required",
-          icon: "error",
-        });
-        return;
-      }
+      // Structured Features and Requirements
+      keyFeatures: newProduct.keyFeatures,
+      systemRequirements: newProduct.systemRequirements,
+    };
 
-      if (!productData.company || productData.company.trim() === "") {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Company/Brand is required",
-          icon: "error",
-        });
-        return;
-      }
+    // Validation - Only validate when not saving as draft
+    if (!isDraft && (!productData.name || productData.name.trim() === "" || productData.name.startsWith('Draft Product'))) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Product Name is required",
+        icon: "error",
+      });
+      return;
+    }
 
-      if (!productData.image || productData.image.trim() === "") {
-        Swal.fire({
-          title: "Validation Error",
-          text: "Main Product Image is required",
-          icon: "error",
-        });
-        return;
-      }
+    // `version` is optional now; no validation required
 
-      // Check if we have at least one price
+    if (!isDraft && (
+      !productData.shortDescription ||
+      productData.shortDescription.trim() === ""
+    )) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Product Description is required",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (!isDraft && (!productData.brand || productData.brand.trim() === "")) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Product Brand is required",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Only require category if the brand actually provides categories
+    if (!isDraft && brandHasCategories && (!productData.category || productData.category.trim() === "")) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Product Category is required",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (!isDraft && (!productData.company || productData.company.trim() === "")) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Company/Brand is required",
+        icon: "error",
+      });
+      return;
+    }
+
+    if (!isDraft && (!productData.image || productData.image.trim() === "")) {
+      Swal.fire({
+        title: "Validation Error",
+        text: "Main Product Image is required",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Check if we have at least one price (not required for drafts)
+    if (!isDraft) {
       const hasValidPrice =
         (productData.price1 && productData.price1 > 0) ||
         (productData.price1INR && productData.price1INR > 0) ||
@@ -827,12 +717,28 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         });
         return;
       }
-
-      console.log("Saving product data:", productData);
-      onSave(productData);
-
-      // Success message is now handled in the parent component
     }
+
+    console.log("Saving product data:", productData);
+    onSave(productData);
+
+    // Clear draft from localStorage after successful save (only if not editing)
+    if (!product) {
+      clearDraft();
+    }
+
+    // Show success message
+    if (isDraft) {
+      Swal.fire({
+        title: "Saved as Draft!",
+        text: `"${productData.name || 'Product'}" has been saved as draft.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+
+    // Success message is now handled in the parent component
   };
 
   return (
@@ -2252,36 +2158,59 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           </div>
 
           {/* Form Actions */}
-          <div
-            className="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-200"
-            style={{ borderColor: colors.border.primary }}
-          >
-            <button
-              type="submit"
-              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-              style={{
-                background: '#00BEF5',
-                color: colors.text.inverse,
-                border: 'none',
-              }}
+          <div className="space-y-4">
+            {/* Auto-save indicator */}
+            {lastSaved && (
+              <div className="flex items-center justify-center gap-2 text-sm" style={{ color: colors.text.secondary }}>
+                <Clock className="h-4 w-4" />
+                <span>Auto-saved at {lastSaved.toLocaleTimeString()}</span>
+              </div>
+            )}
+
+            <div
+              className="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-200"
+              style={{ borderColor: colors.border.primary }}
             >
-              <Save className="h-4 w-4" />
-              {product ? "Update Product" : "Add Product"}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-              style={{
-                background: theme === "dark"
-                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-                color: colors.text.inverse,
-                border: 'none',
-              }}
-            >
-              Cancel
-            </button>
+              <button
+                type="button"
+                onClick={(e) => handleAddProduct(e, true)}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+                style={{
+                  background: colors.background.tertiary,
+                  color: colors.text.primary,
+                  border: `1px solid ${colors.border.primary}`,
+                }}
+              >
+                <FileText className="h-4 w-4" />
+                Save as Draft
+              </button>
+              <button
+                type="submit"
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+                style={{
+                  background: '#00BEF5',
+                  color: colors.text.inverse,
+                  border: 'none',
+                }}
+              >
+                <Save className="h-4 w-4" />
+                {product ? "Update Product" : "Add Product"}
+              </button>
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+                style={{
+                  background: theme === "dark"
+                    ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                    : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                  color: colors.text.inverse,
+                  border: 'none',
+                }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </form>
       </div >

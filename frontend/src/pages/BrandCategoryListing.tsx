@@ -90,7 +90,8 @@ const BrandCategoryListing: React.FC = () => {
 
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
     useProducts(queryParams);
-  const products = data.products || [];
+  // Filter to only show active products to users (exclude draft and inactive)
+  const products = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
   const navigate = useNavigate();
   const { addItem } = useCartContext();
   const { data: user } = useUser();

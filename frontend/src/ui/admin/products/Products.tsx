@@ -275,6 +275,9 @@ const Products: React.FC = () => {
 
   // Apply client-side filtering for new attributes
   const allFilteredProducts = rawProducts.filter((product: Product) => {
+    // Exclude draft products from main products list (they have their own section)
+    if (product.status === "draft") return false;
+    
     // Filter by status
     if (selectedStatus !== "All Status") {
       const productStatus = product.status || "active"; // Default to active if no status
@@ -496,6 +499,12 @@ const Products: React.FC = () => {
   const activeProducts = rawProducts.filter(
     (product: Product) => (product.status || "active") === "active",
   ).length;
+  const draftProducts = rawProducts.filter(
+    (product: Product) => product.status === "draft",
+  ).length;
+  const inactiveProducts = rawProducts.filter(
+    (product: Product) => product.status === "inactive",
+  ).length;
 
   return (
     <div
@@ -599,6 +608,114 @@ const Products: React.FC = () => {
                   style={{ backgroundColor: colors.status.success }}
                 >
                   <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Draft Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Draft Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.status.info }}
+                >
+                  {draftProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Work in progress
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.info}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.info }}
+                >
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Inactive Products Card */}
+          <div
+            className="relative overflow-hidden rounded-xl p-6 shadow-lg border transition-all duration-200 hover:shadow-xl"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p
+                  className="text-sm font-medium opacity-75"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Inactive Products
+                </p>
+                <p
+                  className="text-3xl font-bold mt-2"
+                  style={{ color: colors.status.error }}
+                >
+                  {inactiveProducts}
+                </p>
+                <p
+                  className="text-xs mt-1 opacity-60"
+                  style={{ color: colors.text.secondary }}
+                >
+                  Not available
+                </p>
+              </div>
+              <div
+                className="p-3 rounded-full"
+                style={{ backgroundColor: `${colors.status.error}20` }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.status.error }}
+                >
+                  <svg
+                    className="w-5 h-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
                 </div>
               </div>
             </div>
@@ -713,7 +830,7 @@ const Products: React.FC = () => {
               ))}
             </select>
 
-            {/* <select
+            <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="border rounded-lg px-3 py-2 focus:ring-2 w-full sm:w-40 transition-colors duration-200"
@@ -726,8 +843,7 @@ const Products: React.FC = () => {
               <option>All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
-              <option value="draft">Draft</option>
-            </select> */}
+            </select>
 
             <label className="flex items-center space-x-2 text-sm">
               <input
