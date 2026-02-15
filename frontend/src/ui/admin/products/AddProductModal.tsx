@@ -2175,10 +2175,10 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 type="button"
                 onClick={(e) => handleAddProduct(e, true)}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                style={{
-                  background: colors.background.tertiary,
-                  color: colors.text.primary,
-                  border: `1px solid ${colors.border.primary}`,
+                 style={{
+                  background: '#00BEF5',
+                  color: colors.text.inverse,
+                  border: 'none',
                 }}
               >
                 <FileText className="h-4 w-4" />
