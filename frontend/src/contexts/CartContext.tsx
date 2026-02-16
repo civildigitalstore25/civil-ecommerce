@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback } from "react";
+import React, { createContext, useContext, useCallback, useState } from "react";
 // Custom debounce implementation - no lodash dependency
 const debounce = <T extends (...args: any[]) => any>(
   func: T,
@@ -51,6 +51,10 @@ interface CartContextType {
     productId: string,
     licenseType: "1year" | "3year" | "lifetime",
   ) => number;
+  // UI controls for cart drawer
+  isCartOpen: boolean;
+  openCart: () => void;
+  closeCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -58,6 +62,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { data: user } = useUser();
   const { data: cartData, isLoading, error } = useCartApi();
   const addToCartMutation = useAddToCartApi();
@@ -149,6 +154,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         subscriptionPlan,
       });
       showSuccessToast("Item added to cart!");
+      // Open cart drawer on successful add
+      setIsCartOpen(true);
     } catch (error) {
       console.error("Failed to add item to cart:", error);
       showErrorToast("Failed to add item to cart");
@@ -229,6 +236,9 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     getTotalPrice,
     isItemInCart,
     getItemQuantity,
+    isCartOpen,
+    openCart: () => setIsCartOpen(true),
+    closeCart: () => setIsCartOpen(false),
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
