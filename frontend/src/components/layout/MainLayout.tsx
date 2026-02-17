@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 // import { useLocation } from "react-router-dom"; // Removed unused import
 import { ChevronRight } from "lucide-react";
 import LeftSidebar from "../LeftSidebar";
 import MobileBottomNav from "../MobileBottomNav/MobileBottomNav";
+import CartSidebar from "../../ui/Cart/CartSidebar";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -20,6 +22,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('sidebarOpen', String(isSidebarOpen));
   }, [isSidebarOpen]);
+
+  // Set CSS variables globally so components can use CSS var-based classes
+  const { colors } = useAdminTheme();
+  useEffect(() => {
+    try {
+      const root = document.documentElement;
+      root.style.setProperty('--bg-primary', colors.background.primary);
+      root.style.setProperty('--bg-secondary', colors.background.secondary);
+      root.style.setProperty('--text-primary', colors.text.primary);
+      root.style.setProperty('--text-secondary', colors.text.secondary);
+      root.style.setProperty('--border-primary', colors.border.primary);
+      root.style.setProperty('--status-error', colors.status.error);
+    } catch (e) {
+      // ignore in SSR or environments without document
+    }
+  }, [colors]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
@@ -71,6 +89,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       {/* Mobile Bottom Navigation */}
       <MobileBottomNav onMenuToggle={toggleSidebar} />
+      {/* Cart Drawer (global) */}
+      <CartSidebar />
     </div>
   );
 };
