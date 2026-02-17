@@ -500,3 +500,55 @@ export const removeProductViewer = async (req: Request, res: Response): Promise<
     res.status(500).json({ message: error.message });
   }
 };
+
+// Increment product view count (total views)
+export const incrementProductViewCount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+
+    // Find and increment the view count
+    const product = await Product.findByIdAndUpdate(
+      productId,
+      { $inc: { viewCount: 1 } },
+      { new: true, select: 'viewCount' }
+    );
+
+    if (!product) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
+    }
+
+    res.json({ 
+      success: true, 
+      viewCount: product.viewCount || 1,
+      message: 'View count incremented successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Increment view count error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Get product view count without incrementing
+export const getProductViewCount = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+
+    // Find product and get view count
+    const product = await Product.findById(productId).select('viewCount');
+
+    if (!product) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
+    }
+
+    res.json({ 
+      success: true, 
+      viewCount: product.viewCount || 0,
+      message: 'View count retrieved successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Get view count error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

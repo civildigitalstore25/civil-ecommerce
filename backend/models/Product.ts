@@ -70,6 +70,7 @@ export interface IProduct extends Document {
   isBestSeller?: boolean;
   isOutOfStock?: boolean;
   faqs?: FAQ[];
+  viewCount?: number; // Total number of times this product has been viewed
   createdAt: Date;
   updatedAt: Date;
 }
@@ -150,6 +151,7 @@ const productSchema: Schema = new Schema(
     isBestSeller: { type: Boolean, default: false },
     isOutOfStock: { type: Boolean, default: false },
     faqs: [faqSchema],
+    viewCount: { type: Number, default: 0 }, // Total views for this product
   },
   { timestamps: true }
 );

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './WelcomePopup.css';
 import { createWelcomeLead } from '../../api/leadApi';
 import type { WelcomeLeadData } from '../../api/leadApi';
@@ -14,6 +15,7 @@ interface FormErrors {
 }
 
 const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<WelcomeLeadData>({
         name: '',
         email: '',
@@ -145,8 +147,8 @@ const WelcomePopup: React.FC<WelcomePopupProps> = ({ onClose }) => {
 
     const handleShopNow = () => {
         onClose();
-        // Optionally navigate to products page
-        window.location.href = '/';
+        // Navigate to home page
+        navigate('/');
     };
 
     const handleOverlayClick = (e: React.MouseEvent) => {

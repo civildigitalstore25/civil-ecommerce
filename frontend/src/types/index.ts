@@ -11,6 +11,7 @@ export interface Product {
   rating?: number;
   description: string;
   reviews?: number;
+  viewCount?: number;
 }
 
 export interface Category {

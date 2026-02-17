@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaWhatsapp } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProductDetail, useUpdateProduct, trackProductViewer, getProductViewerCount, removeProductViewer } from "../api/productApi";
+import { useProductDetail, useUpdateProduct, incrementProductViewCount, getProductViewCountStatic } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
 import { isAuthenticated } from "../utils/auth";
@@ -26,7 +26,6 @@ import EnquiryModal from "../components/EnquiryModal";
 import AddProductModal from "../ui/admin/products/AddProductModal";
 import { getProductSEO } from "../utils/seo";
 import { PRODUCT_TRUST_BADGES } from "../constants/productTrustBadges";
-import { getViewerId } from "../utils/viewerUtils";
 
 // Enhanced FAQ Item Component
 interface FAQItemProps {
@@ -169,9 +168,9 @@ const ProductDetail: React.FC = () => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const breadcrumbProductName = (product?.name || "")
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/[|\uFF5C]+/g, "")
-    .replace(/\s{2,}/g, " ")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // Remove zero-width spaces
+    .replace(/[|\u007C\u00A6\u01C0\u01C1\u01C2\u2502\u2551\uFF5C\u239C\u23AA\u23B8\u23D0]+/g, "") // Remove all vertical line variants
+    .replace(/\s{2,}/g, " ") // Remove multiple spaces
     .trim();
 
   // Use theme primary color directly for selected background (theme blue).
@@ -204,9 +203,8 @@ const ProductDetail: React.FC = () => {
   // Ref for the pricing section
   const pricingRef = useRef<HTMLDivElement | null>(null);
 
-  // Viewer tracking state
-  const [viewerCount, setViewerCount] = useState<number>(0);
-  const viewerIdRef = useRef<string>(getViewerId());
+  // Total view count state
+  const [totalViews, setTotalViews] = useState<number>(0);
 
   // Update product mutation
   const updateProductMutation = useUpdateProduct();
@@ -344,50 +342,45 @@ const ProductDetail: React.FC = () => {
     }
   }, [product, activeTab]);
 
-  // Viewer tracking - Track this viewer and poll for count updates
+  // Track product view count - Increment once per session when product is viewed
   useEffect(() => {
     if (!product?._id) return;
 
     const productId = product._id;
-    const viewerId = viewerIdRef.current;
 
-    // Initial tracking - register this viewer
-    const trackViewer = async () => {
+    // Check if this product was already viewed in this session
+    const sessionKey = `viewed_product_${productId}`;
+    const hasViewedInSession = sessionStorage.getItem(sessionKey);
+
+    // Increment view count once when product is loaded (only if not viewed in this session)
+    const trackView = async () => {
       try {
-        const result = await trackProductViewer(productId, viewerId);
-        setViewerCount(result.viewerCount);
+        // Always fetch the current view count to display
+        const result = await incrementProductViewCount(productId);
+        setTotalViews(result.viewCount);
+        
+        // Mark this product as viewed in this session
+        sessionStorage.setItem(sessionKey, 'true');
       } catch (error) {
-        console.error("Error tracking viewer:", error);
+        console.error("Error tracking product view:", error);
       }
     };
 
-    // Poll for viewer count updates
-    const pollViewerCount = async () => {
-      try {
-        const count = await getProductViewerCount(productId);
-        setViewerCount(count);
-      } catch (error) {
-        console.error("Error getting viewer count:", error);
-      }
-    };
-
-    // Track viewer immediately
-    trackViewer();
-
-    // Update viewer tracking every 10 seconds to keep this viewer active
-    const trackInterval = setInterval(trackViewer, 10000);
-
-    // Poll for viewer count updates every 15 seconds
-    const pollInterval = setInterval(pollViewerCount, 15000);
-
-    // Cleanup on unmount
-    return () => {
-      clearInterval(trackInterval);
-      clearInterval(pollInterval);
-
-      // Remove viewer when leaving (fire and forget)
-      removeProductViewer(productId, viewerId).catch(console.error);
-    };
+    // Only increment if not already viewed in this session
+    if (!hasViewedInSession) {
+      trackView();
+    } else {
+      // Just fetch the view count without incrementing
+      const fetchViewCount = async () => {
+        try {
+          const count = await getProductViewCountStatic(productId);
+          setTotalViews(count);
+        } catch (error) {
+          console.error("Error fetching view count:", error);
+        }
+      };
+      fetchViewCount();
+    }
   }, [product?._id]);
 
   // Load reviews for the product
@@ -1345,9 +1338,9 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Viewer Count - Real-time Social Proof */}
-            {viewerCount > 0 && (
-              <div className="flex items-center gap-2 mt-3 animate-pulse">
+            {/* Total View Count - Social Proof */}
+            {totalViews > 0 && (
+              <div className="flex items-center gap-2 mt-3">
                 <div
                   className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
                   style={{
@@ -1362,11 +1355,11 @@ const ProductDetail: React.FC = () => {
                       style={{ color: colors.interactive.primary }}
                     />
                     <span className="font-semibold" style={{ color: colors.interactive.primary }}>
-                      {viewerCount}
+                      {totalViews.toLocaleString()}
                     </span>
                   </div>
                   <span className="text-sm" style={{ color: colors.text.secondary }}>
-                    {viewerCount === 1 ? "person is" : "people are"} viewing this product right now
+                    {totalViews === 1 ? "view" : "views"}
                   </span>
                 </div>
               </div>

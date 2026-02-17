@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { Package } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const EmptyState: React.FC = React.memo(() => {
+  const navigate = useNavigate();
   const { colors } = useAdminTheme();
 
   return (
@@ -31,8 +33,8 @@ const EmptyState: React.FC = React.memo(() => {
       <p className="text-lg mb-8" style={{ color: colors.text.secondary }}>
         Start your shopping journey and your orders will appear here!
       </p>
-      <a
-        href="/"
+      <button
+        onClick={() => navigate("/")}
         className="inline-block px-8 py-4 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg"
         style={{
           backgroundColor: colors.interactive.primary,
@@ -40,7 +42,7 @@ const EmptyState: React.FC = React.memo(() => {
         }}
       >
         Start Shopping
-      </a>
+      </button>
     </div>
   );
 });

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 import {
@@ -51,10 +52,9 @@ const paymentMethods = [
 ];
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
   const { colors, theme } = useAdminTheme();
   const [currentFeatureIndex, setCurrentFeatureIndex] = useState(0);
-
-
 
   // Auto-play carousel for mobile
   useEffect(() => {
@@ -99,7 +99,7 @@ const HeroSection: React.FC = () => {
           </p>
 
           <button
-            onClick={() => (window.location.href = "/products")}
+            onClick={() => navigate("/products")}
             className="px-5 py-2 sm:px-8 sm:py-4 rounded-md sm:rounded-lg font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 mb-6 sm:mb-16"
             style={{
               background: colors.interactive.primary,

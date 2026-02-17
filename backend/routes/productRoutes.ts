@@ -16,7 +16,9 @@ import {
     getCompaniesWithCount,
     trackProductViewer,
     getProductViewerCount,
-    removeProductViewer
+    removeProductViewer,
+    incrementProductViewCount,
+    getProductViewCount
 } from '../controllers/productController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -39,6 +41,8 @@ router.get('/filter/advanced', getProductsWithFilters);
 router.post('/:id/track-viewer', trackProductViewer);
 router.get('/:id/viewer-count', getProductViewerCount);
 router.post('/:id/remove-viewer', removeProductViewer);
+router.post('/:id/increment-view', incrementProductViewCount);
+router.get('/:id/view-count', getProductViewCount);
 
 // CRUD operations (parameterized routes like /:id MUST come last)
 // Admin only routes - require authentication and admin role

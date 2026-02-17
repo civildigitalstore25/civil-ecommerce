@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../../../contexts/AdminThemeContext";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
@@ -12,6 +13,7 @@ const navItems = [
 ];
 
 const HeaderSection: React.FC = () => {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { colors } = useAdminTheme();
 
@@ -31,10 +33,9 @@ const HeaderSection: React.FC = () => {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex items-center">
-          <a 
-            href="/" 
-            onClick={(e) => { e.preventDefault(); window.location.href = "/"; }} 
-            className="flex items-center hover:opacity-90 transition-opacity"
+          <div 
+            onClick={() => navigate("/")} 
+            className="flex items-center hover:opacity-90 transition-opacity cursor-pointer"
           >
             <img 
               src="/whitelogo.png" 
@@ -42,7 +43,7 @@ const HeaderSection: React.FC = () => {
               className="h-10 w-auto sm:h-12 object-contain" 
               style={{ cursor: 'pointer' }}
             />
-          </a>
+          </div>
         </div>
 
         {/* Desktop Navigation */}

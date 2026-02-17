@@ -2,6 +2,7 @@
 // FILE: src/components/banners/BannerDisplay.tsx
 // ============================================
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, ExternalLink } from "lucide-react";
 
 interface Banner {
@@ -20,6 +21,7 @@ interface BannerDisplayProps {
 }
 
 const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
+  const navigate = useNavigate();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -58,7 +60,12 @@ const BannerDisplay: React.FC<BannerDisplayProps> = ({ position }) => {
   const handleCTAClick = () => {
     const currentBanner = banners[currentIndex];
     if (currentBanner.ctaButtonLink) {
-      window.location.href = currentBanner.ctaButtonLink;
+      // Check if it's an external link
+      if (currentBanner.ctaButtonLink.startsWith('http')) {
+        window.open(currentBanner.ctaButtonLink, '_blank');
+      } else {
+        navigate(currentBanner.ctaButtonLink);
+      }
     }
   };
 

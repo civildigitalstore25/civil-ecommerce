@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 
 interface Banner {
@@ -26,6 +27,7 @@ interface BannerCarouselProps {
 const API_BASE_URL = `${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api`;
 
 const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
+  const navigate = useNavigate();
   const [banners, setBanners] = useState<Banner[]>([]);
   const [current, setCurrent] = useState(0);
 
@@ -84,7 +86,7 @@ const BannerCarousel: React.FC<BannerCarouselProps> = ({ page }) => {
   const handleClick = (link?: string) => {
     if (!link) return;
     if (link.startsWith("http")) window.open(link, "_blank");
-    else window.location.href = link;
+    else navigate(link);
   };
 
   // Hide banner if no banners are found

@@ -79,6 +79,7 @@ export interface Product {
   isBestSeller?: boolean;
   isOutOfStock?: boolean;
   faqs?: FAQ[];
+  viewCount?: number; // Total number of times this product has been viewed
   createdAt?: string;
   updatedAt?: string;
 }

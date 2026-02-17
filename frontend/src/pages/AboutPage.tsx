@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getAboutSEO } from "../utils/seo";
@@ -81,7 +82,7 @@ const AboutPage: React.FC = () => {
                             Get in Touch
                         </h2>
                         <p className="mt-3 leading-relaxed" style={{ color: colors.text.secondary }}>
-                            For partnership, bulk licensing or support queries, please visit our <a href="/contact" className="underline" style={{ color: colors.interactive.primary }}>Contact</a> page.
+                            For partnership, bulk licensing or support queries, please visit our <Link to="/contact" className="underline" style={{ color: colors.interactive.primary }}>Contact</Link> page.
                         </p>
                     </section>
                 </div>

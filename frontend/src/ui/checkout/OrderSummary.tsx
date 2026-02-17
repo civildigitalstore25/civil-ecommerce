@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import FormButton from "../../components/Button/FormButton";
 
 interface CartItem {
@@ -164,13 +165,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       >
         Your personal data will be used to process your order, support your
         experience, and for purposes described in our{" "}
-        <a
-          href="/privacy-policy"
+        <Link
+          to="/privacy-policy"
           className="underline"
           style={{ color: colors.interactive.primary }}
         >
           privacy policy
-        </a>
+        </Link>
         .
       </p>
 

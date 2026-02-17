@@ -209,3 +209,30 @@ export const removeProductViewer = async (productId: string, viewerId: string): 
     // Don't throw - this is a cleanup operation
   }
 };
+
+/**
+ * Increment the total view count for a product
+ */
+export const incrementProductViewCount = async (productId: string): Promise<{ success: boolean; viewCount: number }> => {
+  try {
+    const { data } = await apiClient.post(`/${productId}/increment-view`);
+    return data;
+  } catch (error) {
+    console.error("Error incrementing view count:", error);
+    throw error;
+  }
+};
+
+/**
+ * Get the total view count for a product without incrementing
+ */
+export const getProductViewCountStatic = async (productId: string): Promise<number> => {
+  try {
+    const { data } = await apiClient.get(`/${productId}/view-count`);
+    return data.viewCount || 0;
+  } catch (error) {
+    console.error("Error getting view count:", error);
+    return 0;
+  }
+};
+
