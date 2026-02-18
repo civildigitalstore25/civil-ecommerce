@@ -93,6 +93,7 @@ const brandCategories: Record<
     label: "Billing Software",
     categories: [
       { value: "tally", label: "Tally" },
+      { value: "vyapar", label: "Vyapar" },
     ],
   },
   ebook: {

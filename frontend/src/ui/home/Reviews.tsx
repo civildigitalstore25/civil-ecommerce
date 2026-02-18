@@ -66,12 +66,6 @@ const Reviews: React.FC = () => {
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   };
 
-  // Calculate average rating
-  const averageRating =
-    staticReviews.reduce((sum, review) => sum + review.rating, 0) /
-    staticReviews.length;
-  const totalReviews = staticReviews.length;
-
   return (
     <section
       id="reviews-section"
@@ -93,28 +87,7 @@ const Reviews: React.FC = () => {
         >
           What Our Customers Say
         </h2>
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="flex">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`h-4 w-4 md:h-5 md:w-5 ${i < Math.floor(averageRating) ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
-              />
-            ))}
-          </div>
-          <span
-            className="text-base md:text-lg font-poppins font-semibold transition-colors duration-200"
-            style={{ color: colors.text.primary }}
-          >
-            {averageRating.toFixed(1)}
-          </span>
-          <span
-            className="text-xs md:text-sm font-lato transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            ({totalReviews} reviews)
-          </span>
-        </div>
+        
       </div>
 
       {/* Desktop Grid Layout */}

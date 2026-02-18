@@ -358,7 +358,7 @@ const ProductDetail: React.FC = () => {
         // Always fetch the current view count to display
         const result = await incrementProductViewCount(productId);
         setTotalViews(result.viewCount);
-        
+
         // Mark this product as viewed in this session
         sessionStorage.setItem(sessionKey, 'true');
       } catch (error) {
@@ -1359,7 +1359,7 @@ const ProductDetail: React.FC = () => {
                     </span>
                   </div>
                   <span className="text-sm" style={{ color: colors.text.secondary }}>
-                    {totalViews === 1 ? "view" : "views"}
+                    {totalViews === 1 ? "Total view" : "Total views"}
                   </span>
                 </div>
               </div>

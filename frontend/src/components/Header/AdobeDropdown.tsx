@@ -140,15 +140,13 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
                   </div>
                   <div
                     className="text-xs"
-                    style={{
-                      color: colors.text.secondary,
-                    }}
+                    style={{ color: colors.text.secondary }}
                   >
-                    {category.products.length} product{category.products.length !== 1 ? 's' : ''}
+                    {category.products.length} product{category.products.length === 1 ? '' : 's'}
                   </div>
                 </div>
                 <ChevronRight
-                  className="w-5 h-5 transition-transform"
+                  className="w-5 h-5 transition-all"
                   style={{
                     color:
                       hoveredCategory === category.name
@@ -161,52 +159,53 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
           </div>
         </div>
 
-        {/* Right: Products List */}
-        <div className="flex-1 overflow-y-auto">
+        {/* Right: Products for Hovered Category */}
+        <div
+          className="flex-1 p-6 overflow-y-auto"
+          style={{ backgroundColor: colors.background.primary }}
+        >
           {hoveredCategory ? (
-            <div className="p-4">
+            <>
               <h3
-                className="text-lg font-bold mb-4 px-2"
-                style={{ color: colors.text.primary }}
+                className="text-lg font-bold mb-4 pb-2 border-b uppercase tracking-wide"
+                style={{
+                  color: colors.interactive.primary,
+                  borderColor: colors.border.primary,
+                }}
               >
                 {hoveredCategory}
               </h3>
-              <div className="space-y-1">
+              <ul className="space-y-2">
                 {adobeCategories
-                  .find((cat) => cat.name === hoveredCategory)
-                  ?.products.map((product, pIndex) => (
-                    <button
-                      key={pIndex}
-                      onClick={() => handleProductClick(product.href)}
-                      className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group"
-                      style={{
-                        color: colors.text.secondary,
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          colors.background.accent;
-                        (e.currentTarget as HTMLElement).style.color =
-                          colors.interactive.primary;
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.backgroundColor =
-                          "transparent";
-                        (e.currentTarget as HTMLElement).style.color =
-                          colors.text.secondary;
-                      }}
-                    >
-                      <span className="font-medium">{product.name}</span>
-                      <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
+                  .find((c) => c.name === hoveredCategory)
+                  ?.products.map((product, idx) => (
+                    <li key={idx}>
+                      <button
+                        onClick={() => handleProductClick(product.href)}
+                        className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group"
+                        style={{ color: colors.text.secondary }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = colors.background.accent;
+                          (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = colors.text.secondary;
+                        }}
+                      >
+                        <span className="font-medium">{product.name}</span>
+                        <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </button>
+                    </li>
                   ))}
-              </div>
-            </div>
+              </ul>
+            </>
           ) : (
             <div
               className="flex items-center justify-center h-full"
               style={{ color: colors.text.secondary }}
             >
-              <p className="text-center px-8">Hover over a category to view products</p>
+              <p className="text-center">Hover over a category to view products</p>
             </div>
           )}
         </div>
@@ -214,24 +213,25 @@ const AdobeDropdown: React.FC<AdobeDropdownProps> = ({
 
       {/* Bottom button */}
       <div
-        className="border-t flex justify-center py-4"
-        style={{ borderColor: colors.border.primary }}
+        className="px-6 py-4 border-t"
+        style={{
+          borderColor: colors.border.primary,
+          backgroundColor: colors.background.primary,
+        }}
       >
         <button
-          onClick={() => handleProductClick("/adobe")}
-          className="py-3 px-8 rounded-lg font-medium transition-all duration-200"
-          style={{
-            backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse,
+          onClick={() => {
+            onNavigate("/adobe");
+            onClose();
           }}
+          className="text-sm font-semibold transition-colors inline-flex items-center"
+          style={{ color: colors.interactive.primary }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "0.9";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLElement).style.opacity = "1";
+            (e.currentTarget as HTMLElement).style.color = colors.interactive.primary;
           }}
         >
           View All Adobe Products
+          <ChevronRight className="w-4 h-4 ml-1" />
         </button>
       </div>
     </div>
