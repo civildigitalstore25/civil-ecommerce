@@ -13,7 +13,7 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigate: (href: string) => void;
-  user: any;
+  user?: any;
   onLogout: () => void;
 }
 
@@ -22,6 +22,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   onClose,
   onNavigate,
   onLogout,
+  user,
 }) => {
   const { colors } = useAdminTheme();
 
@@ -49,66 +50,89 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
       >
         <div className="px-2 sm:px-4 py-2 sm:py-4 space-y-4 pb-20">
           <div className="space-y-1">
-            <button
-              onClick={() => onNavigate("/profile")}
-              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.interactive.primary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  colors.background.secondary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.text.secondary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  "transparent";
-              }}
-            >
-              <User className="w-5 h-5" />
-              <span>Profile</span>
-            </button>
-            <button
-              onClick={() => onNavigate("/my-orders")}
-              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.interactive.primary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  colors.background.secondary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.text.secondary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  "transparent";
-              }}
-            >
-              <Package className="w-5 h-5" />
-              <span>My Orders</span>
-            </button>
-            <button
-              onClick={onLogout}
-              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
-              style={{ color: colors.text.secondary }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.status.error;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  colors.background.secondary;
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.color =
-                  colors.text.secondary;
-                (e.currentTarget as HTMLElement).style.backgroundColor =
-                  "transparent";
-              }}
-            >
-              <LogOut className="w-5 h-5" />
-              <span>Logout</span>
-            </button>
+            {user ? (
+              <>
+                <button
+                  onClick={() => onNavigate("/profile")}
+                  className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.interactive.primary;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      colors.background.secondary;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.text.secondary;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "transparent";
+                  }}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Profile</span>
+                </button>
+                <button
+                  onClick={() => onNavigate("/my-orders")}
+                  className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.interactive.primary;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      colors.background.secondary;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.text.secondary;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "transparent";
+                  }}
+                >
+                  <Package className="w-5 h-5" />
+                  <span>My Orders</span>
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.status.error;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      colors.background.secondary;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.color =
+                      colors.text.secondary;
+                    (e.currentTarget as HTMLElement).style.backgroundColor =
+                      "transparent";
+                  }}
+                >
+                  <LogOut className="w-5 h-5" />
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  onClick={() => onNavigate("/login")}
+                  className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Login</span>
+                </button>
+                <button
+                  onClick={() => onNavigate("/signup")}
+                  className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <User className="w-5 h-5" />
+                  <span>Register</span>
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

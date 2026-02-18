@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 import Swal from "sweetalert2";
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
@@ -118,7 +119,9 @@ export const useSignIn = () => {
 };
 
 export const useCurrentUser = () => {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  const result = useQuery({
     queryKey: ["currentUser"],
     queryFn: authApi.getCurrentUser,
     retry: (failureCount, error: any) => {
@@ -131,6 +134,21 @@ export const useCurrentUser = () => {
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+
+  // If the query errors due to unauthorized, clear token and cached user
+  useEffect(() => {
+    const err: any = result.error;
+    if (err?.response?.status === 401) {
+      try {
+        localStorage.removeItem("token");
+      } catch (e) {
+        // ignore
+      }
+      queryClient.setQueryData(["currentUser"], null);
+    }
+  }, [result.error, queryClient]);
+
+  return result;
 };
 
 export const useLogout = () => {
