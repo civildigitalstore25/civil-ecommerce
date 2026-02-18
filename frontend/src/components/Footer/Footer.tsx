@@ -34,7 +34,7 @@ const Footer = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={ "/whitelogo.png" }
+                src={"/whitelogo.png"}
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />
@@ -77,6 +77,38 @@ const Footer = () => {
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Shipping & Delivery Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/how-to-purchase"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: footerTextSecondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = footerTextPrimary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = footerTextSecondary;
+                    }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    How to Purchase
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/payment-method"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: footerTextSecondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = footerTextPrimary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = footerTextSecondary;
+                    }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    Payment Method
                   </Link>
                 </li>
                 <li>

@@ -45,6 +45,8 @@ import UserEnquiriesPage from "./pages/UserEnquiriesPage";
 import SCrm from "./components/SCrm";
 import AdobeCloudPage from "./pages/adobecloudpage";
 import AboutPage from "./pages/AboutPage";
+import HowToPurchase from "./pages/HowToPurchase";
+import PaymentMethod from "./pages/PaymentMethod";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import SuperAdminAdminsPage from "./pages/SuperAdminAdminsPage";
 import SuperAdminCreateAdminPage from "./pages/SuperAdminCreateAdminPage";
@@ -339,6 +341,8 @@ function AppLayout() {
             }
           />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/how-to-purchase" element={<HowToPurchase />} />
+          <Route path="/payment-method" element={<PaymentMethod />} />
           <Route path="/sitemap" element={<SitemapPage />} />
           <Route path="/payment-status" element={<PaymentStatusPage />} />
           <Route path="/payment/callback" element={<PaymentCallback />} />
