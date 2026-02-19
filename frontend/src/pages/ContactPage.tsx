@@ -85,15 +85,54 @@ const ContactPage: React.FC = () => {
               className="mx-auto max-w-xl opacity-90"
               style={{ color: "#fff" }}
             >
-              We'd love to hear from you. Please fill out the form below or visit
-              our headquarters.
+              Customer satisfaction is our top priority. Our support team is ready to help you at every step.
             </p>
           </div>
 
+          {/* Introduction Section */}
+          <div className="p-10 pb-5">
+            <div
+              className="rounded-lg p-6"
+              style={{
+                backgroundColor: theme === "light" ? "#F8FAFC" : colors.background.primary,
+                border: `1px solid ${theme === "light" ? "#E2E8F0" : colors.border.primary}`,
+              }}
+            >
+              <p
+                className="text-base leading-relaxed mb-4"
+                style={{ color: theme === "light" ? "#1E293B" : colors.text.primary }}
+              >
+                At SoftZcart, customer satisfaction is our top priority. Whether you have a question about a product, need assistance with activation, want to check your order status, or have any feedback, our support team is ready to help you at every step.
+              </p>
+              <p
+                className="text-base leading-relaxed"
+                style={{ color: theme === "light" ? "#1E293B" : colors.text.primary }}
+              >
+                We understand how important genuine digital software is for your work, studies, and security. Our dedicated support team is committed to providing quick responses, expert guidance, and a personalized experience.
+              </p>
+            </div>
+          </div>
+
           {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10 pt-5">
             {/* Left side - Info */}
             <div className="space-y-6">
+              {/* How to Reach Us Section */}
+              <div>
+                <h2
+                  className="text-2xl font-bold mb-5"
+                  style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                >
+                  How to Reach Us
+                </h2>
+                <p
+                  className="text-sm mb-5 leading-relaxed"
+                  style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}
+                >
+                  You can contact us anytime through the following channels:
+                </p>
+              </div>
+
               <div className="space-y-5">
                 <div
                   className="flex gap-4 rounded-lg border-l-4 p-5"
@@ -114,21 +153,24 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3
-                      className="text-lg font-semibold"
+                      className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      Call to Us:
+                      Phone & WhatsApp Support
                     </h3>
-                    <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
-                      We're available 24/7, 7 days a week.
+                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                      For quick support or custom order inquiries, you can call or message us.
                     </p>
                     <p
-                      className="font-semibold"
+                      className="font-semibold mb-1"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       <a href="tel:+919042993986" className="hover:underline" style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
-                        +91 9042993986
+                        +91 90429 93986
                       </a>
+                    </p>
+                    <p className="text-sm" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                      Available for both voice calls and WhatsApp chat 24×7.
                     </p>
                   </div>
                 </div>
@@ -152,19 +194,22 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3
-                      className="text-lg font-semibold"
+                      className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      Write to Us:
+                      Email Support
                     </h3>
-                    <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
-                      Fill out our form and we will contact you within 24 hours.
+                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                      For detailed queries, product guidance, or activation support.
                     </p>
                     <p
-                      className="font-semibold"
+                      className="font-semibold mb-1"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       softzcart@gmail.com
+                    </p>
+                    <p className="text-sm" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                      We typically respond within 1 to 6 hours depending on the query volume.
                     </p>
                   </div>
                 </div>
@@ -188,14 +233,20 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3
-                      className="text-lg font-semibold"
+                      className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      Business Hours:
+                      Website Helpdesk
                     </h3>
-                    <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>Monday - Friday: 9:00-20:00</p>
-                    <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>Saturday: 11:00 - 15:00</p>
-                    <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>Sunday: Closed</p>
+                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                      Visit our website and use the contact form or upcoming live chat feature for direct assistance.
+                    </p>
+                    <p
+                      className="font-semibold"
+                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                    >
+                      www.softzcart.com
+                    </p>
                   </div>
                 </div>
 
@@ -218,10 +269,10 @@ const ContactPage: React.FC = () => {
                   </div>
                   <div>
                     <h3
-                      className="text-lg font-semibold"
+                      className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      Headquarters Address:
+                      Headquarters Address
                     </h3>
                     <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>Civil DigitalStore</p>
                     <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>D.No.2/308, Main Road</p>
@@ -229,6 +280,82 @@ const ContactPage: React.FC = () => {
                     <p style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>Thanjavur-613403</p>
                   </div>
                 </div>
+              </div>
+
+              {/* Support Availability */}
+              <div
+                className="rounded-lg p-5"
+                style={{
+                  backgroundColor: theme === "light" ? "#F0F9FF" : colors.background.secondary,
+                  border: `2px solid ${theme === "light" ? "#0EA5E9" : colors.border.primary}`,
+                }}
+              >
+                <h3
+                  className="text-lg font-bold mb-3"
+                  style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                >
+                  Support Availability
+                </h3>
+                <p className="text-sm mb-2" style={{ color: theme === "light" ? "#1E293B" : colors.text.primary }}>
+                  Our support team operates 24×7 to assist you with your queries and orders.
+                </p>
+                <ul className="text-sm space-y-1 ml-4" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                  <li className="list-disc">Standard queries are answered 24×7</li>
+                  <li className="list-disc">Urgent issues are monitored and responded to even outside these hours</li>
+                </ul>
+                <p className="text-sm mt-3 font-semibold" style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
+                  Whether day or night, our team ensures that no important query goes unanswered.
+                </p>
+              </div>
+
+              {/* Common Support Topics */}
+              <div
+                className="rounded-lg p-5"
+                style={{
+                  backgroundColor: theme === "light" ? "#FFF7ED" : colors.background.secondary,
+                  border: `2px solid ${theme === "light" ? "#FB923C" : colors.border.primary}`,
+                }}
+              >
+                <h3
+                  className="text-lg font-bold mb-3"
+                  style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                >
+                  Common Support Topics
+                </h3>
+                <ul className="text-sm space-y-2 ml-4" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                  <li className="list-disc">Assistance with software activation or installation</li>
+                  <li className="list-disc">Non-receipt of license key within the standard delivery timeframe</li>
+                  <li className="list-disc">Clarifications regarding product versions (OEM, Retail, Volume, etc.)</li>
+                  <li className="list-disc">Requests for GST-compliant invoices</li>
+                  <li className="list-disc">Help with re-activation or lost license keys</li>
+                  <li className="list-disc">Business inquiries, partnerships, or general feedback</li>
+                </ul>
+              </div>
+
+              {/* Stay Connected */}
+              <div
+                className="rounded-lg p-5"
+                style={{
+                  backgroundColor: theme === "light" ? "#F0FDF4" : colors.background.secondary,
+                  border: `2px solid ${theme === "light" ? "#4ADE80" : colors.border.primary}`,
+                }}
+              >
+                <h3
+                  className="text-lg font-bold mb-3"
+                  style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                >
+                  Stay Connected
+                </h3>
+                <p className="text-sm mb-3" style={{ color: theme === "light" ? "#1E293B" : colors.text.primary }}>
+                  Stay updated with the latest offers, new product launches, and software tips:
+                </p>
+                <ul className="text-sm space-y-1 ml-4" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
+                  <li className="list-disc">Subscribe to our newsletter</li>
+                  <li className="list-disc">Save our customer support number for fast assistance</li>
+                </ul>
+                <p className="text-sm mt-3 font-semibold" style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
+                  We are here to ensure you have a smooth, safe, and reliable digital buying experience.
+                </p>
               </div>
             </div>
 
