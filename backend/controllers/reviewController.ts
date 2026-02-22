@@ -17,10 +17,26 @@ export const getProductReviews = async (req: Request, res: Response) => {
             .skip(skip)
             .limit(limit);
 
+        // Format reviews to handle anonymous ones
+        const formattedReviews = reviews.map(review => {
+            const reviewObj = review.toObject();
+            if (review.isAnonymous) {
+                return {
+                    ...reviewObj,
+                    user: {
+                        _id: 'anonymous',
+                        fullName: review.anonymousName || 'Anonymous User',
+                        email: '',
+                    },
+                };
+            }
+            return reviewObj;
+        });
+
         const total = await Review.countDocuments({ product: productId });
 
         res.json({
-            reviews,
+            reviews: formattedReviews,
             pagination: {
                 page,
                 limit,
@@ -38,8 +54,10 @@ export const getProductReviews = async (req: Request, res: Response) => {
 export const createReview = async (req: Request, res: Response) => {
     try {
         const { productId } = req.params;
-        const { rating, comment } = req.body;
+        const { rating, comment, isAnonymous, anonymousName } = req.body;
         const userId = (req as any).user.id;
+        const userRole = (req as any).user.role;
+        const isAdminUser = userRole === 'admin' || userRole === 'superadmin';
 
         // Check if product exists
         const product = await Product.findById(productId);
@@ -47,25 +65,62 @@ export const createReview = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Product not found' });
         }
 
-        // Check if user already reviewed this product
-        const existingReview = await Review.findOne({ product: productId, user: userId });
-        if (existingReview) {
-            return res.status(400).json({ message: 'You have already reviewed this product' });
+        // If reviewing as themselves (not anonymous)
+        if (!isAnonymous) {
+            // Check if user already reviewed this product
+            const existingReview = await Review.findOne({ 
+                product: productId, 
+                user: userId,
+                isAnonymous: false 
+            });
+            if (existingReview) {
+                return res.status(400).json({ message: 'You have already reviewed this product' });
+            }
+
+            const review = new Review({
+                product: productId,
+                user: userId,
+                rating,
+                comment,
+                isAnonymous: false,
+            });
+
+            await review.save();
+
+            // Populate user details for response
+            await review.populate('user', 'fullName email');
+
+            return res.status(201).json(review);
         }
 
-        const review = new Review({
-            product: productId,
-            user: userId,
-            rating,
-            comment,
-        });
+        // Anonymous review (admin/superadmin only)
+        if (isAnonymous) {
+            // Only admins can create anonymous reviews
+            if (!isAdminUser) {
+                return res.status(403).json({ message: 'Only admins can create anonymous reviews' });
+            }
 
-        await review.save();
+            // Validate anonymous name
+            if (!anonymousName || anonymousName.trim() === '') {
+                return res.status(400).json({ message: 'Anonymous name is required for anonymous reviews' });
+            }
 
-        // Populate user details for response
-        await review.populate('user', 'fullName email');
+            const review = new Review({
+                product: productId,
+                user: null, // No user for anonymous reviews
+                rating,
+                comment,
+                isAnonymous: true,
+                anonymousName: anonymousName.trim(),
+                createdBy: userId, // Track which admin created this
+            });
 
-        res.status(201).json(review);
+            await review.save();
+
+            return res.status(201).json(review);
+        }
+
+        return res.status(400).json({ message: 'Invalid review data' });
     } catch (error) {
         console.error('Error creating review:', error);
         res.status(500).json({ message: 'Server error' });
@@ -86,16 +141,26 @@ export const updateReview = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Review not found' });
         }
 
-        // Check if user owns the review or is admin
-        if (review.user.toString() !== userId && !isAdmin) {
-            return res.status(403).json({ message: 'Not authorized to update this review' });
+        // For anonymous reviews, only the admin who created it can update
+        if (review.isAnonymous) {
+            if (!isAdmin || (review.createdBy && review.createdBy.toString() !== userId)) {
+                return res.status(403).json({ message: 'Not authorized to update this review' });
+            }
+        } else {
+            // For regular reviews, check if user owns the review or is admin
+            if (review.user && review.user.toString() !== userId && !isAdmin) {
+                return res.status(403).json({ message: 'Not authorized to update this review' });
+            }
         }
 
         review.rating = rating || review.rating;
         review.comment = comment || review.comment;
 
         await review.save();
-        await review.populate('user', 'fullName email');
+        
+        if (!review.isAnonymous) {
+            await review.populate('user', 'fullName email');
+        }
 
         res.json(review);
     } catch (error) {
@@ -117,9 +182,16 @@ export const deleteReview = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'Review not found' });
         }
 
-        // Check if user owns the review or is admin
-        if (review.user.toString() !== userId && !isAdmin) {
-            return res.status(403).json({ message: 'Not authorized to delete this review' });
+        // For anonymous reviews, only the admin who created it can delete
+        if (review.isAnonymous) {
+            if (!isAdmin || (review.createdBy && review.createdBy.toString() !== userId)) {
+                return res.status(403).json({ message: 'Not authorized to delete this review' });
+            }
+        } else {
+            // For regular reviews, check if user owns the review or is admin
+            if (review.user && review.user.toString() !== userId && !isAdmin) {
+                return res.status(403).json({ message: 'Not authorized to delete this review' });
+            }
         }
 
         await Review.findByIdAndDelete(reviewId);

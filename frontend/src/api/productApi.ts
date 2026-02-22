@@ -236,3 +236,16 @@ export const getProductViewCountStatic = async (productId: string): Promise<numb
   }
 };
 
+/**
+ * Get the total sold quantity for a product
+ */
+export const getProductSoldQuantity = async (productId: string): Promise<number> => {
+  try {
+    const { data } = await apiClient.get(`/${productId}/sold-quantity`);
+    return data.soldQuantity || 0;
+  } catch (error) {
+    console.error("Error getting sold quantity:", error);
+    return 0;
+  }
+};
+

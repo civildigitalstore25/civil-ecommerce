@@ -552,3 +552,58 @@ export const getProductViewCount = async (req: Request, res: Response): Promise<
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get product sold quantity (total units sold)
+export const getProductSoldQuantity = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id: productId } = req.params;
+
+    // Verify product exists
+    const product = await Product.findById(productId);
+    if (!product) {
+      res.status(404).json({ message: 'Product not found' });
+      return;
+    }
+
+    // Import Order model
+    const Order = require('../models/Order').default;
+
+    // Aggregate orders to get total quantity sold
+    // Only count orders that are paid (not pending, failed, or refunded)
+    // And not cancelled
+    const result = await Order.aggregate([
+      {
+        $match: {
+          paymentStatus: 'paid',
+          orderStatus: { $nin: ['cancelled'] }
+        }
+      },
+      {
+        $unwind: '$items'
+      },
+      {
+        $match: {
+          'items.productId': productId
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalQuantity: { $sum: '$items.quantity' }
+        }
+      }
+    ]);
+
+    const soldQuantity = result.length > 0 ? result[0].totalQuantity : 0;
+
+    res.json({ 
+      success: true, 
+      soldQuantity,
+      productId,
+      message: 'Sold quantity retrieved successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Get sold quantity error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

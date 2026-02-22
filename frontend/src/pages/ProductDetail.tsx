@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaWhatsapp } from 'react-icons/fa';
 import ReactMarkdown from "react-markdown";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProductDetail, useUpdateProduct, incrementProductViewCount, getProductViewCountStatic } from "../api/productApi";
+import { useProductDetail, useUpdateProduct, incrementProductViewCount, getProductViewCountStatic, getProductSoldQuantity } from "../api/productApi";
 import { useCartContext } from "../contexts/CartContext";
 import { useUser } from "../api/userQueries";
 import { isAuthenticated } from "../utils/auth";
@@ -188,6 +188,11 @@ const ProductDetail: React.FC = () => {
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
   const [submittingReview, setSubmittingReview] = useState(false);
+  
+  // Review type selection for admin/superadmin
+  const [showReviewTypeModal, setShowReviewTypeModal] = useState(false);
+  const [reviewAsAnonymous, setReviewAsAnonymous] = useState(false);
+  const [anonymousName, setAnonymousName] = useState("");
 
   // Enquiry modal state
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
@@ -205,6 +210,9 @@ const ProductDetail: React.FC = () => {
 
   // Total view count state
   const [totalViews, setTotalViews] = useState<number>(0);
+
+  // Total sold quantity state
+  const [soldQuantity, setSoldQuantity] = useState<number>(0);
 
   // Update product mutation
   const updateProductMutation = useUpdateProduct();
@@ -352,6 +360,16 @@ const ProductDetail: React.FC = () => {
     const sessionKey = `viewed_product_${productId}`;
     const hasViewedInSession = sessionStorage.getItem(sessionKey);
 
+    // Fetch sold quantity (always fetch regardless of view tracking)
+    const fetchSoldQuantity = async () => {
+      try {
+        const quantity = await getProductSoldQuantity(productId);
+        setSoldQuantity(quantity);
+      } catch (error) {
+        console.error("Error fetching sold quantity:", error);
+      }
+    };
+
     // Increment view count once when product is loaded (only if not viewed in this session)
     const trackView = async () => {
       try {
@@ -381,6 +399,9 @@ const ProductDetail: React.FC = () => {
       };
       fetchViewCount();
     }
+
+    // Always fetch sold quantity
+    fetchSoldQuantity();
   }, [product?._id]);
 
   // Load reviews for the product
@@ -431,19 +452,39 @@ const ProductDetail: React.FC = () => {
       return;
     }
 
+    // Validate anonymous name if reviewing as anonymous user
+    if (reviewAsAnonymous && !anonymousName.trim()) {
+      Swal.fire("Error", "Please enter a name for the review", "error");
+      return;
+    }
+
     try {
       setSubmittingReview(true);
       if (editingReview) {
         await updateReview(editingReview._id, reviewForm);
         Swal.fire("Success", "Review updated successfully", "success");
       } else {
-        await createReview(product._id!, reviewForm);
+        // Prepare review data
+        const reviewData: any = {
+          rating: reviewForm.rating,
+          comment: reviewForm.comment,
+        };
+
+        // Add anonymous review fields if applicable
+        if (reviewAsAnonymous) {
+          reviewData.isAnonymous = true;
+          reviewData.anonymousName = anonymousName.trim();
+        }
+
+        await createReview(product._id!, reviewData);
         Swal.fire("Success", "Review posted successfully", "success");
       }
 
       setReviewForm({ rating: 5, comment: "" });
       setShowReviewForm(false);
       setEditingReview(null);
+      setReviewAsAnonymous(false);
+      setAnonymousName("");
       loadReviews(product._id);
       loadReviewStats(product._id);
     } catch (error: any) {
@@ -455,6 +496,26 @@ const ProductDetail: React.FC = () => {
     } finally {
       setSubmittingReview(false);
     }
+  };
+
+  // Handle write review button click for admin/superadmin
+  const handleWriteReviewClick = () => {
+    const isAdminUser = user?.role === 'admin' || user?.role === 'superadmin';
+    
+    if (isAdminUser) {
+      // Show modal to choose review type
+      setShowReviewTypeModal(true);
+    } else {
+      // Regular users directly show review form
+      setShowReviewForm(true);
+    }
+  };
+
+  // Handle review type selection
+  const handleReviewTypeSelect = (asAnonymous: boolean) => {
+    setReviewAsAnonymous(asAnonymous);
+    setShowReviewTypeModal(false);
+    setShowReviewForm(true);
   };
 
   // Handle review editing
@@ -1360,6 +1421,33 @@ const ProductDetail: React.FC = () => {
                   </div>
                   <span className="text-sm" style={{ color: colors.text.secondary }}>
                     {totalViews === 1 ? "Total view" : "Total views"}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Total Sold Quantity - Social Proof */}
+            {soldQuantity > 0 && (
+              <div className="flex items-center gap-2 mt-3">
+                <div
+                  className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.interactive.secondary + "40",
+                    color: colors.text.primary,
+                  }}
+                >
+                  <div className="flex items-center gap-1">
+                    <LucideIcons.ShoppingCart
+                      size={18}
+                      style={{ color: colors.interactive.secondary }}
+                    />
+                    <span className="font-semibold" style={{ color: colors.interactive.secondary }}>
+                      {soldQuantity.toLocaleString()}
+                    </span>
+                  </div>
+                  <span className="text-sm" style={{ color: colors.text.secondary }}>
+                    {soldQuantity === 1 ? "Unit sold" : "Units sold"}
                   </span>
                 </div>
               </div>
@@ -2810,7 +2898,7 @@ const ProductDetail: React.FC = () => {
                           <div className="mt-4">
                             {user || isAuthenticated() ? (
                               <button
-                                onClick={() => setShowReviewForm(true)}
+                                onClick={handleWriteReviewClick}
                                 className="w-1/2 font-bold py-2.5 rounded-lg text-sm lg:text-base transition-colors duration-200 shadow"
                                 style={{
                                   background: colors.interactive.primary,
@@ -2908,9 +2996,33 @@ const ProductDetail: React.FC = () => {
                           className="text-xl font-bold mb-4"
                           style={{ color: colors.text.primary }}
                         >
-                          {editingReview ? "Edit Review" : "Write a Review"}
+                          {editingReview ? "Edit Review" : reviewAsAnonymous ? "Write Review as User" : "Write a Review"}
                         </h4>
                         <form onSubmit={handleReviewSubmit}>
+                          {/* Anonymous Name Field */}
+                          {reviewAsAnonymous && (
+                            <div className="mb-4">
+                              <label
+                                className="block mb-2 font-medium"
+                                style={{ color: colors.text.primary }}
+                              >
+                                Your Name
+                              </label>
+                              <input
+                                type="text"
+                                value={anonymousName}
+                                onChange={(e) => setAnonymousName(e.target.value)}
+                                className="w-full p-3 rounded-lg border transition-colors"
+                                style={{
+                                  backgroundColor: colors.background.primary,
+                                  borderColor: colors.border.primary,
+                                  color: colors.text.primary,
+                                }}
+                                placeholder="Enter your name"
+                                required
+                              />
+                            </div>
+                          )}
                           <div className="mb-4">
                             <label
                               className="block mb-2 font-medium"
@@ -3002,6 +3114,8 @@ const ProductDetail: React.FC = () => {
                                 setShowReviewForm(false);
                                 setEditingReview(null);
                                 setReviewForm({ rating: 5, comment: "" });
+                                setReviewAsAnonymous(false);
+                                setAnonymousName("");
                               }}
                               className="font-bold py-2 px-4 rounded-lg transition-colors duration-200"
                               style={{
@@ -3415,6 +3529,99 @@ const ProductDetail: React.FC = () => {
           onSave={handleEditProduct}
           product={product}
         />
+      )}
+
+      {/* Review Type Selection Modal - Admin & Superadmin */}
+      {showReviewTypeModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowReviewTypeModal(false)}
+        >
+          <div
+            className="rounded-2xl p-6 max-w-md w-full shadow-xl"
+            style={{ backgroundColor: colors.background.secondary }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3
+              className="text-2xl font-bold mb-4"
+              style={{ color: colors.text.primary }}
+            >
+              Choose Review Type
+            </h3>
+            <p
+              className="mb-6"
+              style={{ color: colors.text.secondary }}
+            >
+              How would you like to write this review?
+            </p>
+            <div className="space-y-3">
+              {/* Review as Admin */}
+              <button
+                onClick={() => handleReviewTypeSelect(false)}
+                className="w-full p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-lg"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.interactive.primary,
+                  color: colors.text.primary,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.interactive.primary + "20";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.background.primary;
+                }}
+              >
+                <div className="text-left">
+                  <div className="font-bold mb-1">Review as Admin</div>
+                  <div className="text-sm" style={{ color: colors.text.secondary }}>
+                    Your review will show your admin account name
+                  </div>
+                </div>
+              </button>
+
+              {/* Review as User */}
+              <button
+                onClick={() => handleReviewTypeSelect(true)}
+                className="w-full p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-lg"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.interactive.secondary,
+                  color: colors.text.primary,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.interactive.secondary + "20";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.background.primary;
+                }}
+              >
+                <div className="text-left">
+                  <div className="font-bold mb-1">Review as User</div>
+                  <div className="text-sm" style={{ color: colors.text.secondary }}>
+                    You can provide a custom name for this review
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Cancel button */}
+            <button
+              onClick={() => setShowReviewTypeModal(false)}
+              className="w-full mt-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.primary,
+                color: colors.text.secondary,
+                border: `1px solid ${colors.border.primary}`,
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Sticky buttons are now handled in the product detail section above */}

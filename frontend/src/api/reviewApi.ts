@@ -26,6 +26,9 @@ export interface Review {
   } | null;
   rating: number;
   comment: string;
+  isAnonymous?: boolean;
+  anonymousName?: string;
+  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +36,8 @@ export interface Review {
 export interface CreateReviewData {
   rating: number;
   comment: string;
+  isAnonymous?: boolean;
+  anonymousName?: string;
 }
 
 export interface UpdateReviewData {
