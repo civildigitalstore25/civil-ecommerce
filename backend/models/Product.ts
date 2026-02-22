@@ -71,6 +71,20 @@ export interface IProduct extends Document {
   isOutOfStock?: boolean;
   faqs?: FAQ[];
   viewCount?: number; // Total number of times this product has been viewed
+  // Deal/Discount fields
+  isDeal?: boolean;
+  dealStartDate?: Date;
+  dealEndDate?: Date;
+  dealPrice1INR?: number;
+  dealPrice1USD?: number;
+  dealPrice3INR?: number;
+  dealPrice3USD?: number;
+  dealPriceLifetimeINR?: number;
+  dealPriceLifetimeUSD?: number;
+  dealMembershipPriceINR?: number;
+  dealMembershipPriceUSD?: number;
+  dealSubscriptionDurations?: SubscriptionDuration[];
+  dealSubscriptions?: SubscriptionDuration[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -152,6 +166,20 @@ const productSchema: Schema = new Schema(
     isOutOfStock: { type: Boolean, default: false },
     faqs: [faqSchema],
     viewCount: { type: Number, default: 0 }, // Total views for this product
+    // Deal/Discount fields
+    isDeal: { type: Boolean, default: false },
+    dealStartDate: { type: Date },
+    dealEndDate: { type: Date },
+    dealPrice1INR: { type: Number },
+    dealPrice1USD: { type: Number },
+    dealPrice3INR: { type: Number },
+    dealPrice3USD: { type: Number },
+    dealPriceLifetimeINR: { type: Number },
+    dealPriceLifetimeUSD: { type: Number },
+    dealMembershipPriceINR: { type: Number },
+    dealMembershipPriceUSD: { type: Number },
+    dealSubscriptionDurations: [subscriptionDurationSchema],
+    dealSubscriptions: [subscriptionDurationSchema],
   },
   { timestamps: true }
 );

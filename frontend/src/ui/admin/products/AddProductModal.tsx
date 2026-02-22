@@ -153,6 +153,34 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           faqs: product.faqs || [],
           keyFeatures: product.keyFeatures || [],
           systemRequirements: product.systemRequirements || [],
+          // Deal fields
+          isDeal: product.isDeal || false,
+          dealStartDate: product.dealStartDate ? new Date(product.dealStartDate).toISOString().split('T')[0] : "",
+          dealEndDate: product.dealEndDate ? new Date(product.dealEndDate).toISOString().split('T')[0] : "",
+          dealStartTime: product.dealStartDate ? new Date(product.dealStartDate).toISOString().split('T')[1].slice(0, 5) : "",
+          dealEndTime: product.dealEndDate ? new Date(product.dealEndDate).toISOString().split('T')[1].slice(0, 5) : "",
+          dealEbookPriceINR: (product as any).dealPrice1INR?.toString() || "",
+          dealEbookPriceUSD: (product as any).dealPrice1USD?.toString() || "",
+          dealLifetimePriceINR: (product as any).dealPriceLifetimeINR?.toString() || "",
+          dealLifetimePriceUSD: (product as any).dealPriceLifetimeUSD?.toString() || "",
+          dealMembershipPriceINR: (product as any).dealMembershipPriceINR?.toString() || "",
+          dealMembershipPriceUSD: (product as any).dealMembershipPriceUSD?.toString() || "",
+          dealSubscriptionDurations: (product as any).dealSubscriptionDurations && (product as any).dealSubscriptionDurations.length > 0
+            ? (product as any).dealSubscriptionDurations.map((sub: any) => ({
+                duration: sub.duration,
+                price: sub.price?.toString() || "",
+                priceINR: sub.priceINR?.toString() || "",
+                priceUSD: sub.priceUSD?.toString() || "",
+              }))
+            : [],
+          dealSubscriptions: (product as any).dealSubscriptions && (product as any).dealSubscriptions.length > 0
+            ? (product as any).dealSubscriptions.map((sub: any) => ({
+                duration: sub.duration,
+                price: sub.price?.toString() || "",
+                priceINR: sub.priceINR?.toString() || "",
+                priceUSD: sub.priceUSD?.toString() || "",
+              }))
+            : [],
         });
       } else {
         // Reset for new product
@@ -196,6 +224,20 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           faqs: [],
           keyFeatures: [],
           systemRequirements: [],
+          // Deal fields
+          isDeal: false,
+          dealStartDate: "",
+          dealEndDate: "",
+          dealStartTime: "",
+          dealEndTime: "",
+          dealEbookPriceINR: "",
+          dealEbookPriceUSD: "",
+          dealLifetimePriceINR: "",
+          dealLifetimePriceUSD: "",
+          dealMembershipPriceINR: "",
+          dealMembershipPriceUSD: "",
+          dealSubscriptionDurations: [],
+          dealSubscriptions: [],
         });
       }
     }
@@ -630,6 +672,68 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       // Structured Features and Requirements
       keyFeatures: newProduct.keyFeatures,
       systemRequirements: newProduct.systemRequirements,
+
+      // Deal Configuration
+      isDeal: newProduct.isDeal || false,
+      dealStartDate: newProduct.isDeal && newProduct.dealStartDate && newProduct.dealStartTime
+        ? new Date(`${newProduct.dealStartDate}T${newProduct.dealStartTime}`)
+        : undefined,
+      dealEndDate: newProduct.isDeal && newProduct.dealEndDate && newProduct.dealEndTime
+        ? new Date(`${newProduct.dealEndDate}T${newProduct.dealEndTime}`)
+        : undefined,
+      // Deal prices for e-books
+      dealPrice1INR: newProduct.isDeal && defaultBrand === "ebook" && newProduct.dealEbookPriceINR
+        ? Number(newProduct.dealEbookPriceINR)
+        : undefined,
+      dealPrice1USD: newProduct.isDeal && defaultBrand === "ebook" && newProduct.dealEbookPriceUSD
+        ? Number(newProduct.dealEbookPriceUSD)
+        : undefined,
+      // Deal prices for lifetime
+      dealPriceLifetimeINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceINR
+        ? Number(newProduct.dealLifetimePriceINR)
+        : undefined,
+      dealPriceLifetimeUSD: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceUSD
+        ? Number(newProduct.dealLifetimePriceUSD)
+        : undefined,
+      // Deal prices for membership
+      dealMembershipPriceINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealMembershipPriceINR
+        ? Number(newProduct.dealMembershipPriceINR)
+        : undefined,
+      dealMembershipPriceUSD: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealMembershipPriceUSD
+        ? Number(newProduct.dealMembershipPriceUSD)
+        : undefined,
+      // Deal subscription durations
+      dealSubscriptionDurations: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealSubscriptionDurations.length > 0
+        ? newProduct.dealSubscriptionDurations
+          .map((sub) => ({
+            duration: sub.duration,
+            price: sub.price ? Number(sub.price) : 0,
+            priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+            priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+          }))
+          .filter(
+            (sub) =>
+              sub.price > 0 ||
+              (sub.priceINR && sub.priceINR > 0) ||
+              (sub.priceUSD && sub.priceUSD > 0),
+          )
+        : [],
+      // Deal admin subscriptions
+      dealSubscriptions: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealSubscriptions.length > 0
+        ? newProduct.dealSubscriptions
+          .map((sub) => ({
+            duration: sub.duration,
+            price: sub.price ? Number(sub.price) : 0,
+            priceINR: sub.priceINR ? Number(sub.priceINR) : undefined,
+            priceUSD: sub.priceUSD ? Number(sub.priceUSD) : undefined,
+          }))
+          .filter(
+            (sub) =>
+              sub.price > 0 ||
+              (sub.priceINR && sub.priceINR > 0) ||
+              (sub.priceUSD && sub.priceUSD > 0),
+          )
+        : [],
     };
 
     // Validation - Only validate when not saving as draft
@@ -1805,6 +1909,522 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               </div>
             </div>
           )}
+
+          {/* Deal Configuration */}
+          <div className="space-y-6">
+            <h2
+              className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+              style={{
+                color: colors.text.primary,
+                borderBottomColor: colors.border.primary,
+              }}
+            >
+              🎉 Deal / Discount Configuration
+            </h2>
+            
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isDeal"
+                checked={newProduct.isDeal}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({ ...prev, isDeal: e.target.checked }))
+                }
+                className="w-4 h-4 rounded focus:ring-2"
+                style={{
+                  accentColor: colors.interactive.primary,
+                }}
+              />
+              <label
+                htmlFor="isDeal"
+                className="text-sm font-medium cursor-pointer"
+                style={{ color: colors.text.secondary }}
+              >
+                Enable Deal/Discount Pricing
+              </label>
+            </div>
+
+            {newProduct.isDeal && (
+              <div className="space-y-6 p-4 rounded-lg border transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary,
+                }}
+              >
+                {/* Deal Duration */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label
+                      className="block text-sm font-medium"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Deal Start Date & Time
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={newProduct.dealStartDate}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({
+                            ...prev,
+                            dealStartDate: e.target.value,
+                          }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isDeal}
+                      />
+                      <input
+                        type="time"
+                        value={newProduct.dealStartTime}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({
+                            ...prev,
+                            dealStartTime: e.target.value,
+                          }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isDeal}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label
+                      className="block text-sm font-medium"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Deal End Date & Time
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={newProduct.dealEndDate}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({
+                            ...prev,
+                            dealEndDate: e.target.value,
+                          }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isDeal}
+                      />
+                      <input
+                        type="time"
+                        value={newProduct.dealEndTime}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({
+                            ...prev,
+                            dealEndTime: e.target.value,
+                          }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isDeal}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Deal Prices for E-books */}
+                {newProduct.brand === "ebook" && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium" style={{ color: colors.text.primary }}>
+                      E-book Deal Pricing
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (INR) ₹
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealEbookPriceINR}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealEbookPriceINR: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (USD) $
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealEbookPriceUSD}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealEbookPriceUSD: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Deal Prices for Subscription Durations */}
+                {newProduct.brand !== "ebook" && newProduct.subscriptionDurations.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium" style={{ color: colors.text.primary }}>
+                      Subscription Deal Pricing
+                    </h3>
+                    {newProduct.subscriptionDurations.map((sub, index) => (
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg border space-y-3"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        <div className="font-medium text-sm" style={{ color: colors.text.primary }}>
+                          {sub.duration} Plan - Deal Price
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label
+                              className="block text-sm font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Deal Price (INR) ₹
+                            </label>
+                            <input
+                              type="number"
+                              value={newProduct.dealSubscriptionDurations[index]?.priceINR || ""}
+                              onChange={(e) => {
+                                const updatedDeals = [...newProduct.dealSubscriptionDurations];
+                                if (!updatedDeals[index]) {
+                                  updatedDeals[index] = { duration: sub.duration, price: "", priceINR: "", priceUSD: "" };
+                                }
+                                updatedDeals[index].priceINR = e.target.value;
+                                setNewProduct((prev) => ({
+                                  ...prev,
+                                  dealSubscriptionDurations: updatedDeals,
+                                }));
+                              }}
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label
+                              className="block text-sm font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Deal Price (USD) $
+                            </label>
+                            <input
+                              type="number"
+                              value={newProduct.dealSubscriptionDurations[index]?.priceUSD || ""}
+                              onChange={(e) => {
+                                const updatedDeals = [...newProduct.dealSubscriptionDurations];
+                                if (!updatedDeals[index]) {
+                                  updatedDeals[index] = { duration: sub.duration, price: "", priceINR: "", priceUSD: "" };
+                                }
+                                updatedDeals[index].priceUSD = e.target.value;
+                                setNewProduct((prev) => ({
+                                  ...prev,
+                                  dealSubscriptionDurations: updatedDeals,
+                                }));
+                              }}
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Deal Prices for Lifetime */}
+                {newProduct.brand !== "ebook" && newProduct.hasLifetime && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium" style={{ color: colors.text.primary }}>
+                      Lifetime Deal Pricing
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (INR) ₹
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealLifetimePriceINR}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealLifetimePriceINR: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (USD) $
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealLifetimePriceUSD}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealLifetimePriceUSD: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Deal Prices for Membership */}
+                {newProduct.brand !== "ebook" && newProduct.hasMembership && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium" style={{ color: colors.text.primary }}>
+                      Membership Deal Pricing
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (INR) ₹
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealMembershipPriceINR}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealMembershipPriceINR: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label
+                          className="block text-sm font-medium"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Deal Price (USD) $
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.dealMembershipPriceUSD}
+                          onChange={(e) =>
+                            setNewProduct((prev) => ({
+                              ...prev,
+                              dealMembershipPriceUSD: e.target.value,
+                            }))
+                          }
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Deal Prices for Admin Subscriptions */}
+                {newProduct.brand !== "ebook" && newProduct.subscriptions.length > 0 && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium" style={{ color: colors.text.primary }}>
+                      Admin Subscription Deal Pricing
+                    </h3>
+                    {newProduct.subscriptions.map((sub, index) => (
+                      <div
+                        key={index}
+                        className="p-4 rounded-lg border space-y-3"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        <div className="font-medium text-sm" style={{ color: colors.text.primary }}>
+                          {sub.duration} Plan - Deal Price
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <label
+                              className="block text-sm font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Deal Price (INR) ₹
+                            </label>
+                            <input
+                              type="number"
+                              value={newProduct.dealSubscriptions[index]?.priceINR || ""}
+                              onChange={(e) => {
+                                const updatedDeals = [...newProduct.dealSubscriptions];
+                                if (!updatedDeals[index]) {
+                                  updatedDeals[index] = { duration: sub.duration, price: "", priceINR: "", priceUSD: "" };
+                                }
+                                updatedDeals[index].priceINR = e.target.value;
+                                setNewProduct((prev) => ({
+                                  ...prev,
+                                  dealSubscriptions: updatedDeals,
+                                }));
+                              }}
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                              }}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label
+                              className="block text-sm font-medium"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              Deal Price (USD) $
+                            </label>
+                            <input
+                              type="number"
+                              value={newProduct.dealSubscriptions[index]?.priceUSD || ""}
+                              onChange={(e) => {
+                                const updatedDeals = [...newProduct.dealSubscriptions];
+                                if (!updatedDeals[index]) {
+                                  updatedDeals[index] = { duration: sub.duration, price: "", priceINR: "", priceUSD: "" };
+                                }
+                                updatedDeals[index].priceUSD = e.target.value;
+                                setNewProduct((prev) => ({
+                                  ...prev,
+                                  dealSubscriptions: updatedDeals,
+                                }));
+                              }}
+                              placeholder="0.00"
+                              step="0.01"
+                              min="0"
+                              className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                              style={{
+                                backgroundColor: colors.background.primary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm" style={{ color: colors.text.secondary }}>
+                    💡 <strong>Tip:</strong> Set deal prices lower than regular prices to attract customers. The deal will automatically start and end at the specified date and time. Products will show in the Deals menu only during active deal period.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Media Information */}
           <div className="space-y-6">

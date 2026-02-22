@@ -80,6 +80,22 @@ export interface Product {
   isOutOfStock?: boolean;
   faqs?: FAQ[];
   viewCount?: number; // Total number of times this product has been viewed
+  // Deal/Discount fields
+  isDeal?: boolean;
+  dealStartDate?: Date | string;
+  dealEndDate?: Date | string;
+  dealPrice1INR?: number;
+  dealPrice1USD?: number;
+  dealPrice2INR?: number;
+  dealPrice2USD?: number;
+  dealPrice3INR?: number;
+  dealPrice3USD?: number;
+  dealPriceLifetimeINR?: number;
+  dealPriceLifetimeUSD?: number;
+  dealMembershipPriceINR?: number;
+  dealMembershipPriceUSD?: number;
+  dealSubscriptionDurations?: SubscriptionDuration[];
+  dealSubscriptions?: SubscriptionDuration[];
   createdAt?: string;
   updatedAt?: string;
 }

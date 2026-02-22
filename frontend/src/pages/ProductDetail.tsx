@@ -27,6 +27,8 @@ import AddProductModal from "../ui/admin/products/AddProductModal";
 import { getProductSEO } from "../utils/seo";
 import { PRODUCT_TRUST_BADGES } from "../constants/productTrustBadges";
 
+import { CountdownTimer } from '../components/CountdownTimer/CountdownTimer';
+
 // Enhanced FAQ Item Component
 interface FAQItemProps {
   question: string;
@@ -213,6 +215,9 @@ const ProductDetail: React.FC = () => {
 
   // Total sold quantity state
   const [soldQuantity, setSoldQuantity] = useState<number>(0);
+
+  // Deal state - check if product has an active deal
+  const [isActiveDeal, setIsActiveDeal] = useState(false);
 
   // Update product mutation
   const updateProductMutation = useUpdateProduct();
@@ -569,11 +574,41 @@ const ProductDetail: React.FC = () => {
     }
   };
 
+  // Check if deal is currently active
+  useEffect(() => {
+    if (product && product.isDeal && product.dealStartDate && product.dealEndDate) {
+      const now = new Date();
+      const start = new Date(product.dealStartDate);
+      const end = new Date(product.dealEndDate);
+      setIsActiveDeal(now >= start && now <= end);
+    } else {
+      setIsActiveDeal(false);
+    }
+  }, [product]);
+
   // Get all available pricing options
   const getAllPricingOptions = () => {
     if (!product) return [];
 
     const options = [];
+
+    // Helper to get price (deal price if active, otherwise regular price)
+    const getPrice = (regularINR: number, regularUSD: number, dealINR?: number, dealUSD?: number) => {
+      if (isActiveDeal && dealINR && dealINR > 0) {
+        return {
+          priceINR: dealINR,
+          priceUSD: dealUSD || dealINR / 83,
+          originalPriceINR: regularINR,
+          originalPriceUSD: regularUSD,
+          isDeal: true,
+        };
+      }
+      return {
+        priceINR: regularINR,
+        priceUSD: regularUSD,
+        isDeal: false,
+      };
+    };
 
     // Add subscription durations if available (main pricing options)
     if (
@@ -586,11 +621,20 @@ const ProductDetail: React.FC = () => {
           (sub.priceINR && sub.priceINR > 0) ||
           (sub.priceUSD && sub.priceUSD > 0)
         ) {
+          const regularPriceINR = sub.priceINR || sub.price || 0;
+          const regularPriceUSD = sub.priceUSD || (sub.price ? sub.price / 83 : 0);
+          const dealSub = product.dealSubscriptionDurations?.[index];
+          const pricing = getPrice(
+            regularPriceINR,
+            regularPriceUSD,
+            dealSub?.priceINR,
+            dealSub?.priceUSD
+          );
+
           options.push({
             id: `subscription-${index}`,
             label: sub.duration,
-            priceINR: sub.priceINR || sub.price || 0,
-            priceUSD: sub.priceUSD || (sub.price ? sub.price / 83 : 0),
+            ...pricing,
             type: "subscription",
             trialDays: sub.trialDays,
             badge: sub.duration.toLowerCase().includes("1")
@@ -651,14 +695,24 @@ const ProductDetail: React.FC = () => {
           (opt) => opt.type === "yearly" || opt.type === "subscription",
         )?.priceINR || 0;
       const threeYearTotal = yearlyPrice * 3;
+      
+      const lifetimePriceUSD = product.lifetimePriceUSD || lifetimePrice / 83;
+      const dealLifetimePriceINR = (product as any).dealPriceLifetimeINR;
+      const dealLifetimePriceUSD = (product as any).dealPriceLifetimeUSD;
+      const pricing = getPrice(
+        lifetimePrice,
+        lifetimePriceUSD,
+        dealLifetimePriceINR,
+        dealLifetimePriceUSD
+      );
+
       const savings =
-        threeYearTotal > lifetimePrice ? threeYearTotal - lifetimePrice : 0;
+        threeYearTotal > pricing.priceINR ? threeYearTotal - pricing.priceINR : 0;
 
       options.push({
         id: "lifetime",
         label: "Lifetime Access",
-        priceINR: lifetimePrice,
-        priceUSD: product.lifetimePriceUSD || lifetimePrice / 83,
+        ...pricing,
         type: "lifetime",
         trialDays: undefined,
         badge: "Best Value",
@@ -670,11 +724,20 @@ const ProductDetail: React.FC = () => {
     const membershipPrice =
       product.membershipPriceINR || product.membershipPrice || 0;
     if (membershipPrice > 0) {
+      const membershipPriceUSD = product.membershipPriceUSD || membershipPrice / 83;
+      const dealMembershipPriceINR = (product as any).dealMembershipPriceINR;
+      const dealMembershipPriceUSD = (product as any).dealMembershipPriceUSD;
+      const pricing = getPrice(
+        membershipPrice,
+        membershipPriceUSD,
+        dealMembershipPriceINR,
+        dealMembershipPriceUSD
+      );
+
       options.push({
         id: "membership",
         label: "Membership",
-        priceINR: membershipPrice,
-        priceUSD: product.membershipPriceUSD || membershipPrice / 83,
+        ...pricing,
         type: "membership",
         trialDays: undefined,
         badge: "Premium Access",
@@ -1453,6 +1516,28 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
+            {/* Deal Countdown Timer and Dates */}
+            {isActiveDeal && product.dealEndDate && (
+              <div className="mt-4 space-y-3">
+                <CountdownTimer dealEndDate={new Date(product.dealEndDate)} colors={colors} />
+                
+                <div className="flex flex-col gap-1 text-sm" style={{ color: colors.text.secondary }}>
+                  {product.dealStartDate && (
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Deal Start:</span>
+                      <span>{new Date(product.dealStartDate).toLocaleString()}</span>
+                    </div>
+                  )}
+                  {product.dealEndDate && (
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">Deal End:</span>
+                      <span>{new Date(product.dealEndDate).toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Social Share Buttons */}
             <div className="flex items-center gap-2 mt-3">
               {(() => {
@@ -1674,9 +1759,26 @@ const ProductDetail: React.FC = () => {
                           className="text-sm font-bold"
                           style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
                         >
-                          {formatPriceWithSymbol(
-                            option.priceINR,
-                            option.priceUSD,
+                          {(option as any).isDeal && (option as any).originalPriceINR ? (
+                            <div className="flex flex-col gap-1">
+                              <div className="text-xs line-through opacity-70">
+                                {formatPriceWithSymbol(
+                                  (option as any).originalPriceINR,
+                                  (option as any).originalPriceUSD,
+                                )}
+                              </div>
+                              <div className="font-bold" style={{ color: selectedLicense === option.id ? '#ffeb3b' : colors.status.warning }}>
+                                {formatPriceWithSymbol(
+                                  option.priceINR,
+                                  option.priceUSD,
+                                )}
+                              </div>
+                            </div>
+                          ) : (
+                            formatPriceWithSymbol(
+                              option.priceINR,
+                              option.priceUSD,
+                            )
                           )}
                         </div>
                       </div>

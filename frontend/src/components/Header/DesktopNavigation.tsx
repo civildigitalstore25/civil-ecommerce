@@ -239,6 +239,13 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
       {/* Other navigation items */}
       <button
+        onClick={() => onNavigate("/deals")}
+        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80 flex items-center gap-1"
+        style={{ color: colors.text.secondary }}
+      >
+        🔥 Deals
+      </button>
+      <button
         onClick={() => onNavigate("/about-us")}
         className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}

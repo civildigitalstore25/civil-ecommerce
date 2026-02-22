@@ -54,6 +54,7 @@ import MainLayout from "./components/layout/MainLayout";
 import MenuManagement from "./components/admins/MenuManagement";
 import WelcomePopup from "./components/WelcomePopup/WelcomePopup";
 import SitemapPage from "./pages/SitemapPage";
+import DealsPage from "./pages/Deals";
 
 const queryClient = new QueryClient();
 
@@ -341,6 +342,7 @@ function AppLayout() {
             }
           />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/deals" element={<DealsPage />} />
           <Route path="/how-to-purchase" element={<HowToPurchase />} />
           <Route path="/payment-method" element={<PaymentMethod />} />
           <Route path="/sitemap" element={<SitemapPage />} />

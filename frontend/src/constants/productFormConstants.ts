@@ -120,6 +120,20 @@ export const DEFAULT_PRODUCT_FORM = {
     faqs: [],
     keyFeatures: [],
     systemRequirements: [],
+    // Deal fields
+    isDeal: false,
+    dealStartDate: "",
+    dealEndDate: "",
+    dealStartTime: "",
+    dealEndTime: "",
+    dealEbookPriceINR: "",
+    dealEbookPriceUSD: "",
+    dealLifetimePriceINR: "",
+    dealLifetimePriceUSD: "",
+    dealMembershipPriceINR: "",
+    dealMembershipPriceUSD: "",
+    dealSubscriptionDurations: [],
+    dealSubscriptions: [],
 };
 
 // LocalStorage keys for auto-save
@@ -187,4 +201,18 @@ export interface ProductForm {
     faqs: FAQ[];
     keyFeatures: Feature[];
     systemRequirements: Requirement[];
+    // Deal fields
+    isDeal: boolean;
+    dealStartDate: string;
+    dealEndDate: string;
+    dealStartTime: string;
+    dealEndTime: string;
+    dealEbookPriceINR: string;
+    dealEbookPriceUSD: string;
+    dealLifetimePriceINR: string;
+    dealLifetimePriceUSD: string;
+    dealMembershipPriceINR: string;
+    dealMembershipPriceUSD: string;
+    dealSubscriptionDurations: SubscriptionDuration[];
+    dealSubscriptions: SubscriptionDuration[];
 }
