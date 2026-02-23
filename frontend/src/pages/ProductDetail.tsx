@@ -3047,6 +3047,24 @@ const ProductDetail: React.FC = () => {
                               ))}
                             </select>
                           </div>
+
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm" style={{ color: colors.text.secondary }}>Date</span>
+                            <select
+                              value={dateFilter}
+                              onChange={(e) => setDateFilter(e.target.value)}
+                              className="px-3 py-1.5 rounded-lg border text-sm font-medium"
+                              style={{
+                                backgroundColor: colors.background.secondary,
+                                borderColor: colors.border.primary,
+                                color: colors.interactive.primary
+                              }}
+                            >
+                              {REVIEW_DATE_FILTERS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </div>
                         </div>
                       )}
                     </div>
