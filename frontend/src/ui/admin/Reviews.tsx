@@ -360,13 +360,17 @@ const Reviews: React.FC = () => {
                             className="font-medium"
                             style={{ color: colors.text.primary }}
                           >
-                            {review.user?.fullName || "Deleted User"}
+                            {review.isAnonymous
+                              ? (review.anonymousName || "Anonymous User")
+                              : (review.user?.fullName || "Deleted User")}
                           </div>
                           <div
                             className="text-sm"
                             style={{ color: colors.text.secondary }}
                           >
-                            {review.user?.email || "N/A"}
+                            {review.isAnonymous
+                              ? "Anonymous Review"
+                              : (review.user?.email || "N/A")}
                           </div>
                         </div>
                       </div>

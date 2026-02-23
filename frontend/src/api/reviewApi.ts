@@ -38,11 +38,13 @@ export interface CreateReviewData {
   comment: string;
   isAnonymous?: boolean;
   anonymousName?: string;
+  createdAt?: string;
 }
 
 export interface UpdateReviewData {
   rating?: number;
   comment?: string;
+  createdAt?: string;
 }
 
 export interface ReviewStats {

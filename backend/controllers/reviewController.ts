@@ -54,7 +54,7 @@ export const getProductReviews = async (req: Request, res: Response) => {
 export const createReview = async (req: Request, res: Response) => {
     try {
         const { productId } = req.params;
-        const { rating, comment, isAnonymous, anonymousName } = req.body;
+        const { rating, comment, isAnonymous, anonymousName, createdAt } = req.body;
         const userId = (req as any).user.id;
         const userRole = (req as any).user.role;
         const isAdminUser = userRole === 'admin' || userRole === 'superadmin';
@@ -68,22 +68,34 @@ export const createReview = async (req: Request, res: Response) => {
         // If reviewing as themselves (not anonymous)
         if (!isAnonymous) {
             // Check if user already reviewed this product
-            const existingReview = await Review.findOne({ 
-                product: productId, 
+            const existingReview = await Review.findOne({
+                product: productId,
                 user: userId,
-                isAnonymous: false 
+                isAnonymous: false
             });
             if (existingReview) {
                 return res.status(400).json({ message: 'You have already reviewed this product' });
             }
 
-            const review = new Review({
+            const reviewData: any = {
                 product: productId,
                 user: userId,
                 rating,
                 comment,
                 isAnonymous: false,
-            });
+            };
+
+            // Allow admin to set custom createdAt
+            if (isAdminUser && createdAt) {
+                reviewData.createdAt = new Date(createdAt);
+            }
+
+            const review = new Review(reviewData);
+
+            // Mark createdAt as modified to override Mongoose timestamps behavior
+            if (isAdminUser && createdAt) {
+                review.markModified('createdAt');
+            }
 
             await review.save();
 
@@ -105,7 +117,7 @@ export const createReview = async (req: Request, res: Response) => {
                 return res.status(400).json({ message: 'Anonymous name is required for anonymous reviews' });
             }
 
-            const review = new Review({
+            const reviewData: any = {
                 product: productId,
                 user: null, // No user for anonymous reviews
                 rating,
@@ -113,7 +125,19 @@ export const createReview = async (req: Request, res: Response) => {
                 isAnonymous: true,
                 anonymousName: anonymousName.trim(),
                 createdBy: userId, // Track which admin created this
-            });
+            };
+
+            // Allow admin to set custom createdAt
+            if (createdAt) {
+                reviewData.createdAt = new Date(createdAt);
+            }
+
+            const review = new Review(reviewData);
+
+            // Mark createdAt as modified to override Mongoose timestamps behavior
+            if (createdAt) {
+                review.markModified('createdAt');
+            }
 
             await review.save();
 
@@ -131,7 +155,7 @@ export const createReview = async (req: Request, res: Response) => {
 export const updateReview = async (req: Request, res: Response) => {
     try {
         const { reviewId } = req.params;
-        const { rating, comment } = req.body;
+        const { rating, comment, createdAt } = req.body;
         const userId = (req as any).user.id;
         const userRole = (req as any).user.role;
         const isAdmin = userRole === 'admin' || userRole === 'superadmin';
@@ -156,8 +180,15 @@ export const updateReview = async (req: Request, res: Response) => {
         review.rating = rating || review.rating;
         review.comment = comment || review.comment;
 
+        // Allow admin to update createdAt
+        if (isAdmin && createdAt) {
+            review.createdAt = new Date(createdAt);
+            // Mark createdAt as modified to override Mongoose timestamps behavior
+            review.markModified('createdAt');
+        }
+
         await review.save();
-        
+
         if (!review.isAnonymous) {
             await review.populate('user', 'fullName email');
         }
