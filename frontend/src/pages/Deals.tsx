@@ -47,7 +47,7 @@ const DealsPage: React.FC = () => {
           <div className="flex items-center justify-center gap-3 mb-4">
             <TrendingDown className="w-10 h-10" style={{ color: colors.status.warning }} />
             <h1
-              className="text-4xl md:text-5xl font-bold"
+              className="text-4xl md:text-5xl font-bold mt-6"
               style={{ color: colors.text.primary }}
             >
               🔥 Active Deals
