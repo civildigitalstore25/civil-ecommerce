@@ -60,12 +60,9 @@ const ReviewSchema = new Schema<IReview>({
     toJSON: { virtuals: true },
 });
 
-// Compound index to ensure one review per user per product (only for non-anonymous reviews)
-ReviewSchema.index({ product: 1, user: 1 }, { 
-    unique: true, 
-    sparse: true, // Allow null user for anonymous reviews
-    partialFilterExpression: { isAnonymous: false } // Only apply to non-anonymous reviews
-});
+// Index for efficient querying - allows multiple reviews per user per product
+ReviewSchema.index({ product: 1, user: 1 });
+ReviewSchema.index({ product: 1, createdAt: -1 }); // For sorting reviews by date
 
 // Virtual for populating user details
 ReviewSchema.virtual('userDetails', {

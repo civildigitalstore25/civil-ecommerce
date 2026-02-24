@@ -510,19 +510,30 @@ const ProductDetail: React.FC = () => {
           reviewData.createdAt = new Date(reviewDate).toISOString();
         }
 
+        console.log('Submitting review with data:', reviewData);
         await createReview(product._id!, reviewData);
-        Swal.fire("Success", "Review posted successfully", "success");
+        
+        // Show success message with appropriate text
+        const successMessage = reviewAsAnonymous 
+          ? `Review posted successfully as ${anonymousName}!` 
+          : "Review posted successfully";
+        
+        Swal.fire("Success", successMessage, "success");
       }
 
+      // Reset all form states completely
       setReviewForm({ rating: 5, comment: "" });
       setShowReviewForm(false);
       setEditingReview(null);
       setReviewAsAnonymous(false);
       setAnonymousName("");
       setReviewDate(null);
+      
+      // Reload reviews to show the new one
       loadReviews(product._id);
       loadReviewStats(product._id);
     } catch (error: any) {
+      console.error('Review submission error:', error);
       Swal.fire(
         "Error",
         error.response?.data?.message || "Failed to submit review",
@@ -536,6 +547,13 @@ const ProductDetail: React.FC = () => {
   // Handle write review button click for admin/superadmin
   const handleWriteReviewClick = () => {
     const isAdminUser = user?.role === 'admin' || user?.role === 'superadmin';
+
+    // Reset all review-related states before showing the form/modal
+    setReviewForm({ rating: 5, comment: "" });
+    setEditingReview(null);
+    setReviewAsAnonymous(false);
+    setAnonymousName("");
+    setReviewDate(null);
 
     if (isAdminUser) {
       // Show modal to choose review type
@@ -551,9 +569,15 @@ const ProductDetail: React.FC = () => {
     setReviewAsAnonymous(asAnonymous);
     setShowReviewTypeModal(false);
     setShowReviewForm(true);
-    // default review date to today for admin/superadmin
+    
+    // Set default review date to today for admin/superadmin
     if (user?.role === 'admin' || user?.role === 'superadmin') {
       setReviewDate(new Date().toISOString().slice(0, 10));
+    }
+    
+    // For anonymous reviews, clear the name field so admin enters new name each time
+    if (asAnonymous) {
+      setAnonymousName("");
     }
   };
 
