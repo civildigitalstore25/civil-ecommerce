@@ -95,12 +95,6 @@ export const createReview = async (req: Request, res: Response) => {
             }
 
             const review = new Review(reviewData);
-
-            // Mark createdAt as modified to override Mongoose timestamps behavior
-            if (isAdminUser && createdAt) {
-                review.markModified('createdAt');
-            }
-
             await review.save();
 
             // Populate user details for response
@@ -143,12 +137,6 @@ export const createReview = async (req: Request, res: Response) => {
             console.log('Creating anonymous review with data:', reviewData);
 
             const review = new Review(reviewData);
-
-            // Mark createdAt as modified to override Mongoose timestamps behavior
-            if (createdAt) {
-                review.markModified('createdAt');
-            }
-
             await review.save();
             console.log('Anonymous review saved successfully:', review._id);
 
@@ -211,8 +199,6 @@ export const updateReview = async (req: Request, res: Response) => {
         // Allow admin to update createdAt
         if (isAdmin && createdAt) {
             review.createdAt = new Date(createdAt);
-            // Mark createdAt as modified to override Mongoose timestamps behavior
-            review.markModified('createdAt');
         }
 
         await review.save();

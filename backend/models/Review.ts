@@ -47,8 +47,16 @@ const ReviewSchema = new Schema<IReview>({
         ref: 'User',
         required: false, // Admin who created the anonymous review
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 }, {
-    timestamps: true,
+    timestamps: false, // Disable automatic timestamps to allow manual control
     toJSON: { virtuals: true },
 });
 
@@ -65,6 +73,19 @@ ReviewSchema.virtual('userDetails', {
     localField: 'user',
     foreignField: '_id',
     justOne: true,
+});
+
+// Pre-save hook to update updatedAt timestamp on modifications
+ReviewSchema.pre('save', function(next) {
+    // Always update updatedAt when document is modified
+    if (!this.isNew) {
+        this.updatedAt = new Date();
+    }
+    // For new documents, if createdAt is not set, set it to now
+    if (this.isNew && !this.createdAt) {
+        this.createdAt = new Date();
+    }
+    next();
 });
 
 export default mongoose.model<IReview>('Review', ReviewSchema);
