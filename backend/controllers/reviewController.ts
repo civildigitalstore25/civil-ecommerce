@@ -59,6 +59,8 @@ export const createReview = async (req: Request, res: Response) => {
         const userRole = (req as any).user.role;
         const isAdminUser = userRole === 'admin' || userRole === 'superadmin';
 
+        console.log('Creating review:', { productId, userId, isAnonymous, rating, comment });
+
         // Check if product exists
         const product = await Product.findById(productId);
         if (!product) {
@@ -69,11 +71,13 @@ export const createReview = async (req: Request, res: Response) => {
         if (!isAnonymous) {
             // Check if user already reviewed this product
             const existingReview = await Review.findOne({
-                product: productId,
-                user: userId,
+                product: new mongoose.Types.ObjectId(productId),
+                user: new mongoose.Types.ObjectId(userId),
                 isAnonymous: false
             });
+            console.log('Existing review check:', { existingReview: !!existingReview });
             if (existingReview) {
+                console.log('Duplicate review detected for user:', userId);
                 return res.status(400).json({ message: 'You have already reviewed this product' });
             }
 
@@ -107,13 +111,17 @@ export const createReview = async (req: Request, res: Response) => {
 
         // Anonymous review (admin/superadmin only)
         if (isAnonymous) {
+            console.log('Processing anonymous review:', { anonymousName, userId, isAdminUser });
+
             // Only admins can create anonymous reviews
             if (!isAdminUser) {
+                console.log('Non-admin tried to create anonymous review');
                 return res.status(403).json({ message: 'Only admins can create anonymous reviews' });
             }
 
             // Validate anonymous name
             if (!anonymousName || anonymousName.trim() === '') {
+                console.log('Anonymous name missing or empty');
                 return res.status(400).json({ message: 'Anonymous name is required for anonymous reviews' });
             }
 
@@ -132,6 +140,8 @@ export const createReview = async (req: Request, res: Response) => {
                 reviewData.createdAt = new Date(createdAt);
             }
 
+            console.log('Creating anonymous review with data:', reviewData);
+
             const review = new Review(reviewData);
 
             // Mark createdAt as modified to override Mongoose timestamps behavior
@@ -140,14 +150,32 @@ export const createReview = async (req: Request, res: Response) => {
             }
 
             await review.save();
+            console.log('Anonymous review saved successfully:', review._id);
 
             return res.status(201).json(review);
         }
 
         return res.status(400).json({ message: 'Invalid review data' });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error creating review:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            code: error.code
+        });
+
+        // Handle MongoDB duplicate key error
+        if (error.code === 11000 || error.name === 'MongoServerError') {
+            return res.status(400).json({
+                message: 'You have already reviewed this product'
+            });
+        }
+
+        res.status(500).json({
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };
 
