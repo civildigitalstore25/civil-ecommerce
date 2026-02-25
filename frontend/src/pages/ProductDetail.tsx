@@ -15,8 +15,12 @@ import {
   createReview,
   updateReview,
   deleteReview,
+  addReplyToReview,
+  updateReply,
+  deleteReply,
   type Review,
   type ReviewStats,
+  type Reply,
 } from "../api/reviewApi";
 import BannerCarousel from "../ui/admin/banner/BannerCarousel";
 import Swal from "sweetalert2";
@@ -208,6 +212,15 @@ const ProductDetail: React.FC = () => {
   const [showReviewTypeModal, setShowReviewTypeModal] = useState(false);
   const [reviewAsAnonymous, setReviewAsAnonymous] = useState(false);
   const [anonymousName, setAnonymousName] = useState("");
+
+  // Reply-related state
+  const [replyingToReview, setReplyingToReview] = useState<string | null>(null); // Review ID being replied to
+  const [replyForm, setReplyForm] = useState({ comment: "" });
+  const [submittingReply, setSubmittingReply] = useState(false);
+  const [editingReply, setEditingReply] = useState<{ reviewId: string; replyId: string } | null>(null);
+  const [replyAsAnonymous, setReplyAsAnonymous] = useState(false);
+  const [replyAnonymousName, setReplyAnonymousName] = useState("");
+  const [showReplyTypeModal, setShowReplyTypeModal] = useState<string | null>(null); // Review ID for modal
 
   // Enquiry modal state
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
@@ -633,6 +646,161 @@ const ProductDetail: React.FC = () => {
       Swal.fire(
         "Error",
         error.response?.data?.message || "Failed to delete review",
+        "error",
+      );
+    }
+  };
+
+  // Handle reply submission
+  const handleReplyClick = (reviewId: string) => {
+    if (!user) {
+      Swal.fire({
+        title: "Login Required",
+        text: "Please login to reply",
+        icon: "info",
+        confirmButtonText: "Login",
+        showCancelButton: true,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          navigate("/signin");
+        }
+      });
+      return;
+    }
+
+    const isAdminUser = user?.role === 'admin' || user?.role === 'superadmin';
+    
+    // Reset reply form state
+    setReplyForm({ comment: "" });
+    setEditingReply(null);
+    setReplyAsAnonymous(false);
+    setReplyAnonymousName("");
+
+    if (isAdminUser) {
+      // Show modal to choose reply type
+      setShowReplyTypeModal(reviewId);
+    } else {
+      // Regular users directly show reply form
+      setReplyingToReview(reviewId);
+    }
+  };
+
+  // Handle reply type selection for admin/superadmin
+  const handleReplyTypeSelect = (reviewId: string, asAnonymous: boolean) => {
+    setReplyAsAnonymous(asAnonymous);
+    setShowReplyTypeModal(null);
+    setReplyingToReview(reviewId);
+    
+    // For anonymous replies, clear the name field
+    if (asAnonymous) {
+      setReplyAnonymousName("");
+    }
+  };
+
+  // Handle reply submission
+  const handleReplySubmit = async (reviewId: string) => {
+    if (!user) return;
+
+    if (!replyForm.comment.trim()) {
+      Swal.fire("Error", "Please enter a reply", "error");
+      return;
+    }
+
+    // Validate anonymous name if replying as anonymous
+    if (replyAsAnonymous && !replyAnonymousName.trim()) {
+      Swal.fire("Error", "Please enter a name for the reply", "error");
+      return;
+    }
+
+    try {
+      setSubmittingReply(true);
+
+      if (editingReply) {
+        // Update existing reply
+        await updateReply(editingReply.reviewId, editingReply.replyId, {
+          comment: replyForm.comment,
+        });
+        Swal.fire("Success", "Reply updated successfully", "success");
+      } else {
+        // Add new reply
+        const replyData: any = {
+          comment: replyForm.comment,
+        };
+
+        if (replyAsAnonymous) {
+          replyData.isAnonymous = true;
+          replyData.anonymousName = replyAnonymousName.trim();
+        }
+
+        await addReplyToReview(reviewId, replyData);
+        
+        const successMessage = replyAsAnonymous 
+          ? `Reply posted successfully as ${replyAnonymousName}!` 
+          : "Reply posted successfully";
+        
+        Swal.fire("Success", successMessage, "success");
+      }
+
+      // Reset reply form
+      setReplyForm({ comment: "" });
+      setReplyingToReview(null);
+      setEditingReply(null);
+      setReplyAsAnonymous(false);
+      setReplyAnonymousName("");
+
+      // Reload reviews
+      loadReviews(product._id);
+    } catch (error: any) {
+      console.error('Reply submission error:', error);
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to submit reply",
+        "error",
+      );
+    } finally {
+      setSubmittingReply(false);
+    }
+  };
+
+  // Handle reply editing
+  const handleEditReply = (reviewId: string, reply: Reply) => {
+    if (!user) return;
+
+    const isAdmin = user.role === 'admin' || user.role === 'superadmin';
+    const isOwner = reply.user && user.id === reply.user._id;
+
+    if (!isAdmin && !isOwner) {
+      Swal.fire('Error', 'You can only edit your own replies', 'error');
+      return;
+    }
+
+    setEditingReply({ reviewId, replyId: reply._id });
+    setReplyForm({ comment: reply.comment });
+    setReplyingToReview(reviewId);
+  };
+
+  // Handle reply deletion
+  const handleDeleteReply = async (reviewId: string, replyId: string) => {
+    if (!user) return;
+
+    const result = await Swal.fire({
+      title: "Delete Reply",
+      text: "Are you sure you want to delete this reply?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await deleteReply(reviewId, replyId);
+      Swal.fire("Success", "Reply deleted successfully", "success");
+      loadReviews(product._id);
+    } catch (error: any) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to delete reply",
         "error",
       );
     }
@@ -3533,6 +3701,232 @@ const ProductDetail: React.FC = () => {
                                         >
                                           {review.comment}
                                         </p>
+
+                                        {/* Reply Button */}
+                                        <div className="mt-3 flex items-center gap-3">
+                                          <button
+                                            onClick={() => handleReplyClick(review._id)}
+                                            className="text-sm font-medium flex items-center gap-1 transition-colors"
+                                            style={{
+                                              color: colors.interactive.primary,
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              e.currentTarget.style.opacity = '0.8';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              e.currentTarget.style.opacity = '1';
+                                            }}
+                                          >
+                                            <LucideIcons.MessageCircle size={16} />
+                                            Reply
+                                          </button>
+                                          {review.replies && review.replies.length > 0 && (
+                                            <span className="text-xs" style={{ color: colors.text.secondary }}>
+                                              {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}
+                                            </span>
+                                          )}
+                                        </div>
+
+                                        {/* Replies Section */}
+                                        {review.replies && review.replies.length > 0 && (
+                                          <div className="mt-4 space-y-3 pl-4 border-l-2" style={{ borderColor: colors.border.primary }}>
+                                            {review.replies.map((reply) => (
+                                              <div
+                                                key={reply._id}
+                                                className="rounded-lg p-4"
+                                                style={{
+                                                  backgroundColor: colors.background.primary,
+                                                }}
+                                              >
+                                                <div className="flex items-start justify-between gap-3">
+                                                  <div className="flex items-start gap-3 flex-1">
+                                                    <div
+                                                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                                                      style={{
+                                                        backgroundColor: colors.interactive.secondary || colors.interactive.primary,
+                                                        color: '#fff',
+                                                      }}
+                                                    >
+                                                      {(reply.isAnonymous && reply.anonymousName)
+                                                        ? reply.anonymousName.charAt(0).toUpperCase()
+                                                        : reply.user?.fullName
+                                                          ? reply.user.fullName.charAt(0).toUpperCase()
+                                                          : "U"}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                      <div className="flex items-center gap-2 mb-1">
+                                                        <h6
+                                                          className="font-semibold text-sm"
+                                                          style={{ color: colors.text.primary }}
+                                                        >
+                                                          {reply.isAnonymous
+                                                            ? (reply.anonymousName || "Anonymous User")
+                                                            : (reply.user?.fullName || "Anonymous User")}
+                                                        </h6>
+                                                        <span
+                                                          className="text-xs"
+                                                          style={{ color: colors.text.secondary }}
+                                                        >
+                                                          {new Date(reply.createdAt).toLocaleDateString('en-US', {
+                                                            month: '2-digit',
+                                                            day: '2-digit',
+                                                            year: 'numeric'
+                                                          })}
+                                                        </span>
+                                                      </div>
+                                                      <p
+                                                        className="text-sm leading-relaxed"
+                                                        style={{ color: colors.text.secondary }}
+                                                      >
+                                                        {reply.comment}
+                                                      </p>
+                                                    </div>
+                                                  </div>
+                                                  {user &&
+                                                    (user.id === reply.user?._id ||
+                                                      user.role === "admin" ||
+                                                      user.role === "superadmin") && (
+                                                      <div className="flex gap-2 flex-shrink-0">
+                                                        <button
+                                                          onClick={() => handleEditReply(review._id, reply)}
+                                                          className="text-xs font-medium px-2 py-1 rounded transition-colors"
+                                                          style={{
+                                                            color: colors.interactive.primary,
+                                                            backgroundColor: 'transparent',
+                                                          }}
+                                                          onMouseEnter={(e) => {
+                                                            e.currentTarget.style.backgroundColor = colors.background.secondary;
+                                                          }}
+                                                          onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                                          }}
+                                                        >
+                                                          Edit
+                                                        </button>
+                                                        <button
+                                                          onClick={() => handleDeleteReply(review._id, reply._id)}
+                                                          className="text-xs font-medium px-2 py-1 rounded transition-colors"
+                                                          style={{
+                                                            color: "#ef4444",
+                                                            backgroundColor: 'transparent',
+                                                          }}
+                                                          onMouseEnter={(e) => {
+                                                            e.currentTarget.style.backgroundColor = '#fee2e2';
+                                                          }}
+                                                          onMouseLeave={(e) => {
+                                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                                          }}
+                                                        >
+                                                          Delete
+                                                        </button>
+                                                      </div>
+                                                    )}
+                                                </div>
+                                              </div>
+                                            ))}
+                                          </div>
+                                        )}
+
+                                        {/* Reply Form */}
+                                        {replyingToReview === review._id && (
+                                          <div
+                                            className="mt-4 p-4 rounded-lg"
+                                            style={{
+                                              backgroundColor: colors.background.primary,
+                                            }}
+                                          >
+                                            <h6
+                                              className="font-semibold mb-3 text-sm"
+                                              style={{ color: colors.text.primary }}
+                                            >
+                                              {editingReply ? "Edit Reply" : replyAsAnonymous ? "Reply as User" : "Write a Reply"}
+                                            </h6>
+                                            {/* Anonymous Name Field for Replies */}
+                                            {replyAsAnonymous && (
+                                              <div className="mb-3">
+                                                <label
+                                                  className="block mb-1 font-medium text-sm"
+                                                  style={{ color: colors.text.primary }}
+                                                >
+                                                  Your Name
+                                                </label>
+                                                <input
+                                                  type="text"
+                                                  value={replyAnonymousName}
+                                                  onChange={(e) => setReplyAnonymousName(e.target.value)}
+                                                  className="w-full p-2 rounded border text-sm transition-colors"
+                                                  style={{
+                                                    backgroundColor: colors.background.secondary,
+                                                    borderColor: colors.border.primary,
+                                                    color: colors.text.primary,
+                                                  }}
+                                                  placeholder="Enter your name"
+                                                  required
+                                                />
+                                              </div>
+                                            )}
+                                            <textarea
+                                              value={replyForm.comment}
+                                              onChange={(e) =>
+                                                setReplyForm({ comment: e.target.value })
+                                              }
+                                              className="w-full p-3 rounded-lg border transition-colors text-sm"
+                                              style={{
+                                                backgroundColor: colors.background.secondary,
+                                                borderColor: colors.border.primary,
+                                                color: colors.text.primary,
+                                              }}
+                                              rows={3}
+                                              placeholder="Write your reply..."
+                                              required
+                                            />
+                                            <div className="flex gap-2 mt-3">
+                                              <button
+                                                onClick={() => handleReplySubmit(review._id)}
+                                                disabled={submittingReply}
+                                                className="text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                                                style={{
+                                                  background: colors.interactive.primary || '#2563eb',
+                                                  color: '#ffffff',
+                                                  border: `1px solid ${colors.interactive.primary || '#2563eb'}`,
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  if (!submittingReply) {
+                                                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                                      (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                                                  }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                                    colors.interactive.primary || '#2563eb';
+                                                }}
+                                              >
+                                                {submittingReply
+                                                  ? "Submitting..."
+                                                  : editingReply
+                                                    ? "Update Reply"
+                                                    : "Post Reply"}
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  setReplyingToReview(null);
+                                                  setReplyForm({ comment: "" });
+                                                  setEditingReply(null);
+                                                  setReplyAsAnonymous(false);
+                                                  setReplyAnonymousName("");
+                                                }}
+                                                className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                                                style={{
+                                                  backgroundColor: colors.background.secondary,
+                                                  color: colors.text.primary,
+                                                  border: `1px solid ${colors.border.primary}`,
+                                                }}
+                                              >
+                                                Cancel
+                                              </button>
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                     {user &&
@@ -3957,6 +4351,99 @@ const ProductDetail: React.FC = () => {
             {/* Cancel button */}
             <button
               onClick={() => setShowReviewTypeModal(false)}
+              className="w-full mt-4 py-2 rounded-lg font-medium transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.primary,
+                color: colors.text.secondary,
+                border: `1px solid ${colors.border.primary}`,
+              }}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Reply Type Selection Modal - Admin & Superadmin */}
+      {showReplyTypeModal && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowReplyTypeModal(null)}
+        >
+          <div
+            className="rounded-2xl p-6 max-w-md w-full shadow-xl"
+            style={{ backgroundColor: colors.background.secondary }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3
+              className="text-2xl font-bold mb-4"
+              style={{ color: colors.text.primary }}
+            >
+              Choose Reply Type
+            </h3>
+            <p
+              className="mb-6"
+              style={{ color: colors.text.secondary }}
+            >
+              How would you like to reply to this review?
+            </p>
+            <div className="space-y-3">
+              {/* Reply as Admin */}
+              <button
+                onClick={() => handleReplyTypeSelect(showReplyTypeModal, false)}
+                className="w-full p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-lg"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.interactive.primary,
+                  color: colors.text.primary,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.interactive.primary + "20";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.background.primary;
+                }}
+              >
+                <div className="text-left">
+                  <div className="font-bold mb-1">Reply as Admin</div>
+                  <div className="text-sm" style={{ color: colors.text.secondary }}>
+                    Your reply will show your admin account name
+                  </div>
+                </div>
+              </button>
+
+              {/* Reply as User */}
+              <button
+                onClick={() => handleReplyTypeSelect(showReplyTypeModal, true)}
+                className="w-full p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-lg"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.interactive.secondary,
+                  color: colors.text.primary,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.interactive.secondary + "20";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.background.primary;
+                }}
+              >
+                <div className="text-left">
+                  <div className="font-bold mb-1">Reply as User</div>
+                  <div className="text-sm" style={{ color: colors.text.secondary }}>
+                    You can provide a custom name for this reply
+                  </div>
+                </div>
+              </button>
+            </div>
+
+            {/* Cancel button */}
+            <button
+              onClick={() => setShowReplyTypeModal(null)}
               className="w-full mt-4 py-2 rounded-lg font-medium transition-colors duration-200"
               style={{
                 backgroundColor: colors.background.primary,

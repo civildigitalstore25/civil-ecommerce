@@ -29,6 +29,22 @@ export interface Review {
   isAnonymous?: boolean;
   anonymousName?: string;
   createdBy?: string;
+  replies: Reply[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Reply {
+  _id: string;
+  user: {
+    _id: string;
+    fullName: string;
+    email: string;
+  } | null;
+  comment: string;
+  isAnonymous?: boolean;
+  anonymousName?: string;
+  createdBy?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -119,4 +135,37 @@ export const getAllReviews = async (
 ): Promise<ReviewsResponse> => {
   const response = await api.get(`/admin/all?page=${page}&limit=${limit}`);
   return response.data;
+};
+
+// Add a reply to a review
+export const addReplyToReview = async (
+  reviewId: string,
+  data: {
+    comment: string;
+    isAnonymous?: boolean;
+    anonymousName?: string;
+  }
+): Promise<Review> => {
+  const response = await api.post(`/${reviewId}/reply`, data);
+  return response.data;
+};
+
+// Update a reply
+export const updateReply = async (
+  reviewId: string,
+  replyId: string,
+  data: {
+    comment: string;
+  }
+): Promise<Review> => {
+  const response = await api.put(`/${reviewId}/reply/${replyId}`, data);
+  return response.data;
+};
+
+// Delete a reply
+export const deleteReply = async (
+  reviewId: string,
+  replyId: string
+): Promise<void> => {
+  await api.delete(`/${reviewId}/reply/${replyId}`);
 };

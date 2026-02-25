@@ -6,6 +6,9 @@ import {
   deleteReview,
   getAllReviews,
   getProductReviewStats,
+  addReplyToReview,
+  updateReply,
+  deleteReply,
 } from '../controllers/reviewController';
 import { authenticate } from '../middlewares/auth';
 
@@ -19,6 +22,11 @@ router.get('/product/:productId/stats', getProductReviewStats);
 router.post('/product/:productId', authenticate, createReview);
 router.put('/:reviewId', authenticate, updateReview);
 router.delete('/:reviewId', authenticate, deleteReview);
+
+// Reply routes (require authentication)
+router.post('/:reviewId/reply', authenticate, addReplyToReview);
+router.put('/:reviewId/reply/:replyId', authenticate, updateReply);
+router.delete('/:reviewId/reply/:replyId', authenticate, deleteReply);
 
 // Admin routes
 router.get('/admin/all', authenticate, getAllReviews);

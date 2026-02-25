@@ -13,22 +13,36 @@ export const getProductReviews = async (req: Request, res: Response) => {
 
         const reviews = await Review.find({ product: productId })
             .populate('user', 'fullName email')
+            .populate('replies.user', 'fullName email')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        // Format reviews to handle anonymous ones
+        // Format reviews to handle anonymous ones and anonymous replies
         const formattedReviews = reviews.map(review => {
-            const reviewObj = review.toObject();
+            const reviewObj: any = review.toObject();
             if (review.isAnonymous) {
-                return {
-                    ...reviewObj,
-                    user: {
-                        _id: 'anonymous',
-                        fullName: review.anonymousName || 'Anonymous User',
-                        email: '',
-                    },
+                reviewObj.user = {
+                    _id: 'anonymous',
+                    fullName: review.anonymousName || 'Anonymous User',
+                    email: '',
                 };
+            }
+            // Format replies
+            if (reviewObj.replies && reviewObj.replies.length > 0) {
+                reviewObj.replies = reviewObj.replies.map((reply: any) => {
+                    if (reply.isAnonymous) {
+                        return {
+                            ...reply,
+                            user: {
+                                _id: 'anonymous',
+                                fullName: reply.anonymousName || 'Anonymous User',
+                                email: '',
+                            },
+                        };
+                    }
+                    return reply;
+                });
             }
             return reviewObj;
         });
@@ -342,5 +356,191 @@ export const getProductReviewStats = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching review stats:', error);
         res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// Add a reply to a review
+export const addReplyToReview = async (req: Request, res: Response) => {
+    try {
+        const { reviewId } = req.params;
+        const { comment, isAnonymous, anonymousName } = req.body;
+        const userId = (req as any).user.id;
+        const userRole = (req as any).user.role;
+        const isAdminUser = userRole === 'admin' || userRole === 'superadmin';
+
+        console.log('Adding reply to review:', { reviewId, userId, isAnonymous, comment });
+
+        // Find the review
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // Validate comment
+        if (!comment || comment.trim() === '') {
+            return res.status(400).json({ message: 'Reply comment is required' });
+        }
+
+        // Prepare reply data
+        const replyData: any = {
+            comment: comment.trim(),
+            isAnonymous: isAnonymous || false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        };
+
+        // If anonymous reply
+        if (isAnonymous) {
+            // Only admins can post anonymous replies
+            if (!isAdminUser) {
+                return res.status(403).json({ message: 'Only admins can post anonymous replies' });
+            }
+
+            // Validate anonymous name
+            if (!anonymousName || anonymousName.trim() === '') {
+                return res.status(400).json({ message: 'Anonymous name is required for anonymous replies' });
+            }
+
+            replyData.anonymousName = anonymousName.trim();
+            replyData.user = null;
+            replyData.createdBy = userId;
+        } else {
+            replyData.user = userId;
+        }
+
+        // Add reply to review
+        review.replies.push(replyData);
+        await review.save();
+
+        // Populate the review with user details
+        await review.populate('user', 'fullName email');
+        await review.populate('replies.user', 'fullName email');
+
+        // Format the review to handle anonymous replies
+        const reviewObj: any = review.toObject();
+        if (reviewObj.replies && reviewObj.replies.length > 0) {
+            reviewObj.replies = reviewObj.replies.map((reply: any) => {
+                if (reply.isAnonymous) {
+                    return {
+                        ...reply,
+                        user: {
+                            _id: 'anonymous',
+                            fullName: reply.anonymousName || 'Anonymous User',
+                            email: '',
+                        },
+                    };
+                }
+                return reply;
+            });
+        }
+
+        res.status(201).json(reviewObj);
+    } catch (error: any) {
+        console.error('Error adding reply:', error);
+        res.status(500).json({
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+// Update a reply
+export const updateReply = async (req: Request, res: Response) => {
+    try {
+        const { reviewId, replyId } = req.params;
+        const { comment } = req.body;
+        const userId = (req as any).user.id;
+        const userRole = (req as any).user.role;
+        const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+
+        // Find the review
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // Find the reply
+        const reply = review.replies.id(replyId);
+        if (!reply) {
+            return res.status(404).json({ message: 'Reply not found' });
+        }
+
+        // Check authorization
+        if (reply.isAnonymous) {
+            // For anonymous replies, only the admin who created it can update
+            if (!isAdmin || (reply.createdBy && reply.createdBy.toString() !== userId)) {
+                return res.status(403).json({ message: 'Not authorized to update this reply' });
+            }
+        } else {
+            // For regular replies, check if user owns the reply or is admin
+            if (reply.user && reply.user.toString() !== userId && !isAdmin) {
+                return res.status(403).json({ message: 'Not authorized to update this reply' });
+            }
+        }
+
+        // Update the reply
+        reply.comment = comment || reply.comment;
+        reply.updatedAt = new Date();
+
+        await review.save();
+
+        // Populate user details
+        await review.populate('user', 'fullName email');
+        await review.populate('replies.user', 'fullName email');
+
+        res.json(review);
+    } catch (error: any) {
+        console.error('Error updating reply:', error);
+        res.status(500).json({
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+};
+
+// Delete a reply
+export const deleteReply = async (req: Request, res: Response) => {
+    try {
+        const { reviewId, replyId } = req.params;
+        const userId = (req as any).user.id;
+        const userRole = (req as any).user.role;
+        const isAdmin = userRole === 'admin' || userRole === 'superadmin';
+
+        // Find the review
+        const review = await Review.findById(reviewId);
+        if (!review) {
+            return res.status(404).json({ message: 'Review not found' });
+        }
+
+        // Find the reply
+        const reply = review.replies.id(replyId);
+        if (!reply) {
+            return res.status(404).json({ message: 'Reply not found' });
+        }
+
+        // Check authorization
+        if (reply.isAnonymous) {
+            // For anonymous replies, only the admin who created it can delete
+            if (!isAdmin || (reply.createdBy && reply.createdBy.toString() !== userId)) {
+                return res.status(403).json({ message: 'Not authorized to delete this reply' });
+            }
+        } else {
+            // For regular replies, check if user owns the reply or is admin
+            if (reply.user && reply.user.toString() !== userId && !isAdmin) {
+                return res.status(403).json({ message: 'Not authorized to delete this reply' });
+            }
+        }
+
+        // Remove the reply using pull
+        review.replies.pull(replyId);
+        await review.save();
+
+        res.json({ message: 'Reply deleted successfully' });
+    } catch (error: any) {
+        console.error('Error deleting reply:', error);
+        res.status(500).json({
+            message: 'Server error',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 };

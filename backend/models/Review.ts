@@ -1,5 +1,16 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
+export interface IReply {
+    _id?: mongoose.Types.ObjectId;
+    user: mongoose.Types.ObjectId | null;
+    comment: string;
+    isAnonymous: boolean;
+    anonymousName?: string;
+    createdBy?: mongoose.Types.ObjectId; // Admin who created the anonymous reply
+    createdAt: Date;
+    updatedAt: Date;
+}
+
 export interface IReview extends Document {
     product: mongoose.Types.ObjectId;
     user: mongoose.Types.ObjectId | null;
@@ -8,9 +19,47 @@ export interface IReview extends Document {
     isAnonymous: boolean; // True if admin reviewing as anonymous user
     anonymousName?: string; // Custom name for anonymous reviews
     createdBy?: mongoose.Types.ObjectId; // Admin who created the anonymous review
+    replies: mongoose.Types.DocumentArray<IReply & mongoose.Types.Subdocument>;
     createdAt: Date;
     updatedAt: Date;
 }
+
+// Reply subdocument schema
+const ReplySchema = new Schema<IReply>({
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: false, // Not required for anonymous replies
+    },
+    comment: {
+        type: String,
+        required: true,
+        trim: true,
+    },
+    isAnonymous: {
+        type: Boolean,
+        default: false,
+    },
+    anonymousName: {
+        type: String,
+        trim: true,
+    },
+    createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: false, // Admin who created the anonymous reply
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+}, {
+    timestamps: false,
+});
 
 const ReviewSchema = new Schema<IReview>({
     product: {
@@ -47,6 +96,7 @@ const ReviewSchema = new Schema<IReview>({
         ref: 'User',
         required: false, // Admin who created the anonymous review
     },
+    replies: [ReplySchema],
     createdAt: {
         type: Date,
         default: Date.now,
