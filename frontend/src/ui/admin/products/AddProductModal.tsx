@@ -553,54 +553,29 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       company: defaultBrand, // For backward compatibility
       brand: defaultBrand, // New field
 
-      // Pricing handling
-      // For ebook brand, prefer the simple ebook price fields
-      // For drafts, default to 0 if no price is provided
+      // Pricing handling - always send explicit values (use 0 when cleared) so backend updates them.
+      // Undefined keys are omitted in JSON and backend won't update those fields.
       price1:
         defaultBrand === "ebook"
-          ? newProduct.ebookPriceINR
-            ? Number(newProduct.ebookPriceINR)
-            : (isDraft ? 0 : 0)
-          : newProduct.subscriptionDurations[0]?.price
-            ? Number(newProduct.subscriptionDurations[0].price)
-            : (isDraft ? 0 : 0),
-      price3: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.price
-        ? Number(newProduct.subscriptionDurations[1].price)
-        : undefined,
+          ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
+          : (newProduct.subscriptionDurations[0]?.price ? Number(newProduct.subscriptionDurations[0].price) : 0),
+      price3: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0),
       priceLifetime:
         defaultBrand === "ebook"
-          ? undefined
-          : newProduct.hasLifetime && newProduct.lifetimePrice
-            ? Number(newProduct.lifetimePrice)
-            : undefined,
+          ? 0
+          : (newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : newProduct.hasLifetime && newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : 0),
 
       // Dual currency pricing
       price1INR: defaultBrand === "ebook"
-        ? newProduct.ebookPriceINR
-          ? Number(newProduct.ebookPriceINR)
-          : undefined
-        : newProduct.subscriptionDurations[0]?.priceINR
-          ? Number(newProduct.subscriptionDurations[0].priceINR)
-          : undefined,
+        ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
+        : (newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : 0),
       price1USD: defaultBrand === "ebook"
-        ? newProduct.ebookPriceUSD
-          ? Number(newProduct.ebookPriceUSD)
-          : undefined
-        : newProduct.subscriptionDurations[0]?.priceUSD
-          ? Number(newProduct.subscriptionDurations[0].priceUSD)
-          : undefined,
-      price3INR: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceINR
-        ? Number(newProduct.subscriptionDurations[1].priceINR)
-        : undefined,
-      price3USD: defaultBrand === "ebook" ? undefined : newProduct.subscriptionDurations[1]?.priceUSD
-        ? Number(newProduct.subscriptionDurations[1].priceUSD)
-        : undefined,
-      priceLifetimeINR: defaultBrand === "ebook" ? undefined : newProduct.lifetimePriceINR
-        ? Number(newProduct.lifetimePriceINR)
-        : undefined,
-      priceLifetimeUSD: defaultBrand === "ebook" ? undefined : newProduct.lifetimePriceUSD
-        ? Number(newProduct.lifetimePriceUSD)
-        : undefined,
+        ? (newProduct.ebookPriceUSD ? Number(newProduct.ebookPriceUSD) : 0)
+        : (newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : 0),
+      price3INR: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0),
+      price3USD: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0),
+      priceLifetimeINR: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0),
+      priceLifetimeUSD: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0),
 
       // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
       subscriptionDurations: defaultBrand === "ebook" ? [] : newProduct.subscriptionDurations
@@ -633,44 +608,26 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             (sub.priceUSD && sub.priceUSD > 0),
         ),
 
-      // Lifetime pricing
+      // Lifetime pricing - send 0 when cleared so backend updates
       hasLifetime: newProduct.hasLifetime,
-      lifetimePrice: newProduct.lifetimePriceINR
-        ? Number(newProduct.lifetimePriceINR)
-        : newProduct.lifetimePrice
-          ? Number(newProduct.lifetimePrice)
-          : undefined, // Backward compatibility fallback
-      lifetimePriceINR: newProduct.lifetimePriceINR
-        ? Number(newProduct.lifetimePriceINR)
-        : undefined,
-      lifetimePriceUSD: newProduct.lifetimePriceUSD
-        ? Number(newProduct.lifetimePriceUSD)
-        : undefined,
+      lifetimePrice: newProduct.hasLifetime && (newProduct.lifetimePriceINR || newProduct.lifetimePrice)
+        ? Number(newProduct.lifetimePriceINR || newProduct.lifetimePrice)
+        : 0,
+      lifetimePriceINR: newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0,
+      lifetimePriceUSD: newProduct.hasLifetime && newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0,
 
-      // Membership pricing
+      // Membership pricing - send 0 when cleared so backend updates
       hasMembership: newProduct.hasMembership,
       membershipPrice:
-        newProduct.hasMembership && newProduct.membershipPriceINR
-          ? Number(newProduct.membershipPriceINR)
-          : newProduct.hasMembership && newProduct.membershipPrice
-            ? Number(newProduct.membershipPrice)
-            : undefined, // Backward compatibility fallback
-      membershipPriceINR:
-        newProduct.hasMembership && newProduct.membershipPriceINR
-          ? Number(newProduct.membershipPriceINR)
-          : undefined,
-      membershipPriceUSD:
-        newProduct.hasMembership && newProduct.membershipPriceUSD
-          ? Number(newProduct.membershipPriceUSD)
-          : undefined,
+        newProduct.hasMembership && (newProduct.membershipPriceINR || newProduct.membershipPrice)
+          ? Number(newProduct.membershipPriceINR || newProduct.membershipPrice)
+          : 0,
+      membershipPriceINR: newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : 0,
+      membershipPriceUSD: newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : 0,
 
-      // Strikethrough Price (MRP)
-      strikethroughPriceINR: newProduct.strikethroughPriceINR
-        ? Number(newProduct.strikethroughPriceINR)
-        : undefined,
-      strikethroughPriceUSD: newProduct.strikethroughPriceUSD
-        ? Number(newProduct.strikethroughPriceUSD)
-        : undefined,
+      // Strikethrough Price (MRP) - send 0 when cleared so backend updates
+      strikethroughPriceINR: newProduct.strikethroughPriceINR ? Number(newProduct.strikethroughPriceINR) : 0,
+      strikethroughPriceUSD: newProduct.strikethroughPriceUSD ? Number(newProduct.strikethroughPriceUSD) : 0,
 
       // Images
       image: defaultImage, // For backward compatibility
@@ -698,35 +655,35 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       keyFeatures: newProduct.keyFeatures,
       systemRequirements: newProduct.systemRequirements,
 
-      // Deal Configuration
+      // Deal Configuration - send null when deal disabled so backend clears dates
       isDeal: newProduct.isDeal || false,
       dealStartDate: newProduct.isDeal && newProduct.dealStartDate && newProduct.dealStartTime
         ? new Date(`${newProduct.dealStartDate}T${newProduct.dealStartTime}`)
-        : undefined,
+        : null,
       dealEndDate: newProduct.isDeal && newProduct.dealEndDate && newProduct.dealEndTime
         ? new Date(`${newProduct.dealEndDate}T${newProduct.dealEndTime}`)
-        : undefined,
+        : null,
       // Deal prices for e-books
       dealPrice1INR: newProduct.isDeal && defaultBrand === "ebook" && newProduct.dealEbookPriceINR
         ? Number(newProduct.dealEbookPriceINR)
-        : undefined,
+        : 0,
       dealPrice1USD: newProduct.isDeal && defaultBrand === "ebook" && newProduct.dealEbookPriceUSD
         ? Number(newProduct.dealEbookPriceUSD)
-        : undefined,
+        : 0,
       // Deal prices for lifetime
       dealPriceLifetimeINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceINR
         ? Number(newProduct.dealLifetimePriceINR)
-        : undefined,
+        : 0,
       dealPriceLifetimeUSD: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceUSD
         ? Number(newProduct.dealLifetimePriceUSD)
-        : undefined,
+        : 0,
       // Deal prices for membership
       dealMembershipPriceINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealMembershipPriceINR
         ? Number(newProduct.dealMembershipPriceINR)
-        : undefined,
+        : 0,
       dealMembershipPriceUSD: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealMembershipPriceUSD
         ? Number(newProduct.dealMembershipPriceUSD)
-        : undefined,
+        : 0,
       // Deal subscription durations
       dealSubscriptionDurations: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealSubscriptionDurations.length > 0
         ? newProduct.dealSubscriptionDurations
