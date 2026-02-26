@@ -153,12 +153,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           faqs: product.faqs || [],
           keyFeatures: product.keyFeatures || [],
           systemRequirements: product.systemRequirements || [],
-          // Deal fields
-          isDeal: product.isDeal || false,
-          dealStartDate: product.dealStartDate ? new Date(product.dealStartDate).toISOString().split('T')[0] : "",
-          dealEndDate: product.dealEndDate ? new Date(product.dealEndDate).toISOString().split('T')[0] : "",
-          dealStartTime: product.dealStartDate ? new Date(product.dealStartDate).toISOString().split('T')[1].slice(0, 5) : "",
-          dealEndTime: product.dealEndDate ? new Date(product.dealEndDate).toISOString().split('T')[1].slice(0, 5) : "",
+          // Deal fields - use local time (toISOString uses UTC and causes wrong date/time on reopen)
+          ...(product.dealStartDate
+            ? (() => {
+                const d = new Date(product.dealStartDate);
+                if (isNaN(d.getTime())) return { dealStartDate: "", dealStartTime: "" };
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return {
+                  dealStartDate: `${y}-${m}-${day}`,
+                  dealStartTime: `${h}:${min}`,
+                };
+              })()
+            : { dealStartDate: "", dealStartTime: "" }),
+          ...(product.dealEndDate
+            ? (() => {
+                const d = new Date(product.dealEndDate);
+                if (isNaN(d.getTime())) return { dealEndDate: "", dealEndTime: "" };
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return {
+                  dealEndDate: `${y}-${m}-${day}`,
+                  dealEndTime: `${h}:${min}`,
+                };
+              })()
+            : { dealEndDate: "", dealEndTime: "" }),
           dealEbookPriceINR: (product as any).dealPrice1INR?.toString() || "",
           dealEbookPriceUSD: (product as any).dealPrice1USD?.toString() || "",
           dealLifetimePriceINR: (product as any).dealPriceLifetimeINR?.toString() || "",

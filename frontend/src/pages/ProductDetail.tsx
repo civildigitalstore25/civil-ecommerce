@@ -1749,25 +1749,14 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Deal Countdown Timer and Dates */}
+            {/* Deal Countdown Timer */}
             {isActiveDeal && product.dealEndDate && (
-              <div className="mt-4 space-y-3">
-                <CountdownTimer dealEndDate={new Date(product.dealEndDate)} colors={colors} />
-
-                <div className="flex flex-col gap-1 text-sm" style={{ color: colors.text.secondary }}>
-                  {product.dealStartDate && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Deal Start:</span>
-                      <span>{new Date(product.dealStartDate).toLocaleString()}</span>
-                    </div>
-                  )}
-                  {product.dealEndDate && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Deal End:</span>
-                      <span>{new Date(product.dealEndDate).toLocaleString()}</span>
-                    </div>
-                  )}
-                </div>
+              <div className="mt-4">
+                <CountdownTimer
+                  dealEndDate={new Date(product.dealEndDate)}
+                  colors={colors}
+                  variant="featured"
+                />
               </div>
             )}
 

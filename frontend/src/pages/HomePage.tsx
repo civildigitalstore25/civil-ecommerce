@@ -1,6 +1,5 @@
 import React from "react";
 import { Helmet } from "react-helmet";
-// import ExclusiveOffers from "../ui/home/ExclusiveOffers";
 import HeroSection from "../ui/home/HeroSection";
 import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
@@ -8,10 +7,14 @@ import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getHomeSEO } from "../utils/seo";
+import DealsPage from "./Deals";
+import { useActiveDeals } from "../api/dealsApi";
 
 const HomePage: React.FC = () => {
   const { colors } = useAdminTheme();
   const seoData = getHomeSEO();
+  const { data: dealsData } = useActiveDeals();
+  const hasDeals = (dealsData?.deals || []).length > 0;
 
   return (
     <>
@@ -63,13 +66,16 @@ const HomePage: React.FC = () => {
           <HomeProducts />
         </section>
 
-        {/* <section className="px-4 sm:px-6 lg:px-8">
-          <ExclusiveOffers />
-        </section> */}
-
         <section className="px-4 sm:px-6 lg:px-8">
           <WhyChooseUs />
         </section>
+
+        {hasDeals && (
+          <section className="px-4 sm:px-6 lg:px-8">
+            <DealsPage />
+          </section>
+        )}
+
 
         <section className="px-4 sm:px-6 lg:px-8">
           <Reviews />
