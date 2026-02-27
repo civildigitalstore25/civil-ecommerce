@@ -6,6 +6,8 @@ import { getActiveDeals } from "../api/dealsApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { CountdownTimer } from "../components/CountdownTimer/CountdownTimer";
+import { useAdminThemeStyles } from "../hooks/useAdminThemeStyles";
+
 const DealsPage: React.FC = () => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
@@ -37,10 +39,10 @@ const DealsPage: React.FC = () => {
 
   return (
     <div
-      className="min-h-screen transition-colors duration-200 pt-20"
-      style={{ backgroundColor: colors.background.secondary }}
+      className="min-h-screen py-20 px-4"
+      style={{ backgroundColor: colors.background.primary }}
     >
-      <div className="max-w-7xl mx-auto py-8 px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -49,7 +51,7 @@ const DealsPage: React.FC = () => {
               className="text-4xl md:text-5xl font-bold mt-6"
               style={{ color: colors.text.primary }}
             >
-              Active Deals
+              🔥 Active Deals
             </h1>
             <TrendingDown className="w-10 h-10" style={{ color: colors.status.warning }} />
           </div>
@@ -58,7 +60,7 @@ const DealsPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Deals Grid - Same as BrandCategoryListing */}
+        {/* Deals Grid */}
         {deals.length === 0 ? (
           <div className="text-center py-20">
             <Clock className="w-20 h-20 mx-auto mb-4 opacity-50" style={{ color: colors.text.secondary }} />
@@ -70,8 +72,9 @@ const DealsPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {deals.map((product: any) => {
+              const { cardStyle, buttonStyle } = useAdminThemeStyles();
               // Get original and deal prices
               const originalPrice = product.price1INR || product.price1 || 0;
               const dealPrice = product.dealPrice1INR || originalPrice;
@@ -84,80 +87,76 @@ const DealsPage: React.FC = () => {
                 <div
                   key={product._id}
                   onClick={() => handleProductClick(slug)}
-                  className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] cursor-pointer"
-                  style={{ backgroundColor: colors.background.primary }}
+                  className="rounded-2xl shadow-md p-6 sm:p-8 border transition-all duration-300 hover:shadow-lg cursor-pointer group"
+                  style={cardStyle("secondary")}
                 >
-                  {/* Image - Same height as BrandCategoryListing */}
-                  <div
-                    className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 transition-colors duration-200 relative"
-                    style={{ backgroundColor: colors.background.secondary }}
-                  >
-                    <img
-                      src={product.imageUrl || product.image}
-                      alt={product.name}
-                      className="object-contain w-full h-full transition-transform duration-300 hover:scale-105"
-                    />
-                  </div>
-
-                  {/* Name - Same styling as BrandCategoryListing */}
-                  <h2
-                    className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] md:min-h-[3rem]"
-                    style={{ color: colors.text.primary }}
-                  >
-                    {product.name}
-                    {product.version && (
-                      <span
-                        className="font-normal transition-colors duration-200"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        {" "}({product.version})
-                      </span>
-                    )}
-                  </h2>
-
-                  {/* Price */}
-                  <div className="flex items-center gap-2 mb-1 md:mb-2">
-                    <span
-                      className="text-sm md:text-xl font-bold"
-                      style={{ color: colors.status.warning }}
-                    >
-                      {formatPriceWithSymbol(dealPrice, product.dealPrice1USD || dealPrice / 83)}
-                    </span>
-                    {discount > 0 && (
-                      <span
-                        className="text-xs md:text-base line-through opacity-60"
-                        style={{ color: colors.text.secondary }}
-                      >
-                        {formatPriceWithSymbol(originalPrice, (product.price1USD || originalPrice / 83))}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Countdown */}
-                  {product.dealEndDate && (
-                    <div className="mb-2 md:mb-3">
-                      <CountdownTimer
-                        dealEndDate={new Date(product.dealEndDate)}
-                        colors={colors}
+                  <div className="flex flex-col h-full">
+                    <div className="w-full overflow-hidden rounded-lg mb-4">
+                      <img
+                        src={product.imageUrl || product.image}
+                        alt={product.name}
+                        className="w-full h-44 object-contain group-hover:scale-105 transition-transform duration-300"
+                        style={{ backgroundColor: colors.background.primary }}
                       />
                     </div>
-                  )}
 
-                  {/* View Deal Button - Same structure as BrandCategoryListing buttons */}
-                  <div className="mt-auto">
-                    <button
-                      className="w-full rounded-md md:rounded-lg py-1 md:py-2 font-semibold text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
-                      style={{
-                        background: "#0068ff",
-                        color: "#fff",
-                      }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleProductClick(slug);
-                      }}
-                    >
-                      View Deal
-                    </button>
+                    <div className="flex-1">
+                      <h3
+                        className="text-xl font-bold mb-2 line-clamp-2"
+                        style={{ color: colors.text.primary }}
+                      >
+                        {product.name}
+                      </h3>
+
+                      {product.version && (
+                        <p className="text-sm mb-3" style={{ color: colors.text.secondary }}>
+                          Version: {product.version}
+                        </p>
+                      )}
+
+                      <div className="mb-4">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className="text-2xl font-bold"
+                            style={{ color: colors.status.warning }}
+                          >
+                            {formatPriceWithSymbol(dealPrice, product.dealPrice1USD || dealPrice / 83)}
+                          </span>
+                          {discount > 0 && (
+                            <span
+                              className="text-lg line-through opacity-60"
+                              style={{ color: colors.text.secondary }}
+                            >
+                              {formatPriceWithSymbol(originalPrice, (product.price1USD || originalPrice / 83))}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {product.dealEndDate && (
+                        <div className="mt-2">
+                          <div
+                            className="text-xs font-semibold mb-2"
+                            style={{ color: colors.text.secondary }}
+                          >
+                            Hurry! Deal ends in:
+                          </div>
+                          <CountdownTimer
+                            dealEndDate={new Date(product.dealEndDate)}
+                            colors={colors}
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="mt-6">
+                      <button
+                        className="w-full py-3 rounded-lg font-semibold transition-all duration-200"
+                        style={buttonStyle("primary") as React.CSSProperties}
+                      >
+                        View Deal
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

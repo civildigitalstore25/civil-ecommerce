@@ -27,7 +27,7 @@ const HomePage: React.FC = () => {
         <meta property="og:type" content="website" />
         <link rel="canonical" href={window.location.href} />
       </Helmet>
-      
+
       <div
         className="flex flex-col min-h-screen transition-colors duration-200"
         style={{ backgroundColor: colors.background.primary }}
@@ -36,16 +36,16 @@ const HomePage: React.FC = () => {
 
         {/* Main Content */}
         <main className="flex-grow pt-20">
-        <section className="px-4 sm:px-6 lg:px-8">
-          <MarqueeBanner />
-        </section>
+          <section className="px-4 sm:px-6 lg:px-8">
+            <MarqueeBanner />
+          </section>
 
-        <section className="px-4 sm:px-6 lg:px-8">
-          <HeroSection />
-        </section>
+          <section className="px-4 sm:px-6 lg:px-8">
+            <HeroSection />
+          </section>
 
-        {/* Shop by Category - Mobile Only (commented out for now, will be used later) */}
-        {/* <section
+          {/* Shop by Category - Mobile Only (commented out for now, will be used later) */}
+          {/* <section
           className="px-2 sm:px-6 lg:hidden py-6 transition-colors duration-200"
           style={{
             background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
@@ -62,28 +62,26 @@ const HomePage: React.FC = () => {
         </section> */}
 
 
-        <section className="px-4 sm:px-6 lg:px-8">
-          <HomeProducts />
-        </section>
-        
-        {hasDeals && (
           <section className="px-4 sm:px-6 lg:px-8">
-            <DealsPage />
+            <HomeProducts />
           </section>
-        )}
 
-        <section className="px-4 sm:px-6 lg:px-8">
-          <WhyChooseUs />
-        </section>
+          <section className="px-4 sm:px-6 lg:px-8">
+            <WhyChooseUs />
+          </section>
 
-        
+          {hasDeals && (
+            <section className="px-4 sm:px-6 lg:px-8">
+              <DealsPage />
+            </section>
+          )}
 
 
-        <section className="px-4 sm:px-6 lg:px-8">
-          <Reviews />
-        </section>
-      </main>
-    </div>
+          <section className="px-4 sm:px-6 lg:px-8">
+            <Reviews />
+          </section>
+        </main>
+      </div>
     </>
   );
 };

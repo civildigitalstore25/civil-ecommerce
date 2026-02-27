@@ -153,36 +153,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           faqs: product.faqs || [],
           keyFeatures: product.keyFeatures || [],
           systemRequirements: product.systemRequirements || [],
+          isDeal: (product as any).isDeal || false,
           // Deal fields - use local time (toISOString uses UTC and causes wrong date/time on reopen)
           ...(product.dealStartDate
             ? (() => {
-                const d = new Date(product.dealStartDate);
-                if (isNaN(d.getTime())) return { dealStartDate: "", dealStartTime: "" };
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const h = String(d.getHours()).padStart(2, '0');
-                const min = String(d.getMinutes()).padStart(2, '0');
-                return {
-                  dealStartDate: `${y}-${m}-${day}`,
-                  dealStartTime: `${h}:${min}`,
-                };
-              })()
+              const d = new Date(product.dealStartDate);
+              if (isNaN(d.getTime())) return { dealStartDate: "", dealStartTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                dealStartDate: `${y}-${m}-${day}`,
+                dealStartTime: `${h}:${min}`,
+              };
+            })()
             : { dealStartDate: "", dealStartTime: "" }),
           ...(product.dealEndDate
             ? (() => {
-                const d = new Date(product.dealEndDate);
-                if (isNaN(d.getTime())) return { dealEndDate: "", dealEndTime: "" };
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                const h = String(d.getHours()).padStart(2, '0');
-                const min = String(d.getMinutes()).padStart(2, '0');
-                return {
-                  dealEndDate: `${y}-${m}-${day}`,
-                  dealEndTime: `${h}:${min}`,
-                };
-              })()
+              const d = new Date(product.dealEndDate);
+              if (isNaN(d.getTime())) return { dealEndDate: "", dealEndTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                dealEndDate: `${y}-${m}-${day}`,
+                dealEndTime: `${h}:${min}`,
+              };
+            })()
             : { dealEndDate: "", dealEndTime: "" }),
           dealEbookPriceINR: (product as any).dealPrice1INR?.toString() || "",
           dealEbookPriceUSD: (product as any).dealPrice1USD?.toString() || "",
@@ -192,19 +193,19 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           dealMembershipPriceUSD: (product as any).dealMembershipPriceUSD?.toString() || "",
           dealSubscriptionDurations: (product as any).dealSubscriptionDurations && (product as any).dealSubscriptionDurations.length > 0
             ? (product as any).dealSubscriptionDurations.map((sub: any) => ({
-                duration: sub.duration,
-                price: sub.price?.toString() || "",
-                priceINR: sub.priceINR?.toString() || "",
-                priceUSD: sub.priceUSD?.toString() || "",
-              }))
+              duration: sub.duration,
+              price: sub.price?.toString() || "",
+              priceINR: sub.priceINR?.toString() || "",
+              priceUSD: sub.priceUSD?.toString() || "",
+            }))
             : [],
           dealSubscriptions: (product as any).dealSubscriptions && (product as any).dealSubscriptions.length > 0
             ? (product as any).dealSubscriptions.map((sub: any) => ({
-                duration: sub.duration,
-                price: sub.price?.toString() || "",
-                priceINR: sub.priceINR?.toString() || "",
-                priceUSD: sub.priceUSD?.toString() || "",
-              }))
+              duration: sub.duration,
+              price: sub.price?.toString() || "",
+              priceINR: sub.priceINR?.toString() || "",
+              priceUSD: sub.priceUSD?.toString() || "",
+            }))
             : [],
         });
       } else {
@@ -1903,7 +1904,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
             >
               🎉 Deal / Discount Configuration
             </h2>
-            
+
             <div className="flex items-center gap-3">
               <input
                 type="checkbox"
@@ -2777,7 +2778,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 type="button"
                 onClick={(e) => handleAddProduct(e, true)}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                 style={{
+                style={{
                   background: '#00BEF5',
                   color: colors.text.inverse,
                   border: 'none',
