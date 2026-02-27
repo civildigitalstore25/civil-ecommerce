@@ -264,7 +264,99 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
-    // Create Cashfree order
+    const totalNum = Number(totalAmount) || 0;
+    const isFreeOrder = totalNum <= 0;
+
+    // For free orders (₹0), skip payment gateway and create order as paid
+    if (isFreeOrder) {
+      const couponCodeUpper = couponCode ? String(couponCode).toUpperCase() : null;
+      const order = new Order({
+        userId: user._id,
+        orderId,
+        orderNumber,
+        items: itemsWithDriveLink,
+        subtotal,
+        discount,
+        shippingCharges,
+        totalAmount: totalNum,
+        shippingAddress,
+        couponCode: couponCodeUpper,
+        notes,
+        cashfreeOrderId: undefined,
+        paymentSessionId: undefined,
+        paymentStatus: 'paid',
+        orderStatus: 'processing'
+      });
+
+      await order.save();
+
+      // Apply coupon if used
+      if (couponCodeUpper) {
+        try {
+          const Coupon = (await import('../models/Coupon')).default;
+          const coupon = await Coupon.findOne({ code: couponCodeUpper });
+          if (coupon && coupon.status === 'Active' && coupon.usedCount < coupon.usageLimit) {
+            coupon.usedCount += 1;
+            if (coupon.usedCount >= coupon.usageLimit) coupon.status = 'Inactive';
+            await coupon.save();
+          }
+        } catch (e) {
+          console.error('Free order coupon update failed:', e);
+        }
+      }
+
+      // Send order confirmation emails
+      try {
+        const customerEmail = user.email || (notes?.replace?.(/^Email:\s*/i, '').trim()) || 'N/A';
+        const orderDetails = {
+          orderId: order.orderId,
+          orderNumber: order.orderNumber,
+          customerName: shippingAddress.fullName,
+          customerPhone: shippingAddress.phoneNumber,
+          customerEmail,
+          items: itemsWithDriveLink.map((item: any) => ({
+            productId: item.productId || null,
+            name: item.name,
+            version: item.version || null,
+            pricingPlan: item.pricingPlan || null,
+            quantity: item.quantity,
+            price: item.price
+          })),
+          subtotal,
+          discount,
+          totalAmount: totalNum,
+          paymentId: 'FREE_ORDER'
+        };
+        await emailService.sendOrderConfirmationToAdmin(orderDetails);
+        if (customerEmail && customerEmail !== 'N/A' && customerEmail.includes('@')) {
+          await emailService.sendPurchaseConfirmationEmail({
+            ...orderDetails,
+            purchaseDate: order.createdAt || new Date(),
+            downloadLinks: itemsWithDriveLink.map((item: any) => ({ name: item.name, driveLink: item.driveLink }))
+          });
+        }
+        order.adminNotificationSent = true;
+        await order.save();
+      } catch (e) {
+        console.error('Free order email failed:', e);
+      }
+
+      console.log('✅ Free order created (no payment):', orderId, 'for userId:', user._id);
+
+      res.status(201).json({
+        success: true,
+        message: 'Order placed successfully',
+        data: {
+          orderId: order.orderId,
+          isFreeOrder: true,
+          amount: 0,
+          currency: 'INR'
+        }
+      });
+      return;
+    }
+
+    // Create Cashfree order for paid orders
     const customerInfo = {
       customerId: user._id.toString(),
       name: shippingAddress.fullName,
@@ -435,7 +527,21 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
 
     console.log('✅ Payment verified for order:', order.orderId);
 
-    // Send order confirmation notifications
+    // Send order confirmation notifications (only once - prevents duplicate emails from retries/StrictMode)
+    if ((order as any).adminNotificationSent) {
+      console.log('ℹ️ Admin notification already sent for this order, skipping');
+      res.status(200).json({
+        success: true,
+        message: 'Payment verified successfully',
+        data: {
+          orderId: order.orderId,
+          orderStatus: order.orderStatus,
+          paymentStatus: order.paymentStatus
+        }
+      });
+      return;
+    }
+
     try {
       console.log('📧 Preparing to send notifications...');
       
@@ -514,6 +620,9 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
           console.error('❌ Failed to send customer confirmation email:', emailError.message);
         }
 
+        // Mark notifications as sent to prevent duplicates
+        order.adminNotificationSent = true;
+        await order.save();
       } catch (notificationError: any) {
         console.error('❌ Error sending notifications:', notificationError.message);
         // Don't fail the payment verification if notifications fail

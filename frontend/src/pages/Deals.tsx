@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Clock, TrendingDown } from "lucide-react";
+import { Clock } from "lucide-react";
 import { getActiveDeals } from "../api/dealsApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
@@ -44,17 +44,13 @@ const DealsPage: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <TrendingDown className="w-10 h-10" style={{ color: colors.status.warning }} />
-            <h1
-              className="text-4xl md:text-5xl font-bold mt-6"
-              style={{ color: colors.text.primary }}
-            >
-              🔥 Active Deals
-            </h1>
-            <TrendingDown className="w-10 h-10" style={{ color: colors.status.warning }} />
-          </div>
+        <div className=" text-center mb-12">
+          <h1
+            className="text-4xl font-bold mb-2 transition-colors duration-200"
+            style={{ color: colors.text.primary }}
+          >
+            Active Deals
+          </h1>
           <p className="text-lg" style={{ color: colors.text.secondary }}>
             Limited time offers - Don't miss out!
           </p>
@@ -72,7 +68,7 @@ const DealsPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 max-w-10xl mx-auto">
             {deals.map((product: any) => {
               const { cardStyle, buttonStyle } = useAdminThemeStyles();
               // Get original and deal prices
