@@ -34,16 +34,32 @@ const CategoryTabs: React.FC = () => {
       limit: 5,
     });
 
-  // Filter to only show active products (exclude draft and inactive)
-  const products = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
 
-  // Filter out 'others' brand
-  const visibleProducts = products.filter((p: any) => {
+  // Prioritize active and non-'others' products, but always show up to 5
+  const allProducts = data.products || [];
+  // 1. Active and not 'others'
+  const primary = allProducts.filter((p: any) => {
     const b = (p.brand || p.company || "").toString().toLowerCase();
-    return b !== "others";
+    return (p.status === 'active' || !p.status) && b !== "others";
+  });
+  // 2. Active and 'others'
+  const secondary = allProducts.filter((p: any) => {
+    const b = (p.brand || p.company || "").toString().toLowerCase();
+    return (p.status === 'active' || !p.status) && b === "others";
+  });
+  // 3. Inactive but not 'others'
+  const tertiary = allProducts.filter((p: any) => {
+    const b = (p.brand || p.company || "").toString().toLowerCase();
+    return p.status !== 'active' && b !== "others";
+  });
+  // 4. Inactive and 'others'
+  const fallback = allProducts.filter((p: any) => {
+    const b = (p.brand || p.company || "").toString().toLowerCase();
+    return p.status !== 'active' && b === "others";
   });
 
-  const displayedProducts = visibleProducts.slice(0, 5);
+  // Concatenate in order of priority and take up to 5
+  const displayedProducts = [...primary, ...secondary, ...tertiary, ...fallback].slice(0, 5);
 
   const interactiveTint =
     colors.interactive.primary &&

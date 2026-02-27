@@ -76,6 +76,15 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         </div>
       </div>
 
+      {/* Blog Menu */}
+      <button
+        onClick={() => onNavigate("/blog")}
+        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80 flex items-center gap-1"
+        style={{ color: colors.text.secondary }}
+      >
+        📝 Blog
+      </button>
+
       {/* Autodesk Dropdown */}
       <div className="relative">
         <div

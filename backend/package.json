@@ -8,7 +8,8 @@
     "dev": "nodemon --watch ./ --ext ts --exec ts-node server.ts",
     "start": "node dist/server.js",
     "build": "tsc",
-    "seed:menus": "ts-node scripts/seed-menus.ts"
+    "seed:menus": "ts-node scripts/seed-menus.ts",
+    "script:drop-review-index": "ts-node scripts/drop-review-unique-index.ts"
   },
   "keywords": [],
   "author": "",

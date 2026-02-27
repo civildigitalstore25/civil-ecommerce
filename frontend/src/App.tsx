@@ -55,6 +55,10 @@ import MenuManagement from "./components/admins/MenuManagement";
 import WelcomePopup from "./components/WelcomePopup/WelcomePopup";
 import SitemapPage from "./pages/SitemapPage";
 import DealsPage from "./pages/Deals";
+import BlogListPage from "./pages/BlogListPage";
+import BlogDetailPage from "./pages/BlogDetailPage";
+import AdminBlogList from "./pages/AdminBlogList";
+import AdminBlogForm from "./pages/AdminBlogForm";
 
 const queryClient = new QueryClient();
 
@@ -343,6 +347,35 @@ function AppLayout() {
           />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/deals" element={<DealsPage />} />
+          <Route path="/blog" element={<BlogListPage />} />
+          <Route path="/blog/:slug" element={<BlogDetailPage />} />
+          
+          {/* Admin Blog Routes */}
+          <Route
+            path="/admin/blogs"
+            element={
+              <AuthGuard>
+                <AdminBlogList />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/blogs/create"
+            element={
+              <AuthGuard>
+                <AdminBlogForm />
+              </AuthGuard>
+            }
+          />
+          <Route
+            path="/admin/blogs/edit/:id"
+            element={
+              <AuthGuard>
+                <AdminBlogForm />
+              </AuthGuard>
+            }
+          />
+          
           <Route path="/how-to-purchase" element={<HowToPurchase />} />
           <Route path="/payment-method" element={<PaymentMethod />} />
           <Route path="/sitemap" element={<SitemapPage />} />

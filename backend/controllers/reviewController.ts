@@ -167,9 +167,20 @@ export const createReview = async (req: Request, res: Response) => {
             code: error.code
         });
 
-        // Handle MongoDB errors
-        if (error.code === 11000 || error.name === 'MongoServerError') {
-            console.error('MongoDB error:', error);
+        // Handle MongoDB duplicate key error (11000)
+        if (error.code === 11000) {
+            console.error('MongoDB duplicate key error - unique index violation:', error);
+            console.error('This usually means the database has a unique index on { product, user }');
+            console.error('Please run: npm run script:drop-review-index on production');
+            return res.status(500).json({
+                message: 'Database constraint error. Multiple reviews detected. Please contact support.',
+                hint: 'Database migration needed - run drop-review-unique-index script'
+            });
+        }
+        
+        // Handle other MongoDB errors
+        if (error.name === 'MongoServerError') {
+            console.error('MongoDB server error:', error);
             return res.status(500).json({
                 message: 'Database error occurred'
             });

@@ -110,8 +110,9 @@ const ReviewSchema = new Schema<IReview>({
     toJSON: { virtuals: true },
 });
 
-// Index for efficient querying - allows multiple reviews per user per product
-ReviewSchema.index({ product: 1, user: 1 });
+// Index for efficient querying - explicitly NON-unique to allow multiple reviews per user per product
+// This allows admins to create multiple anonymous reviews and users to post multiple reviews
+ReviewSchema.index({ product: 1, user: 1 }, { unique: false });
 ReviewSchema.index({ product: 1, createdAt: -1 }); // For sorting reviews by date
 
 // Virtual for populating user details
