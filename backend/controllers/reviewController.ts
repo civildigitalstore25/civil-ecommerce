@@ -263,24 +263,72 @@ export const deleteReview = async (req: Request, res: Response) => {
     }
 };
 
-// Get all reviews for admin (with pagination)
+// Get all reviews for admin (with pagination, search, and filters)
 export const getAllReviews = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 20;
+        const search = (req.query.search as string) || '';
+        const rating = req.query.rating as string;
+        const dateFilter = (req.query.dateFilter as string) || 'all';
         const skip = (page - 1) * limit;
 
-        const reviews = await Review.find()
+        const filter: any = {};
+
+        if (rating && !isNaN(parseInt(rating))) {
+            filter.rating = parseInt(rating);
+        }
+
+        if (dateFilter !== 'all') {
+            const now = new Date();
+            let startDate: Date;
+
+            if (dateFilter === 'last-week') {
+                startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            } else if (dateFilter === 'last-month') {
+                startDate = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+            } else if (dateFilter === 'last-year') {
+                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+            } else {
+                startDate = new Date(0);
+            }
+            filter.createdAt = { $gte: startDate };
+        }
+
+        if (search && search.trim()) {
+            const searchRegex = new RegExp(search.trim(), 'i');
+            const matchingProducts = await Product.find({ name: searchRegex }).select('_id').lean();
+            const productIds = matchingProducts.map((p: any) => p._id);
+            filter.$or = [
+                { comment: searchRegex },
+                { anonymousName: searchRegex },
+                ...(productIds.length > 0 ? [{ product: { $in: productIds } }] : []),
+            ];
+        }
+
+        const reviews = await Review.find(filter)
             .populate('user', 'fullName email')
             .populate('product', 'name')
             .sort({ createdAt: -1 })
             .skip(skip)
-            .limit(limit);
+            .limit(limit)
+            .lean();
 
-        const total = await Review.countDocuments();
+        const total = await Review.countDocuments(filter);
+
+        const formattedReviews = reviews.map((review: any) => {
+            if (review.isAnonymous) {
+                review.user = {
+                    _id: null,
+                    fullName: review.anonymousName || 'Anonymous User',
+                    email: 'Anonymous Review',
+                };
+            }
+            return review;
+        });
 
         res.json({
-            reviews,
+            reviews: formattedReviews,
             pagination: {
                 page,
                 limit,

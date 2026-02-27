@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
-import { Edit, Trash2 } from "lucide-react";
+import React, { useState, useEffect, useCallback } from "react";
+import { Trash2 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import AdminPagination from "./components/AdminPagination";
+import ReviewFilters from "./reviews/ReviewFilters";
+import ReviewTable from "./reviews/ReviewTable";
 import { useUser } from "../../api/userQueries";
 import {
   getAllReviews,
@@ -20,33 +22,41 @@ const Reviews: React.FC = () => {
   const [editForm, setEditForm] = useState({ rating: 5, comment: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalReviews, setTotalReviews] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("all");
+  const [selectedReviews, setSelectedReviews] = useState<string[]>([]);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [pageSize]);
+  }, [pageSize, searchTerm, ratingFilter, dateFilter]);
 
-  const totalPages = Math.max(1, Math.ceil(reviews.length / pageSize));
-  const paginatedReviews = reviews.slice(
-    (currentPage - 1) * pageSize,
-    (currentPage - 1) * pageSize + pageSize,
-  );
-
-  useEffect(() => {
-    loadReviews();
-  }, []);
-
-  const loadReviews = async () => {
+  const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getAllReviews();
+      const response = await getAllReviews({
+        page: currentPage,
+        limit: pageSize,
+        search: searchTerm || undefined,
+        rating: ratingFilter || undefined,
+        dateFilter: dateFilter !== "all" ? dateFilter : undefined,
+      });
       setReviews(response.reviews);
+      setTotalPages(response.pagination?.pages || 1);
+      setTotalReviews(response.pagination?.total || response.reviews.length);
     } catch (error) {
       console.error("Error loading reviews:", error);
       Swal.fire("Error", "Failed to load reviews", "error");
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, searchTerm, ratingFilter, dateFilter]);
+
+  useEffect(() => {
+    loadReviews();
+  }, [loadReviews]);
 
   const handleDeleteReview = async (reviewId: string) => {
     const result = await Swal.fire({
@@ -63,6 +73,7 @@ const Reviews: React.FC = () => {
     try {
       await deleteReview(reviewId);
       Swal.fire("Success", "Review deleted successfully", "success");
+      setSelectedReviews((prev) => prev.filter((id) => id !== reviewId));
       loadReviews();
     } catch (error: any) {
       Swal.fire(
@@ -73,8 +84,57 @@ const Reviews: React.FC = () => {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedReviews.length === 0) return;
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to delete ${selectedReviews.length} review(s). This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete them!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await Promise.all(selectedReviews.map((id) => deleteReview(id)));
+      Swal.fire({
+        title: "Deleted!",
+        text: `${selectedReviews.length} review(s) have been deleted.`,
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      setSelectedReviews([]);
+      loadReviews();
+    } catch (error: any) {
+      Swal.fire(
+        "Error",
+        error.response?.data?.message || "Failed to delete reviews",
+        "error",
+      );
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedReviews.length === reviews.length) {
+      setSelectedReviews([]);
+    } else {
+      setSelectedReviews(reviews.map((r) => r._id));
+    }
+  };
+
+  const handleSelectReview = (id: string) => {
+    setSelectedReviews((prev) =>
+      prev.includes(id) ? prev.filter((rid) => rid !== id) : [...prev, id],
+    );
+  };
+
   const handleEditReview = (review: Review) => {
-    // Require user to be owner or have admin/superadmin role
     if (!user) {
       Swal.fire("Error", "Please login to edit reviews", "error");
       return;
@@ -114,40 +174,43 @@ const Reviews: React.FC = () => {
     setEditForm({ rating: 5, comment: "" });
   };
 
+  const clearFilters = () => {
+    setSearchTerm("");
+    setRatingFilter("");
+    setDateFilter("all");
+    setCurrentPage(1);
+  };
+
   const renderStars = (
     rating: number,
     interactive = false,
     onRatingChange?: (rating: number) => void,
-  ) => {
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <button
-            key={star}
-            type="button"
-            disabled={!interactive}
-            onClick={() =>
-              interactive && onRatingChange && onRatingChange(star)
-            }
-            className={`text-lg ${interactive ? "cursor-pointer hover:scale-110" : ""} transition-transform`}
-            style={{
-              color: star <= rating ? "#fbbf24" : colors.text.secondary,
-            }}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-    );
-  };
+  ) => (
+    <div className="flex gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          disabled={!interactive}
+          onClick={() => interactive && onRatingChange?.(star)}
+          className={`text-lg ${interactive ? "cursor-pointer hover:scale-110" : ""} transition-transform`}
+          style={{
+            color: star <= rating ? "#fbbf24" : colors.text.secondary,
+          }}
+        >
+          ★
+        </button>
+      ))}
+    </div>
+  );
 
-  if (loading) {
+  if (loading && reviews.length === 0) {
     return (
       <div className="flex justify-center items-center py-12">
         <div
           className="animate-spin rounded-full h-8 w-8 border-b-2"
           style={{ borderColor: colors.interactive.primary }}
-        ></div>
+        />
         <span className="ml-2" style={{ color: colors.text.secondary }}>
           Loading reviews...
         </span>
@@ -157,7 +220,7 @@ const Reviews: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h2
             className="text-2xl font-bold"
@@ -169,16 +232,35 @@ const Reviews: React.FC = () => {
             Manage customer reviews and feedback
           </p>
         </div>
-        <div className="text-sm" style={{ color: colors.text.secondary }}>
-          Total Reviews: {reviews.length}
+        <div className="flex gap-2 items-center">
+          {selectedReviews.length > 0 && (
+            <button
+              className="px-4 py-2 rounded-lg flex items-center space-x-2 font-medium transition-colors duration-200 bg-red-600 text-white hover:bg-red-700"
+              onClick={handleBulkDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete Selected ({selectedReviews.length})
+            </button>
+          )}
         </div>
       </div>
+
+      <ReviewFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        ratingFilter={ratingFilter}
+        setRatingFilter={setRatingFilter}
+        dateFilter={dateFilter}
+        setDateFilter={setDateFilter}
+        clearFilters={clearFilters}
+        totalReviews={totalReviews}
+      />
 
       {/* Edit Modal */}
       {editingReview && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
-            className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+            className="rounded-lg p-6 w-full max-w-md mx-4"
             style={{ backgroundColor: colors.background.secondary }}
           >
             <h3
@@ -229,17 +311,17 @@ const Reviews: React.FC = () => {
                 className="flex-1 font-bold py-2 px-4 rounded-lg transition-colors shadow-sm"
                 style={{
                   background: colors.interactive.primary,
-                  color: '#fff',
+                  color: "#fff",
                   border: `1.5px solid ${colors.interactive.primary}`,
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.10)'
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.10)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primaryHover || colors.interactive.primary;
-                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    colors.interactive.primaryHover || colors.interactive.primary;
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.background = colors.interactive.primary;
-                  (e.currentTarget as HTMLButtonElement).style.color = '#fff';
+                  (e.currentTarget as HTMLButtonElement).style.background =
+                    colors.interactive.primary;
                 }}
               >
                 Update
@@ -252,13 +334,14 @@ const Reviews: React.FC = () => {
                   color: colors.text.primary,
                   border: `1px solid ${colors.border.primary}`,
                 }}
-                onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor =
-                  (colors as any).background?.accent || colors.background.secondary)
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = colors.background.primary)
-                }
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    (colors as any).background?.accent || colors.background.secondary;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    colors.background.primary;
+                }}
               >
                 Cancel
               </button>
@@ -267,181 +350,17 @@ const Reviews: React.FC = () => {
         </div>
       )}
 
-      {/* Reviews Table */}
-      <div
-        className="rounded-xl shadow-xl border overflow-hidden transition-colors duration-200"
-        style={{
-          backgroundColor: colors.background.secondary,
-          borderColor: colors.border.primary,
-        }}
-      >
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead
-              className="border-b transition-colors duration-200"
+      <ReviewTable
+        reviews={reviews}
+        selectedReviews={selectedReviews}
+        handleSelectAll={handleSelectAll}
+        handleSelectReview={handleSelectReview}
+        handleEditReview={handleEditReview}
+        handleDeleteReview={handleDeleteReview}
+        renderStars={renderStars}
+      />
 
-            >
-              <tr>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  User
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Product
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Rating
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Comment
-                </th>
-                <th
-                  className="text-left py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Date
-                </th>
-                <th
-                  className="text-center py-3 px-4 font-medium"
-                  style={{ color: colors.text.primary }}
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody
-              className="divide-y transition-colors duration-200"
-              style={{ borderColor: colors.border.secondary }}
-            >
-              {reviews.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-4 py-8 text-center"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    No reviews found
-                  </td>
-                </tr>
-              ) : (
-                paginatedReviews.map((review) => (
-                  <tr
-                    key={review._id}
-                    className="transition-colors duration-200"
-                    onMouseEnter={(e) =>
-                    (e.currentTarget.style.backgroundColor =
-                      colors.background.accent)
-                    }
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.backgroundColor = "transparent")
-                    }
-                  >
-                    <td className="py-4 px-4">
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
-
-                        >
-                          <span className="text-lg">👤</span>
-                        </div>
-                        <div>
-                          <div
-                            className="font-medium"
-                            style={{ color: colors.text.primary }}
-                          >
-                            {review.isAnonymous
-                              ? (review.anonymousName || "Anonymous User")
-                              : (review.user?.fullName || "Deleted User")}
-                          </div>
-                          <div
-                            className="text-sm"
-                            style={{ color: colors.text.secondary }}
-                          >
-                            {review.isAnonymous
-                              ? "Anonymous Review"
-                              : (review.user?.email || "N/A")}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <div
-                        className="font-medium"
-                        style={{ color: colors.text.primary }}
-                      >
-                        {(review as any).product?.name || "Unknown Product"}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">{renderStars(review.rating)}</td>
-                    <td className="py-4 px-4 max-w-xs">
-                      <div
-                        className="truncate"
-                        style={{ color: colors.text.secondary }}
-                        title={review.comment}
-                      >
-                        {review.comment.length > 50
-                          ? `${review.comment.substring(0, 50)}...`
-                          : review.comment}
-                      </div>
-                    </td>
-                    <td
-                      className="py-4 px-4 text-sm"
-                      style={{ color: colors.text.secondary }}
-                    >
-                      {new Date(review.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="py-4 px-4">
-                      <div className="flex items-center justify-center gap-2">
-                        <button
-                          onClick={() => handleEditReview(review)}
-                          className="p-1 rounded transition-colors"
-                          style={{ color: colors.interactive.primary }}
-                          title="Edit Review"
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.opacity = "0.8")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.opacity = "1")
-                          }
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteReview(review._id)}
-                          className="p-1 rounded transition-colors"
-                          style={{ color: "#ef4444" }}
-                          title="Delete Review"
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.opacity = "0.8")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.opacity = "1")
-                          }
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {reviews.length > 0 && (
+      {totalPages > 1 && (
         <AdminPagination
           currentPage={currentPage}
           totalPages={totalPages}

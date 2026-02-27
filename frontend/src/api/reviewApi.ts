@@ -128,12 +128,26 @@ export const deleteReview = async (reviewId: string): Promise<void> => {
   await api.delete(`/${reviewId}`);
 };
 
-// Get all reviews for admin
+// Get all reviews for admin (with search and filters)
 export const getAllReviews = async (
-  page = 1,
-  limit = 20,
+  params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    rating?: string;
+    dateFilter?: string;
+  },
 ): Promise<ReviewsResponse> => {
-  const response = await api.get(`/admin/all?page=${page}&limit=${limit}`);
+  const { page = 1, limit = 20, search = "", rating = "", dateFilter = "all" } = params || {};
+  const queryParams: Record<string, string> = {
+    page: String(page),
+    limit: String(limit),
+  };
+  if (search?.trim()) queryParams.search = search.trim();
+  if (rating) queryParams.rating = rating;
+  if (dateFilter && dateFilter !== "all") queryParams.dateFilter = dateFilter;
+  const searchParams = new URLSearchParams(queryParams);
+  const response = await api.get(`/admin/all?${searchParams}`);
   return response.data;
 };
 
