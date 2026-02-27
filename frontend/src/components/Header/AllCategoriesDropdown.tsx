@@ -89,8 +89,8 @@ const brandCategories: Record<
       { value: "archi-cad", label: "Archi CAD" },
     ],
   },
-  "billing-software": {
-    label: "Billing Software",
+  "accounting-billing": {
+    label: "Billing and Accounting",
     categories: [
       { value: "tally", label: "Tally" },
       { value: "vyapar", label: "Vyapar" },
