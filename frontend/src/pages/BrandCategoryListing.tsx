@@ -74,6 +74,7 @@ const BrandCategoryListing: React.FC = () => {
   const params = new URLSearchParams(search);
   const brand = params.get("brand") || "";
   const category = params.get("category") || "";
+  const searchTerm = params.get("search") || "";
 
   // Generate SEO metadata
   const seoData = getCategoryListingSEO({ brand, category });
@@ -85,6 +86,9 @@ const BrandCategoryListing: React.FC = () => {
   }
   if (category) {
     queryParams.category = category;
+  }
+  if (searchTerm) {
+    queryParams.search = searchTerm;
   }
   queryParams.limit = 1000; // Fetch up to 1000 products for category listing
 
@@ -139,6 +143,9 @@ const BrandCategoryListing: React.FC = () => {
 
   // Get display title
   const getDisplayTitle = () => {
+    if (searchTerm) {
+      return `Search Results for "${searchTerm}"`;
+    }
     if (category && brand) {
       const categoryName = categoryLabels[category] || category;
       const brandName = brandLabels[brand] || brand;
@@ -198,6 +205,14 @@ const BrandCategoryListing: React.FC = () => {
                 </span>
               </>
             )}
+            {searchTerm && (
+              <>
+                <span className="mx-2">/</span>
+                <span style={{ color: colors.text.primary }}>
+                  Search: {searchTerm}
+                </span>
+              </>
+            )}
           </div>
 
           {/* Header */}
@@ -233,7 +248,9 @@ const BrandCategoryListing: React.FC = () => {
                 className="text-lg mb-6"
                 style={{ color: colors.text.secondary }}
               >
-                We couldn't find any products in this category.
+                {searchTerm
+                  ? `No products matched "${searchTerm}".`
+                  : "We couldn't find any products in this category."}
               </p>
               <button
                 onClick={() => navigate("/")}

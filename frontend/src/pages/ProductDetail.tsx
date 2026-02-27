@@ -525,12 +525,12 @@ const ProductDetail: React.FC = () => {
 
         console.log('Submitting review with data:', reviewData);
         await createReview(product._id!, reviewData);
-        
+
         // Show success message with appropriate text
-        const successMessage = reviewAsAnonymous 
-          ? `Review posted successfully as ${anonymousName}!` 
+        const successMessage = reviewAsAnonymous
+          ? `Review posted successfully as ${anonymousName}!`
           : "Review posted successfully";
-        
+
         Swal.fire("Success", successMessage, "success");
       }
 
@@ -541,7 +541,7 @@ const ProductDetail: React.FC = () => {
       setReviewAsAnonymous(false);
       setAnonymousName("");
       setReviewDate(null);
-      
+
       // Reload reviews to show the new one
       loadReviews(product._id);
       loadReviewStats(product._id);
@@ -582,12 +582,12 @@ const ProductDetail: React.FC = () => {
     setReviewAsAnonymous(asAnonymous);
     setShowReviewTypeModal(false);
     setShowReviewForm(true);
-    
+
     // Set default review date to today for admin/superadmin
     if (user?.role === 'admin' || user?.role === 'superadmin') {
       setReviewDate(new Date().toISOString().slice(0, 10));
     }
-    
+
     // For anonymous reviews, clear the name field so admin enters new name each time
     if (asAnonymous) {
       setAnonymousName("");
@@ -669,7 +669,7 @@ const ProductDetail: React.FC = () => {
     }
 
     const isAdminUser = user?.role === 'admin' || user?.role === 'superadmin';
-    
+
     // Reset reply form state
     setReplyForm({ comment: "" });
     setEditingReply(null);
@@ -690,7 +690,7 @@ const ProductDetail: React.FC = () => {
     setReplyAsAnonymous(asAnonymous);
     setShowReplyTypeModal(null);
     setReplyingToReview(reviewId);
-    
+
     // For anonymous replies, clear the name field
     if (asAnonymous) {
       setReplyAnonymousName("");
@@ -733,11 +733,11 @@ const ProductDetail: React.FC = () => {
         }
 
         await addReplyToReview(reviewId, replyData);
-        
-        const successMessage = replyAsAnonymous 
-          ? `Reply posted successfully as ${replyAnonymousName}!` 
+
+        const successMessage = replyAsAnonymous
+          ? `Reply posted successfully as ${replyAnonymousName}!`
           : "Reply posted successfully";
-        
+
         Swal.fire("Success", successMessage, "success");
       }
 
@@ -1749,25 +1749,14 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Deal Countdown Timer and Dates */}
+            {/* Deal Countdown Timer */}
             {isActiveDeal && product.dealEndDate && (
-              <div className="mt-4 space-y-3">
-                <CountdownTimer dealEndDate={new Date(product.dealEndDate)} colors={colors} />
-
-                <div className="flex flex-col gap-1 text-sm" style={{ color: colors.text.secondary }}>
-                  {product.dealStartDate && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Deal Start:</span>
-                      <span>{new Date(product.dealStartDate).toLocaleString()}</span>
-                    </div>
-                  )}
-                  {product.dealEndDate && (
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">Deal End:</span>
-                      <span>{new Date(product.dealEndDate).toLocaleString()}</span>
-                    </div>
-                  )}
-                </div>
+              <div className="mt-4">
+                <CountdownTimer
+                  dealEndDate={new Date(product.dealEndDate)}
+                  colors={colors}
+                  variant="featured"
+                />
               </div>
             )}
 
@@ -2269,81 +2258,6 @@ const ProductDetail: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Selected Option Summary with Strikethrough Price */}
-              {selectedOption && (
-                <div className="mt-4 pt-4 border-t" style={{ borderColor: colors.border.primary }}>
-                  <div className="flex items-baseline gap-3 flex-wrap">
-                    {/* Strikethrough Price (MRP) */}
-                    {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
-                      <div className="flex flex-col">
-                        <span className="text-xs" style={{ color: colors.text.secondary }}>
-                          MRP:
-                        </span>
-                        <span
-                          className="text-lg lg:text-xl font-semibold line-through opacity-60"
-                          style={{ color: colors.text.secondary }}
-                        >
-                          {formatPriceWithSymbol(
-                            product.strikethroughPriceINR || 0,
-                            product.strikethroughPriceUSD || 0
-                          )}
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Current Price */}
-                    <div className="flex flex-col">
-                      {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
-                        <span className="text-xs" style={{ color: colors.interactive.primary }}>
-                          Special Price:
-                        </span>
-                      )}
-                      <span
-                        className="text-2xl lg:text-3xl font-bold"
-                        style={{ color: colors.interactive.primary }}
-                      >
-                        {formatPriceWithSymbol(
-                          selectedOption.priceINR,
-                          selectedOption.priceUSD
-                        )}
-                      </span>
-                    </div>
-
-                    {/* Savings Badge */}
-                    {(product.strikethroughPriceINR || product.strikethroughPriceUSD) && (
-                      (() => {
-                        const strikethrough = product.strikethroughPriceINR || (product.strikethroughPriceUSD || 0) * 83;
-                        const current = selectedOption.priceINR;
-                        const savings = strikethrough - current;
-                        const savingsPercent = ((savings / strikethrough) * 100).toFixed(0);
-
-                        if (savings > 0) {
-                          return (
-                            <div
-                              className="px-3 py-1.5 rounded-lg font-bold text-sm"
-                              style={{
-                                backgroundColor: '#10b981',
-                                color: '#fff',
-                              }}
-                            >
-                              Save {savingsPercent}%
-                            </div>
-                          );
-                        }
-                        return null;
-                      })()
-                    )}
-                  </div>
-
-                  {/* Selected Plan Label */}
-                  <div className="mt-3">
-                    <span className="text-sm" style={{ color: colors.text.secondary }}>
-                      Selected: <span className="font-semibold" style={{ color: colors.text.primary }}>{selectedOption.label}</span>
-                    </span>
                   </div>
                 </div>
               )}

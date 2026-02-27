@@ -182,7 +182,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Center section - Desktop */}
-          <div className="flex-1 flex items-center justify-center px-4 lg:px-8">
+          <div className="flex-1 flex items-center justify-center px-4 lg:px-8 gap-4">
             {/* Desktop Navigation */}
             <DesktopNavigation
               onNavigate={handleNavigation}
@@ -193,8 +193,6 @@ const Header: React.FC = () => {
               antivirusButtonRef={antivirusButtonRef}
               hideHomeMenu
             />
-
-
           </div>
 
           {/* Right side actions */}
