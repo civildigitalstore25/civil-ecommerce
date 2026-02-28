@@ -204,14 +204,6 @@ const CheckoutPage: React.FC = () => {
         return;
       }
 
-      // Load Cashfree script
-      const scriptLoaded = await loadCashfreeScript();
-      if (!scriptLoaded) {
-        toast.error("Failed to load payment gateway. Please try again.");
-        setIsProcessing(false);
-        return;
-      }
-
       const subtotal = normalizePrice(summary.subtotal);
       const finalTotal = subtotal - discount;
 
@@ -291,6 +283,57 @@ const CheckoutPage: React.FC = () => {
 
       if (!responseData.success) {
         toast.error(responseData.message || "Failed to create order");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Free order (₹0): skip payment gateway, place order directly
+      const isFreeOrder = responseData.data?.isFreeOrder || finalTotal <= 0;
+      if (isFreeOrder) {
+        try {
+          await clearCart();
+        } catch (error) {
+          console.error("Failed to clear cart:", error);
+        }
+        await Swal.fire({
+          icon: "success",
+          title: "Order Placed!",
+          html: `
+            <div style="text-align: left; margin-top: 20px;">
+              <p style="margin-bottom: 15px;">Thank you for your order. Your order has been placed successfully.</p>
+              <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <strong>Order ID:</strong>
+                  <span style="font-family: monospace;">${responseData.data.orderId}</span>
+                </div>
+              </div>
+              <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
+                📧 Order confirmation has been sent to your email and WhatsApp.
+              </div>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: "View Orders",
+          cancelButtonText: "Continue Shopping",
+          confirmButtonColor: "#10b981",
+          cancelButtonColor: "#6b7280",
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/my-orders");
+          } else {
+            navigate("/");
+          }
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      // Load Cashfree script (only for paid orders)
+      const scriptLoaded = await loadCashfreeScript();
+      if (!scriptLoaded) {
+        toast.error("Failed to load payment gateway. Please try again.");
         setIsProcessing(false);
         return;
       }

@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import FormButton from "../../components/Button/FormButton";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -8,6 +9,7 @@ interface CartEmptyProps {
 
 const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
   const { colors } = useAdminTheme();
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -58,13 +60,15 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
         Start Shopping
       </FormButton>
 
-      {/* Additional Links */}
-      <div className="mt-8 flex flex-col sm:flex-row gap-4 text-sm">
+      {/* Additional Links - Clickable navigation */}
+      <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-sm">
         <button
-          className="font-medium transition-colors duration-200"
+          type="button"
+          onClick={() => navigate("/products")}
+          className="font-medium transition-colors duration-200 hover:underline cursor-pointer"
           style={{ color: colors.interactive.primary }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.interactive.primaryHover;
+            e.currentTarget.style.color = (colors as any).interactive?.primaryHover || colors.interactive.primary;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = colors.interactive.primary;
@@ -72,17 +76,16 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
         >
           View Popular Software
         </button>
-        <span
-          className="hidden sm:inline"
-          style={{ color: colors.text.accent }}
-        >
+        <span className="hidden sm:inline" style={{ color: colors.text.accent }}>
           •
         </span>
         <button
-          className="font-medium transition-colors duration-200"
+          type="button"
+          onClick={() => navigate("/products")}
+          className="font-medium transition-colors duration-200 hover:underline cursor-pointer"
           style={{ color: colors.interactive.primary }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.interactive.primaryHover;
+            e.currentTarget.style.color = (colors as any).interactive?.primaryHover || colors.interactive.primary;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = colors.interactive.primary;
@@ -90,17 +93,16 @@ const CartEmpty: React.FC<CartEmptyProps> = ({ onContinueShopping }) => {
         >
           Browse Categories
         </button>
-        <span
-          className="hidden sm:inline"
-          style={{ color: colors.text.accent }}
-        >
+        <span className="hidden sm:inline" style={{ color: colors.text.accent }}>
           •
         </span>
         <button
-          className="font-medium transition-colors duration-200"
+          type="button"
+          onClick={() => navigate("/deals")}
+          className="font-medium transition-colors duration-200 hover:underline cursor-pointer"
           style={{ color: colors.interactive.primary }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.interactive.primaryHover;
+            e.currentTarget.style.color = (colors as any).interactive?.primaryHover || colors.interactive.primary;
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = colors.interactive.primary;

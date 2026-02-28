@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Star, Package } from "lucide-react";
+import { Star, Package, ChevronDown } from "lucide-react";
 import { Helmet } from "react-helmet";
 import { useProducts } from "../api/productApi";
 import { useUser } from "../api/userQueries";
@@ -20,6 +20,7 @@ const brandLabels: Record<string, string> = {
   "structural-softwares": "Structural Softwares",
   "architectural-softwares": "Architectural Softwares",
   "billing-software": "Billing Software",
+  "accounting-billing": "Billing and Accounting",
   ebook: "Ebook",
 };
 
@@ -67,7 +68,18 @@ const categoryLabels: Record<string, string> = {
   "d5-render": "D5 Render",
   "archi-cad": "Archi CAD",
   tally: "Tally",
+  vyapar: "Vyapar",
 };
+
+type SortOption = "newest" | "modified" | "oldest" | "name-asc" | "name-desc";
+
+const sortOptions: { value: SortOption; label: string }[] = [
+  { value: "newest", label: "Newest first" },
+  { value: "modified", label: "Modified first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "name-asc", label: "Name (A-Z)" },
+  { value: "name-desc", label: "Name (Z-A)" },
+];
 
 const BrandCategoryListing: React.FC = () => {
   const { search } = useLocation();
@@ -95,7 +107,40 @@ const BrandCategoryListing: React.FC = () => {
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
     useProducts(queryParams);
   // Filter to only show active products to users (exclude draft and inactive)
-  const products = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
+  const rawProducts = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
+
+  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
+
+  // Sort products based on selected option
+  const products = useMemo(() => {
+    const sorted = [...rawProducts];
+    switch (sortBy) {
+      case "newest":
+        return sorted.sort((a: any, b: any) =>
+          new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime()
+        );
+      case "modified":
+        return sorted.sort((a: any, b: any) =>
+          new Date(b.updatedAt || b.createdAt || 0).getTime() - new Date(a.updatedAt || a.createdAt || 0).getTime()
+        );
+      case "oldest":
+        return sorted.sort((a: any, b: any) =>
+          new Date(a.createdAt || 0).getTime() - new Date(b.createdAt || 0).getTime()
+        );
+      case "name-asc":
+        return sorted.sort((a: any, b: any) =>
+          (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" })
+        );
+      case "name-desc":
+        return sorted.sort((a: any, b: any) =>
+          (b.name || "").localeCompare(a.name || "", undefined, { sensitivity: "base" })
+        );
+      default:
+        return sorted;
+    }
+  }, [rawProducts, sortBy]);
+
   const navigate = useNavigate();
   const { addItem } = useCartContext();
   const { data: user } = useUser();
@@ -223,12 +268,79 @@ const BrandCategoryListing: React.FC = () => {
             >
               {getDisplayTitle()}
             </h1>
-            <p
-              className="text-lg transition-colors duration-200"
-              style={{ color: colors.text.secondary }}
-            >
-              {products.length} product{products.length !== 1 && "s"} found
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <p
+                className="text-lg transition-colors duration-200"
+                style={{ color: colors.text.secondary }}
+              >
+                {products.length} product{products.length !== 1 && "s"} found
+              </p>
+              {products.length > 0 && (
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setSortDropdownOpen(!sortDropdownOpen)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg border text-sm font-medium transition-colors duration-200"
+                    style={{
+                      backgroundColor: colors.background.primary,
+                      borderColor: colors.border.primary,
+                      color: colors.text.primary,
+                    }}
+                  >
+                    Sort: {sortOptions.find((o) => o.value === sortBy)?.label || "Newest first"}
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${sortDropdownOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {sortDropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setSortDropdownOpen(false)}
+                        aria-hidden="true"
+                      />
+                      <div
+                        className="absolute right-0 mt-1 py-1 rounded-lg border shadow-lg z-20 min-w-[180px]"
+                        style={{
+                          backgroundColor: colors.background.primary,
+                          borderColor: colors.border.primary,
+                        }}
+                      >
+                        {sortOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => {
+                              setSortBy(option.value);
+                              setSortDropdownOpen(false);
+                            }}
+                            className={`w-full px-4 py-2 text-left text-sm transition-colors duration-200 ${
+                              sortBy === option.value ? "font-semibold" : ""
+                            }`}
+                            style={{
+                              color: sortBy === option.value ? colors.interactive.primary : colors.text.primary,
+                              backgroundColor: sortBy === option.value ? `${colors.interactive.primary}15` : "transparent",
+                            }}
+                            onMouseEnter={(e) => {
+                              if (sortBy !== option.value) {
+                                e.currentTarget.style.backgroundColor = colors.background.secondary;
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (sortBy !== option.value) {
+                                e.currentTarget.style.backgroundColor = "transparent";
+                              }
+                            }}
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Products Grid */}

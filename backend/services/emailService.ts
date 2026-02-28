@@ -701,12 +701,9 @@ class EmailService {
               </div>
             </div>
 
-            <div class="footer">
-              <h4>Thank You for Choosing SoftZcart!</h4>
-              <p>We appreciate your business and hope you enjoy your digital products.</p>
-              <p style="margin-top: 15px;">© ${new Date().getFullYear()} SoftZcart. All rights reserved.</p>
-              <p style="font-size: 12px; margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
-            </div>
+            ${buildCommonEmailFooter({
+        topNoteHtml: 'Thank you for choosing SoftZcart. We appreciate your business and hope you enjoy your digital products.',
+      })}
           </div>
         </body>
         </html>

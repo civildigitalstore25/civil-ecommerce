@@ -39,6 +39,7 @@ export interface IOrder extends Document {
   cashfreeOrderId?: string;
   paymentSessionId?: string;
   cashfreePaymentId?: string;
+  adminNotificationSent?: boolean;  // Prevents duplicate admin order emails
   createdAt: Date;
   updatedAt: Date;
 }
@@ -123,6 +124,10 @@ const OrderSchema = new Schema<IOrder>({
   },
   cashfreePaymentId: {
     type: String
+  },
+  adminNotificationSent: {
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true

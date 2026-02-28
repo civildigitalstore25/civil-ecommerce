@@ -1,6 +1,7 @@
 import React from "react";
-import { Search, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import AdminSearchBar from "../components/AdminSearchBar";
 
 interface Props {
   searchTerm: string;
@@ -24,25 +25,11 @@ const UserFilters: React.FC<Props> = ({
   return (
     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        {/* Search box */}
-        <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
-            style={{ color: colors.text.secondary }}
-          />
-          <input
-            type="text"
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 w-full sm:w-64 transition-colors duration-200"
-            style={{
-              backgroundColor: colors.background.secondary,
-              borderColor: colors.border.primary,
-              color: colors.text.primary,
-            }}
-          />
-        </div>
+        <AdminSearchBar
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Search users..."
+        />
 
         {/* Role filter */}
         <select

@@ -90,6 +90,13 @@ const brandCategories: Record<
       { value: "archi-cad", label: "Archi CAD" },
     ],
   },
+  "accounting-billing": {
+    label: "Billing and Accounting",
+    categories: [
+      { value: "tally", label: "Tally" },
+      { value: "vyapar", label: "Vyapar" },
+    ],
+  },
   ebook: {
     label: "Ebook",
     categories: [],
@@ -349,7 +356,7 @@ const AllProductsPage: React.FC = () => {
                   className="text-sm"
                   style={{ color: colors.text.secondary }}
                 >
-                  Choose from 8 professional software brands
+                  Choose from 9 professional software brands
                 </p>
               </div>
             )}

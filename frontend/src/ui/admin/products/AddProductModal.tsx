@@ -831,38 +831,45 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black bg-opacity-75">
       <div
-        className="relative rounded-xl shadow-xl max-w-4xl w-full mx-4 p-6 overflow-y-auto max-h-[90vh] modal-scroll-container transition-colors duration-200"
+        className="relative flex flex-col rounded-xl shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] transition-colors duration-200"
         style={{ backgroundColor: colors.background.secondary }}
       >
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-6 text-2xl font-bold transition-colors duration-200"
-          style={{ color: colors.text.secondary }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.color = colors.text.primary)
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.color = colors.text.secondary)
-          }
-          aria-label="Close modal"
-        >
-          &times;
-        </button>
-
-        <div className="mb-6">
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: colors.text.primary }}
-          >
-            {product ? "Edit Product" : "Add New Product"}
-          </h1>
-          <p className="mt-1" style={{ color: colors.text.secondary }}>
-            Add a new software product to your catalog with advanced formatting
-            options
-          </p>
+        {/* Sticky Header */}
+        <div className="flex-shrink-0 px-6 pt-6 pb-4 border-b" style={{ borderColor: colors.border.primary }}>
+          <div className="flex items-start justify-between pr-8">
+            <div>
+              <h1
+                className="text-2xl font-bold"
+                style={{ color: colors.text.primary }}
+              >
+                {product ? "Edit Product" : "Add New Product"}
+              </h1>
+              <p className="mt-1" style={{ color: colors.text.secondary }}>
+                Add a new software product to your catalog with advanced formatting
+                options
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="absolute top-6 right-6 text-2xl font-bold transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.color = colors.text.primary)
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.color = colors.text.secondary)
+              }
+              aria-label="Close modal"
+            >
+              &times;
+            </button>
+          </div>
         </div>
 
-        <form onSubmit={handleAddProduct} className="space-y-8">
+        {/* Scrollable Content */}
+        <form onSubmit={handleAddProduct} className="flex-1 flex flex-col min-h-0">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-6 modal-scroll-container">
+            <div className="space-y-8">
           {/* Basic Information */}
           <div className="space-y-6">
             <h2
@@ -2769,55 +2776,58 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 <span>Auto-saved at {lastSaved.toLocaleTimeString()}</span>
               </div>
             )}
-
-            <div
-              className="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-200"
-              style={{ borderColor: colors.border.primary }}
-            >
-              <button
-                type="button"
-                onClick={(e) => handleAddProduct(e, true)}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                style={{
-                  background: '#00BEF5',
-                  color: colors.text.inverse,
-                  border: 'none',
-                }}
-              >
-                <FileText className="h-4 w-4" />
-                Save as Draft
-              </button>
-              <button
-                type="submit"
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                style={{
-                  background: '#00BEF5',
-                  color: colors.text.inverse,
-                  border: 'none',
-                }}
-              >
-                <Save className="h-4 w-4" />
-                {product ? "Update Product" : "Add Product"}
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
-                style={{
-                  background: theme === "dark"
-                    ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
-                    : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
-                  color: colors.text.inverse,
-                  border: 'none',
-                }}
-              >
-                Cancel
-              </button>
+            </div>
             </div>
           </div>
+
+          {/* Sticky Footer */}
+          <div
+            className="flex-shrink-0 flex flex-col sm:flex-row gap-4 px-6 py-4 border-t transition-colors duration-200"
+            style={{ borderColor: colors.border.primary, backgroundColor: colors.background.secondary }}
+          >
+            <button
+              type="button"
+              onClick={(e) => handleAddProduct(e, true)}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+              style={{
+                background: '#00BEF5',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
+            >
+              <FileText className="h-4 w-4" />
+              Save as Draft
+            </button>
+            <button
+              type="submit"
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-lg hover:opacity-90 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+              style={{
+                background: '#00BEF5',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
+            >
+              <Save className="h-4 w-4" />
+              {product ? "Update Product" : "Add Product"}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-6 py-3 border rounded-lg hover:opacity-80 focus:ring-2 focus:ring-offset-2 transition-all duration-200"
+              style={{
+                background: theme === "dark"
+                  ? 'linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)'
+                  : 'linear-gradient(90deg, #00C8FF 0%, #0A2A6B 100%)',
+                color: colors.text.inverse,
+                border: 'none',
+              }}
+            >
+              Cancel
+            </button>
+          </div>
         </form>
-      </div >
-    </div >
+      </div>
+    </div>
   );
 };
 
