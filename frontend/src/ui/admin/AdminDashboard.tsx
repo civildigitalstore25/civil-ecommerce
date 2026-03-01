@@ -10,7 +10,6 @@ import {
   MessageSquare,
   Mail,
   FileText,
-  BookOpen,
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import Products from "./products/Products";
@@ -26,7 +25,6 @@ import Reviews from "./Reviews";
 import EnquiryManagement from "./EnquiryManagement";
 import SuperAdminAdminManagement from "./SuperAdminAdminManagement";
 import { useAuth } from "../../api/auth";
-import AdminBlogList from "../../pages/AdminBlogList";
 
 type MenuType =
   | "dashboard"
@@ -39,7 +37,6 @@ type MenuType =
   | "banner"
   | "coupons"
   | "reviews"
-  | "blogs"
   | "enquiries"
   | "admin-management";
 
@@ -66,7 +63,6 @@ const AdminDashboardContent: React.FC = () => {
     { id: "draft-products", label: "Draft Products", icon: FileText, permission: "products" },
     // Removed Categories and Companies menu items
     { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
-    { id: "blogs", label: "Blogs", icon: BookOpen, permission: "blogs" },
     { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
     { id: "enquiries", label: "Enquiries", icon: Mail, permission: "enquiries" },
     { id: "banner", label: "Banner", icon: Image, permission: "banners" },
@@ -117,8 +113,6 @@ const AdminDashboardContent: React.FC = () => {
         return <Orders />;
       case "reviews":
         return <Reviews />;
-      case "blogs":
-        return <AdminBlogList />;
       case "enquiries":
         return <EnquiryManagement />;
       case "banner":

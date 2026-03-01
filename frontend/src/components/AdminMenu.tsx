@@ -5,7 +5,7 @@ import { useUser } from "../api/userQueries";
 const AdminMenu: React.FC = () => {
   const { data: user } = useUser();
   if (!user || (user.role !== "superadmin" && user.role !== "admin")) return null;
-  
+
   return (
     <nav className="mb-6">
       <h2 className="text-lg font-bold mb-2">{user.role === "superadmin" ? "Superadmin" : "Admin"} Menu</h2>

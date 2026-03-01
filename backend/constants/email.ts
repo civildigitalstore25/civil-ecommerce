@@ -1,5 +1,5 @@
 export const EMAIL_BRAND = {
-    brandName: process.env.FROM_NAME || "Civil Digital Store",
+    brandName: process.env.FROM_NAME || "SoftzCart",
     fromEmail: process.env.FROM_EMAIL || "noreply@yourapp.com",
     supportEmail:
         process.env.CONTACT_EMAIL || process.env.FROM_EMAIL || "support@yourapp.com",
