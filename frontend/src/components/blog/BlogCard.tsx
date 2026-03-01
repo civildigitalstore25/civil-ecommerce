@@ -11,16 +11,11 @@ const PLACEHOLDER_IMAGE = "https://via.placeholder.com/400x300?text=No+Image";
 
 interface BlogCardProps {
   blog: Blog;
-  /** Show Read more + optional Edit/Delete (for list page) */
   showActions?: boolean;
-  /** Show Edit button (admin) */
   onEdit?: (id: string, e: React.MouseEvent) => void;
-  /** Show Delete button (admin) */
   onDelete?: (id: string, title: string, e: React.MouseEvent) => void;
   isDeleting?: boolean;
-  /** Excerpt max length */
   excerptLength?: number;
-  /** Compact layout for related posts */
   variant?: "default" | "compact";
 }
 
@@ -30,18 +25,20 @@ export function BlogCard({
   onEdit,
   onDelete,
   isDeleting = false,
-  excerptLength = 100,
+  excerptLength = 80,
   variant = "default",
 }: BlogCardProps): React.ReactElement {
   const isCompact = variant === "compact";
+
+  const imageHeightClass = isCompact
+    ? "h-28 md:h-40 rounded-t-lg"
+    : "h-32 md:h-36 rounded-t-lg";
 
   const cardContent = (
     <>
       <Link
         to={`/blog/${blog.slug}`}
-        className={`block overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-300 hover:scale-[1.02] ${
-          isCompact ? "h-28 md:h-40 rounded-t-lg" : "h-28 md:h-40 mb-2 md:mb-3 rounded-md md:rounded-xl"
-        }`}
+        className={`block overflow-hidden bg-gray-100 cursor-pointer transition-transform duration-200 hover:scale-[1.02] ${imageHeightClass}`}
       >
         <img
           src={blog.featuredImage || PLACEHOLDER_IMAGE}
@@ -53,17 +50,17 @@ export function BlogCard({
         />
       </Link>
 
-      <div className={isCompact ? "p-4" : "p-2 md:p-5 flex flex-col flex-1"}>
-        <div className={`flex flex-wrap gap-2 mb-1.5 md:mb-2 ${isCompact ? "mb-2" : ""}`}>
+      <div className={isCompact ? "p-4" : "p-3 md:p-4 flex flex-col flex-1 min-h-0"}>
+        <div className={`flex flex-wrap gap-1.5 mb-1 ${isCompact ? "mb-2" : ""}`}>
           <BlogCategoryTag category={blog.category} />
         </div>
 
         <Link to={`/blog/${blog.slug}`} className="block">
           <h2
-            className={`font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors ${
+            className={`font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors leading-snug ${
               isCompact
                 ? "text-base mb-2"
-                : "text-[11px] md:text-lg mb-1 md:mb-2 min-h-[2.5rem] md:min-h-[3rem]"
+                : "text-sm md:text-base mb-1"
             }`}
           >
             {blog.title}
@@ -71,10 +68,10 @@ export function BlogCard({
         </Link>
 
         <p
-          className={`text-gray-600 flex-1 ${
+          className={`text-gray-600 line-clamp-2 leading-snug ${
             isCompact
-              ? "text-sm line-clamp-2 mb-3"
-              : "text-[9px] md:text-sm mb-2 md:mb-3 line-clamp-2"
+              ? "text-sm mb-3"
+              : "text-xs md:text-sm mb-2"
           }`}
         >
           {truncateText(blog.excerpt, excerptLength)}
@@ -83,16 +80,16 @@ export function BlogCard({
         <BlogMeta
           author={blog.author}
           date={blog.publishedAt || blog.createdAt}
-          size={isCompact ? "sm" : "md"}
-          className={isCompact ? "mb-3" : "mb-2 md:mb-3 pb-2 md:pb-3 border-b border-gray-200"}
+          size={isCompact ? "sm" : "sm"}
+          className={isCompact ? "mb-3" : "mb-3 text-xs"}
         />
 
         {!isCompact && blog.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 md:gap-2 mb-2 md:mb-3">
+          <div className="flex flex-wrap gap-1.5 mb-3">
             {blog.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
-                className="text-[8px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 bg-gray-100 text-gray-700 rounded-full font-medium"
+                className="text-[10px] md:text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded font-medium"
               >
                 #{tag}
               </span>
@@ -101,36 +98,36 @@ export function BlogCard({
         )}
 
         {showActions && !isCompact && (
-          <div className="flex flex-col gap-1.5 md:gap-2 mt-auto">
+          <div className="flex items-center gap-2 mt-auto pt-2 border-t border-gray-100">
             <BlogButton
               variant="primary"
-              className="w-full py-1.5 md:py-2 text-[10px] md:text-base"
+              className="flex-1 min-w-0 py-2 text-sm font-medium"
               to={`/blog/${blog.slug}`}
             >
               Read More
             </BlogButton>
             {onEdit != null && (
-              <div className="flex gap-1.5 md:gap-2">
-                <BlogButton
-                  variant="outline"
-                  className="flex-1 py-1.5 md:py-2 text-[10px] md:text-base"
+              <>
+                <button
+                  type="button"
                   onClick={(e) => onEdit(blog._id, e)}
-                  title="Edit Blog"
+                  title="Edit"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors shrink-0"
+                  aria-label="Edit blog"
                 >
-                  <Pencil className="w-3 h-3 md:w-4 md:h-4" />
-                  <span className="hidden md:inline">Edit</span>
-                </BlogButton>
-                <BlogButton
-                  variant="danger"
-                  className="flex-1 py-1.5 md:py-2 text-[10px] md:text-base"
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
                   onClick={(e) => onDelete?.(blog._id, blog.title, e)}
                   disabled={isDeleting}
-                  title="Delete Blog"
+                  title="Delete"
+                  className="flex items-center justify-center w-9 h-9 rounded-lg border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Delete blog"
                 >
-                  <Trash2 className="w-3 h-3 md:w-4 md:h-4" />
-                  <span className="hidden md:inline">Delete</span>
-                </BlogButton>
-              </div>
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </>
             )}
           </div>
         )}
@@ -142,7 +139,7 @@ export function BlogCard({
     return (
       <Link
         to={`/blog/${blog.slug}`}
-        className="group block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200"
+        className="group block bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-all duration-200 border border-gray-200"
       >
         {cardContent}
       </Link>
@@ -150,7 +147,7 @@ export function BlogCard({
   }
 
   return (
-    <div className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 flex flex-col bg-white border border-gray-200 overflow-hidden">
+    <div className="rounded-lg shadow-sm hover:shadow-md transition-all duration-200 flex flex-col bg-white border border-gray-200 overflow-hidden">
       {cardContent}
     </div>
   );
