@@ -57,22 +57,20 @@ export function BlogCard({
 
         <Link to={`/blog/${blog.slug}`} className="block">
           <h2
-            className={`font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors leading-snug ${
-              isCompact
+            className={`font-semibold text-gray-900 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors leading-snug ${isCompact
                 ? "text-base mb-2"
                 : "text-sm md:text-base mb-1"
-            }`}
+              }`}
           >
             {blog.title}
           </h2>
         </Link>
 
         <p
-          className={`text-gray-600 line-clamp-2 leading-snug ${
-            isCompact
+          className={`text-gray-600 line-clamp-2 leading-snug ${isCompact
               ? "text-sm mb-3"
               : "text-xs md:text-sm mb-2"
-          }`}
+            }`}
         >
           {truncateText(blog.excerpt, excerptLength)}
         </p>
