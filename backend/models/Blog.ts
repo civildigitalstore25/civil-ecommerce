@@ -10,6 +10,7 @@ export interface IBlog extends Document {
   category: string;
   tags: string[];
   featuredImage: string;
+  youtubeVideoUrl?: string;
   status: 'draft' | 'published';
   metaTitle?: string;
   metaDescription?: string;
@@ -25,7 +26,7 @@ const BlogSchema = new Schema<IBlog>(
     title: {
       type: String,
       trim: true,
-      required: false,
+      required: [true, 'Title is required'],
     },
     slug: {
       type: String,
@@ -36,7 +37,7 @@ const BlogSchema = new Schema<IBlog>(
     },
     content: {
       type: String,
-      required: false,
+      required: [true, 'Content is required'],
     },
     excerpt: {
       type: String,
@@ -66,6 +67,11 @@ const BlogSchema = new Schema<IBlog>(
     }],
     featuredImage: {
       type: String,
+      required: false,
+    },
+    youtubeVideoUrl: {
+      type: String,
+      trim: true,
       required: false,
     },
     status: {

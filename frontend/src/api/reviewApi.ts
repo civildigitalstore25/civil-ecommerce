@@ -18,7 +18,11 @@ api.interceptors.request.use((config) => {
 
 export interface Review {
   _id: string;
-  product: string;
+  product: string | {
+    _id: string;
+    name: string;
+    slug: string;
+  };
   user: {
     _id: string;
     fullName: string;
@@ -182,4 +186,9 @@ export const deleteReply = async (
   replyId: string
 ): Promise<void> => {
   await api.delete(`/${reviewId}/reply/${replyId}`);
+};
+// Get recent reviews across all products (for testimonials)
+export const getRecentReviews = async (limit = 21): Promise<{ reviews: Review[]; total: number }> => {
+  const response = await api.get(`/recent?limit=${limit}`);
+  return response.data;
 };

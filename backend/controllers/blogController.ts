@@ -18,9 +18,28 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
     const user = (req as any).user as IUser;
     const blogData = { ...req.body };
 
+    // Validate required fields
+    if (!blogData.title || !blogData.title.trim()) {
+      res.status(400).json({
+        success: false,
+        message: 'Title is required',
+      });
+      return;
+    }
+
+    if (!blogData.content || !blogData.content.trim()) {
+      res.status(400).json({
+        success: false,
+        message: 'Content is required',
+      });
+      return;
+    }
+
     // Generate slug from title if not provided
-    if (!blogData.slug && blogData.title) {
+    if (!blogData.slug || !blogData.slug.trim()) {
       blogData.slug = generateSlug(blogData.title);
+    } else {
+      blogData.slug = generateSlug(blogData.slug);
     }
 
     // Check if slug already exists
@@ -203,6 +222,23 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
     const { id } = req.params;
     const updateData = { ...req.body };
 
+    // Validate required fields
+    if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim())) {
+      res.status(400).json({
+        success: false,
+        message: 'Title cannot be empty',
+      });
+      return;
+    }
+
+    if (updateData.content !== undefined && (!updateData.content || !updateData.content.trim())) {
+      res.status(400).json({
+        success: false,
+        message: 'Content cannot be empty',
+      });
+      return;
+    }
+
     // If title is updated, regenerate slug
     if (updateData.title && !updateData.slug) {
       const newSlug = generateSlug(updateData.title);
@@ -212,6 +248,8 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
       } else {
         updateData.slug = newSlug;
       }
+    } else if (updateData.slug) {
+      updateData.slug = generateSlug(updateData.slug);
     }
 
     const blog = await Blog.findByIdAndUpdate(id, updateData, {
@@ -353,6 +391,48 @@ export const getFeaturedBlogs = async (req: Request, res: Response): Promise<voi
     res.status(500).json({
       success: false,
       message: error.message || 'Failed to fetch featured blogs',
+    });
+  }
+};
+
+// Get related blogs by category (Public)
+export const getRelatedBlogs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { slug } = req.params;
+    const { limit = 4 } = req.query;
+    const limitNum = parseInt(limit as string, 10);
+
+    // First, get the current blog to find its category
+    const currentBlog = await Blog.findOne({ slug, status: 'published' });
+    
+    if (!currentBlog) {
+      res.status(404).json({
+        success: false,
+        message: 'Blog not found',
+      });
+      return;
+    }
+
+    // Find other published blogs in the same category
+    const relatedBlogs = await Blog.find({
+      category: currentBlog.category,
+      status: 'published',
+      _id: { $ne: currentBlog._id }, // Exclude current blog
+    })
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .limit(limitNum)
+      .select('-content'); // Exclude full content for performance
+
+    res.status(200).json({
+      success: true,
+      blogs: relatedBlogs,
+      category: currentBlog.category,
+    });
+  } catch (error: any) {
+    console.error('Error fetching related blogs:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch related blogs',
     });
   }
 };

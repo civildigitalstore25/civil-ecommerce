@@ -78,6 +78,18 @@ export const useFeaturedBlogs = (limit: number = 5) => {
   });
 };
 
+// Get related blogs by category
+export const useRelatedBlogs = (slug: string, limit: number = 4) => {
+  return useQuery<BlogsResponse>({
+    queryKey: ["relatedBlogs", slug, limit],
+    queryFn: async () => {
+      const { data } = await apiClient.get(`/blogs/slug/${slug}/related?limit=${limit}`);
+      return data;
+    },
+    enabled: !!slug,
+  });
+};
+
 // Get blog categories
 export const useBlogCategories = () => {
   return useQuery<BlogCategoriesResponse>({

@@ -182,7 +182,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Center section - Desktop */}
-          <div className="flex-1 flex items-center justify-center px-4 lg:px-8 gap-4">
+          <div className="flex-1 flex items-center justify-center px-2 lg:px-4 gap-2">
             {/* Desktop Navigation */}
             <DesktopNavigation
               onNavigate={handleNavigation}
@@ -196,7 +196,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 pr-2 lg:pr-4 min-h-[56px]">
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 pr-2 lg:pr-3 min-h-[56px]">
             {/* Cart */}
             <button
               onClick={() => handleNavigation("/cart")}

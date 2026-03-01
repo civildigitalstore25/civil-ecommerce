@@ -167,6 +167,8 @@ const ProductDetail: React.FC = () => {
   const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false); // Track manual selection
   const [mainImage, setMainImage] = useState<string | null>(null);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [activeTab, setActiveTab] = useState<
     "features" | "requirements" | "reviews" | "faq" | "details"
   >("features");
@@ -1604,11 +1606,27 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <img
-                  src={currentMainImage}
-                  className="max-w-full max-h-full object-contain rounded-lg lg:rounded-xl shadow-lg"
-                  alt={product.name}
-                />
+                <div 
+                  className="relative w-full h-full flex items-center justify-center overflow-hidden cursor-crosshair"
+                  onMouseEnter={() => setIsZooming(true)}
+                  onMouseLeave={() => setIsZooming(false)}
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setZoomPosition({ x, y });
+                  }}
+                >
+                  <img
+                    src={currentMainImage}
+                    className="max-w-full max-h-full object-contain rounded-lg lg:rounded-xl shadow-lg transition-transform duration-200"
+                    alt={product.name}
+                    style={{
+                      transform: isZooming ? 'scale(2)' : 'scale(1)',
+                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    }}
+                  />
+                </div>
               )}
             </div>
 
@@ -1645,6 +1663,60 @@ const ProductDetail: React.FC = () => {
                   )}
                 </div>
               ))}
+            </div>
+
+            {/* Product Description - Moved from right side */}
+            <div className="mt-4">
+              <div
+                className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
+                style={{ backgroundColor: colors.background.secondary }}
+              >
+                <h3
+                  className="text-base lg:text-lg font-bold"
+                  style={{ color: colors.text.primary }}
+                >
+                  Product Description
+                </h3>
+
+                <div className="mt-3">
+                  <style dangerouslySetInnerHTML={{
+                    __html: `
+                    .product-description-content h1,
+                    .product-description-content h2,
+                    .product-description-content h3,
+                    .product-description-content h4,
+                    .product-description-content h5,
+                    .product-description-content h6 {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                      margin-top: 1rem;
+                      margin-bottom: 0.5rem;
+                    }
+                    .product-description-content p,
+                    .product-description-content li,
+                    .product-description-content span,
+                    .product-description-content div {
+                      color: ${colors.text.secondary} !important;
+                    }
+                    .product-description-content strong,
+                    .product-description-content b {
+                      color: ${colors.text.primary} !important;
+                      font-weight: 600;
+                    }
+                    .product-description-content ul,
+                    .product-description-content ol {
+                      padding-left: 1.5rem;
+                      margin: 0.5rem 0;
+                    }
+                    .product-description-content a {
+                      color: ${colors.interactive.primary} !important;
+                    }
+                  `}} />
+                  <div className="product-description-content">
+                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1749,55 +1821,7 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Deal Countdown Timer */}
-            {isActiveDeal && product.dealEndDate && (
-              <div className="mt-4">
-                <CountdownTimer
-                  dealEndDate={new Date(product.dealEndDate)}
-                  colors={colors}
-                  variant="featured"
-                />
-              </div>
-            )}
-
-            {/* Social Share Buttons */}
-            <div className="flex items-center gap-2 mt-3">
-              {(() => {
-                // Use the same icon components as the footer for visual consistency
-                const WhatsappIcon = FaWhatsapp;
-                const FacebookIcon = (LucideIcons as any).Facebook;
-                const TwitterIcon = (LucideIcons as any).Twitter;
-                const LinkedInIcon = (LucideIcons as any).Linkedin;
-                const MailIcon = (LucideIcons as any).Mail;
-
-                // Render only WhatsApp, Facebook, Twitter, LinkedIn and Email icons
-                return (
-                  <>
-                    <button onClick={() => shareTo('whatsapp')} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="px-1">
-                      {WhatsappIcon ? <WhatsappIcon size={20} style={{ color: '#25D366' }} /> : null}
-                    </button>
-
-                    <button onClick={() => shareTo('facebook')} title="Share on Facebook" aria-label="Share on Facebook" className="px-1">
-                      {FacebookIcon ? <FacebookIcon size={20} style={{ color: '#1877F2' }} /> : null}
-                    </button>
-
-                    <button onClick={() => shareTo('twitter')} title="Share on Twitter" aria-label="Share on Twitter" className="px-1">
-                      {TwitterIcon ? <TwitterIcon size={20} style={{ color: '#1DA1F2' }} /> : null}
-                    </button>
-
-                    <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" aria-label="Share on LinkedIn" className="px-1">
-                      {LinkedInIcon ? <LinkedInIcon size={20} style={{ color: '#0A66C2' }} /> : null}
-                    </button>
-
-                    <button onClick={() => shareTo('email')} title="Share via Email" aria-label="Share via Email" className="px-1">
-                      {MailIcon ? <MailIcon size={20} style={{ color: '#6b7280' }} /> : null}
-                    </button>
-                  </>
-                );
-              })()}
-            </div>
-
-            {/* Trust Badges (moved from footer) */}
+            {/* Trust Badges */}
             <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
               {PRODUCT_TRUST_BADGES.map((badge) => {
                 const Icon =
@@ -1844,65 +1868,10 @@ const ProductDetail: React.FC = () => {
               })}
             </div>
 
-            {/* Description as Accordion (desktop only) */}
-            <div className="hidden lg:block">
-              <div
-                className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
-                style={{ backgroundColor: colors.background.secondary }}
-              >
-                <h3
-                  className="text-base lg:text-lg font-bold"
-                  style={{ color: colors.text.primary }}
-                >
-                  Product Description
-                </h3>
-
-                <div className="mt-3">
-                  <style dangerouslySetInnerHTML={{
-                    __html: `
-                    .product-description-content h1,
-                    .product-description-content h2,
-                    .product-description-content h3,
-                    .product-description-content h4,
-                    .product-description-content h5,
-                    .product-description-content h6 {
-                      color: ${colors.text.primary} !important;
-                      font-weight: 600;
-                      margin-top: 1rem;
-                      margin-bottom: 0.5rem;
-                    }
-                    .product-description-content p,
-                    .product-description-content li,
-                    .product-description-content span,
-                    .product-description-content div {
-                      color: ${colors.text.secondary} !important;
-                    }
-                    .product-description-content strong,
-                    .product-description-content b {
-                      color: ${colors.text.primary} !important;
-                      font-weight: 600;
-                    }
-                    .product-description-content ul,
-                    .product-description-content ol {
-                      padding-left: 1.5rem;
-                      margin: 0.5rem 0;
-                    }
-                    .product-description-content a {
-                      color: ${colors.interactive.primary} !important;
-                    }
-                  `}} />
-                  <div className="product-description-content">
-                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
-                  </div>
-                </div>
-                {/* full description always shown; 'Show more' removed */}
-              </div>
-            </div>
-
-            {/* License Selection */}
+            {/* License Selection - Moved up from below */}
             <div
               ref={pricingRef}
-              className="rounded-lg lg:rounded-xl p-3 lg:p-4 transition-colors duration-200"
+              className="rounded-lg lg:rounded-xl p-3 lg:p-4 transition-colors duration-200 mt-4"
               style={{ backgroundColor: colors.background.secondary }}
             >
               <div className="flex items-center justify-between mb-3 lg:mb-4">
@@ -2067,6 +2036,252 @@ const ProductDetail: React.FC = () => {
               )}
 
               {/* Lifetime License Section - Small box */}
+              {lifetimeOptions.length > 0 && (
+                <div className="mb-3">
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Lifetime Access
+                  </h4>
+                  <div className="flex gap-2">
+                    {lifetimeOptions.map((option) => (
+                      <div
+                        key={option.id}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[120px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
+                        style={{
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
+                        }}
+                      >
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
+                        >
+                          {option.label}
+                        </div>
+                        <div
+                          className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                          style={{
+                            backgroundColor: "#10b981",
+                            color: colors.background.primary,
+                            fontSize: "10px",
+                          }}
+                        >
+                          Best Value
+                        </div>
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: selectedLicense === option.id ? '#fff' : colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
+                        </div>
+                        {option.savings && (
+                          <div className="text-xs text-green-400 mt-1">
+                            {option.savings}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Membership Section - Small box */}
+              {membershipOptions.length > 0 && (
+                <div className="mb-3">
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Premium Membership
+                  </h4>
+                  <div className="flex gap-2">
+                    {membershipOptions.map((option) => (
+                      <div
+                        key={option.id}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
+                        style={{
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
+                        }}
+                      >
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {option.label}
+                        </div>
+                        <div
+                          className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                          style={{
+                            backgroundColor: "#f59e0b",
+                            color: colors.background.primary,
+                            fontSize: "10px",
+                          }}
+                        >
+                          Premium
+                        </div>
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Admin Subscription Plans */}
+              {adminSubscriptionPlans.length > 0 && (
+                <div className="mb-3">
+                  <h4
+                    className="text-xs font-semibold mb-2"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    Subscription Plans
+                  </h4>
+                  <div className="flex gap-2">
+                    {adminSubscriptionPlans.map((option: any) => (
+                      <div
+                        key={option.id}
+                        onClick={() => {
+                          setSelectedLicense(option.id);
+                          setUserHasSelectedPlan(true);
+                        }}
+                        className={`flex-shrink-0 p-2 border-2 rounded-lg cursor-pointer transition-all duration-200 hover:scale-[1.02] text-center min-w-[110px] ${selectedLicense === option.id ? 'ring-2 ring-offset-2' : ''}`}
+                        style={{
+                          borderColor:
+                            selectedLicense === option.id
+                              ? colors.interactive.primary
+                              : colors.border.primary,
+                          background:
+                            selectedLicense === option.id
+                              ? selectedBg
+                              : colors.background.secondary,
+                          color: selectedLicense === option.id ? '#fff' : colors.text.primary,
+                          boxShadow: selectedLicense === option.id ? '0 2px 12px 0 rgba(0,0,0,0.10)' : undefined,
+                        }}
+                      >
+                        <div
+                          className="text-xs font-bold mb-1"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {option.label}
+                        </div>
+                        {option.badge && (
+                          <div
+                            className="text-xs px-1 py-0.5 rounded font-bold mb-1"
+                            style={{
+                              backgroundColor:
+                                option.badge === "Flexible"
+                                  ? "#10b981"
+                                  : "#3b82f6",
+                              color: colors.background.primary,
+                              fontSize: "10px",
+                            }}
+                          >
+                            {option.badge}
+                          </div>
+                        )}
+                        <div
+                          className="text-sm font-bold"
+                          style={{ color: colors.text.primary }}
+                        >
+                          {formatPriceWithSymbol(
+                            option.priceINR,
+                            option.priceUSD,
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Deal Countdown Timer */}
+            {isActiveDeal && product.dealEndDate && (
+              <div className="mt-4">
+                <CountdownTimer
+                  dealEndDate={new Date(product.dealEndDate)}
+                  colors={colors}
+                  variant="featured"
+                />
+              </div>
+            )}
+
+            {/* Social Share Buttons */}
+            <div className="flex items-center gap-2 mt-3">
+              {(() => {
+                // Use the same icon components as the footer for visual consistency
+                const WhatsappIcon = FaWhatsapp;
+                const FacebookIcon = (LucideIcons as any).Facebook;
+                const TwitterIcon = (LucideIcons as any).Twitter;
+                const LinkedInIcon = (LucideIcons as any).Linkedin;
+                const MailIcon = (LucideIcons as any).Mail;
+
+                // Render only WhatsApp, Facebook, Twitter, LinkedIn and Email icons
+                return (
+                  <>
+                    <button onClick={() => shareTo('whatsapp')} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="px-1">
+                      {WhatsappIcon ? <WhatsappIcon size={20} style={{ color: '#25D366' }} /> : null}
+                    </button>
+
+                    <button onClick={() => shareTo('facebook')} title="Share on Facebook" aria-label="Share on Facebook" className="px-1">
+                      {FacebookIcon ? <FacebookIcon size={20} style={{ color: '#1877F2' }} /> : null}
+                    </button>
+
+                    <button onClick={() => shareTo('twitter')} title="Share on Twitter" aria-label="Share on Twitter" className="px-1">
+                      {TwitterIcon ? <TwitterIcon size={20} style={{ color: '#1DA1F2' }} /> : null}
+                    </button>
+
+                    <button onClick={() => shareTo('linkedin')} title="Share on LinkedIn" aria-label="Share on LinkedIn" className="px-1">
+                      {LinkedInIcon ? <LinkedInIcon size={20} style={{ color: '#0A66C2' }} /> : null}
+                    </button>
+
+                    <button onClick={() => shareTo('email')} title="Share via Email" aria-label="Share via Email" className="px-1">
+                      {MailIcon ? <MailIcon size={20} style={{ color: '#6b7280' }} /> : null}
+                    </button>
+                  </>
+                );
+              })()}
+            </div>
+
+            {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}
+            <div ref={actionRef} className="mt-4">
               {lifetimeOptions.length > 0 && (
                 <div className="mb-3">
                   <h4

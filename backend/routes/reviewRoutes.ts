@@ -9,12 +9,14 @@ import {
   addReplyToReview,
   updateReply,
   deleteReply,
+  getRecentReviews,
 } from '../controllers/reviewController';
 import { authenticate } from '../middlewares/auth';
 
 const router = express.Router();
 
 // Public routes
+router.get('/recent', getRecentReviews);
 router.get('/product/:productId', getProductReviews);
 router.get('/product/:productId/stats', getProductReviewStats);
 

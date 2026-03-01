@@ -603,3 +603,37 @@ export const deleteReply = async (req: Request, res: Response) => {
         });
     }
 };
+
+// Get recent reviews across all products (for testimonials section)
+export const getRecentReviews = async (req: Request, res: Response) => {
+    try {
+        const limit = parseInt(req.query.limit as string) || 21;
+
+        const reviews = await Review.find()
+            .populate('user', 'fullName email')
+            .populate('product', 'name slug')
+            .sort({ createdAt: -1 })
+            .limit(limit);
+
+        // Format reviews to handle anonymous ones
+        const formattedReviews = reviews.map(review => {
+            const reviewObj: any = review.toObject();
+            if (review.isAnonymous) {
+                reviewObj.user = {
+                    _id: 'anonymous',
+                    fullName: review.anonymousName || 'Anonymous User',
+                    email: '',
+                };
+            }
+            return reviewObj;
+        });
+
+        res.json({
+            reviews: formattedReviews,
+            total: formattedReviews.length,
+        });
+    } catch (error) {
+        console.error('Error fetching recent reviews:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};

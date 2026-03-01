@@ -1,5 +1,5 @@
 import React from "react";
-import { LogOut, User, Package } from "lucide-react";
+import { LogOut, User, Package, BookOpen } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import ProductSearchBar from "./ProductSearchBar";
 
@@ -44,6 +44,15 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
           <ProductSearchBar onSearch={onClose} />
 
           <div className="space-y-1">
+            <button
+              onClick={() => onNavigate("/blog")}
+              className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
+              style={{ color: colors.text.secondary }}
+            >
+              <BookOpen className="w-5 h-5" />
+              <span>Blog</span>
+            </button>
+            
             {user ? (
               <>
                 <button

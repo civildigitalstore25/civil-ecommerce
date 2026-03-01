@@ -44,7 +44,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   };
 
   return (
-    <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 mr-4">
+    <nav className="hidden lg:flex items-center space-x-2 xl:space-x-4 mr-2">
       <div className="relative">
         <div
           ref={allCategoriesButtonRef}
@@ -53,11 +53,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             All Categories
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "categories" && (
             <div
@@ -84,11 +84,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             Autodesk
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "autodesk" && autodeskButtonRef.current && (
             <div
@@ -115,11 +115,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             Adobe
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "adobe" && adobeButtonRef.current && (
             <div
@@ -146,11 +146,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             Microsoft
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "microsoft" && microsoftButtonRef.current && (
             <div
@@ -177,11 +177,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             Antivirus
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "antivirus" && antivirusButtonRef.current && (
             <div
@@ -208,11 +208,11 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
           className="inline-block"
         >
           <button
-            className="flex items-center font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
             style={{ color: colors.text.secondary }}
           >
             Offers
-            <ChevronDown className="ml-1 w-4 h-4" />
+            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
           </button>
           {activeDropdown === "offers" && offersButtonRef.current && (
             <div
@@ -234,21 +234,28 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
       
       <button
+        onClick={() => onNavigate("/blog")}
+        className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+        style={{ color: colors.text.secondary }}
+      >
+        Blog
+      </button>
+      <button
         onClick={() => onNavigate("/about-us")}
-        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+        className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
       >
         About Us
       </button>
       <button
         onClick={() => onNavigate("/contact")}
-        className="font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
+        className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
       >
         Contact Us
       </button>
       {/* Move search next to Contact Us and reduce width on desktop */}
-      <ProductSearchBar className="hidden lg:block w-48" />
+      <ProductSearchBar className="hidden lg:block w-36 xl:w-40" />
     </nav>
   );
 };

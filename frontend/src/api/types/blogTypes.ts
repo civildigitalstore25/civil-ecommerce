@@ -9,6 +9,7 @@ export interface Blog {
   category: string;
   tags: string[];
   featuredImage: string;
+  youtubeVideoUrl?: string;
   status: 'draft' | 'published';
   metaTitle?: string;
   metaDescription?: string;
@@ -27,6 +28,7 @@ export interface BlogFormData {
   category: string;
   tags: string[];
   featuredImage: string;
+  youtubeVideoUrl?: string;
   status: 'draft' | 'published';
   metaTitle?: string;
   metaDescription?: string;

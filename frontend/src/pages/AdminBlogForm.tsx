@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../api/userQueries";
 import { useCreateBlog, useUpdateBlog, useBlogById } from "../api/blogApi";
 import type { BlogFormData } from "../api/types/blogTypes";
+import { 
+  Bold, Italic, Underline, List, ListOrdered, Link as LinkIcon, 
+  Image as ImageIcon, Code, Heading1, Heading2, Heading3 
+} from "lucide-react";
 
 const AdminBlogForm: React.FC = () => {
   const { id } = useParams();
@@ -22,7 +26,8 @@ const AdminBlogForm: React.FC = () => {
     category: "",
     tags: [],
     featuredImage: "",
-    status: "draft",
+    youtubeVideoUrl: "",
+    status: "published",
     metaTitle: "",
     metaDescription: "",
     metaKeywords: [],
@@ -31,6 +36,43 @@ const AdminBlogForm: React.FC = () => {
   const [tagInput, setTagInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+
+  // Rich text editor helper functions
+  const insertFormatting = (prefix: string, suffix: string = "") => {
+    const textarea = contentRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selectedText = formData.content.substring(start, end);
+    const beforeText = formData.content.substring(0, start);
+    const afterText = formData.content.substring(end);
+
+    const newContent = beforeText + prefix + selectedText + suffix + afterText;
+    setFormData(prev => ({ ...prev, content: newContent }));
+
+    // Set cursor position after insertion
+    setTimeout(() => {
+      textarea.focus();
+      const newPosition = start + prefix.length + selectedText.length + suffix.length;
+      textarea.setSelectionRange(newPosition, newPosition);
+    }, 0);
+  };
+
+  const formatButtons = [
+    { icon: <Heading1 className="w-4 h-4" />, action: () => insertFormatting('<h1>', '</h1>'), title: 'Heading 1' },
+    { icon: <Heading2 className="w-4 h-4" />, action: () => insertFormatting('<h2>', '</h2>'), title: 'Heading 2' },
+    { icon: <Heading3 className="w-4 h-4" />, action: () => insertFormatting('<h3>', '</h3>'), title: 'Heading 3' },
+    { icon: <Bold className="w-4 h-4" />, action: () => insertFormatting('<strong>', '</strong>'), title: 'Bold' },
+    { icon: <Italic className="w-4 h-4" />, action: () => insertFormatting('<em>', '</em>'), title: 'Italic' },
+    { icon: <Underline className="w-4 h-4" />, action: () => insertFormatting('<u>', '</u>'), title: 'Underline' },
+    { icon: <List className="w-4 h-4" />, action: () => insertFormatting('<ul>\n<li>', '</li>\n</ul>'), title: 'Bullet List' },
+    { icon: <ListOrdered className="w-4 h-4" />, action: () => insertFormatting('<ol>\n<li>', '</li>\n</ol>'), title: 'Numbered List' },
+    { icon: <LinkIcon className="w-4 h-4" />, action: () => insertFormatting('<a href="URL">', '</a>'), title: 'Link' },
+    { icon: <ImageIcon className="w-4 h-4" />, action: () => insertFormatting('<img src="URL" alt="description" />'), title: 'Image' },
+    { icon: <Code className="w-4 h-4" />, action: () => insertFormatting('<code>', '</code>'), title: 'Code' },
+  ];
 
   useEffect(() => {
     if (isEditMode && blogData?.blog) {
@@ -43,6 +85,7 @@ const AdminBlogForm: React.FC = () => {
         category: blog.category || "",
         tags: blog.tags || [],
         featuredImage: blog.featuredImage || "",
+        youtubeVideoUrl: blog.youtubeVideoUrl || "",
         status: blog.status || "draft",
         metaTitle: blog.metaTitle || "",
         metaDescription: blog.metaDescription || "",
@@ -107,6 +150,33 @@ const AdminBlogForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!formData.title || !formData.title.trim()) {
+      alert("Please enter a blog title");
+      return;
+    }
+
+    if (!formData.content || !formData.content.trim()) {
+      alert("Please enter blog content");
+      return;
+    }
+
+    if (!formData.excerpt || !formData.excerpt.trim()) {
+      alert("Please enter a blog excerpt");
+      return;
+    }
+
+    if (!formData.category || !formData.category.trim()) {
+      alert("Please enter a blog category");
+      return;
+    }
+
+    if (!formData.featuredImage || !formData.featuredImage.trim()) {
+      alert("Please enter a featured image URL");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -117,46 +187,64 @@ const AdminBlogForm: React.FC = () => {
         await createBlogMutation.mutateAsync(formData);
         alert("Blog created successfully!");
       }
-      navigate("/admin/blogs");
+      navigate("/blog");
     } catch (error: any) {
       console.error("Error saving blog:", error);
+      const errorMessage = error?.response?.data?.message || error?.message || "Failed to save blog. Please try again.";
+      alert(`Error: ${errorMessage}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">
-        {isEditMode ? "Edit Blog Post" : "Create New Blog Post"}
-      </h1>
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl flex flex-col" style={{ maxHeight: '90vh' }}>
+        {/* Sticky Header */}
+        <div className="flex justify-between items-center p-6 border-b border-gray-200 bg-white rounded-t-lg">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {isEditMode ? "Edit Blog Post" : "Create New Blog Post"}
+          </h1>
+          <button
+            type="button"
+            onClick={() => navigate("/blog")}
+            className="text-gray-400 hover:text-gray-600 text-2xl font-bold w-8 h-8 flex items-center justify-center"
+          >
+            ×
+          </button>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
         {/* Basic Information */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">Basic Information</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Title</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Title *</label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                required
+                placeholder="Enter blog title"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Excerpt</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Excerpt *</label>
               <textarea
                 name="excerpt"
                 value={formData.excerpt}
                 onChange={handleChange}
                 rows={3}
                 maxLength={300}
+                required
                 placeholder="Brief summary (max 300 characters)"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               />
               <p className="text-sm text-gray-500 mt-1">
                 {formData.excerpt.length}/300 characters
@@ -164,51 +252,62 @@ const AdminBlogForm: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Content</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Content *</label>
+              
+              {/* Formatting Toolbar */}
+              <div className="flex flex-wrap gap-1 mb-2 p-2 bg-gray-100 rounded-t-lg border border-gray-300">
+                {formatButtons.map((btn, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    onClick={btn.action}
+                    title={btn.title}
+                    className="p-2 hover:bg-gray-200 rounded transition-colors"
+                  >
+                    {btn.icon}
+                  </button>
+                ))}
+              </div>
+
+              {/* Content Textarea */}
               <textarea
+                ref={contentRef}
                 name="content"
                 value={formData.content}
                 onChange={handleChange}
-                rows={15}
-                placeholder="Write your blog content here... (Supports HTML)"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 font-mono text-sm"
+                rows={20}
+                placeholder="Write your blog content here... Use the toolbar buttons to add HTML formatting."
+                className="w-full px-4 py-2 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-blue-500 bg-white font-mono text-sm resize-y"
+                style={{ minHeight: '400px' }}
               />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Author</label>
-                <input
-                  type="text"
-                  name="author"
-                  value={formData.author}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-2">Category</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  placeholder="e.g., Technology, Software, Tips"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
-                />
-              </div>
+              <p className="text-sm text-gray-500 mt-1">
+                Use the toolbar buttons above to add HTML formatting. You can also write HTML directly.
+              </p>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Featured Image URL</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Category *</label>
+              <input
+                type="text"
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                required
+                placeholder="e.g., Technology, Software, Tips"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Featured Image URL *</label>
               <input
                 type="url"
                 name="featuredImage"
                 value={formData.featuredImage}
                 onChange={handleChange}
+                required
                 placeholder="https://example.com/image.jpg"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               />
               {formData.featuredImage && (
                 <img
@@ -223,7 +322,22 @@ const AdminBlogForm: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Tags</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">YouTube Video URL (Optional)</label>
+              <input
+                type="url"
+                name="youtubeVideoUrl"
+                value={formData.youtubeVideoUrl}
+                onChange={handleChange}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+              />
+              <p className="text-sm text-gray-500 mt-1">
+                Enter a YouTube video URL to embed it in your blog post
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Tags</label>
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
@@ -231,7 +345,7 @@ const AdminBlogForm: React.FC = () => {
                   onChange={(e) => setTagInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), handleAddTag())}
                   placeholder="Add a tag and press Enter"
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 <button
                   type="button"
@@ -245,13 +359,13 @@ const AdminBlogForm: React.FC = () => {
                 {formData.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm flex items-center gap-2"
+                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm flex items-center gap-2"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag)}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200"
+                      className="text-blue-600 hover:text-blue-800"
                     >
                       ×
                     </button>
@@ -261,12 +375,12 @@ const AdminBlogForm: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Status</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Status</label>
               <select
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="draft">Draft</option>
                 <option value="published">Published</option>
@@ -276,36 +390,36 @@ const AdminBlogForm: React.FC = () => {
         </div>
 
         {/* SEO Settings */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">SEO Settings</h2>
+        <div className="bg-white p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-semibold mb-4 text-gray-900">SEO Settings</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Meta Title</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Meta Title</label>
               <input
                 type="text"
                 name="metaTitle"
                 value={formData.metaTitle}
                 onChange={handleChange}
                 placeholder="Leave empty to use blog title"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Meta Description</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Meta Description</label>
               <textarea
                 name="metaDescription"
                 value={formData.metaDescription}
                 onChange={handleChange}
                 rows={3}
                 placeholder="SEO description for search engines"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Meta Keywords</label>
+              <label className="block text-sm font-medium mb-2 text-gray-700">Meta Keywords</label>
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
@@ -315,7 +429,7 @@ const AdminBlogForm: React.FC = () => {
                     e.key === "Enter" && (e.preventDefault(), handleAddKeyword())
                   }
                   placeholder="Add a keyword and press Enter"
-                  className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
                 />
                 <button
                   type="button"
@@ -329,13 +443,13 @@ const AdminBlogForm: React.FC = () => {
                 {formData.metaKeywords?.map((keyword) => (
                   <span
                     key={keyword}
-                    className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-sm flex items-center gap-2"
+                    className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm flex items-center gap-2"
                   >
                     {keyword}
                     <button
                       type="button"
                       onClick={() => handleRemoveKeyword(keyword)}
-                      className="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                      className="text-gray-600 hover:text-gray-800"
                     >
                       ×
                     </button>
@@ -345,13 +459,14 @@ const AdminBlogForm: React.FC = () => {
             </div>
           </div>
         </div>
+          </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end gap-4">
+        {/* Sticky Footer */}
+        <div className="p-6 border-t border-gray-200 bg-white rounded-b-lg flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate("/admin/blogs")}
-            className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+            onClick={() => navigate("/blog")}
+            className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
           >
             Cancel
           </button>
@@ -367,7 +482,8 @@ const AdminBlogForm: React.FC = () => {
               : "Create Blog"}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

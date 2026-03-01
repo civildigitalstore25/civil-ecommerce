@@ -9,6 +9,7 @@ import {
   getBlogCategories,
   getPopularTags,
   getFeaturedBlogs,
+  getRelatedBlogs,
 } from '../controllers/blogController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -20,6 +21,7 @@ router.get('/blogs/featured', getFeaturedBlogs); // Get featured/popular blogs
 router.get('/blogs/categories', getBlogCategories); // Get all categories with counts
 router.get('/blogs/tags', getPopularTags); // Get popular tags
 router.get('/blogs/slug/:slug', getBlogBySlug); // Get single blog by slug
+router.get('/blogs/slug/:slug/related', getRelatedBlogs); // Get related blogs by category
 
 // Admin routes (Protected)
 router.post('/blogs', authenticate, requireAdmin, createBlog); // Create new blog

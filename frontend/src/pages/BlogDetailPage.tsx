@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useBlogBySlug, useFeaturedBlogs } from "../api/blogApi";
+import { useBlogBySlug, useRelatedBlogs } from "../api/blogApi";
 
 const BlogDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useBlogBySlug(slug || "");
-  const { data: featuredData } = useFeaturedBlogs(3);
+  const { data: relatedBlogsData } = useRelatedBlogs(slug || "", 4);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -17,6 +17,16 @@ const BlogDetailPage: React.FC = () => {
       month: "long",
       day: "numeric",
     });
+  };
+
+  // Extract YouTube video ID from URL
+  const getYouTubeVideoId = (url: string): string | null => {
+    if (!url) return null;
+    
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    
+    return (match && match[2].length === 11) ? match[2] : null;
   };
 
   if (isLoading) {
@@ -65,6 +75,19 @@ const BlogDetailPage: React.FC = () => {
       style={{ backgroundColor: '#f9fafb' }}
     >
       <div className="max-w-5xl mx-auto">
+        {/* Back to Blog Button */}
+        <div className="mb-6">
+          <Link
+            to="/blog"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-50 transition-all font-semibold shadow-md border border-gray-200"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Blog
+          </Link>
+        </div>
+
         {/* Header */}
         <div className="mb-6 md:mb-8">
           <span className="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-bold rounded-full shadow-lg inline-block mb-4">
@@ -86,34 +109,57 @@ const BlogDetailPage: React.FC = () => {
               </svg>
               <span>{formatDate(blog.publishedAt || blog.createdAt)}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              <span className="font-semibold">{blog.viewCount} views</span>
-            </div>
           </div>
+          
+          {/* Featured Image */}
+          {blog.featuredImage && (
+            <div className="mb-6 flex justify-center">
+              <img
+                src={blog.featuredImage}
+                alt={blog.title}
+                className="w-full h-auto rounded-2xl shadow-2xl object-contain"
+                style={{ maxHeight: '350px' }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <article className="lg:col-span-2">
-              <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
+        {/* Main Content */}
+        <article className="w-full">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
                 {/* Excerpt */}
-                <div className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed italic border-l-4 border-blue-600 pl-6 py-3 mb-8 bg-gradient-to-r from-blue-50/50 to-purple-50/50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-r-lg">
+                <div className="text-xl text-gray-700 leading-relaxed italic border-l-4 border-blue-600 pl-6 py-3 mb-8 bg-gradient-to-r from-blue-50/50 to-purple-50/50 rounded-r-lg">
                   {blog.excerpt}
                 </div>
 
+                {/* YouTube Video Player */}
+                {blog.youtubeVideoUrl && getYouTubeVideoId(blog.youtubeVideoUrl) && (
+                  <div className="mb-8">
+                    <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full rounded-xl shadow-2xl"
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(blog.youtubeVideoUrl)}`}
+                        title="YouTube video player"
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                  </div>
+                )}
+
                 {/* Content */}
                 <div
-                  className="prose prose-lg dark:prose-invert max-w-none
-                    prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-gray-100 prose-headings:mb-4 prose-headings:mt-8
-                    prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed prose-p:mb-4
-                    prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
-                    prose-strong:text-gray-900 dark:prose-strong:text-gray-100
-                    prose-code:text-pink-600 dark:prose-code:text-pink-400 prose-code:bg-pink-50 dark:prose-code:bg-pink-900/20 prose-code:px-1 prose-code:rounded
-                    prose-pre:bg-gray-900 dark:prose-pre:bg-gray-950 prose-pre:shadow-xl
+                  className="prose prose-lg max-w-none
+                    prose-headings:font-bold prose-headings:text-gray-900 prose-headings:mb-4 prose-headings:mt-8
+                    prose-p:text-gray-700 prose-p:leading-relaxed prose-p:mb-4
+                    prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-a:font-semibold
+                    prose-strong:text-gray-900
+                    prose-code:text-pink-600 prose-code:bg-pink-50 prose-code:px-1 prose-code:rounded
+                    prose-pre:bg-gray-900 prose-pre:shadow-xl
                     prose-img:rounded-xl prose-img:shadow-2xl prose-img:my-8
                     prose-ul:my-6 prose-ol:my-6
                     prose-li:my-2"
@@ -122,8 +168,8 @@ const BlogDetailPage: React.FC = () => {
 
                 {/* Tags */}
                 {blog.tags.length > 0 && (
-                  <div className="mt-12 pt-8 border-t-2 border-gray-200 dark:border-gray-700">
-                    <h3 className="font-bold text-xl mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
+                  <div className="mt-12 pt-8 border-t-2 border-gray-200">
+                    <h3 className="font-bold text-xl mb-4 flex items-center gap-2 text-gray-800">
                       <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
@@ -134,7 +180,7 @@ const BlogDetailPage: React.FC = () => {
                         <Link
                           key={tag}
                           to={`/blog?tag=${encodeURIComponent(tag)}`}
-                          className="px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/50 dark:to-purple-900/50 text-blue-800 dark:text-blue-200 rounded-full text-sm font-semibold hover:scale-110 hover:shadow-lg transition-all"
+                          className="px-5 py-2.5 bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 rounded-full text-sm font-semibold hover:scale-110 hover:shadow-lg transition-all"
                         >
                           #{tag}
                         </Link>
@@ -144,7 +190,7 @@ const BlogDetailPage: React.FC = () => {
                 )}
 
                 {/* Share Section */}
-                <div className="mt-12 pt-8 border-t-2 border-gray-200 dark:border-gray-700">
+                <div className="mt-12 pt-8 border-t-2 border-gray-200">
                   <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl p-6 text-white shadow-xl">
                     <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,109 +242,53 @@ const BlogDetailPage: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Back to Blog */}
-              <div className="mt-6">
-                <Link
-                  to="/blog"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:scale-105 transition-all font-semibold shadow-lg hover:shadow-xl"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                  Back to all blogs
-                </Link>
-              </div>
             </article>
 
-            {/* Sidebar */}
-            <aside className="lg:col-span-1">
-              <div className="sticky top-6 space-y-6">
-                {/* Author Info */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
-                  <h3 className="font-bold text-xl mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
-                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    About the Author
-                  </h3>
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-xl p-4">
-                    <p className="text-gray-800 dark:text-gray-200 font-bold text-lg">
-                      {blog.author}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Related/Featured Posts */}
-                {featuredData && featuredData.blogs.length > 0 && (
-                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700">
-                    <h3 className="font-bold text-xl mb-4 flex items-center gap-2 text-gray-800 dark:text-white">
-                      <svg className="w-6 h-6 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                      </svg>
-                      Featured Articles
-                    </h3>
-                    <div className="space-y-4">
-                      {featuredData.blogs
-                        .filter((b) => b._id !== blog._id)
-                        .slice(0, 3)
-                        .map((featuredBlog) => (
-                          <Link
-                            key={featuredBlog._id}
-                            to={`/blog/${featuredBlog.slug}`}
-                            className="block group"
-                          >
-                            <div className="flex gap-3 p-3 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all hover:scale-105 hover:shadow-lg">
-                              <img
-                                src={featuredBlog.featuredImage}
-                                alt={featuredBlog.title}
-                                className="w-20 h-20 object-cover rounded-lg shadow-md"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src =
-                                    "https://via.placeholder.com/80?text=Blog";
-                                }}
-                              />
-                              <div className="flex-1 min-w-0">
-                                <h4 className="font-bold text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition line-clamp-2 mb-2">
-                                  {featuredBlog.title}
-                                </h4>
-                                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                  </svg>
-                                  {formatDate(
-                                    featuredBlog.publishedAt || featuredBlog.createdAt
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </Link>
-                        ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Categories */}
-                <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-xl p-6 text-white">
-                  <h3 className="font-bold text-xl mb-4 flex items-center gap-2">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
-                    Explore More
-                  </h3>
-                  <Link
-                    to="/blog"
-                    className="flex items-center justify-center gap-2 px-6 py-3 bg-white text-blue-600 text-center rounded-xl hover:scale-105 transition-all font-bold shadow-lg hover:shadow-2xl"
-                  >
-                    View All Blogs
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </Link>
+            {/* Related Blogs Section */}
+            {relatedBlogsData?.blogs && relatedBlogsData.blogs.length > 0 && (
+              <div className="mt-12">
+                <h2 className="text-2xl font-bold mb-6" style={{ color: '#1e293b' }}>
+                  Related Articles
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {relatedBlogsData.blogs.map((relatedBlog) => (
+                    <Link
+                      key={relatedBlog._id}
+                      to={`/blog/${relatedBlog.slug}`}
+                      className="group bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300"
+                    >
+                      <div className="h-28 md:h-40 overflow-hidden bg-gray-100">
+                        {relatedBlog.featuredImage && (
+                          <img
+                            src={relatedBlog.featuredImage}
+                            alt={relatedBlog.title}
+                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                          />
+                        )}
+                      </div>
+                      <div className="p-4">
+                        <span className="inline-block px-3 py-1 bg-blue-100 text-blue-600 text-xs font-semibold rounded-full mb-2">
+                          {relatedBlog.category}
+                        </span>
+                        <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                          {relatedBlog.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                          {relatedBlog.excerpt}
+                        </p>
+                        <div className="text-xs text-gray-500">
+                          {new Date(relatedBlog.publishedAt || relatedBlog.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
                 </div>
               </div>
-            </aside>
-          </div>
+            )}
         </div>
       </div>
   );

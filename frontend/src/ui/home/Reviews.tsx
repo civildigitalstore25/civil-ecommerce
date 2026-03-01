@@ -1,48 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-
-interface Review {
-  author_name: string;
-  rating: number;
-  text: string;
-  relative_time_description: string;
-}
-
-// Static review data - Only 3 reviews
-const staticReviews: Review[] = [
-  {
-    author_name: "Rajesh Kumar",
-    rating: 5,
-    text: "Excellent service! Got my software license instantly. The support team was very helpful in guiding me through the installation process.",
-    relative_time_description: "2 weeks ago",
-  },
-  {
-    author_name: "Priya Sharma",
-    rating: 5,
-    text: "Best place to buy genuine software at affordable prices. I purchased Microsoft Office and the activation was seamless. Highly recommended!",
-    relative_time_description: "1 month ago",
-  },
-  {
-    author_name: "Amit Patel",
-    rating: 4,
-    text: "Great collection of software products. Delivery was quick and customer support responded promptly to my queries. Will buy again!",
-    relative_time_description: "3 weeks ago",
-  },
-];
+import { getRecentReviews, type Review as ApiReview } from "../../api/reviewApi";
 
 const Reviews: React.FC = () => {
   const { colors } = useAdminTheme();
+  const [reviews, setReviews] = useState<ApiReview[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch recent reviews
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setIsLoading(true);
+        const data = await getRecentReviews(21);
+        setReviews(data.reviews);
+      } catch (err) {
+        console.error("Error fetching reviews:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   // Auto-play carousel for mobile
   useEffect(() => {
+    if (reviews.length === 0) return;
+    
+    const displayCount = Math.min(3, reviews.length);
     const interval = setInterval(() => {
-      setCurrentReviewIndex((prev) => (prev + 1) % staticReviews.length);
+      setCurrentReviewIndex((prev) => (prev + 1) % displayCount);
     }, 5000); // Change slide every 5 seconds
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reviews.length]);
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+    
+    if (diffInDays === 0) return "Today";
+    if (diffInDays === 1) return "1 day ago";
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+    if (diffInDays < 365) return `${Math.floor(diffInDays / 30)} months ago`;
+    return `${Math.floor(diffInDays / 365)} years ago`;
+  };
 
   // Function to generate initials avatar
   const getInitialsAvatar = (name: string) => {
@@ -65,6 +73,32 @@ const Reviews: React.FC = () => {
 
     return `data:image/svg+xml;base64,${btoa(svg)}`;
   };
+
+  if (isLoading) {
+    return (
+      <section
+        id="reviews-section"
+        className="w-full py-16 transition-colors duration-200"
+        style={{
+          background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+          border: 'none',
+          boxShadow: 'none',
+          borderRadius: 0,
+        }}
+      >
+        <div className="text-center px-4">
+          <div style={{ color: colors.text.secondary }}>Loading reviews...</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (reviews.length === 0) {
+    return null; // Don't show section if no reviews
+  }
+
+  // Show only first 3 reviews for desktop
+  const displayedReviews = reviews.slice(0, 3);
 
   return (
     <section
@@ -92,9 +126,9 @@ const Reviews: React.FC = () => {
 
       {/* Desktop Grid Layout */}
       <div className="hidden md:grid md:grid-cols-3 gap-8 px-6 md:px-20">
-        {staticReviews.map((review, index) => (
+        {displayedReviews.map((review) => (
           <div
-            key={index}
+            key={review._id}
             className="rounded-2xl shadow-md p-6 flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
             style={{ backgroundColor: colors.background.primary }}
           >
@@ -113,7 +147,7 @@ const Reviews: React.FC = () => {
               className="italic mb-6 font-lato transition-colors duration-200"
               style={{ color: colors.text.secondary }}
             >
-              "{review.text}"
+              "{review.comment}"
             </p>
 
             {/* Profile */}
@@ -123,8 +157,8 @@ const Reviews: React.FC = () => {
                 style={{ borderColor: colors.interactive.primary }}
               >
                 <img
-                  src={getInitialsAvatar(review.author_name)}
-                  alt={review.author_name}
+                  src={getInitialsAvatar(review.user?.fullName || review.anonymousName || 'Anonymous')}
+                  alt={review.user?.fullName || review.anonymousName || 'Anonymous'}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -133,13 +167,13 @@ const Reviews: React.FC = () => {
                   className="font-poppins font-semibold transition-colors duration-200"
                   style={{ color: colors.text.primary }}
                 >
-                  {review.author_name}
+                  {review.user?.fullName || review.anonymousName || 'Anonymous'}
                 </h4>
                 <p
                   className="text-sm font-lato transition-colors duration-200"
                   style={{ color: colors.text.secondary }}
                 >
-                  {review.relative_time_description}
+                  {formatTimeAgo(review.createdAt)}
                 </p>
               </div>
             </div>
@@ -156,9 +190,9 @@ const Reviews: React.FC = () => {
               transform: `translateX(-${currentReviewIndex * 100}%)`,
             }}
           >
-            {staticReviews.map((review, index) => (
+            {displayedReviews.map((review) => (
               <div
-                key={index}
+                key={review._id}
                 className="w-full flex-shrink-0 px-2"
               >
                 <div
@@ -180,7 +214,7 @@ const Reviews: React.FC = () => {
                     className="italic mb-4 text-sm text-center font-lato transition-colors duration-200"
                     style={{ color: colors.text.secondary }}
                   >
-                    "{review.text}"
+                    "{review.comment}"
                   </p>
 
                   {/* Profile */}
@@ -190,8 +224,8 @@ const Reviews: React.FC = () => {
                       style={{ borderColor: colors.interactive.primary }}
                     >
                       <img
-                        src={getInitialsAvatar(review.author_name)}
-                        alt={review.author_name}
+                        src={getInitialsAvatar(review.user?.fullName || review.anonymousName || 'Anonymous')}
+                        alt={review.user?.fullName || review.anonymousName || 'Anonymous'}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -200,13 +234,13 @@ const Reviews: React.FC = () => {
                         className="font-poppins font-semibold text-sm transition-colors duration-200"
                         style={{ color: colors.text.primary }}
                       >
-                        {review.author_name}
+                        {review.user?.fullName || review.anonymousName || 'Anonymous'}
                       </h4>
                       <p
                         className="text-xs font-lato transition-colors duration-200"
                         style={{ color: colors.text.secondary }}
                       >
-                        {review.relative_time_description}
+                        {formatTimeAgo(review.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -218,7 +252,7 @@ const Reviews: React.FC = () => {
 
         {/* Carousel Indicators */}
         <div className="flex justify-center gap-2 mt-4">
-          {staticReviews.map((_, index) => (
+          {displayedReviews.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentReviewIndex(index)}
