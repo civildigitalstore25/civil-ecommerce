@@ -59,7 +59,7 @@ const PartnerProgram = () => (
       <li>Instant activation and secure transactions ensure customer satisfaction.</li>
     </ul>
     <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">How to Apply:</h2>
-    <p className="mb-4">To join, simply fill out our Partner Program Application Form. <a href="#" className="text-blue-600 underline">click to Apply Now</a></p>
+    <p className="mb-4">To join, simply fill out our Partner Program Application Form. <a href="https://docs.google.com/forms/d/e/1FAIpQLSdzCiJIUqdamM2KWNWbrhVmS5WIFikPH00P3h0cHno-5ZGZpQ/viewform" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">click to Apply Now</a></p>
     <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Frequently Asked Questions (FAQs)</h2>
     <p className="mb-2"><strong>Q1: How long does it take to approve my partner application?</strong><br />
     ----&gt; We will review and approve your application within 24 hours of submission.</p>
