@@ -59,6 +59,7 @@ import BlogListPage from "./pages/BlogListPage";
 import BlogDetailPage from "./pages/BlogDetailPage";
 import AdminBlogList from "./pages/AdminBlogList";
 import AdminBlogForm from "./pages/AdminBlogForm";
+import PartnerProgram from "./pages/PartnerProgram";
 
 const queryClient = new QueryClient();
 
@@ -388,6 +389,7 @@ function AppLayout() {
           <Route path="/disclaimer" element={<Disclaimer />} />
           <Route path="/return-policy" element={<ReturnPolicy />} />
           <Route path="/shipping-policy" element={<ShippingPolicy />} />
+  <Route path="/partner-program" element={<PartnerProgram />} />
 
           {/* Catch all route */}
           <Route path="*" element={<Navigate to="/signin" replace />} />

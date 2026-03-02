@@ -122,7 +122,7 @@ const SitemapPage: React.FC = () => {
                     <button
                       key={product._id}
                       onClick={() => handleProductClick(product)}
-                      className="w-full text-left px-2.5 py-1.5 rounded-md border transition-all duration-200 hover:shadow-md text-[11px]"
+                      className="w-full text-left px-2.5 py-2 rounded-md border transition-all duration-200 hover:shadow-md text-base md:text-lg"
                       style={{
                         backgroundColor: colors.background.secondary,
                         borderColor: colors.border.primary,
@@ -141,7 +141,7 @@ const SitemapPage: React.FC = () => {
                         <span className="truncate font-medium leading-tight">{product.name}</span>
                         {product.version && (
                           <span
-                            className="text-[9px] px-1 py-0.5 rounded flex-shrink-0"
+                            className="text-xs md:text-sm px-1 py-0.5 rounded flex-shrink-0"
                             style={{
                               backgroundColor: colors.interactive.primary + "20",
                               color: colors.interactive.primary
