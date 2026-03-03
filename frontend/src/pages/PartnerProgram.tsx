@@ -1,4 +1,4 @@
-import React from "react";
+// ...existing code...
 
 const PartnerProgram = () => (
   <div className="max-w-3xl mx-auto px-4 py-10 text-base text-gray-800 mt-15">
