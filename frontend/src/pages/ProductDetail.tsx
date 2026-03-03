@@ -215,6 +215,10 @@ const ProductDetail: React.FC = () => {
   const [reviewAsAnonymous, setReviewAsAnonymous] = useState(false);
   const [anonymousName, setAnonymousName] = useState("");
 
+  // Show more reviews (initially show 3, expand on click)
+  const [showAllReviews, setShowAllReviews] = useState(false);
+  const REVIEWS_INITIAL_COUNT = 3;
+
   // Reply-related state
   const [replyingToReview, setReplyingToReview] = useState<string | null>(null); // Review ID being replied to
   const [replyForm, setReplyForm] = useState({ comment: "" });
@@ -352,6 +356,11 @@ const ProductDetail: React.FC = () => {
       loadReviewStats(product._id);
     }
   }, [product?._id]);
+
+  // Reset "show all reviews" when sort/filter changes
+  useEffect(() => {
+    setShowAllReviews(false);
+  }, [sortBy, ratingFilter, dateFilter, customStartDate, customEndDate]);
 
   // Ensure page opens scrolled to top when navigating to a product
   useEffect(() => {
@@ -3772,7 +3781,14 @@ const ProductDetail: React.FC = () => {
                                 filtered.sort((a, b) => a.rating - b.rating);
                               }
 
-                              return filtered.map((review) => (
+                              const shouldCollapse = filtered.length > REVIEWS_INITIAL_COUNT;
+                              const displayedReviews = shouldCollapse && !showAllReviews
+                                ? filtered.slice(0, REVIEWS_INITIAL_COUNT)
+                                : filtered;
+
+                              return (
+                                <>
+                              {displayedReviews.map((review) => (
                                 <div
                                   key={review._id}
                                   className="rounded-xl p-5 border transition-colors duration-200"
@@ -4099,7 +4115,21 @@ const ProductDetail: React.FC = () => {
                                       )}
                                   </div>
                                 </div>
-                              ));
+                              ))}
+
+                              {shouldCollapse && (
+                                <div className="mt-4">
+                                  <button
+                                    onClick={() => setShowAllReviews(!showAllReviews)}
+                                    className="text-sm font-medium cursor-pointer bg-transparent border-0 p-0 transition-opacity hover:opacity-80"
+                                    style={{ color: colors.interactive.primary }}
+                                  >
+                                    {showAllReviews ? "See less reviews..." : "See more reviews..."}
+                                  </button>
+                                </div>
+                              )}
+                                </>
+                              );
                             })()
                           )}
                         </div>
