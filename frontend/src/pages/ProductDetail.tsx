@@ -1616,7 +1616,7 @@ const ProductDetail: React.FC = () => {
                   </div>
                 </div>
               ) : (
-                <div 
+                <div
                   className="relative w-full h-full flex items-center justify-center overflow-hidden cursor-crosshair"
                   onMouseEnter={() => setIsZooming(true)}
                   onMouseLeave={() => setIsZooming(false)}
@@ -1677,21 +1677,21 @@ const ProductDetail: React.FC = () => {
 
             {/* Product Description - Hidden per requirement */}
             {false && (
-            <div className="mt-4">
-              <div
-                className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
-                style={{ backgroundColor: colors.background.secondary }}
-              >
-                <h3
-                  className="text-base lg:text-lg font-bold"
-                  style={{ color: colors.text.primary }}
+              <div className="mt-4">
+                <div
+                  className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
+                  style={{ backgroundColor: colors.background.secondary }}
                 >
-                  Product Description
-                </h3>
+                  <h3
+                    className="text-base lg:text-lg font-bold"
+                    style={{ color: colors.text.primary }}
+                  >
+                    Product Description
+                  </h3>
 
-                <div className="mt-3">
-                  <style dangerouslySetInnerHTML={{
-                    __html: `
+                  <div className="mt-3">
+                    <style dangerouslySetInnerHTML={{
+                      __html: `
                     .product-description-content h1,
                     .product-description-content h2,
                     .product-description-content h3,
@@ -1723,12 +1723,12 @@ const ProductDetail: React.FC = () => {
                       color: ${colors.interactive.primary} !important;
                     }
                   `}} />
-                  <div className="product-description-content">
-                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
+                    <div className="product-description-content">
+                      {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base lg:text-lg leading-relaxed')}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             )}
           </div>
 
@@ -2661,21 +2661,21 @@ const ProductDetail: React.FC = () => {
             </div>
             {/* Mobile: Description - Hidden per requirement */}
             {false && (
-            <div className="block lg:hidden mt-4">
-              <div
-                className="rounded-lg p-4 transition-colors duration-200"
-                style={{ backgroundColor: colors.background.secondary }}
-              >
-                <h3
-                  className="text-base font-bold mb-3"
-                  style={{ color: colors.text.primary }}
+              <div className="block lg:hidden mt-4">
+                <div
+                  className="rounded-lg p-4 transition-colors duration-200"
+                  style={{ backgroundColor: colors.background.secondary }}
                 >
-                  Product Description
-                </h3>
+                  <h3
+                    className="text-base font-bold mb-3"
+                    style={{ color: colors.text.primary }}
+                  >
+                    Product Description
+                  </h3>
 
-                <div className="mb-4">
-                  <style dangerouslySetInnerHTML={{
-                    __html: `
+                  <div className="mb-4">
+                    <style dangerouslySetInnerHTML={{
+                      __html: `
                     .product-description-mobile h1,
                     .product-description-mobile h2,
                     .product-description-mobile h3,
@@ -2707,13 +2707,13 @@ const ProductDetail: React.FC = () => {
                       color: ${colors.interactive.primary} !important;
                     }
                   `}} />
-                  <div className="product-description-mobile">
-                    {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base leading-relaxed')}
+                    <div className="product-description-mobile">
+                      {renderHTMLContent(product.shortDescription, 'prose max-w-none text-base leading-relaxed')}
+                    </div>
                   </div>
+                  {/* full description always shown on mobile; toggle removed */}
                 </div>
-                {/* full description always shown on mobile; toggle removed */}
               </div>
-            </div>
             )}
           </div>
 
@@ -3793,346 +3793,346 @@ const ProductDetail: React.FC = () => {
 
                               return (
                                 <>
-                              {displayedReviews.map((review) => (
-                                <div
-                                  key={review._id}
-                                  className="rounded-xl p-5 border transition-colors duration-200"
-                                  style={{
-                                    backgroundColor: colors.background.secondary,
-                                    borderColor: colors.border.primary,
-                                  }}
-                                >
-                                  <div className="flex items-start justify-between gap-4">
-                                    <div className="flex items-start gap-3 flex-1">
-                                      <div
-                                        className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
-                                        style={{
-                                          backgroundColor: colors.interactive.primary,
-                                          color: '#fff',
-                                        }}
-                                      >
-                                        {(review.isAnonymous && review.anonymousName)
-                                          ? review.anonymousName.charAt(0).toUpperCase()
-                                          : review.user?.fullName
-                                            ? review.user.fullName.charAt(0).toUpperCase()
-                                            : "U"}
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <h5
-                                          className="font-bold text-base mb-1"
-                                          style={{ color: colors.text.primary }}
-                                        >
-                                          {review.isAnonymous
-                                            ? (review.anonymousName || "Anonymous User")
-                                            : (review.user?.fullName || "Anonymous User")}
-                                        </h5>
-                                        <div className="flex items-center gap-2 mb-2">
-                                          <div className="flex text-yellow-400 text-lg">
-                                            {[...Array(5)].map((_, i) => (
-                                              <span key={i}>
-                                                {i < review.rating ? "★" : "☆"}
-                                              </span>
-                                            ))}
-                                          </div>
-                                          <span
-                                            className="text-sm"
-                                            style={{ color: colors.text.secondary }}
-                                          >
-                                            {new Date(review.createdAt).toLocaleDateString('en-US', {
-                                              month: '2-digit',
-                                              day: '2-digit',
-                                              year: 'numeric'
-                                            })}
-                                          </span>
-                                        </div>
-                                        <p
-                                          className="text-sm leading-relaxed"
-                                          style={{ color: colors.text.secondary }}
-                                        >
-                                          {review.comment}
-                                        </p>
-
-                                        {/* Reply Button */}
-                                        <div className="mt-3 flex items-center gap-3">
-                                          <button
-                                            onClick={() => handleReplyClick(review._id)}
-                                            className="text-sm font-medium flex items-center gap-1 transition-colors"
+                                  {displayedReviews.map((review) => (
+                                    <div
+                                      key={review._id}
+                                      className="rounded-xl p-5 border transition-colors duration-200"
+                                      style={{
+                                        backgroundColor: colors.background.secondary,
+                                        borderColor: colors.border.primary,
+                                      }}
+                                    >
+                                      <div className="flex items-start justify-between gap-4">
+                                        <div className="flex items-start gap-3 flex-1">
+                                          <div
+                                            className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg flex-shrink-0"
                                             style={{
-                                              color: colors.interactive.primary,
-                                            }}
-                                            onMouseEnter={(e) => {
-                                              e.currentTarget.style.opacity = '0.8';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                              e.currentTarget.style.opacity = '1';
+                                              backgroundColor: colors.interactive.primary,
+                                              color: '#fff',
                                             }}
                                           >
-                                            <LucideIcons.MessageCircle size={16} />
-                                            Reply
-                                          </button>
-                                          {review.replies && review.replies.length > 0 && (
-                                            <span className="text-xs" style={{ color: colors.text.secondary }}>
-                                              {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}
-                                            </span>
-                                          )}
-                                        </div>
+                                            {(review.isAnonymous && review.anonymousName)
+                                              ? review.anonymousName.charAt(0).toUpperCase()
+                                              : review.user?.fullName
+                                                ? review.user.fullName.charAt(0).toUpperCase()
+                                                : "U"}
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <h5
+                                              className="font-bold text-base mb-1"
+                                              style={{ color: colors.text.primary }}
+                                            >
+                                              {review.isAnonymous
+                                                ? (review.anonymousName || "Anonymous User")
+                                                : (review.user?.fullName || "Anonymous User")}
+                                            </h5>
+                                            <div className="flex items-center gap-2 mb-2">
+                                              <div className="flex text-yellow-400 text-lg">
+                                                {[...Array(5)].map((_, i) => (
+                                                  <span key={i}>
+                                                    {i < review.rating ? "★" : "☆"}
+                                                  </span>
+                                                ))}
+                                              </div>
+                                              <span
+                                                className="text-sm"
+                                                style={{ color: colors.text.secondary }}
+                                              >
+                                                {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                  month: '2-digit',
+                                                  day: '2-digit',
+                                                  year: 'numeric'
+                                                })}
+                                              </span>
+                                            </div>
+                                            <p
+                                              className="text-sm leading-relaxed"
+                                              style={{ color: colors.text.secondary }}
+                                            >
+                                              {review.comment}
+                                            </p>
 
-                                        {/* Replies Section */}
-                                        {review.replies && review.replies.length > 0 && (
-                                          <div className="mt-4 space-y-3 pl-4 border-l-2" style={{ borderColor: colors.border.primary }}>
-                                            {review.replies.map((reply) => (
+                                            {/* Reply Button */}
+                                            <div className="mt-3 flex items-center gap-3">
+                                              <button
+                                                onClick={() => handleReplyClick(review._id)}
+                                                className="text-sm font-medium flex items-center gap-1 transition-colors"
+                                                style={{
+                                                  color: colors.interactive.primary,
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  e.currentTarget.style.opacity = '0.8';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.currentTarget.style.opacity = '1';
+                                                }}
+                                              >
+                                                <LucideIcons.MessageCircle size={16} />
+                                                Reply
+                                              </button>
+                                              {review.replies && review.replies.length > 0 && (
+                                                <span className="text-xs" style={{ color: colors.text.secondary }}>
+                                                  {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}
+                                                </span>
+                                              )}
+                                            </div>
+
+                                            {/* Replies Section */}
+                                            {review.replies && review.replies.length > 0 && (
+                                              <div className="mt-4 space-y-3 pl-4 border-l-2" style={{ borderColor: colors.border.primary }}>
+                                                {review.replies.map((reply) => (
+                                                  <div
+                                                    key={reply._id}
+                                                    className="rounded-lg p-4"
+                                                    style={{
+                                                      backgroundColor: colors.background.primary,
+                                                    }}
+                                                  >
+                                                    <div className="flex items-start justify-between gap-3">
+                                                      <div className="flex items-start gap-3 flex-1">
+                                                        <div
+                                                          className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+                                                          style={{
+                                                            backgroundColor: colors.interactive.secondary || colors.interactive.primary,
+                                                            color: '#fff',
+                                                          }}
+                                                        >
+                                                          {(reply.isAnonymous && reply.anonymousName)
+                                                            ? reply.anonymousName.charAt(0).toUpperCase()
+                                                            : reply.user?.fullName
+                                                              ? reply.user.fullName.charAt(0).toUpperCase()
+                                                              : "U"}
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                          <div className="flex items-center gap-2 mb-1">
+                                                            <h6
+                                                              className="font-semibold text-sm"
+                                                              style={{ color: colors.text.primary }}
+                                                            >
+                                                              {reply.isAnonymous
+                                                                ? (reply.anonymousName || "Anonymous User")
+                                                                : (reply.user?.fullName || "Anonymous User")}
+                                                            </h6>
+                                                            <span
+                                                              className="text-xs"
+                                                              style={{ color: colors.text.secondary }}
+                                                            >
+                                                              {new Date(reply.createdAt).toLocaleDateString('en-US', {
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                                year: 'numeric'
+                                                              })}
+                                                            </span>
+                                                          </div>
+                                                          <p
+                                                            className="text-sm leading-relaxed"
+                                                            style={{ color: colors.text.secondary }}
+                                                          >
+                                                            {reply.comment}
+                                                          </p>
+                                                        </div>
+                                                      </div>
+                                                      {user &&
+                                                        (user.id === reply.user?._id ||
+                                                          user.role === "admin" ||
+                                                          user.role === "superadmin") && (
+                                                          <div className="flex gap-2 flex-shrink-0">
+                                                            <button
+                                                              onClick={() => handleEditReply(review._id, reply)}
+                                                              className="text-xs font-medium px-2 py-1 rounded transition-colors"
+                                                              style={{
+                                                                color: colors.interactive.primary,
+                                                                backgroundColor: 'transparent',
+                                                              }}
+                                                              onMouseEnter={(e) => {
+                                                                e.currentTarget.style.backgroundColor = colors.background.secondary;
+                                                              }}
+                                                              onMouseLeave={(e) => {
+                                                                e.currentTarget.style.backgroundColor = 'transparent';
+                                                              }}
+                                                            >
+                                                              Edit
+                                                            </button>
+                                                            <button
+                                                              onClick={() => handleDeleteReply(review._id, reply._id)}
+                                                              className="text-xs font-medium px-2 py-1 rounded transition-colors"
+                                                              style={{
+                                                                color: "#ef4444",
+                                                                backgroundColor: 'transparent',
+                                                              }}
+                                                              onMouseEnter={(e) => {
+                                                                e.currentTarget.style.backgroundColor = '#fee2e2';
+                                                              }}
+                                                              onMouseLeave={(e) => {
+                                                                e.currentTarget.style.backgroundColor = 'transparent';
+                                                              }}
+                                                            >
+                                                              Delete
+                                                            </button>
+                                                          </div>
+                                                        )}
+                                                    </div>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+
+                                            {/* Reply Form */}
+                                            {replyingToReview === review._id && (
                                               <div
-                                                key={reply._id}
-                                                className="rounded-lg p-4"
+                                                className="mt-4 p-4 rounded-lg"
                                                 style={{
                                                   backgroundColor: colors.background.primary,
                                                 }}
                                               >
-                                                <div className="flex items-start justify-between gap-3">
-                                                  <div className="flex items-start gap-3 flex-1">
-                                                    <div
-                                                      className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                                                      style={{
-                                                        backgroundColor: colors.interactive.secondary || colors.interactive.primary,
-                                                        color: '#fff',
-                                                      }}
-                                                    >
-                                                      {(reply.isAnonymous && reply.anonymousName)
-                                                        ? reply.anonymousName.charAt(0).toUpperCase()
-                                                        : reply.user?.fullName
-                                                          ? reply.user.fullName.charAt(0).toUpperCase()
-                                                          : "U"}
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                      <div className="flex items-center gap-2 mb-1">
-                                                        <h6
-                                                          className="font-semibold text-sm"
-                                                          style={{ color: colors.text.primary }}
-                                                        >
-                                                          {reply.isAnonymous
-                                                            ? (reply.anonymousName || "Anonymous User")
-                                                            : (reply.user?.fullName || "Anonymous User")}
-                                                        </h6>
-                                                        <span
-                                                          className="text-xs"
-                                                          style={{ color: colors.text.secondary }}
-                                                        >
-                                                          {new Date(reply.createdAt).toLocaleDateString('en-US', {
-                                                            month: '2-digit',
-                                                            day: '2-digit',
-                                                            year: 'numeric'
-                                                          })}
-                                                        </span>
-                                                      </div>
-                                                      <p
-                                                        className="text-sm leading-relaxed"
-                                                        style={{ color: colors.text.secondary }}
-                                                      >
-                                                        {reply.comment}
-                                                      </p>
-                                                    </div>
-                                                  </div>
-                                                  {user &&
-                                                    (user.id === reply.user?._id ||
-                                                      user.role === "admin" ||
-                                                      user.role === "superadmin") && (
-                                                      <div className="flex gap-2 flex-shrink-0">
-                                                        <button
-                                                          onClick={() => handleEditReply(review._id, reply)}
-                                                          className="text-xs font-medium px-2 py-1 rounded transition-colors"
-                                                          style={{
-                                                            color: colors.interactive.primary,
-                                                            backgroundColor: 'transparent',
-                                                          }}
-                                                          onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = colors.background.secondary;
-                                                          }}
-                                                          onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                                          }}
-                                                        >
-                                                          Edit
-                                                        </button>
-                                                        <button
-                                                          onClick={() => handleDeleteReply(review._id, reply._id)}
-                                                          className="text-xs font-medium px-2 py-1 rounded transition-colors"
-                                                          style={{
-                                                            color: "#ef4444",
-                                                            backgroundColor: 'transparent',
-                                                          }}
-                                                          onMouseEnter={(e) => {
-                                                            e.currentTarget.style.backgroundColor = '#fee2e2';
-                                                          }}
-                                                          onMouseLeave={(e) => {
-                                                            e.currentTarget.style.backgroundColor = 'transparent';
-                                                          }}
-                                                        >
-                                                          Delete
-                                                        </button>
-                                                      </div>
-                                                    )}
-                                                </div>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        )}
-
-                                        {/* Reply Form */}
-                                        {replyingToReview === review._id && (
-                                          <div
-                                            className="mt-4 p-4 rounded-lg"
-                                            style={{
-                                              backgroundColor: colors.background.primary,
-                                            }}
-                                          >
-                                            <h6
-                                              className="font-semibold mb-3 text-sm"
-                                              style={{ color: colors.text.primary }}
-                                            >
-                                              {editingReply ? "Edit Reply" : replyAsAnonymous ? "Reply as User" : "Write a Reply"}
-                                            </h6>
-                                            {/* Anonymous Name Field for Replies */}
-                                            {replyAsAnonymous && (
-                                              <div className="mb-3">
-                                                <label
-                                                  className="block mb-1 font-medium text-sm"
+                                                <h6
+                                                  className="font-semibold mb-3 text-sm"
                                                   style={{ color: colors.text.primary }}
                                                 >
-                                                  Your Name
-                                                </label>
-                                                <input
-                                                  type="text"
-                                                  value={replyAnonymousName}
-                                                  onChange={(e) => setReplyAnonymousName(e.target.value)}
-                                                  className="w-full p-2 rounded border text-sm transition-colors"
+                                                  {editingReply ? "Edit Reply" : replyAsAnonymous ? "Reply as User" : "Write a Reply"}
+                                                </h6>
+                                                {/* Anonymous Name Field for Replies */}
+                                                {replyAsAnonymous && (
+                                                  <div className="mb-3">
+                                                    <label
+                                                      className="block mb-1 font-medium text-sm"
+                                                      style={{ color: colors.text.primary }}
+                                                    >
+                                                      Your Name
+                                                    </label>
+                                                    <input
+                                                      type="text"
+                                                      value={replyAnonymousName}
+                                                      onChange={(e) => setReplyAnonymousName(e.target.value)}
+                                                      className="w-full p-2 rounded border text-sm transition-colors"
+                                                      style={{
+                                                        backgroundColor: colors.background.secondary,
+                                                        borderColor: colors.border.primary,
+                                                        color: colors.text.primary,
+                                                      }}
+                                                      placeholder="Enter your name"
+                                                      required
+                                                    />
+                                                  </div>
+                                                )}
+                                                <textarea
+                                                  value={replyForm.comment}
+                                                  onChange={(e) =>
+                                                    setReplyForm({ comment: e.target.value })
+                                                  }
+                                                  className="w-full p-3 rounded-lg border transition-colors text-sm"
                                                   style={{
                                                     backgroundColor: colors.background.secondary,
                                                     borderColor: colors.border.primary,
                                                     color: colors.text.primary,
                                                   }}
-                                                  placeholder="Enter your name"
+                                                  rows={3}
+                                                  placeholder="Write your reply..."
                                                   required
                                                 />
+                                                <div className="flex gap-2 mt-3">
+                                                  <button
+                                                    onClick={() => handleReplySubmit(review._id)}
+                                                    disabled={submittingReply}
+                                                    className="text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                                                    style={{
+                                                      background: colors.interactive.primary || '#2563eb',
+                                                      color: '#ffffff',
+                                                      border: `1px solid ${colors.interactive.primary || '#2563eb'}`,
+                                                    }}
+                                                    onMouseEnter={(e) => {
+                                                      if (!submittingReply) {
+                                                        (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                                          (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
+                                                      }
+                                                    }}
+                                                    onMouseLeave={(e) => {
+                                                      (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                                                        colors.interactive.primary || '#2563eb';
+                                                    }}
+                                                  >
+                                                    {submittingReply
+                                                      ? "Submitting..."
+                                                      : editingReply
+                                                        ? "Update Reply"
+                                                        : "Post Reply"}
+                                                  </button>
+                                                  <button
+                                                    onClick={() => {
+                                                      setReplyingToReview(null);
+                                                      setReplyForm({ comment: "" });
+                                                      setEditingReply(null);
+                                                      setReplyAsAnonymous(false);
+                                                      setReplyAnonymousName("");
+                                                    }}
+                                                    className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                                                    style={{
+                                                      backgroundColor: colors.background.secondary,
+                                                      color: colors.text.primary,
+                                                      border: `1px solid ${colors.border.primary}`,
+                                                    }}
+                                                  >
+                                                    Cancel
+                                                  </button>
+                                                </div>
                                               </div>
                                             )}
-                                            <textarea
-                                              value={replyForm.comment}
-                                              onChange={(e) =>
-                                                setReplyForm({ comment: e.target.value })
-                                              }
-                                              className="w-full p-3 rounded-lg border transition-colors text-sm"
-                                              style={{
-                                                backgroundColor: colors.background.secondary,
-                                                borderColor: colors.border.primary,
-                                                color: colors.text.primary,
-                                              }}
-                                              rows={3}
-                                              placeholder="Write your reply..."
-                                              required
-                                            />
-                                            <div className="flex gap-2 mt-3">
+                                          </div>
+                                        </div>
+                                        {user &&
+                                          (user.id === review.user?._id ||
+                                            user.role === "admin" ||
+                                            user.role === "superadmin") && (
+                                            <div className="flex gap-2 flex-shrink-0">
                                               <button
-                                                onClick={() => handleReplySubmit(review._id)}
-                                                disabled={submittingReply}
-                                                className="text-sm font-medium px-4 py-2 rounded-lg transition-colors disabled:opacity-50"
+                                                onClick={() => handleEditReview(review)}
+                                                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
                                                 style={{
-                                                  background: colors.interactive.primary || '#2563eb',
-                                                  color: '#ffffff',
-                                                  border: `1px solid ${colors.interactive.primary || '#2563eb'}`,
+                                                  color: colors.interactive.primary,
+                                                  backgroundColor: 'transparent',
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                  if (!submittingReply) {
-                                                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                                                      (colors.interactive && (colors.interactive.primaryHover || colors.interactive.primary)) || '#1e40af';
-                                                  }
+                                                  e.currentTarget.style.backgroundColor = colors.background.accent || colors.background.primary;
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                                                    colors.interactive.primary || '#2563eb';
+                                                  e.currentTarget.style.backgroundColor = 'transparent';
                                                 }}
                                               >
-                                                {submittingReply
-                                                  ? "Submitting..."
-                                                  : editingReply
-                                                    ? "Update Reply"
-                                                    : "Post Reply"}
+                                                Edit
                                               </button>
                                               <button
-                                                onClick={() => {
-                                                  setReplyingToReview(null);
-                                                  setReplyForm({ comment: "" });
-                                                  setEditingReply(null);
-                                                  setReplyAsAnonymous(false);
-                                                  setReplyAnonymousName("");
-                                                }}
-                                                className="text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                                                onClick={() => handleDeleteReview(review._id)}
+                                                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
                                                 style={{
-                                                  backgroundColor: colors.background.secondary,
-                                                  color: colors.text.primary,
-                                                  border: `1px solid ${colors.border.primary}`,
+                                                  color: "#ef4444",
+                                                  backgroundColor: 'transparent',
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                  e.currentTarget.style.backgroundColor = '#fee2e2';
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                  e.currentTarget.style.backgroundColor = 'transparent';
                                                 }}
                                               >
-                                                Cancel
+                                                Delete
                                               </button>
                                             </div>
-                                          </div>
-                                        )}
+                                          )}
                                       </div>
                                     </div>
-                                    {user &&
-                                      (user.id === review.user?._id ||
-                                        user.role === "admin" ||
-                                        user.role === "superadmin") && (
-                                        <div className="flex gap-2 flex-shrink-0">
-                                          <button
-                                            onClick={() => handleEditReview(review)}
-                                            className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-                                            style={{
-                                              color: colors.interactive.primary,
-                                              backgroundColor: 'transparent',
-                                            }}
-                                            onMouseEnter={(e) => {
-                                              e.currentTarget.style.backgroundColor = colors.background.accent || colors.background.primary;
-                                            }}
-                                            onMouseLeave={(e) => {
-                                              e.currentTarget.style.backgroundColor = 'transparent';
-                                            }}
-                                          >
-                                            Edit
-                                          </button>
-                                          <button
-                                            onClick={() => handleDeleteReview(review._id)}
-                                            className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
-                                            style={{
-                                              color: "#ef4444",
-                                              backgroundColor: 'transparent',
-                                            }}
-                                            onMouseEnter={(e) => {
-                                              e.currentTarget.style.backgroundColor = '#fee2e2';
-                                            }}
-                                            onMouseLeave={(e) => {
-                                              e.currentTarget.style.backgroundColor = 'transparent';
-                                            }}
-                                          >
-                                            Delete
-                                          </button>
-                                        </div>
-                                      )}
-                                  </div>
-                                </div>
-                              ))}
+                                  ))}
 
-                              {shouldCollapse && (
-                                <div className="mt-4">
-                                  <button
-                                    onClick={() => setShowAllReviews(!showAllReviews)}
-                                    className="text-sm font-medium cursor-pointer bg-transparent border-0 p-0 transition-opacity hover:opacity-80"
-                                    style={{ color: colors.interactive.primary }}
-                                  >
-                                    {showAllReviews ? "See less reviews..." : "See more reviews..."}
-                                  </button>
-                                </div>
-                              )}
+                                  {shouldCollapse && (
+                                    <div className="mt-4">
+                                      <button
+                                        onClick={() => setShowAllReviews(!showAllReviews)}
+                                        className="text-sm font-medium cursor-pointer bg-transparent border-0 p-0 transition-opacity hover:opacity-80"
+                                        style={{ color: colors.interactive.primary }}
+                                      >
+                                        {showAllReviews ? "See less reviews..." : "See more reviews..."}
+                                      </button>
+                                    </div>
+                                  )}
                                 </>
                               );
                             })()

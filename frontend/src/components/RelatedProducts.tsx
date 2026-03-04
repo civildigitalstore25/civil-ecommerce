@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect } from "react";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useProducts } from "../api/productApi";
 import type { Product } from "../api/types/productTypes";
@@ -43,14 +43,11 @@ const getBrandKey = (product: Product): string | null => {
 
 const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit: limitProp }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const updateScrollButtons = () => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 0);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+    // Reserved for optional future use (e.g. disabling prev/next at start/end)
   };
   const navigate = useNavigate();
   const { addItem } = useCartContext();
