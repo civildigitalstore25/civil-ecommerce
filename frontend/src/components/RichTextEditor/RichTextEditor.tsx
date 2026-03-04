@@ -16,6 +16,8 @@ interface RichTextEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  /** Min height for the editor area only (e.g. "400px"). Avoids empty space below the footer. */
+  editorMinHeight?: string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -23,6 +25,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   onChange,
   placeholder = "Enter text...",
   className = "",
+  editorMinHeight,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [characterCount, setCharacterCount] = useState(0);
@@ -189,6 +192,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           whiteSpace: "pre-wrap",
           wordWrap: "break-word",
           lineHeight: "1.6",
+          ...(editorMinHeight ? { minHeight: editorMinHeight } : {}),
         }}
         suppressContentEditableWarning={true}
         data-placeholder={placeholder}

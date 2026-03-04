@@ -109,7 +109,7 @@ const BrandCategoryListing: React.FC = () => {
   // Filter to only show active products to users (exclude draft and inactive)
   const rawProducts = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
 
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [sortBy, setSortBy] = useState<SortOption>("name-desc");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
   // Sort products based on selected option
@@ -287,7 +287,7 @@ const BrandCategoryListing: React.FC = () => {
                       color: colors.text.primary,
                     }}
                   >
-                    Sort: {sortOptions.find((o) => o.value === sortBy)?.label || "Newest first"}
+                    Sort: {sortOptions.find((o) => o.value === sortBy)?.label || "Name (Z-A)"}
                     <ChevronDown
                       className={`w-4 h-4 transition-transform ${sortDropdownOpen ? "rotate-180" : ""}`}
                     />

@@ -29,7 +29,7 @@ export interface IProduct extends Document {
   name: string;
   version?: string;
   shortDescription?: string;
-  description: string;
+  description?: string;
   detailsDescription?: string;
   overallFeatures?: string;
   requirements?: string;
@@ -120,7 +120,7 @@ const productSchema: Schema = new Schema(
     name: { type: String, required: true },
     version: { type: String },
     shortDescription: { type: String },
-    description: { type: String, required: true },
+    description: { type: String },
     detailsDescription: { type: String },
     overallFeatures: { type: String },
     requirements: { type: String },

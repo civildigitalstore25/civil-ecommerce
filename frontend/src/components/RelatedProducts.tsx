@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useProducts } from "../api/productApi";
 import type { Product } from "../api/types/productTypes";
 import { useNavigate } from "react-router-dom";
 import { useCartContext } from "../contexts/CartContext";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface RelatedProductsProps {
   currentProduct: Product;
+  /** Optional max number to show; omit or set high to show all in carousel */
   limit?: number;
 }
 
@@ -39,55 +41,56 @@ const getBrandKey = (product: Product): string | null => {
 };
 
 
-const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit = 4 }) => {
-  // All hooks must be called unconditionally and at the top
-  const { colors } = useAdminTheme();
+const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit: limitProp }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const updateScrollButtons = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 0);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 2);
+  };
   const navigate = useNavigate();
   const { addItem } = useCartContext();
+  const { colors } = useAdminTheme();
   const brandKey = getBrandKey(currentProduct);
   const { data, isLoading } = useProducts({
     company: brandKey ? brandKey : undefined,
     limit: 50 // fetch more for better filtering
   });
 
-  if (isLoading) return <div>Loading related products...</div>;
-  if (!data || !data.products) return null;
-
-  // Filter to only show active products (exclude draft and inactive)
-  const activeProducts = data.products.filter((p: any) => p.status === 'active' || !p.status);
-
-  // Submenu category logic: show products under the same submenu (brand) and submenu category
+  // Compute derived data with safe defaults so we never return before hooks (avoids "Rendered more hooks" error)
+  const activeProducts = (data?.products ?? []).filter((p: any) => p.status === 'active' || !p.status);
   let related: Product[] = [];
-  if (brandKey && brandCategoryMap[brandKey]) {
-    // Find the submenu category for the current product
-    const currentSubmenuCat = brandCategoryMap[brandKey].find((cat) =>
-      currentProduct.category?.toLowerCase().includes(cat)
-    );
-    if (currentSubmenuCat) {
-      // Show products in the same submenu category (excluding current)
-      related = activeProducts.filter(
-        (p) =>
-          p._id !== currentProduct._id &&
-          p.category?.toLowerCase().includes(currentSubmenuCat)
+  if (!isLoading && data?.products && data.products.length > 0) {
+    if (brandKey && brandCategoryMap[brandKey]) {
+      const currentSubmenuCat = brandCategoryMap[brandKey].find((cat) =>
+        currentProduct.category?.toLowerCase().includes(cat)
       );
+      if (currentSubmenuCat) {
+        related = activeProducts.filter(
+          (p) =>
+            p._id !== currentProduct._id &&
+            p.category?.toLowerCase().includes(currentSubmenuCat)
+        );
+      } else {
+        related = activeProducts.filter(
+          (p) =>
+            p._id !== currentProduct._id &&
+            brandCategoryMap[brandKey].some((cat) =>
+              p.category?.toLowerCase().includes(cat)
+            )
+        );
+      }
     } else {
-      // If not found, show all products under the same brand submenu
       related = activeProducts.filter(
-        (p) =>
-          p._id !== currentProduct._id &&
-          brandCategoryMap[brandKey].some((cat) =>
-            p.category?.toLowerCase().includes(cat)
-          )
+        (p) => p._id !== currentProduct._id && p.category === currentProduct.category
       );
     }
-  } else {
-    // fallback: show same category
-    related = activeProducts.filter(
-      (p) => p._id !== currentProduct._id && p.category === currentProduct.category
-    );
   }
-
-  if (related.length === 0) return <div>No related products found.</div>;
+  const displayList = limitProp != null && limitProp > 0 ? related.slice(0, limitProp) : related;
 
   const interactiveTint =
     colors.interactive.primary &&
@@ -96,12 +99,62 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
       ? `${colors.interactive.secondary}20`
       : `${colors.interactive.primary}20`;
 
+  // Auto-advance carousel every 4 seconds (must run unconditionally, before any return)
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el || displayList.length <= 1) return;
+    const id = setInterval(() => {
+      const step = 304;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+      const next = Math.min(el.scrollLeft + step, maxScroll);
+      el.scrollTo({ left: next, behavior: "smooth" });
+      if (next >= maxScroll - 2) {
+        setTimeout(() => el.scrollTo({ left: 0, behavior: "smooth" }), 600);
+      }
+      updateScrollButtons();
+    }, 4000);
+    return () => clearInterval(id);
+  }, [displayList.length]);
+
+  // Early returns only after all hooks have run
+  if (isLoading) return <div>Loading related products...</div>;
+  if (!data || !data.products) return null;
+  if (related.length === 0) return <div>No related products found.</div>;
+
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6">
-      {related.slice(0, limit).map((product) => (
+    <div className="relative group">
+      {displayList.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            const el = scrollRef.current;
+            if (!el) return;
+            el.scrollTo({ left: Math.max(0, el.scrollLeft - 304), behavior: "smooth" });
+            updateScrollButtons();
+          }}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{
+            backgroundColor: colors.background.secondary,
+            color: colors.text.primary,
+            border: `2px solid ${colors.border.primary}`,
+          }}
+          aria-label="Previous products"
+        >
+          <ChevronLeft className="w-6 h-6" />
+        </button>
+      )}
+
+      <div
+        ref={scrollRef}
+        onScroll={updateScrollButtons}
+        className="flex gap-4 md:gap-6 overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory pb-2"
+        style={{ scrollbarWidth: "thin", WebkitOverflowScrolling: "touch" }}
+      >
+        {displayList.map((product) => (
         <div
           key={product._id}
-          className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] border"
+          className="flex-shrink-0 w-[260px] md:w-[280px] snap-start rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] border"
           style={{
             backgroundColor: colors.background.primary,
             borderColor: colors.border.primary,
@@ -223,7 +276,31 @@ const RelatedProducts: React.FC<RelatedProductsProps> = ({ currentProduct, limit
             </button>
           </div>
         </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Next button */}
+      {displayList.length > 1 && (
+        <button
+          type="button"
+          onClick={() => {
+            const el = scrollRef.current;
+            if (!el) return;
+            const maxScroll = el.scrollWidth - el.clientWidth;
+            el.scrollTo({ left: Math.min(el.scrollLeft + 304, maxScroll), behavior: "smooth" });
+            updateScrollButtons();
+          }}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full shadow-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+          style={{
+            backgroundColor: colors.background.secondary,
+            color: colors.text.primary,
+            border: `2px solid ${colors.border.primary}`,
+          }}
+          aria-label="Next products"
+        >
+          <ChevronRight className="w-6 h-6" />
+        </button>
+      )}
     </div>
   );
 };

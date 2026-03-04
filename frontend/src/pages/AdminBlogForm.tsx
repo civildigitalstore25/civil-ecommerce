@@ -1,12 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../api/userQueries";
 import { useCreateBlog, useUpdateBlog, useBlogById } from "../api/blogApi";
 import type { BlogFormData } from "../api/types/blogTypes";
-import { 
-  Bold, Italic, Underline, List, ListOrdered, Link as LinkIcon, 
-  Image as ImageIcon, Code, Heading1, Heading2, Heading3 
-} from "lucide-react";
+import RichTextEditor from "../components/RichTextEditor/RichTextEditor";
 
 const AdminBlogForm: React.FC = () => {
   const { id } = useParams();
@@ -36,43 +33,6 @@ const AdminBlogForm: React.FC = () => {
   const [tagInput, setTagInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const contentRef = useRef<HTMLTextAreaElement>(null);
-
-  // Rich text editor helper functions
-  const insertFormatting = (prefix: string, suffix: string = "") => {
-    const textarea = contentRef.current;
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = formData.content.substring(start, end);
-    const beforeText = formData.content.substring(0, start);
-    const afterText = formData.content.substring(end);
-
-    const newContent = beforeText + prefix + selectedText + suffix + afterText;
-    setFormData(prev => ({ ...prev, content: newContent }));
-
-    // Set cursor position after insertion
-    setTimeout(() => {
-      textarea.focus();
-      const newPosition = start + prefix.length + selectedText.length + suffix.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    }, 0);
-  };
-
-  const formatButtons = [
-    { icon: <Heading1 className="w-4 h-4" />, action: () => insertFormatting('<h1>', '</h1>'), title: 'Heading 1' },
-    { icon: <Heading2 className="w-4 h-4" />, action: () => insertFormatting('<h2>', '</h2>'), title: 'Heading 2' },
-    { icon: <Heading3 className="w-4 h-4" />, action: () => insertFormatting('<h3>', '</h3>'), title: 'Heading 3' },
-    { icon: <Bold className="w-4 h-4" />, action: () => insertFormatting('<strong>', '</strong>'), title: 'Bold' },
-    { icon: <Italic className="w-4 h-4" />, action: () => insertFormatting('<em>', '</em>'), title: 'Italic' },
-    { icon: <Underline className="w-4 h-4" />, action: () => insertFormatting('<u>', '</u>'), title: 'Underline' },
-    { icon: <List className="w-4 h-4" />, action: () => insertFormatting('<ul>\n<li>', '</li>\n</ul>'), title: 'Bullet List' },
-    { icon: <ListOrdered className="w-4 h-4" />, action: () => insertFormatting('<ol>\n<li>', '</li>\n</ol>'), title: 'Numbered List' },
-    { icon: <LinkIcon className="w-4 h-4" />, action: () => insertFormatting('<a href="URL">', '</a>'), title: 'Link' },
-    { icon: <ImageIcon className="w-4 h-4" />, action: () => insertFormatting('<img src="URL" alt="description" />'), title: 'Image' },
-    { icon: <Code className="w-4 h-4" />, action: () => insertFormatting('<code>', '</code>'), title: 'Code' },
-  ];
 
   useEffect(() => {
     if (isEditMode && blogData?.blog) {
@@ -253,36 +213,13 @@ const AdminBlogForm: React.FC = () => {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-700">Content *</label>
-              
-              {/* Formatting Toolbar */}
-              <div className="flex flex-wrap gap-1 mb-2 p-2 bg-gray-100 rounded-t-lg border border-gray-300">
-                {formatButtons.map((btn, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={btn.action}
-                    title={btn.title}
-                    className="p-2 hover:bg-gray-200 rounded transition-colors"
-                  >
-                    {btn.icon}
-                  </button>
-                ))}
-              </div>
-
-              {/* Content Textarea */}
-              <textarea
-                ref={contentRef}
-                name="content"
+              <RichTextEditor
                 value={formData.content}
-                onChange={handleChange}
-                rows={20}
-                placeholder="Write your blog content here... Use the toolbar buttons to add HTML formatting."
-                className="w-full px-4 py-2 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-blue-500 bg-white font-mono text-sm resize-y"
-                style={{ minHeight: '400px' }}
+                onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
+                placeholder="Write your blog content here..."
+                className="w-full"
+                editorMinHeight="400px"
               />
-              <p className="text-sm text-gray-500 mt-1">
-                Use the toolbar buttons above to add HTML formatting. You can also write HTML directly.
-              </p>
             </div>
 
             <div>

@@ -171,7 +171,7 @@ const ProductDetail: React.FC = () => {
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [activeTab, setActiveTab] = useState<
     "features" | "requirements" | "reviews" | "faq" | "details"
-  >("features");
+  >("details");
   const [renderedTabs, setRenderedTabs] = useState<
     ("features" | "requirements" | "reviews" | "faq" | "details")[]
   >(["features", "requirements", "reviews", "faq", "details"]);
@@ -386,9 +386,10 @@ const ProductDetail: React.FC = () => {
 
     setRenderedTabs(tabs);
 
-    // Ensure activeTab is valid — if not, switch to first available
-    if (!tabs.includes(activeTab)) {
-      setActiveTab(tabs[0]);
+    // Only correct activeTab when we have product data (so tabs are final). Before product
+    // loads, tabs may not include "details", so we avoid switching to reviews/faq then.
+    if (product && !tabs.includes(activeTab)) {
+      setActiveTab(tabs.includes("details") ? "details" : tabs[0]);
     }
   }, [product, activeTab]);
 
@@ -1674,7 +1675,8 @@ const ProductDetail: React.FC = () => {
               ))}
             </div>
 
-            {/* Product Description - Moved from right side */}
+            {/* Product Description - Hidden per requirement */}
+            {false && (
             <div className="mt-4">
               <div
                 className="rounded-lg p-4 lg:p-6 transition-colors duration-200"
@@ -1727,6 +1729,7 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
             </div>
+            )}
           </div>
 
           {/* Right Side - Product Info */}
@@ -2656,7 +2659,8 @@ const ProductDetail: React.FC = () => {
               )}
 
             </div>
-            {/* Mobile: Description placed under enquiry button */}
+            {/* Mobile: Description - Hidden per requirement */}
+            {false && (
             <div className="block lg:hidden mt-4">
               <div
                 className="rounded-lg p-4 transition-colors duration-200"
@@ -2710,6 +2714,7 @@ const ProductDetail: React.FC = () => {
                 {/* full description always shown on mobile; toggle removed */}
               </div>
             </div>
+            )}
           </div>
 
           {/* Sticky WhatsApp button - Always visible, Buy Now only on desktop */}
@@ -4219,7 +4224,7 @@ const ProductDetail: React.FC = () => {
               Related Products
             </h2>
           </div>
-          <RelatedProducts currentProduct={product} limit={4} />
+          <RelatedProducts currentProduct={product} />
         </div>
       </div>
 

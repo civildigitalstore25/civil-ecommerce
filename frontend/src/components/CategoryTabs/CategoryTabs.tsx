@@ -7,13 +7,15 @@ import { useCartContext } from "../../contexts/CartContext";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
 
-// Define the categories/brands to show as tabs
+// Define the categories/brands to show as tabs.
+// Use both company and category when a brand (e.g. AutoCAD) is a subset of a company (e.g. Autodesk)
+// so that only related products show (e.g. only AutoCAD, not Revit).
 const CATEGORY_TABS = [
-  { id: "autocad", label: "AutoCAD", company: "autodesk", image: "/mobilelogo/autocad.png", color: "#f59e0b" },
-  { id: "microsoft", label: "Microsoft", company: "microsoft", image: "/mobilelogo/Microsoft_Logo.png", color: "#3b82f6" },
-  { id: "antivirus", label: "Antivirus", company: "antivirus", icon: Shield, color: "#10b981" },
-  { id: "adobe", label: "Adobe", company: "adobe", image: "/mobilelogo/adobe.png", color: "#ec4899" },
-  { id: "corel", label: "Corel", company: "corel", image: "/mobilelogo/corel.jpg", color: "#06b6d4" },
+  { id: "autocad", label: "AutoCAD", company: "autodesk", category: "autocad", image: "/mobilelogo/autocad.png", color: "#f59e0b" },
+  { id: "microsoft", label: "Microsoft", company: "microsoft", category: "microsoft", image: "/mobilelogo/Microsoft_Logo.png", color: "#3b82f6" },
+  { id: "antivirus", label: "Antivirus", company: "antivirus", category: "antivirus", icon: Shield, color: "#10b981" },
+  { id: "adobe", label: "Adobe", company: "adobe", category: "adobe", image: "/mobilelogo/adobe.png", color: "#ec4899" },
+  { id: "corel", label: "Corel", company: "corel", category: "corel", image: "/mobilelogo/corel.jpg", color: "#06b6d4" },
 ];
 
 const CategoryTabs: React.FC = () => {
@@ -23,14 +25,16 @@ const CategoryTabs: React.FC = () => {
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
 
-  // Get the active category's company name
+  // Get the active category's company and category so only related products show
   const activeCategory = CATEGORY_TABS.find((tab) => tab.id === activeTab);
   const companyFilter = activeCategory?.company || "";
+  const categoryFilter = activeCategory?.category || "";
 
-  // Fetch products filtered by company
+  // Fetch products filtered by company AND category (e.g. AutoCAD only, not all Autodesk/Revit)
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
     useProducts({
       company: companyFilter,
+      ...(categoryFilter ? { category: categoryFilter } : {}),
       limit: 5,
     });
 

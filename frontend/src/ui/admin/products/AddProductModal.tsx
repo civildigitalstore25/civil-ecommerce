@@ -730,18 +730,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     }
 
     // `version` is optional now; no validation required
-
-    if (!isDraft && (
-      !productData.shortDescription ||
-      productData.shortDescription.trim() === ""
-    )) {
-      Swal.fire({
-        title: "Validation Error",
-        text: "Product Description is required",
-        icon: "error",
-      });
-      return;
-    }
+    // Product Description (shortDescription) is optional
 
     if (!isDraft && (!productData.brand || productData.brand.trim() === "")) {
       Swal.fire({
@@ -931,7 +920,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 className="block text-sm font-medium"
                 style={{ color: colors.text.secondary }}
               >
-                Long Description
+                Long Description <span className="opacity-70">(optional)</span>
               </label>
               <RichTextEditor
                 value={newProduct.longDescription}
@@ -946,7 +935,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 className="block text-sm font-medium"
                 style={{ color: colors.text.secondary }}
               >
-                Details Description
+                Details Description <span className="opacity-70">(optional)</span>
               </label>
               <RichTextEditor
                 value={newProduct.detailsDescription}
