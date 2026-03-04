@@ -79,6 +79,7 @@ const Footer = () => {
                     Shipping & Delivery Policy
                   </Link>
                 </li>
+               
                 <li>
                   <Link
                     to="/how-to-purchase"
@@ -169,6 +170,22 @@ const Footer = () => {
                     onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                   >
                     Terms and Conditions
+                  </Link>
+                </li>
+                 <li>
+                  <Link
+                    to="/partner-program"
+                    className="transition-colors duration-200 hover:underline"
+                    style={{ color: footerTextSecondary }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = footerTextPrimary;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = footerTextSecondary;
+                    }}
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  >
+                    Partner Program
                   </Link>
                 </li>
                 <li>
