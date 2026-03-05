@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import { useAppForm } from "../hooks/useAppForm";
 import { useSubmitContactForm } from "../api/contactApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail} from "lucide-react";
 import { getContactSEO } from "../utils/seo";
 
 interface ContactFormData {
@@ -114,26 +114,21 @@ const ContactPage: React.FC = () => {
           </div>
 
           {/* Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 p-10 pt-5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 p-12 pt-8">
             {/* Left side - Info */}
-            <div className="space-y-6">
+            <div className="space-y-8 flex flex-col h-full">
               {/* How to Reach Us Section */}
               <div>
                 <h2
-                  className="text-2xl font-bold mb-5"
+                  className="text-2xl font-bold mb-4"
                   style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                 >
                   How to Reach Us
                 </h2>
-                <p
-                  className="text-sm mb-5 leading-relaxed"
-                  style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}
-                >
-                  You can contact us anytime through the following channels:
-                </p>
+               
               </div>
 
-              <div className="space-y-5">
+              <div className="space-y-6 flex-1">
                 <div
                   className="flex gap-4 rounded-lg border-l-4 p-5"
                   style={{
@@ -158,9 +153,7 @@ const ContactPage: React.FC = () => {
                     >
                       Phone & WhatsApp Support
                     </h3>
-                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
-                      For quick support or custom order inquiries, you can call or message us.
-                    </p>
+                  
                     <p
                       className="font-semibold mb-1"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
@@ -199,9 +192,7 @@ const ContactPage: React.FC = () => {
                     >
                       Email Support
                     </h3>
-                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
-                      For detailed queries, product guidance, or activation support.
-                    </p>
+                  
                     <p
                       className="font-semibold mb-1"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
@@ -214,41 +205,7 @@ const ContactPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div
-                  className="flex gap-4 rounded-lg border-l-4 p-5"
-                  style={{
-                    backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
-                    border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
-                    color: theme === "light" ? "#0A2A6B" : colors.text.primary,
-                  }}
-                >
-                  <div
-                    className="flex h-12 w-12 items-center justify-center rounded-lg"
-                    style={{
-                      background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
-                      color: "#fff",
-                    }}
-                  >
-                    <Clock size={20} />
-                  </div>
-                  <div>
-                    <h3
-                      className="text-lg font-semibold mb-2"
-                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
-                    >
-                      Website Helpdesk
-                    </h3>
-                    <p className="text-sm mb-2" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
-                      Visit our website and use the contact form or upcoming live chat feature for direct assistance.
-                    </p>
-                    <p
-                      className="font-semibold"
-                      style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
-                    >
-                      www.softzcart.com
-                    </p>
-                  </div>
-                </div>
+             
 
                 <div
                   className="flex gap-4 rounded-lg border-l-4 p-5"
@@ -285,16 +242,16 @@ const ContactPage: React.FC = () => {
             </div>
 
             {/* Right side - Form */}
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 flex flex-col h-full">
               <h2
-                className="text-2xl font-bold mb-5"
+                className="text-2xl font-bold mb-6"
                 style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
               >
                 Connect
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Name Field */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <label
                     className="text-sm font-semibold"
                     style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
@@ -326,7 +283,7 @@ const ContactPage: React.FC = () => {
                         onChange={field.onChange}
                         disabled={submitContactForm.isPending}
                         placeholder="Enter your full name"
-                        className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.name ? "border-red-500" : ""}`}
+                        className={`rounded-lg border-2 px-5 py-3 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.name ? "border-red-500" : ""}`}
                         style={{
                           backgroundColor: colors.background.primary,
                           borderColor: errors.name ? "#ef4444" : colors.border.primary,
@@ -347,7 +304,7 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 {/* Email Field */}
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-3">
                   <label
                     className="text-sm font-semibold"
                     style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
@@ -371,7 +328,7 @@ const ContactPage: React.FC = () => {
                         onChange={field.onChange}
                         disabled={submitContactForm.isPending}
                         placeholder="Enter your email address"
-                        className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.email ? "border-red-500" : ""}`}
+                        className={`rounded-lg border-2 px-5 py-3 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.email ? "border-red-500" : ""}`}
                         style={{
                           backgroundColor: colors.background.primary,
                           borderColor: errors.email ? "#ef4444" : colors.border.primary,
@@ -393,7 +350,7 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Subject Field */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3">
                 <label
                   className="text-sm font-semibold"
                   style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
@@ -421,7 +378,7 @@ const ContactPage: React.FC = () => {
                       onChange={field.onChange}
                       disabled={submitContactForm.isPending}
                       placeholder="What is this regarding?"
-                      className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.subject ? "border-red-500" : ""}`}
+                      className={`rounded-lg border-2 px-5 py-3 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.subject ? "border-red-500" : ""}`}
                       style={{
                         backgroundColor: colors.background.primary,
                         borderColor: errors.subject ? "#ef4444" : colors.border.primary,
@@ -442,7 +399,7 @@ const ContactPage: React.FC = () => {
               </div>
 
               {/* Message Field */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-3 flex-1">
                 <label
                   className="text-sm font-semibold"
                   style={{ color: theme === "light" ? colors.text.primary : colors.text.accent }}
@@ -462,10 +419,10 @@ const ContactPage: React.FC = () => {
                     <textarea
                       value={field.value}
                       onChange={field.onChange}
-                      rows={5}
+                      rows={6}
                       disabled={submitContactForm.isPending}
                       placeholder="Tell us more about your inquiry..."
-                      className={`rounded-lg border-2 px-4 py-2 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.message ? "border-red-500" : ""}`}
+                      className={`rounded-lg border-2 px-5 py-3 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${errors.message ? "border-red-500" : ""}`}
                       style={{
                         backgroundColor: colors.background.primary,
                         borderColor: errors.message ? "#ef4444" : colors.border.primary,
@@ -488,7 +445,7 @@ const ContactPage: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitContactForm.isPending}
-                className="flex items-center justify-center gap-2 rounded-lg px-6 py-3 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+                className="flex items-center justify-center gap-2 rounded-lg px-8 py-4 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 text-base"
                 style={{
                   background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
                   color: "#fff",

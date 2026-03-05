@@ -39,6 +39,15 @@
     background: rgba(0, 0, 0, 0.3);
     background-clip: padding-box;
   }
+  
+  /* Line clamp utilities for text truncation */
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
 
   /* Force fixed positioning for mobile bottom nav */
   .mobile-nav-fixed {

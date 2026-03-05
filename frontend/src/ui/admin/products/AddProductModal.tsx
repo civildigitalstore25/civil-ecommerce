@@ -942,6 +942,7 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 onChange={(val) => handleInputChange("detailsDescription", val)}
                 placeholder="Detailed product description with images and content (shown in Details tab)..."
                 className="w-full"
+                editorMaxHeight="300px"
               />
             </div>
           </div>

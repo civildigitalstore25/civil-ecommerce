@@ -18,6 +18,8 @@ interface RichTextEditorProps {
   className?: string;
   /** Min height for the editor area only (e.g. "400px"). Avoids empty space below the footer. */
   editorMinHeight?: string;
+  /** Max height for the editor area (e.g. "400px"). Enables scrolling when content exceeds this height. */
+  editorMaxHeight?: string;
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -26,6 +28,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   placeholder = "Enter text...",
   className = "",
   editorMinHeight,
+  editorMaxHeight,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const [characterCount, setCharacterCount] = useState(0);
@@ -193,6 +196,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           wordWrap: "break-word",
           lineHeight: "1.6",
           ...(editorMinHeight ? { minHeight: editorMinHeight } : {}),
+          ...(editorMaxHeight ? { maxHeight: editorMaxHeight, overflowY: "auto" } : {}),
         }}
         suppressContentEditableWarning={true}
         data-placeholder={placeholder}

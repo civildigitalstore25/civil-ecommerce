@@ -215,9 +215,12 @@ const ProductDetail: React.FC = () => {
   const [reviewAsAnonymous, setReviewAsAnonymous] = useState(false);
   const [anonymousName, setAnonymousName] = useState("");
 
-  // Show more reviews (initially show 3, expand on click)
+  // Show more reviews (initially show 2, expand on click)
   const [showAllReviews, setShowAllReviews] = useState(false);
-  const REVIEWS_INITIAL_COUNT = 3;
+  const REVIEWS_INITIAL_COUNT = 2;
+  
+  // Track which review comments are expanded
+  const [expandedReviewComments, setExpandedReviewComments] = useState<Set<string>>(new Set());
 
   // Reply-related state
   const [replyingToReview, setReplyingToReview] = useState<string | null>(null); // Review ID being replied to
@@ -357,9 +360,10 @@ const ProductDetail: React.FC = () => {
     }
   }, [product?._id]);
 
-  // Reset "show all reviews" when sort/filter changes
+  // Reset "show all reviews" and expanded comments when sort/filter changes
   useEffect(() => {
     setShowAllReviews(false);
+    setExpandedReviewComments(new Set());
   }, [sortBy, ratingFilter, dateFilter, customStartDate, customEndDate]);
 
   // Ensure page opens scrolled to top when navigating to a product
@@ -3845,12 +3849,37 @@ const ProductDetail: React.FC = () => {
                                                 })}
                                               </span>
                                             </div>
-                                            <p
-                                              className="text-sm leading-relaxed"
-                                              style={{ color: colors.text.secondary }}
-                                            >
-                                              {review.comment}
-                                            </p>
+                                            <div className="text-sm leading-relaxed" style={{ color: colors.text.secondary }}>
+                                              <p
+                                                className={expandedReviewComments.has(review._id) ? "" : "line-clamp-3"}
+                                                style={{ color: colors.text.secondary }}
+                                              >
+                                                {review.comment}
+                                              </p>
+                                              {review.comment.length > 150 && (
+                                                <button
+                                                  onClick={() => {
+                                                    const newExpanded = new Set(expandedReviewComments);
+                                                    if (expandedReviewComments.has(review._id)) {
+                                                      newExpanded.delete(review._id);
+                                                    } else {
+                                                      newExpanded.add(review._id);
+                                                    }
+                                                    setExpandedReviewComments(newExpanded);
+                                                  }}
+                                                  className="text-xs font-medium mt-1 transition-colors"
+                                                  style={{ color: colors.interactive.primary }}
+                                                  onMouseEnter={(e) => {
+                                                    e.currentTarget.style.opacity = '0.8';
+                                                  }}
+                                                  onMouseLeave={(e) => {
+                                                    e.currentTarget.style.opacity = '1';
+                                                  }}
+                                                >
+                                                  {expandedReviewComments.has(review._id) ? 'See less' : 'See more'}
+                                                </button>
+                                              )}
+                                            </div>
 
                                             {/* Reply Button */}
                                             <div className="mt-3 flex items-center gap-3">
