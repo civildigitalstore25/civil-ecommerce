@@ -79,8 +79,8 @@ export function clarityConsent(granted: boolean): void {
 }
 
 export function clarityConsentV2(options?: {
-  ad_Storage?: "granted" | "denied";
-  analytics_Storage?: "granted" | "denied";
+  ad_Storage: "granted" | "denied";
+  analytics_Storage: "granted" | "denied";
 }): void {
   if (!isClarityLoaded()) return;
   try {
