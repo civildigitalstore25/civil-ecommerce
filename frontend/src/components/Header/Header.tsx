@@ -127,7 +127,7 @@ const Header: React.FC = () => {
                   <img
                     src={theme === "dark" ? darkLogo : lightLogo}
                     alt="Logo"
-                    className="h-8 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
+                    className="h-10 w-[140px] sm:h-10 sm:w-[140px] md:h-12 md:w-[165px] object-contain object-left"
                   />
                 </button>
               </div>
@@ -176,7 +176,7 @@ const Header: React.FC = () => {
               <img
                 src={theme === "dark" ? darkLogo : lightLogo}
                 alt="Logo"
-                className="h-10 sm:h-10 md:h-12 max-h-12 w-auto object-contain"
+                className="h-10 w-[140px] sm:h-10 sm:w-[140px] md:h-12 md:w-[165px] object-contain object-left"
               />
             </button>
           </div>
