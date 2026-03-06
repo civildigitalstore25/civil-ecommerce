@@ -221,6 +221,8 @@ const ProductDetail: React.FC = () => {
   
   // Track which review comments are expanded
   const [expandedReviewComments, setExpandedReviewComments] = useState<Set<string>>(new Set());
+  // Track which reply comments are expanded
+  const [expandedReplyComments, setExpandedReplyComments] = useState<Set<string>>(new Set());
 
   // Reply-related state
   const [replyingToReview, setReplyingToReview] = useState<string | null>(null); // Review ID being replied to
@@ -3849,15 +3851,20 @@ const ProductDetail: React.FC = () => {
                                                 })}
                                               </span>
                                             </div>
-                                            <div className="text-sm leading-relaxed" style={{ color: colors.text.secondary }}>
+                                            <div className="text-sm leading-relaxed min-w-0 overflow-hidden" style={{ color: colors.text.secondary }}>
                                               <p
-                                                className={expandedReviewComments.has(review._id) ? "" : "line-clamp-3"}
-                                                style={{ color: colors.text.secondary }}
+                                                className={expandedReviewComments.has(review._id) ? "" : "line-clamp-2"}
+                                                style={{
+                                                  color: colors.text.secondary,
+                                                  wordBreak: "break-word",
+                                                  overflow: expandedReviewComments.has(review._id) ? "visible" : "hidden",
+                                                }}
                                               >
                                                 {review.comment}
                                               </p>
-                                              {review.comment.length > 150 && (
+                                              {review.comment.length > 80 && (
                                                 <button
+                                                  type="button"
                                                   onClick={() => {
                                                     const newExpanded = new Set(expandedReviewComments);
                                                     if (expandedReviewComments.has(review._id)) {
@@ -3867,16 +3874,16 @@ const ProductDetail: React.FC = () => {
                                                     }
                                                     setExpandedReviewComments(newExpanded);
                                                   }}
-                                                  className="text-xs font-medium mt-1 transition-colors"
+                                                  className="text-xs font-medium mt-1 transition-colors hover:underline"
                                                   style={{ color: colors.interactive.primary }}
                                                   onMouseEnter={(e) => {
-                                                    e.currentTarget.style.opacity = '0.8';
+                                                    e.currentTarget.style.opacity = "0.8";
                                                   }}
                                                   onMouseLeave={(e) => {
-                                                    e.currentTarget.style.opacity = '1';
+                                                    e.currentTarget.style.opacity = "1";
                                                   }}
                                                 >
-                                                  {expandedReviewComments.has(review._id) ? 'See less' : 'See more'}
+                                                  {expandedReviewComments.has(review._id) ? "See less" : "See more"}
                                                 </button>
                                               )}
                                             </div>
@@ -3932,7 +3939,7 @@ const ProductDetail: React.FC = () => {
                                                               ? reply.user.fullName.charAt(0).toUpperCase()
                                                               : "U"}
                                                         </div>
-                                                        <div className="flex-1 min-w-0">
+                                                        <div className="flex-1 min-w-0 overflow-hidden">
                                                           <div className="flex items-center gap-2 mb-1">
                                                             <h6
                                                               className="font-semibold text-sm"
@@ -3953,12 +3960,33 @@ const ProductDetail: React.FC = () => {
                                                               })}
                                                             </span>
                                                           </div>
-                                                          <p
-                                                            className="text-sm leading-relaxed"
-                                                            style={{ color: colors.text.secondary }}
-                                                          >
-                                                            {reply.comment}
-                                                          </p>
+                                                          <div className="text-sm leading-relaxed min-w-0 overflow-hidden" style={{ color: colors.text.secondary }}>
+                                                            <p
+                                                              className={expandedReplyComments.has(reply._id) ? "" : "line-clamp-2"}
+                                                              style={{
+                                                                color: colors.text.secondary,
+                                                                wordBreak: "break-word",
+                                                                overflow: expandedReplyComments.has(reply._id) ? "visible" : "hidden",
+                                                              }}
+                                                            >
+                                                              {reply.comment}
+                                                            </p>
+                                                            {reply.comment && reply.comment.length > 80 && (
+                                                              <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                  const next = new Set(expandedReplyComments);
+                                                                  if (next.has(reply._id)) next.delete(reply._id);
+                                                                  else next.add(reply._id);
+                                                                  setExpandedReplyComments(next);
+                                                                }}
+                                                                className="text-xs font-medium mt-1 transition-colors hover:underline"
+                                                                style={{ color: colors.interactive.primary }}
+                                                              >
+                                                                {expandedReplyComments.has(reply._id) ? "See less" : "See more"}
+                                                              </button>
+                                                            )}
+                                                          </div>
                                                         </div>
                                                       </div>
                                                       {user &&
