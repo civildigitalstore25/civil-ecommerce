@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useBlogs, useDeleteBlog } from "../api/blogApi";
 import { useUser } from "../api/userQueries";
 import { Plus } from "lucide-react";
@@ -28,17 +29,25 @@ const BlogListPage: React.FC = () => {
   const handleDelete = async (id: string, title: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (window.confirm(`Are you sure you want to delete "${title}"?`)) {
-      try {
-        await deleteBlogMutation.mutateAsync(id);
-        alert("Blog deleted successfully!");
-      } catch (err: unknown) {
-        const msg =
-          err && typeof err === "object" && "response" in err
-            ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-            : null;
-        alert(msg || "Failed to delete blog");
-      }
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Delete Blog?",
+      text: `Are you sure you want to delete "${title}"? This action cannot be undone.`,
+      showCancelButton: true,
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await deleteBlogMutation.mutateAsync(id);
+      await Swal.fire({ icon: "success", title: "Deleted!", text: "Blog deleted successfully." });
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : null;
+      Swal.fire({ icon: "error", title: "Delete Failed", text: msg || "Failed to delete blog." });
     }
   };
 

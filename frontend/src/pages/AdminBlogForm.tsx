@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useUser } from "../api/userQueries";
 import { useCreateBlog, useUpdateBlog, useBlogById } from "../api/blogApi";
 import type { BlogFormData } from "../api/types/blogTypes";
@@ -110,48 +111,42 @@ const AdminBlogForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate form
+
     if (!formData.title || !formData.title.trim()) {
-      alert("Please enter a blog title");
+      Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog title" });
       return;
     }
-
     if (!formData.content || !formData.content.trim()) {
-      alert("Please enter blog content");
+      Swal.fire({ icon: "warning", title: "Validation", text: "Please enter blog content" });
       return;
     }
-
     if (!formData.excerpt || !formData.excerpt.trim()) {
-      alert("Please enter a blog excerpt");
+      Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog excerpt" });
       return;
     }
-
     if (!formData.category || !formData.category.trim()) {
-      alert("Please enter a blog category");
+      Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog category" });
       return;
     }
-
     if (!formData.featuredImage || !formData.featuredImage.trim()) {
-      alert("Please enter a featured image URL");
+      Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a featured image URL" });
       return;
     }
 
     setIsSubmitting(true);
-
     try {
       if (isEditMode && id) {
         await updateBlogMutation.mutateAsync({ id, data: formData });
-        alert("Blog updated successfully!");
+        await Swal.fire({ icon: "success", title: "Success!", text: "Blog updated successfully!" });
       } else {
         await createBlogMutation.mutateAsync(formData);
-        alert("Blog created successfully!");
+        await Swal.fire({ icon: "success", title: "Success!", text: "Blog created successfully!" });
       }
       navigate("/blog");
     } catch (error: any) {
       console.error("Error saving blog:", error);
       const errorMessage = error?.response?.data?.message || error?.message || "Failed to save blog. Please try again.";
-      alert(`Error: ${errorMessage}`);
+      Swal.fire({ icon: "error", title: "Error", text: errorMessage });
     } finally {
       setIsSubmitting(false);
     }
