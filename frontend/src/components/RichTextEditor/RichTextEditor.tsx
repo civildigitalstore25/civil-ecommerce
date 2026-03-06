@@ -98,10 +98,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   return (
     <div
-      className={`border border-gray-300 rounded-lg overflow-hidden ${className}`}
+      className={`border border-gray-300 rounded-lg overflow-hidden flex flex-col ${className}`}
     >
-      {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b border-gray-200">
+      {/* Toolbar - always visible at top; content scrolls below */}
+      <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 border-b border-gray-200 flex-shrink-0">
         <button
           type="button"
           onClick={() => formatText("bold")}
@@ -185,17 +185,17 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         </button>
       </div>
 
-      {/* Editor */}
+      {/* Editor - scrolls when content is long so toolbar stays in view */}
       <div
         ref={editorRef}
         contentEditable
         onInput={handleInput}
-        className="min-h-[150px] p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rich-text-editor"
+        className="p-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-inset rich-text-editor flex-1 min-h-0"
         style={{
           whiteSpace: "pre-wrap",
           wordWrap: "break-word",
           lineHeight: "1.6",
-          ...(editorMinHeight ? { minHeight: editorMinHeight } : {}),
+          minHeight: editorMinHeight || "150px",
           ...(editorMaxHeight ? { maxHeight: editorMaxHeight, overflowY: "auto" } : {}),
         }}
         suppressContentEditableWarning={true}
@@ -203,7 +203,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       />
 
       {/* Footer */}
-      <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t border-gray-200 text-sm text-gray-500">
+      <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t border-gray-200 text-sm text-gray-500 flex-shrink-0">
         <div>
           Supports <strong>bold</strong>, <em>italic</em>, <u>underline</u> •
           bullets, 1. numbers, [links](url), ![images](url)

@@ -218,7 +218,8 @@ const AdminBlogForm: React.FC = () => {
                 onChange={(val) => setFormData((prev) => ({ ...prev, content: val }))}
                 placeholder="Write your blog content here..."
                 className="w-full"
-                editorMinHeight="400px"
+                editorMinHeight="200px"
+                editorMaxHeight="50vh"
               />
             </div>
 
