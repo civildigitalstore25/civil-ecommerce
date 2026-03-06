@@ -180,13 +180,15 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
           ${isOpen ? "translate-x-0 lg:w-80" : "-translate-x-full lg:translate-x-0 lg:w-0"}
           w-80
           overflow-y-auto
-          shadow-lg
+          rounded-r-xl
+          shadow-2xl
           scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400
           z-50
         `}
         style={{
           backgroundColor: colors.background.primary,
-          borderRight: isOpen ? `1px solid ${colors.border.primary}` : 'none',
+          borderRight: isOpen ? `1px solid ${colors.border.primary}` : "none",
+          borderBottom: isOpen ? `1px solid ${colors.border.primary}` : "none",
         }}
       >
         {/* Desktop Toggle Button - Positioned at bottom center - Only visible when open */}
@@ -200,21 +202,25 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
               items-center justify-center
               rounded-full
               shadow-2xl
-              hover:shadow-2xl
               hover:scale-110
               transition-all duration-300
               z-[60]
-              bg-blue-600 hover:bg-blue-700
             "
+            style={{
+              backgroundColor: colors.interactive.primary,
+              color: colors.text?.inverse ?? "#fff",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.opacity = "0.9"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.opacity = "1"; }}
             title="Close sidebar"
           >
-            <ChevronLeft className="w-6 h-6 text-white font-bold" strokeWidth={3} />
+            <ChevronLeft className="w-6 h-6 font-bold" strokeWidth={3} />
           </button>
         )}
 
         {/* Mobile Header */}
         <div
-          className="lg:hidden flex items-center justify-end p-4 border-b"
+          className="lg:hidden flex items-center justify-end p-4 rounded-tl-none rounded-tr-xl border-b"
           style={{
             borderColor: colors.border.primary,
             backgroundColor: colors.background.secondary,
@@ -223,9 +229,9 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
           <button
             onClick={onToggle}
             className="p-2 rounded-lg hover:opacity-80 transition-opacity"
-            style={{ backgroundColor: colors.background.primary }}
+            style={{ backgroundColor: colors.background.primary, color: colors.text.primary }}
           >
-            <X className="w-5 h-5" style={{ color: colors.text.primary }} />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -233,66 +239,112 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
 
         {/* Categories List - Only show when sidebar is open */}
         {isOpen && (
-          <nav className="p-2">
+          <nav className="py-2">
             {navigationCategories.map((category) => (
-              <div key={category.id} className="mb-1">
-                {/* Category Header */}
+              <div key={category.id} className="mb-0">
                 <button
                   onClick={() => {
                     if (category.subcategories && category.subcategories.length > 0) {
                       toggleCategory(category.id);
                     } else {
-                      handleNavigation(category.href || '/');
+                      handleNavigation(category.href || "/");
                     }
                   }}
-                  className="w-full flex items-center justify-between p-3 rounded-lg transition-all duration-200 hover:shadow-md group"
+                  className="w-full px-6 py-4 text-left transition-all duration-200 flex items-center justify-between group border-l-4"
                   style={{
                     backgroundColor: expandedCategories.includes(category.id)
-                      ? colors.background.secondary
+                      ? (colors.background.accent ?? colors.background.secondary)
                       : "transparent",
-                    color: colors.text.primary,
+                    borderLeftColor: expandedCategories.includes(category.id)
+                      ? colors.interactive.primary
+                      : "transparent",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!expandedCategories.includes(category.id)) {
+                      e.currentTarget.style.backgroundColor = colors.background.secondary ?? "rgba(0,0,0,0.04)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!expandedCategories.includes(category.id)) {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }
                   }}
                 >
-                  <span className="font-medium text-left group-hover:translate-x-1 transition-transform duration-200">
-                    {category.name}
-                  </span>
+                  <div>
+                    <div
+                      className="font-semibold text-base mb-0.5"
+                      style={{
+                        color: expandedCategories.includes(category.id)
+                          ? colors.interactive.primary
+                          : colors.text.primary,
+                      }}
+                    >
+                      {category.name}
+                    </div>
+                    {category.subcategories && category.subcategories.length > 0 && (
+                      <div className="text-xs" style={{ color: colors.text.secondary }}>
+                        {category.subcategories.length} products
+                      </div>
+                    )}
+                  </div>
                   {category.subcategories && category.subcategories.length > 0 && (
                     <span className="transition-transform duration-200">
                       {expandedCategories.includes(category.id) ? (
                         <ChevronDown
-                          className="w-4 h-4"
-                          style={{ color: colors.text.secondary }}
+                          className="w-5 h-5"
+                          style={{
+                            color: expandedCategories.includes(category.id)
+                              ? colors.interactive.primary
+                              : colors.text.secondary,
+                          }}
                         />
                       ) : (
-                        <ChevronRight
-                          className="w-4 h-4"
-                          style={{ color: colors.text.secondary }}
-                        />
+                        <ChevronRight className="w-5 h-5" style={{ color: colors.text.secondary }} />
                       )}
                     </span>
                   )}
                 </button>
 
-                {/* SubCategories */}
                 {category.subcategories &&
                   category.subcategories.length > 0 &&
                   expandedCategories.includes(category.id) && (
-                    <div
-                      className="ml-4 mt-1 mb-2 border-l-2 pl-2 animate-slideDown"
-                      style={{ borderColor: colors.border.primary }}
-                    >
+                    <div className="px-2 pb-2">
                       {category.subcategories.map((subcategory) => (
                         <button
                           key={subcategory.id}
                           onClick={() => handleNavigation(subcategory.href)}
-                          className="w-full text-left p-2 pl-3 rounded-md transition-all duration-200 hover:shadow-sm hover:pl-4 mb-1 group"
+                          className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group mb-0.5"
                           style={{ color: colors.text.secondary }}
+                          onMouseEnter={(e) => {
+                            const el = e.currentTarget as HTMLElement;
+                            el.style.backgroundColor = colors.background.accent ?? colors.background.secondary;
+                            el.style.color = colors.interactive.primary;
+                          }}
+                          onMouseLeave={(e) => {
+                            const el = e.currentTarget as HTMLElement;
+                            el.style.backgroundColor = "transparent";
+                            el.style.color = colors.text.secondary;
+                          }}
                         >
-                          <span className="group-hover:font-medium transition-all duration-200">
-                            {subcategory.name}
-                          </span>
+                          <span className="font-medium">{subcategory.name}</span>
+                          <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </button>
                       ))}
+                      <button
+                        onClick={() => handleNavigation(category.href || "#")}
+                        className="w-full mt-2 px-4 py-2 text-sm font-semibold rounded-lg transition-colors inline-flex items-center justify-center"
+                        style={{ color: colors.interactive.primary }}
+                        onMouseEnter={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor =
+                            colors.background.accent ?? colors.background.secondary;
+                        }}
+                        onMouseLeave={(e) => {
+                          (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                        }}
+                      >
+                        View all {category.name}
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </button>
                     </div>
                   )}
               </div>
