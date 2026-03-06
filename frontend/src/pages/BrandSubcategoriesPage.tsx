@@ -46,6 +46,7 @@ const brandData: Record<string, BrandData> = {
     subcategories: [
       { name: "Productivity & Collaboration", category: "microsoft-365", displayName: "Microsoft 365" },
       { name: "Productivity & Collaboration", category: "microsoft-professional", displayName: "Microsoft Professional" },
+      { name: "Productivity & Collaboration", category: "visio-professional", displayName: "Visio Professional" },
       { name: "Project Management", category: "microsoft-projects", displayName: "Microsoft Projects" },
       { name: "Server & Enterprise", category: "server", displayName: "Server" },
       { name: "Operating Systems", category: "windows", displayName: "Windows" },

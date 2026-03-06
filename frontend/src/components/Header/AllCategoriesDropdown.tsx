@@ -33,6 +33,7 @@ const brandCategories: Record<
     categories: [
       { value: "microsoft-365", label: "Microsoft 365" },
       { value: "microsoft-professional", label: "Microsoft Professional" },
+      { value: "visio-professional", label: "Visio Professional" },
       { value: "microsoft-projects", label: "Microsoft Projects" },
       { value: "server", label: "Server" },
       { value: "windows", label: "Windows" },

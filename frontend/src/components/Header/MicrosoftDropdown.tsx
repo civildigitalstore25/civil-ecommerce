@@ -32,6 +32,10 @@ const microsoftCategories: MicrosoftCategory[] = [
         name: "Microsoft Professional",
         href: "/category?brand=microsoft&category=microsoft-professional",
       },
+      {
+        name: "Visio Professional",
+        href: "/category?brand=microsoft&category=visio-professional",
+      },
     ],
   },
   {

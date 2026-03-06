@@ -45,6 +45,7 @@ const navigationCategories: Category[] = [
     subcategories: [
       { id: "microsoft-365", name: "Microsoft 365", href: "/category?brand=microsoft&category=microsoft-365" },
       { id: "microsoft-professional", name: "Microsoft Professional", href: "/category?brand=microsoft&category=microsoft-professional" },
+      { id: "visio-professional", name: "Visio Professional", href: "/category?brand=microsoft&category=visio-professional" },
       { id: "microsoft-projects", name: "Microsoft Projects", href: "/category?brand=microsoft&category=microsoft-projects" },
       { id: "server", name: "Server", href: "/category?brand=microsoft&category=server" },
       { id: "windows", name: "Windows", href: "/category?brand=microsoft&category=windows" },

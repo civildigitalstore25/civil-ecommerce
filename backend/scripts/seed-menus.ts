@@ -70,10 +70,11 @@ const initialMenus = [
     children: [
       { name: 'Office 365', slug: 'microsoft-365', order: 0, type: 'brand' },
       { name: 'Office Professional', slug: 'microsoft-professional', order: 1, type: 'brand' },
-      { name: 'Windows', slug: 'windows', order: 2, type: 'brand' },
-      { name: 'Projects', slug: 'microsoft-projects', order: 3, type: 'brand' },
-      { name: 'Server', slug: 'server', order: 4, type: 'brand' },
-      { name: 'View All', slug: 'microsoft', order: 5, type: 'subcategory' },
+      { name: 'Visio Professional', slug: 'visio-professional', order: 2, type: 'brand' },
+      { name: 'Windows', slug: 'windows', order: 3, type: 'brand' },
+      { name: 'Projects', slug: 'microsoft-projects', order: 4, type: 'brand' },
+      { name: 'Server', slug: 'server', order: 5, type: 'brand' },
+      { name: 'View All', slug: 'microsoft', order: 6, type: 'subcategory' },
     ],
   },
 

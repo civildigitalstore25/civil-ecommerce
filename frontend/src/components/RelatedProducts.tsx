@@ -19,7 +19,7 @@ const brandCategoryMap: Record<string, string[]> = {
     "autocad", "autocad-lt", "autocad-mechanical", "autocad-electrical", "autocad-mep", "3ds-max", "maya", "revit", "fusion", "inventor-professional", "civil-3d", "map-3d", "aec-collection", "navisworks-manage"
   ],
   microsoft: [
-    "microsoft-365", "microsoft-professional", "microsoft-projects", "server"
+    "microsoft-365", "microsoft-professional", "visio-professional", "microsoft-projects", "server"
   ],
   adobe: [
     "adobe-acrobat", "photoshop", "lightroom", "after-effect", "premier-pro", "illustrator", "adobe-creative-cloud"

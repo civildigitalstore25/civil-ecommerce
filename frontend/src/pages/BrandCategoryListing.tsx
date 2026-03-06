@@ -41,6 +41,7 @@ const categoryLabels: Record<string, string> = {
   "autocad-mep": "AutoCAD MEP",
   "microsoft-365": "Microsoft 365",
   "microsoft-professional": "Microsoft Professional",
+  "visio-professional": "Visio Professional",
   "microsoft-projects": "Microsoft Projects",
   server: "Server",
   windows: "Windows",

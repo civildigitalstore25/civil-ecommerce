@@ -85,6 +85,11 @@ const CATEGORY_SEO_CONFIG: Record<string, { name: string; keywords: string; desc
     keywords: "microsoft office professional, ms office, office suite",
     description: "Microsoft Office Professional for business productivity",
   },
+  "visio-professional": {
+    name: "Visio Professional",
+    keywords: "visio professional, microsoft visio, diagram software, flowcharts",
+    description: "Microsoft Visio Professional for diagrams and flowcharts",
+  },
   windows: {
     name: "Windows",
     keywords: "windows license, windows OS, operating system, microsoft windows",
