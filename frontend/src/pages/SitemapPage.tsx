@@ -100,11 +100,50 @@ const SitemapPage: React.FC = () => {
         </div>
 
         {/* Products by Category - Column Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div 
+          className="gap-4 md:gap-6"
+          style={{
+            columnCount: 1,
+            columnGap: '1rem'
+          }}
+          // Responsive column count using media queries via style
+          ref={(el) => {
+            if (el) {
+              const updateColumns = () => {
+                const width = window.innerWidth;
+                if (width >= 1280) {
+                  el.style.columnCount = '4';
+                  el.style.columnGap = '1.5rem';
+                } else if (width >= 1024) {
+                  el.style.columnCount = '3';
+                  el.style.columnGap = '1.5rem';
+                } else if (width >= 768) {
+                  el.style.columnCount = '2';
+                  el.style.columnGap = '1rem';
+                } else {
+                  el.style.columnCount = '1';
+                  el.style.columnGap = '1rem';
+                }
+              };
+              updateColumns();
+              window.addEventListener('resize', updateColumns);
+              return () => window.removeEventListener('resize', updateColumns);
+            }
+          }}
+        >
           {Object.keys(productsByCategory)
             .sort()
             .map((category) => (
-              <div key={category} className="space-y-2">
+              <div 
+                key={category} 
+                className="space-y-2 mb-6"
+                style={{
+                  breakInside: 'avoid',
+                  pageBreakInside: 'avoid',
+                  display: 'inline-block',
+                  width: '100%'
+                }}
+              >
                 {/* Category Header */}
                 <h2
                   className="text-sm md:text-base font-bold pb-2 border-b-2"
