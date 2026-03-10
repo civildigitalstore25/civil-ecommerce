@@ -86,7 +86,7 @@ const SitemapPage: React.FC = () => {
         {/* Header - Centered */}
         <div className="text-center mb-6">
           <h1
-            className="text-3xl md:text-4xl font-bold mb-2"
+            className="text-3xl md:text-4xl font-bold mb-2 uppercase"
             style={{ color: colors.text.primary }}
           >
             Sitemap
@@ -146,7 +146,7 @@ const SitemapPage: React.FC = () => {
               >
                 {/* Category Header */}
                 <h2
-                  className="text-sm md:text-base font-bold pb-2 border-b-2"
+                  className="text-sm md:text-base font-bold pb-2 border-b-2 uppercase"
                   style={{
                     color: colors.text.primary,
                     borderColor: colors.interactive.primary
