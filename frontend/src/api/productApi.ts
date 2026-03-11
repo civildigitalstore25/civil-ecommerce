@@ -249,3 +249,18 @@ export const getProductSoldQuantity = async (productId: string): Promise<number>
   }
 };
 
+/**
+ * Get best-selling products (top 10 by order count) for homepage carousel
+ */
+export const getBestSellingProducts = async (limit = 10): Promise<{ products: (Product & { soldCount?: number })[] }> => {
+  const { data } = await apiClient.get("/filter/best-selling", { params: { limit } });
+  return data;
+};
+
+export const useBestSellingProducts = (limit = 10) => {
+  return useQuery<{ products: (Product & { soldCount?: number })[] }>({
+    queryKey: ["products", "best-selling", limit],
+    queryFn: () => getBestSellingProducts(limit),
+  });
+};
+

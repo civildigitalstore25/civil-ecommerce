@@ -607,3 +607,66 @@ export const getProductSoldQuantity = async (req: Request, res: Response): Promi
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get top N best-selling products (by order count from order management)
+export const getBestSellingProducts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
+
+    const Order = require('../models/Order').default;
+    const mongoose = require('mongoose');
+
+    const topSold = await Order.aggregate([
+      {
+        $match: {
+          paymentStatus: 'paid',
+          orderStatus: { $nin: ['cancelled'] }
+        }
+      },
+      { $unwind: '$items' },
+      {
+        $group: {
+          _id: '$items.productId',
+          totalQuantity: { $sum: '$items.quantity' }
+        }
+      },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: limit }
+    ]);
+
+    const productIds = topSold
+      .map((r: any) => r._id)
+      .filter((id: string) => id && mongoose.Types.ObjectId.isValid(id));
+
+    if (productIds.length === 0) {
+      res.json({ success: true, products: [], message: 'No orders yet' });
+      return;
+    }
+
+    const products = await Product.find({
+      _id: { $in: productIds.map((id: string) => new mongoose.Types.ObjectId(id)) },
+      status: { $in: ['active', undefined, null] }
+    })
+      .lean();
+
+    const soldMap = new Map(topSold.map((r: any) => [r._id.toString(), r.totalQuantity]));
+
+    const ordered = productIds.map((id: string) => {
+      const product = products.find((p: any) => p._id.toString() === id);
+      if (!product) return null;
+      return {
+        ...product,
+        soldCount: soldMap.get(id) || 0
+      };
+    }).filter(Boolean);
+
+    res.json({
+      success: true,
+      products: ordered,
+      message: 'Best selling products retrieved successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Get best selling products error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
