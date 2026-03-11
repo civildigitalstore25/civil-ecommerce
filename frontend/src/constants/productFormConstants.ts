@@ -10,6 +10,7 @@ export const BRANDS = [
     { value: "architectural-softwares", label: "Architectural Softwares" },
     { value: "accounting-billing", label: "Accounting and Billing" },
     { value: "ebook", label: "Ebook" },
+    { value: "recovery-softwares", label: "Recovery Softwares" },
     { value: "others", label: "Others" },
 ];
 
@@ -75,7 +76,11 @@ export const BRAND_CATEGORIES: Record<string, { value: string; label: string }[]
         { value: "tally", label: "Tally" },
         { value: "vyapar", label: "Vyapar" },
     ],
-    ebook: [],
+    ebook: [
+        { value: "civil-engineering", label: "Civil Engineering" },
+        { value: "ai-prompts", label: "AI Prompts" },
+    ],
+    "recovery-softwares": [],
     others: [],
 };
 

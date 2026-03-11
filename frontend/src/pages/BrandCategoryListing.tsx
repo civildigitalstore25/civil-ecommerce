@@ -22,6 +22,7 @@ const brandLabels: Record<string, string> = {
   "billing-software": "Billing Software",
   "accounting-billing": "Billing and Accounting",
   ebook: "Ebook",
+  "recovery-softwares": "Recovery Softwares",
 };
 
 const categoryLabels: Record<string, string> = {
@@ -70,6 +71,8 @@ const categoryLabels: Record<string, string> = {
   "archi-cad": "Archi CAD",
   tally: "Tally",
   vyapar: "Vyapar",
+  "civil-engineering": "Civil Engineering",
+  "ai-prompts": "AI Prompts",
 };
 
 type SortOption = "newest" | "modified" | "oldest" | "name-asc" | "name-desc";

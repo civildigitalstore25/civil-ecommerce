@@ -99,6 +99,13 @@ const brandCategories: Record<
   },
   ebook: {
     label: "Ebook",
+    categories: [
+      { value: "civil-engineering", label: "Civil Engineering" },
+      { value: "ai-prompts", label: "AI Prompts" },
+    ],
+  },
+  "recovery-softwares": {
+    label: "Recovery Softwares",
     categories: [],
   },
 };
