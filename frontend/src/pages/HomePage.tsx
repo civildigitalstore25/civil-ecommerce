@@ -6,6 +6,7 @@ import MarqueeBanner from "../ui/home/MarqueeBanner";
 import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 import LatestBlogsCarousel from "../ui/home/LatestBlogsCarousel";
+import BestSellingCarousel from "../ui/home/BestSellingCarousel";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getHomeSEO } from "../utils/seo";
 import DealsPage from "./Deals";
@@ -65,6 +66,10 @@ const HomePage: React.FC = () => {
 
           <section className="px-4 sm:px-6 lg:px-8">
             <HomeProducts />
+          </section>
+
+          <section className="px-4 sm:px-6 lg:px-8">
+            <BestSellingCarousel />
           </section>
 
           <section className="px-4 sm:px-6 lg:px-8">

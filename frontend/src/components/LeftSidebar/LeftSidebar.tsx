@@ -109,19 +109,28 @@ const navigationCategories: Category[] = [
       { id: "archi-cad", name: "Archi CAD", href: "/category?brand=architectural-softwares&category=archi-cad" },
     ],
   },
-    {
-      id: "accounting-billing",
-      name: "Accounting and Billing",
-      href: "/category?brand=accounting-billing",
-      subcategories: [
-        { id: "tally", name: "Tally", href: "/category?brand=accounting-billing&category=tally" },
-        { id: "vyapar", name: "Vyapar", href: "/category?brand=accounting-billing&category=vyapar" },
-      ],
-    },
+  {
+    id: "accounting-billing",
+    name: "Accounting and Billing",
+    href: "/category?brand=accounting-billing",
+    subcategories: [
+      { id: "tally", name: "Tally", href: "/category?brand=accounting-billing&category=tally" },
+      { id: "vyapar", name: "Vyapar", href: "/category?brand=accounting-billing&category=vyapar" },
+    ],
+  },
   {
     id: "ebook",
     name: "Ebook",
     href: "/category?brand=ebook",
+    subcategories: [
+      { id: "civil-engineering", name: "Civil Engineering", href: "/category?brand=ebook&category=civil-engineering" },
+      { id: "ai-prompts", name: "AI Prompts", href: "/category?brand=ebook&category=ai-prompts" },
+    ],
+  },
+  {
+    id: "recovery-softwares",
+    name: "Recovery Softwares",
+    href: "/category?brand=recovery-softwares",
   },
   {
     id: "about",

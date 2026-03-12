@@ -5,8 +5,8 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 const features = [
   {
     icon: CheckCircle,
-    title: "100% Genuine",
-    description: "Authentic licenses from authorized vendors",
+    title: "Quality Assured",
+    description: "Verified licenses from trusted sources",
   },
   {
     icon: Shield,

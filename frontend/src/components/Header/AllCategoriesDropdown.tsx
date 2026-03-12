@@ -99,6 +99,13 @@ const brandCategories: Record<
   },
   ebook: {
     label: "Ebook",
+    categories: [
+      { value: "civil-engineering", label: "Civil Engineering" },
+      { value: "ai-prompts", label: "AI Prompts" },
+    ],
+  },
+  "recovery-softwares": {
+    label: "Recovery Softwares",
     categories: [],
   },
 };
@@ -166,16 +173,16 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
       {/* Header removed for compactness */}
 
       {/* Brands Side Menu + Categories Content */}
-      <div className="flex" style={{ minHeight: "400px", maxHeight: "600px" }}>
-        {/* Left: Brands List */}
+      <div className="flex" style={{ minHeight: "400px", maxHeight: "70vh" }}>
+        {/* Left: Brands List - scrollable so all categories are visible */}
         <div
-          className="w-80 border-r"
+          className="w-80 border-r flex flex-col min-h-0 shrink-0"
           style={{
             borderColor: colors.border.primary,
             backgroundColor: colors.background.secondary,
           }}
         >
-          <div className="py-2">
+          <div className="py-2 flex-1 min-h-0 overflow-y-auto all-categories-dropdown">
             {Object.entries(brandCategories).map(([brandKey, brandData]) => (
               <button
                 key={brandKey}
@@ -239,7 +246,7 @@ const AllCategoriesDropdown: React.FC<AllCategoriesDropdownProps> = ({
             brandCategories[hoveredBrand].categories.length > 0 ? (
             <div
               className="p-6 category-dropdown-section"
-              style={{ maxHeight: "600px", overflowY: "auto" }}
+              style={{ maxHeight: "70vh", overflowY: "auto" }}
             >
               {/* Section Header */}
               <div className="mb-4">
