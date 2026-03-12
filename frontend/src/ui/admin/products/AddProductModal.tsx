@@ -207,6 +207,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               priceUSD: sub.priceUSD?.toString() || "",
             }))
             : [],
+          isFreeProduct: (product as any).isFreeProduct || false,
+          ...((product as any).freeProductStartDate
+            ? (() => {
+              const d = new Date((product as any).freeProductStartDate);
+              if (isNaN(d.getTime())) return { freeProductStartDate: "", freeProductStartTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                freeProductStartDate: `${y}-${m}-${day}`,
+                freeProductStartTime: `${h}:${min}`,
+              };
+            })()
+            : { freeProductStartDate: "", freeProductStartTime: "" }),
+          ...((product as any).freeProductEndDate
+            ? (() => {
+              const d = new Date((product as any).freeProductEndDate);
+              if (isNaN(d.getTime())) return { freeProductEndDate: "", freeProductEndTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                freeProductEndDate: `${y}-${m}-${day}`,
+                freeProductEndTime: `${h}:${min}`,
+              };
+            })()
+            : { freeProductEndDate: "", freeProductEndTime: "" }),
         });
       } else {
         // Reset for new product
