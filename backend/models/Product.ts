@@ -87,6 +87,28 @@ export interface IProduct extends Document {
   dealSubscriptions?: SubscriptionDuration[];
   createdAt: Date;
   updatedAt: Date;
+  // Free product (₹0, show on homepage for limited time)
+  isFreeProduct?: boolean;
+  freeProductStartDate?: Date;
+  freeProductEndDate?: Date;
+  // Snapshot of prices before going free; restored for display after free period ends
+  preFreePricing?: {
+    subscriptionDurations?: SubscriptionDuration[];
+    price1?: number;
+    price1INR?: number;
+    price1USD?: number;
+    price3?: number;
+    price3INR?: number;
+    price3USD?: number;
+    priceLifetime?: number;
+    priceLifetimeINR?: number;
+    priceLifetimeUSD?: number;
+    membershipPrice?: number;
+    membershipPriceINR?: number;
+    membershipPriceUSD?: number;
+    hasLifetime?: boolean;
+    hasMembership?: boolean;
+  };
 }
 
 const subscriptionDurationSchema = new Schema({
@@ -180,6 +202,30 @@ const productSchema: Schema = new Schema(
     dealMembershipPriceUSD: { type: Number },
     dealSubscriptionDurations: [subscriptionDurationSchema],
     dealSubscriptions: [subscriptionDurationSchema],
+    // Free product (₹0, show on homepage for limited time)
+    isFreeProduct: { type: Boolean, default: false },
+    freeProductStartDate: { type: Date },
+    freeProductEndDate: { type: Date },
+    preFreePricing: {
+      type: {
+        subscriptionDurations: [subscriptionDurationSchema],
+        price1: Number,
+        price1INR: Number,
+        price1USD: Number,
+        price3: Number,
+        price3INR: Number,
+        price3USD: Number,
+        priceLifetime: Number,
+        priceLifetimeINR: Number,
+        priceLifetimeUSD: Number,
+        membershipPrice: Number,
+        membershipPriceINR: Number,
+        membershipPriceUSD: Number,
+        hasLifetime: Boolean,
+        hasMembership: Boolean,
+      },
+      required: false,
+    },
   },
   { timestamps: true }
 );

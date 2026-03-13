@@ -98,4 +98,25 @@ export interface Product {
   dealSubscriptions?: SubscriptionDuration[];
   createdAt?: string;
   updatedAt?: string;
+  isFreeProduct?: boolean;
+  freeProductStartDate?: Date | string;
+  freeProductEndDate?: Date | string;
+  /** Snapshot of prices before going free; shown after free period ends */
+  preFreePricing?: {
+    subscriptionDurations?: SubscriptionDuration[];
+    price1?: number;
+    price1INR?: number;
+    price1USD?: number;
+    price3?: number;
+    price3INR?: number;
+    price3USD?: number;
+    priceLifetime?: number;
+    priceLifetimeINR?: number;
+    priceLifetimeUSD?: number;
+    membershipPrice?: number;
+    membershipPriceINR?: number;
+    membershipPriceUSD?: number;
+    hasLifetime?: boolean;
+    hasMembership?: boolean;
+  };
 }

@@ -140,6 +140,12 @@ export const DEFAULT_PRODUCT_FORM = {
     dealMembershipPriceUSD: "",
     dealSubscriptionDurations: [],
     dealSubscriptions: [],
+    // Free product fields
+    isFreeProduct: false,
+    freeProductStartDate: "",
+    freeProductEndDate: "",
+    freeProductStartTime: "",
+    freeProductEndTime: "",
 };
 
 // LocalStorage keys for auto-save
@@ -221,4 +227,10 @@ export interface ProductForm {
     dealMembershipPriceUSD: string;
     dealSubscriptionDurations: SubscriptionDuration[];
     dealSubscriptions: SubscriptionDuration[];
+    // Free product
+    isFreeProduct: boolean;
+    freeProductStartDate: string;
+    freeProductEndDate: string;
+    freeProductStartTime: string;
+    freeProductEndTime: string;
 }

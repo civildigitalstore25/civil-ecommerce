@@ -840,6 +840,120 @@ const ProductDetail: React.FC = () => {
   const getAllPricingOptions = () => {
     if (!product) return [];
 
+    const now = new Date();
+    const isActiveFreeProduct =
+      product.isFreeProduct &&
+      product.freeProductStartDate &&
+      product.freeProductEndDate &&
+      ((product.price1INR === 0 || product.price1 === 0) || (product.price1INR == null && product.price1 == null)) &&
+      now >= new Date(product.freeProductStartDate) &&
+      now <= new Date(product.freeProductEndDate);
+
+    if (isActiveFreeProduct) {
+      return [{
+        id: "free",
+        label: "Free",
+        priceINR: 0,
+        priceUSD: 0,
+        type: "yearly",
+        trialDays: undefined,
+        badge: "Free",
+        savings: null,
+      }];
+    }
+
+    // Free period ended: show old prices from preFreePricing snapshot
+    const freePeriodEnded =
+      product.isFreeProduct &&
+      product.freeProductEndDate &&
+      now > new Date(product.freeProductEndDate) &&
+      product.preFreePricing;
+    if (freePeriodEnded && product.preFreePricing) {
+      const pre = product.preFreePricing;
+      const options: Array<{
+        id: string;
+        label: string;
+        priceINR: number;
+        priceUSD: number;
+        type: string;
+        trialDays?: number;
+        badge: string | null;
+        savings: string | null;
+      }> = [];
+      if (pre.subscriptionDurations && pre.subscriptionDurations.length > 0) {
+        pre.subscriptionDurations.forEach((sub: any, index: number) => {
+          if (
+            (sub.price && sub.price > 0) ||
+            (sub.priceINR && sub.priceINR > 0) ||
+            (sub.priceUSD && sub.priceUSD > 0)
+          ) {
+            options.push({
+              id: `subscription-${index}`,
+              label: sub.duration,
+              priceINR: sub.priceINR ?? sub.price ?? 0,
+              priceUSD: sub.priceUSD ?? (sub.price ? sub.price / 83 : 0),
+              type: "subscription",
+              trialDays: sub.trialDays,
+              badge: sub.duration?.toLowerCase().includes("1") ? "Most Popular" : sub.duration?.toLowerCase().includes("3") ? "Save 30%" : null,
+              savings: null,
+            });
+          }
+        });
+      } else {
+        if ((pre.price1INR && pre.price1INR > 0) || (pre.price1 && pre.price1 > 0)) {
+          options.push({
+            id: "yearly",
+            label: "1 Year License",
+            priceINR: pre.price1INR ?? pre.price1 ?? 0,
+            priceUSD: pre.price1USD ?? (pre.price1 ? pre.price1 / 83 : 0),
+            type: "yearly",
+            badge: "Most Popular",
+            savings: null,
+          });
+        }
+        if ((pre.price3INR && pre.price3INR > 0) || (pre.price3 && pre.price3 > 0)) {
+          options.push({
+            id: "3year",
+            label: "3 Year License",
+            priceINR: pre.price3INR ?? pre.price3 ?? 0,
+            priceUSD: pre.price3USD ?? (pre.price3 ? pre.price3 / 83 : 0),
+            type: "3year",
+            badge: "Save 30%",
+            savings: null,
+          });
+        }
+      }
+      const lifetimePrice = pre.priceLifetimeINR ?? pre.priceLifetime ?? 0;
+      if (lifetimePrice > 0) {
+        const yearlyPrice = options.find(o => o.type === "yearly" || o.type === "subscription")?.priceINR ?? 0;
+        const threeYearTotal = yearlyPrice * 3;
+        const lifetimePriceUSD = pre.priceLifetimeUSD ?? lifetimePrice / 83;
+        const savings = threeYearTotal > lifetimePrice ? threeYearTotal - lifetimePrice : 0;
+        options.push({
+          id: "lifetime",
+          label: "Lifetime Access",
+          priceINR: lifetimePrice,
+          priceUSD: lifetimePriceUSD,
+          type: "lifetime",
+          badge: "Best Value",
+          savings: savings > 0 ? `Save ₹${savings.toLocaleString()}` : null,
+        });
+      }
+      const membershipPrice = pre.membershipPriceINR ?? pre.membershipPrice ?? 0;
+      if (membershipPrice > 0) {
+        options.push({
+          id: "membership",
+          label: "Membership",
+          priceINR: membershipPrice,
+          priceUSD: pre.membershipPriceUSD ?? membershipPrice / 83,
+          type: "membership",
+          badge: "Premium Access",
+          savings: null,
+        });
+      }
+      if (options.length > 0) return options;
+    }
+
     const options = [];
 
     // Helper to get price (deal price if active, otherwise regular price)
@@ -1120,6 +1234,9 @@ const ProductDetail: React.FC = () => {
       // Handle lifetime license
       if (selectedLicense === "lifetime") return "lifetime";
 
+      // Free product option maps to 1-year for cart
+      if (selectedLicense === "free") return "1year";
+
       // Handle main subscription/pricing options
       if (
         selectedLicense === "yearly" ||
@@ -1176,7 +1293,7 @@ const ProductDetail: React.FC = () => {
     if (
       product &&
       selectedOption &&
-      (selectedOption.priceINR > 0 || selectedOption.priceUSD > 0)
+      (selectedOption.priceINR > 0 || selectedOption.priceUSD > 0 || selectedOption.id === "free")
     ) {
       try {
         // Create a temporary product object with the selected subscription plan price
@@ -1258,6 +1375,9 @@ const ProductDetail: React.FC = () => {
   const getCartLicenseTypeForCheck = (): "1year" | "3year" | "lifetime" => {
     // Handle lifetime license
     if (selectedLicense === "lifetime") return "lifetime";
+
+    // Free product option maps to 1-year for cart
+    if (selectedLicense === "free") return "1year";
 
     // Handle main subscription/pricing options
     if (

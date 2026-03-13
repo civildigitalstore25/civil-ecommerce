@@ -207,6 +207,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               priceUSD: sub.priceUSD?.toString() || "",
             }))
             : [],
+          isFreeProduct: (product as any).isFreeProduct || false,
+          ...((product as any).freeProductStartDate
+            ? (() => {
+              const d = new Date((product as any).freeProductStartDate);
+              if (isNaN(d.getTime())) return { freeProductStartDate: "", freeProductStartTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                freeProductStartDate: `${y}-${m}-${day}`,
+                freeProductStartTime: `${h}:${min}`,
+              };
+            })()
+            : { freeProductStartDate: "", freeProductStartTime: "" }),
+          ...((product as any).freeProductEndDate
+            ? (() => {
+              const d = new Date((product as any).freeProductEndDate);
+              if (isNaN(d.getTime())) return { freeProductEndDate: "", freeProductEndTime: "" };
+              const y = d.getFullYear();
+              const m = String(d.getMonth() + 1).padStart(2, '0');
+              const day = String(d.getDate()).padStart(2, '0');
+              const h = String(d.getHours()).padStart(2, '0');
+              const min = String(d.getMinutes()).padStart(2, '0');
+              return {
+                freeProductEndDate: `${y}-${m}-${day}`,
+                freeProductEndTime: `${h}:${min}`,
+              };
+            })()
+            : { freeProductEndDate: "", freeProductEndTime: "" }),
         });
       } else {
         // Reset for new product
@@ -264,6 +295,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           dealMembershipPriceUSD: "",
           dealSubscriptionDurations: [],
           dealSubscriptions: [],
+          isFreeProduct: false,
+          freeProductStartDate: "",
+          freeProductEndDate: "",
+          freeProductStartTime: "",
+          freeProductEndTime: "",
         });
       }
     }
@@ -556,27 +592,36 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
       // Pricing handling - always send explicit values (use 0 when cleared) so backend updates them.
       // Undefined keys are omitted in JSON and backend won't update those fields.
+      // When free product is enabled, force price to 0 so backend and product detail show free.
       price1:
-        defaultBrand === "ebook"
+        newProduct.isFreeProduct
+          ? 0
+          : defaultBrand === "ebook"
           ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
           : (newProduct.subscriptionDurations[0]?.price ? Number(newProduct.subscriptionDurations[0].price) : 0),
-      price3: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0),
+      price3: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0)),
       priceLifetime:
-        defaultBrand === "ebook"
+        newProduct.isFreeProduct
+          ? 0
+          : defaultBrand === "ebook"
           ? 0
           : (newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : newProduct.hasLifetime && newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : 0),
 
       // Dual currency pricing
-      price1INR: defaultBrand === "ebook"
+      price1INR: newProduct.isFreeProduct
+        ? 0
+        : defaultBrand === "ebook"
         ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
         : (newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : 0),
-      price1USD: defaultBrand === "ebook"
+      price1USD: newProduct.isFreeProduct
+        ? 0
+        : defaultBrand === "ebook"
         ? (newProduct.ebookPriceUSD ? Number(newProduct.ebookPriceUSD) : 0)
         : (newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : 0),
-      price3INR: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0),
-      price3USD: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0),
-      priceLifetimeINR: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0),
-      priceLifetimeUSD: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0),
+      price3INR: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0)),
+      price3USD: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0)),
+      priceLifetimeINR: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0)),
+      priceLifetimeUSD: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0)),
 
       // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
       subscriptionDurations: defaultBrand === "ebook" ? [] : newProduct.subscriptionDurations
@@ -620,11 +665,13 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       // Membership pricing - send 0 when cleared so backend updates
       hasMembership: newProduct.hasMembership,
       membershipPrice:
-        newProduct.hasMembership && (newProduct.membershipPriceINR || newProduct.membershipPrice)
+        newProduct.isFreeProduct
+          ? 0
+          : newProduct.hasMembership && (newProduct.membershipPriceINR || newProduct.membershipPrice)
           ? Number(newProduct.membershipPriceINR || newProduct.membershipPrice)
           : 0,
-      membershipPriceINR: newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : 0,
-      membershipPriceUSD: newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : 0,
+      membershipPriceINR: newProduct.isFreeProduct ? 0 : (newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : 0),
+      membershipPriceUSD: newProduct.isFreeProduct ? 0 : (newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : 0),
 
       // Strikethrough Price (MRP) - send 0 when cleared so backend updates
       strikethroughPriceINR: newProduct.strikethroughPriceINR ? Number(newProduct.strikethroughPriceINR) : 0,
@@ -717,6 +764,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
               (sub.priceUSD && sub.priceUSD > 0),
           )
         : [],
+      // Free product (show on homepage for limited time, ₹0)
+      isFreeProduct: newProduct.isFreeProduct || false,
+      freeProductStartDate: newProduct.isFreeProduct && newProduct.freeProductStartDate && newProduct.freeProductStartTime
+        ? new Date(`${newProduct.freeProductStartDate}T${newProduct.freeProductStartTime}`)
+        : null,
+      freeProductEndDate: newProduct.isFreeProduct && newProduct.freeProductEndDate && newProduct.freeProductEndTime
+        ? new Date(`${newProduct.freeProductEndDate}T${newProduct.freeProductEndTime}`)
+        : null,
     };
 
     // Validation - Only validate when not saving as draft
@@ -769,8 +824,8 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       return;
     }
 
-    // Check if we have at least one price (not required for drafts)
-    if (!isDraft) {
+    // Check if we have at least one price (not required for drafts; not required for free products)
+    if (!isDraft && !productData.isFreeProduct) {
       const hasValidPrice =
         (productData.price1 && productData.price1 > 0) ||
         (productData.price1INR && productData.price1INR > 0) ||
@@ -789,6 +844,29 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         Swal.fire({
           title: "Validation Error",
           text: "At least one valid price is required (subscription, lifetime, or membership)",
+          icon: "error",
+        });
+        return;
+      }
+    }
+
+    // Free product: require start and end date/time
+    if (!isDraft && productData.isFreeProduct) {
+      if (!newProduct.freeProductStartDate || !newProduct.freeProductStartTime ||
+          !newProduct.freeProductEndDate || !newProduct.freeProductEndTime) {
+        Swal.fire({
+          title: "Validation Error",
+          text: "Free product requires Start and End date & time for homepage visibility",
+          icon: "error",
+        });
+        return;
+      }
+      const start = new Date(`${newProduct.freeProductStartDate}T${newProduct.freeProductStartTime}`);
+      const end = new Date(`${newProduct.freeProductEndDate}T${newProduct.freeProductEndTime}`);
+      if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
+        Swal.fire({
+          title: "Validation Error",
+          text: "Free product end date/time must be after start date/time",
           icon: "error",
         });
         return;
@@ -2402,6 +2480,123 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                     💡 <strong>Tip:</strong> Set deal prices lower than regular prices to attract customers. The deal will automatically start and end at the specified date and time. Products will show in the Deals menu only during active deal period.
                   </p>
                 </div>
+              </div>
+            )}
+          </div>
+
+          {/* Free Product - Show on homepage for limited time (₹0) */}
+          <div className="space-y-6">
+            <h2
+              className="text-xl font-semibold border-b pb-2 transition-colors duration-200"
+              style={{
+                color: colors.text.primary,
+                borderBottomColor: colors.border.primary,
+              }}
+            >
+              🎁 Free Product (Homepage)
+            </h2>
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="isFreeProduct"
+                checked={newProduct.isFreeProduct}
+                onChange={(e) =>
+                  setNewProduct((prev) => ({ ...prev, isFreeProduct: e.target.checked }))
+                }
+                className="w-4 h-4 rounded focus:ring-2"
+                style={{ accentColor: colors.interactive.primary }}
+              />
+              <label
+                htmlFor="isFreeProduct"
+                className="text-sm font-medium cursor-pointer"
+                style={{ color: colors.text.secondary }}
+              >
+                Free product (show on homepage for limited time, ₹0 – no payment gateway)
+              </label>
+            </div>
+            {newProduct.isFreeProduct && (
+              <div
+                className="space-y-6 p-4 rounded-lg border transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.primary,
+                  borderColor: colors.border.primary,
+                }}
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                      Free product start date & time
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={newProduct.freeProductStartDate}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({ ...prev, freeProductStartDate: e.target.value }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isFreeProduct}
+                      />
+                      <input
+                        type="time"
+                        value={newProduct.freeProductStartTime}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({ ...prev, freeProductStartTime: e.target.value }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isFreeProduct}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium" style={{ color: colors.text.secondary }}>
+                      Free product end date & time
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="date"
+                        value={newProduct.freeProductEndDate}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({ ...prev, freeProductEndDate: e.target.value }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isFreeProduct}
+                      />
+                      <input
+                        type="time"
+                        value={newProduct.freeProductEndTime}
+                        onChange={(e) =>
+                          setNewProduct((prev) => ({ ...prev, freeProductEndTime: e.target.value }))
+                        }
+                        className="px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                        style={{
+                          backgroundColor: colors.background.secondary,
+                          borderColor: colors.border.primary,
+                          color: colors.text.primary,
+                        }}
+                        required={newProduct.isFreeProduct}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-sm" style={{ color: colors.text.secondary }}>
+                  💡 Product will appear in &quot;Free for limited time&quot; on the homepage only between these dates. Set price to ₹0 (e.g. in Subscription/Lifetime/Membership or E-book price). Orders will be created without payment gateway.
+                </p>
               </div>
             )}
           </div>
