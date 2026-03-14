@@ -25,6 +25,7 @@ interface Coupon {
   usageLimit: number;
   usedCount: number;
   status: "Active" | "Inactive";
+  applicableProductIds?: string[] | { _id: string; name?: string }[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -70,16 +71,17 @@ const Coupons: React.FC = () => {
     }
   };
 
-  const handleAddCoupon = async (coupon: Coupon) => {
+  const handleAddCoupon = async (coupon: Coupon & { applicableProductIds?: string[] }) => {
     try {
       const method = editingCoupon ? "PUT" : "POST";
       const url = editingCoupon
         ? `${apiBase}/api/coupons/${editingCoupon._id}`
         : `${apiBase}/api/coupons`;
+      const payload = { ...coupon, applicableProductIds: coupon.applicableProductIds ?? [] };
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(coupon),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const errorData = await res.json();
@@ -446,6 +448,17 @@ const Coupons: React.FC = () => {
                       >
                         {statusText}
                       </span>
+                      {coupon.applicableProductIds && coupon.applicableProductIds.length > 0 && (
+                        <span
+                          className="px-3 py-1 rounded-full text-sm font-medium"
+                          style={{
+                            backgroundColor: colors.text.secondary + "30",
+                            color: colors.text.primary,
+                          }}
+                        >
+                          Product-specific
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -524,6 +537,23 @@ const Coupons: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Applicable products (product-specific coupon) */}
+                  {coupon.applicableProductIds && coupon.applicableProductIds.length > 0 && (
+                    <div
+                      className="mb-3 p-2 rounded text-sm"
+                      style={{
+                        backgroundColor: colors.background.primary,
+                        color: colors.text.secondary,
+                        border: `1px solid ${colors.border.primary}`,
+                      }}
+                    >
+                      <span className="font-medium" style={{ color: colors.text.primary }}>Applicable to: </span>
+                      {coupon.applicableProductIds.map((p: any) =>
+                        typeof p === "object" && p?.name ? p.name : p
+                      ).join(", ")}
+                    </div>
+                  )}
+
                   {/* Usage Limit Warning */}
                   {coupon.usedCount >= coupon.usageLimit && (
                     <div
@@ -576,6 +606,7 @@ const Coupons: React.FC = () => {
       {/* Coupon Form Modal */}
       {showForm && (
         <CouponFormModal
+          key={editingCoupon?._id ?? "new"}
           onClose={() => {
             setShowForm(false);
             setEditingCoupon(null);
@@ -589,6 +620,12 @@ const Coupons: React.FC = () => {
     </div>
   );
 };
+
+interface ProductOption {
+  _id: string;
+  name: string;
+  category?: string;
+}
 
 // Coupon Form Modal Component (inline for single-file setup)
 const CouponFormModal: React.FC<{
@@ -608,8 +645,45 @@ const CouponFormModal: React.FC<{
     validTo: "",
     usageLimit: 1,
     status: "Active" as "Active" | "Inactive",
+    applicableProductIds: [] as string[],
   });
+  const [products, setProducts] = useState<ProductOption[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<string>("");
+
+  // Group products by category
+  const productsByCategory = React.useMemo(() => {
+    const map = new Map<string, ProductOption[]>();
+    for (const p of products) {
+      const cat = (p.category || "").trim() || "Uncategorized";
+      if (!map.has(cat)) map.set(cat, []);
+      map.get(cat)!.push(p);
+    }
+    const sortedCategories = Array.from(map.keys()).sort((a, b) =>
+      a === "Uncategorized" ? 1 : b === "Uncategorized" ? -1 : a.localeCompare(b)
+    );
+    return sortedCategories.map((cat) => ({ category: cat, products: map.get(cat)! }));
+  }, [products]);
+
+  const categoryNames = React.useMemo(() => productsByCategory.map((g) => g.category), [productsByCategory]);
+
+  const toggleProductSelection = (productId: string) => {
+    setFormData((prev) => {
+      const ids = prev.applicableProductIds.includes(productId)
+        ? prev.applicableProductIds.filter((id) => id !== productId)
+        : [...prev.applicableProductIds, productId];
+      return { ...prev, applicableProductIds: ids };
+    });
+  };
+
+  const removeSelectedProduct = (productId: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      applicableProductIds: prev.applicableProductIds.filter((id) => id !== productId),
+    }));
+  };
+
+  const getProductName = (id: string) => products.find((p) => p._id === id)?.name || id;
 
   // Prevent background scrolling when modal is open
   useEffect(() => {
@@ -626,7 +700,23 @@ const CouponFormModal: React.FC<{
   }, []);
 
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"}/api/products?limit=500`);
+        const data = await res.json();
+        setProducts(data.products || []);
+      } catch {
+        setProducts([]);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
     if (editingCoupon) {
+      const ids = (editingCoupon.applicableProductIds || []).map((p: any) =>
+        typeof p === "object" && p?._id ? p._id : String(p)
+      );
       setFormData({
         code: editingCoupon.code,
         name: editingCoupon.name,
@@ -637,6 +727,7 @@ const CouponFormModal: React.FC<{
         validTo: editingCoupon.validTo?.split("T")[0] || "",
         usageLimit: editingCoupon.usageLimit || 1,
         status: editingCoupon.status,
+        applicableProductIds: ids,
       });
     }
   }, [editingCoupon]);
@@ -958,6 +1049,121 @@ const CouponFormModal: React.FC<{
             >
               Maximum number of times this coupon can be used. Coupon will automatically deactivate when limit is reached.
             </p>
+          </div>
+          {/* Applicable products (optional - for product-specific coupons) */}
+          <div>
+            <label
+              className="block text-sm mb-1 font-medium"
+              style={{ color: colors.text.primary }}
+            >
+              Applicable products
+            </label>
+            <p
+              className="text-xs mb-2"
+              style={{ color: colors.text.secondary }}
+            >
+              Leave empty for site-wide coupon. Pick a category below, then tick products. Selected products can be removed from the chips.
+            </p>
+            {/* Category filter */}
+            <div className="mb-2">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full px-3 py-2 border rounded text-sm"
+                style={{
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                  backgroundColor: colors.background.primary,
+                }}
+              >
+                <option value="">All categories</option>
+                {categoryNames.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Product checkboxes (grouped by category when "All", or single category) */}
+            <div
+              className="border rounded overflow-y-auto mb-3"
+              style={{
+                borderColor: colors.border.primary,
+                backgroundColor: colors.background.secondary || colors.background.primary,
+                maxHeight: "200px",
+              }}
+            >
+              {(categoryFilter
+                ? productsByCategory.filter((g) => g.category === categoryFilter)
+                : productsByCategory
+              ).map(({ category, products: categoryProducts }) => (
+                <div key={category} className="p-2">
+                  <div
+                    className="text-xs font-semibold uppercase tracking-wide mb-1.5 px-1"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    {category}
+                  </div>
+                  <div className="space-y-1">
+                    {categoryProducts.map((p) => {
+                      const isChecked = formData.applicableProductIds.includes(p._id);
+                      return (
+                        <label
+                          key={p._id}
+                          className="flex items-center gap-2 py-1.5 px-2 rounded cursor-pointer hover:opacity-90"
+                          style={{
+                            backgroundColor: isChecked ? (colors.interactive.primary + "18") : "transparent",
+                          }}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleProductSelection(p._id)}
+                            className="rounded"
+                            style={{ accentColor: colors.interactive.primary }}
+                          />
+                          <span className="text-sm" style={{ color: colors.text.primary }}>
+                            {p.name}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Selected products as removable chips */}
+            {formData.applicableProductIds.length > 0 && (
+              <div>
+                <div className="text-xs font-medium mb-1.5" style={{ color: colors.text.secondary }}>
+                  Selected ({formData.applicableProductIds.length})
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.applicableProductIds.map((id) => (
+                    <span
+                      key={id}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-sm"
+                      style={{
+                        backgroundColor: colors.interactive.primary + "25",
+                        color: colors.text.primary,
+                        border: `1px solid ${colors.interactive.primary}40`,
+                      }}
+                    >
+                      {getProductName(id)}
+                      <button
+                        type="button"
+                        onClick={() => removeSelectedProduct(id)}
+                        className="rounded-full p-0.5 hover:opacity-80 focus:outline-none"
+                        style={{ color: colors.text.secondary }}
+                        aria-label="Remove"
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           {/* Status */}
           <div>

@@ -499,6 +499,18 @@ const applyCoupon = async () => {
 
   const subtotal = normalizePrice(summary.subtotal);
 
+  // Build productIds and items for product-specific coupon validation
+  const productIds: string[] = rawCartItems
+    .map((item: any) => (item.product?._id || item.product?.id || item._id)?.toString())
+    .filter(Boolean);
+  const items: { productId: string; subtotal: number }[] = rawCartItems.map((item: any) => {
+    const pid = (item.product?._id || item.product?.id || item._id)?.toString();
+    const lineSubtotal = normalizePrice(
+      Number(item.totalPrice ?? (item.price ?? item.product?.price ?? 0) * (item.quantity ?? 1))
+    );
+    return { productId: pid, subtotal: lineSubtotal };
+  }).filter((i: { productId: string; subtotal: number }) => i.productId);
+
   try {
     // Validate coupon with backend
     const response = await fetch(
@@ -511,6 +523,8 @@ const applyCoupon = async () => {
         body: JSON.stringify({
           code: code,
           subtotal: subtotal,
+          productIds,
+          items,
         }),
       }
     );
@@ -614,6 +628,11 @@ const applyCoupon = async () => {
                   <span style="color: #065f46;">You Save:</span>
                   <span style="color: #10b981; font-weight: bold; font-size: 18px;">₹${discountAmount.toFixed(2)}</span>
                 </div>
+                ${data.coupon.eligibleSubtotal != null ? `
+                <div style="margin-top: 8px; font-size: 13px; color: #047857;">
+                  Applied to selected product(s) in your cart.
+                </div>
+                ` : ''}
               </div>
              
             </div>
