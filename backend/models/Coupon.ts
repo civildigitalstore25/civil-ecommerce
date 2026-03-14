@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface ICoupon extends Document {
   code: string;
@@ -11,6 +11,7 @@ export interface ICoupon extends Document {
   usageLimit: number; // Maximum number of times coupon can be used
   usedCount: number; // Current usage count
   status: 'Active' | 'Inactive';
+  applicableProductIds?: Types.ObjectId[]; // If set, coupon is valid only for these products
 }
 
 const couponSchema = new Schema<ICoupon>({
@@ -24,6 +25,7 @@ const couponSchema = new Schema<ICoupon>({
   usageLimit: { type: Number, required: true, default: 1, min: 1 },
   usedCount: { type: Number, default: 0, min: 0 },
   status: { type: String, enum: ['Active', 'Inactive'], default: 'Active' },
+  applicableProductIds: { type: [{ type: Schema.Types.ObjectId, ref: 'Product' }], default: [] },
 }, { timestamps: true });
 
 export default mongoose.model<ICoupon>('Coupon', couponSchema);

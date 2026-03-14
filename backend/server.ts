@@ -25,6 +25,7 @@ import billingAddressRoutes from './routes/billingAddressRoutes';
 import menuRoutes from './routes/menuRoutes';
 import leadRoutes from './routes/leadRoutes';
 import dealsRoutes from './routes/dealsRoutes';
+import freeProductsRoutes from './routes/freeProductsRoutes';
 import blogRoutes from './routes/blogRoutes';
 
 const app = express();
@@ -109,6 +110,7 @@ app.use('/api/billing-addresses', billingAddressRoutes);
 app.use('/api/menus', menuRoutes);
 app.use('/api/leads', leadRoutes);
 app.use('/api/deals', dealsRoutes);
+app.use('/api/free-products', freeProductsRoutes);
 app.use('/api', blogRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Server is running!" }));
