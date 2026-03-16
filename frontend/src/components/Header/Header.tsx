@@ -25,7 +25,7 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
 // Use PNG logo from public folder
 const lightLogo = "/softlogo.png";
-const darkLogo = "/whitelogo.png";
+const darkLogo = "/darkLogo.png";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
