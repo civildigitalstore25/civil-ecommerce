@@ -838,18 +838,26 @@ const ProductDetail: React.FC = () => {
     }
   }, [product]);
 
+  // Determine if the product is currently in its active free period
+  const isActiveFreeProduct = React.useMemo(() => {
+    if (!product) return false;
+    const now = new Date();
+    return (
+      product.isFreeProduct &&
+      product.freeProductStartDate &&
+      product.freeProductEndDate &&
+      ((product.price1INR === 0 || product.price1 === 0) ||
+        (product.price1INR == null && product.price1 == null)) &&
+      now >= new Date(product.freeProductStartDate) &&
+      now <= new Date(product.freeProductEndDate)
+    );
+  }, [product]);
+
   // Get all available pricing options
   const getAllPricingOptions = () => {
     if (!product) return [];
 
     const now = new Date();
-    const isActiveFreeProduct =
-      product.isFreeProduct &&
-      product.freeProductStartDate &&
-      product.freeProductEndDate &&
-      ((product.price1INR === 0 || product.price1 === 0) || (product.price1INR == null && product.price1 == null)) &&
-      now >= new Date(product.freeProductStartDate) &&
-      now <= new Date(product.freeProductEndDate);
 
     if (isActiveFreeProduct) {
       return [{
@@ -2656,27 +2664,29 @@ const ProductDetail: React.FC = () => {
                   {/* Desktop Buttons - Always visible */}
                   <div className="hidden lg:block space-y-2">
                     <div className="flex gap-2">
-                      <button
-                        onClick={handleAddToCart}
-                        className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
-                        style={{
-                          background: colors.interactive.primary,
-                          color: '#fff',
-                          border: `1.5px solid ${colors.interactive.primary}`,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = colors.interactive.primaryHover;
-                          e.currentTarget.style.color = '#fff';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = colors.interactive.primary;
-                          e.currentTarget.style.color = '#fff';
-                        }}
-                      >
-                        <LucideIcons.ShoppingCart size={20} />
-                        {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
-                      </button>
+                      {!isActiveFreeProduct && (
+                        <button
+                          onClick={handleAddToCart}
+                          className="flex-1 font-bold py-2.5 lg:py-3 rounded-lg text-sm lg:text-base transition-colors duration-200 flex items-center justify-center gap-2 shadow"
+                          style={{
+                            background: colors.interactive.primary,
+                            color: '#fff',
+                            border: `1.5px solid ${colors.interactive.primary}`,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = colors.interactive.primaryHover;
+                            e.currentTarget.style.color = '#fff';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = colors.interactive.primary;
+                            e.currentTarget.style.color = '#fff';
+                          }}
+                        >
+                          <LucideIcons.ShoppingCart size={20} />
+                          {isInCart ? `In Cart (${cartQuantity})` : "Add to Cart"}
+                        </button>
+                      )}
 
                       <button
                         onClick={handleBuyNow}
@@ -2736,19 +2746,21 @@ const ProductDetail: React.FC = () => {
                     }}
                   >
                     <div className="flex gap-1.5">
-                      <button
-                        onClick={handleAddToCart}
-                        className="flex-1 font-bold py-2.5 rounded-lg text-xs transition-colors duration-200 flex items-center justify-center gap-1"
-                        style={{
-                          background: colors.interactive.primary,
-                          color: '#fff',
-                          border: `1.5px solid ${colors.interactive.primary}`,
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
-                        }}
-                      >
-                        <LucideIcons.ShoppingCart size={16} />
-                        <span className="whitespace-nowrap">{isInCart ? 'In Cart' : 'Add'}</span>
-                      </button>
+                      {!isActiveFreeProduct && (
+                        <button
+                          onClick={handleAddToCart}
+                          className="flex-1 font-bold py-2.5 rounded-lg text-xs transition-colors duration-200 flex items-center justify-center gap-1"
+                          style={{
+                            background: colors.interactive.primary,
+                            color: '#fff',
+                            border: `1.5px solid ${colors.interactive.primary}`,
+                            boxShadow: '0 2px 8px rgba(0,0,0,0.10)',
+                          }}
+                        >
+                          <LucideIcons.ShoppingCart size={16} />
+                          <span className="whitespace-nowrap">{isInCart ? 'In Cart' : 'Add'}</span>
+                        </button>
+                      )}
 
                       <button
                         onClick={handleBuyNow}
