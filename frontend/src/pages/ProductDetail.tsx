@@ -1915,33 +1915,33 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
 
-            {/* Share - Mobile only: single row under product name */}
+            {/* Share - Mobile only: filled circle icons (same style as floating bar) */}
             {(() => {
-              const FacebookIcon = (LucideIcons as any).Facebook;
-              const TwitterIcon = (LucideIcons as any).Twitter;
-              const LinkedInIcon = (LucideIcons as any).Linkedin;
-              const MailIcon = (LucideIcons as any).Mail;
+              const mobileShareIcons = [
+                { platform: "whatsapp", title: "Share on WhatsApp", icon: FaWhatsapp, bgColor: "#25D366" },
+                { platform: "facebook", title: "Share on Facebook", icon: FaFacebookF, bgColor: "#1877F2" },
+                { platform: "twitter", title: "Share on X", icon: SiX, bgColor: "#000000" },
+                { platform: "linkedin", title: "Share on LinkedIn", icon: FaLinkedinIn, bgColor: "#0A66C2" },
+                { platform: "email", title: "Share via Email", icon: FaEnvelope, bgColor: "#4B5563" },
+              ];
               return (
                 <div
                   className="flex md:hidden items-center gap-2 mt-3 flex-wrap"
                   aria-label="Share this product"
                 >
                   <span className="text-xs font-semibold mr-1" style={{ color: colors.text.secondary }}>Share:</span>
-                  <button onClick={() => shareTo("whatsapp")} title="Share on WhatsApp" aria-label="Share on WhatsApp" className="p-2 rounded-xl hover:scale-110 transition-transform" style={{ backgroundColor: "rgba(37, 211, 102, 0.12)" }}>
-                    <FaWhatsapp size={20} style={{ color: "#25D366" }} />
-                  </button>
-                  <button onClick={() => shareTo("facebook")} title="Share on Facebook" aria-label="Share on Facebook" className="p-2 rounded-xl hover:scale-110 transition-transform" style={{ backgroundColor: "rgba(24, 119, 242, 0.12)" }}>
-                    {FacebookIcon ? <FacebookIcon size={20} style={{ color: "#1877F2" }} /> : null}
-                  </button>
-                  <button onClick={() => shareTo("twitter")} title="Share on Twitter" aria-label="Share on Twitter" className="p-2 rounded-xl hover:scale-110 transition-transform" style={{ backgroundColor: "rgba(29, 161, 242, 0.12)" }}>
-                    {TwitterIcon ? <TwitterIcon size={20} style={{ color: "#1DA1F2" }} /> : null}
-                  </button>
-                  <button onClick={() => shareTo("linkedin")} title="Share on LinkedIn" aria-label="Share on LinkedIn" className="p-2 rounded-xl hover:scale-110 transition-transform" style={{ backgroundColor: "rgba(10, 102, 194, 0.12)" }}>
-                    {LinkedInIcon ? <LinkedInIcon size={20} style={{ color: "#0A66C2" }} /> : null}
-                  </button>
-                  <button onClick={() => shareTo("email")} title="Share via Email" aria-label="Share via Email" className="p-2 rounded-xl hover:scale-110 transition-transform" style={{ backgroundColor: "rgba(107, 114, 128, 0.12)" }}>
-                    {MailIcon ? <MailIcon size={20} style={{ color: "#6b7280" }} /> : null}
-                  </button>
+                  {mobileShareIcons.map(({ platform, title, icon: Icon, bgColor }) => (
+                    <button
+                      key={platform}
+                      onClick={() => shareTo(platform)}
+                      title={title}
+                      aria-label={title}
+                      className="w-9 h-9 flex items-center justify-center rounded-full transition-transform hover:scale-110 flex-shrink-0"
+                      style={{ backgroundColor: bgColor, color: "#FFFFFF" }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: "#FFFFFF" }} />
+                    </button>
+                  ))}
                 </div>
               );
             })()}
