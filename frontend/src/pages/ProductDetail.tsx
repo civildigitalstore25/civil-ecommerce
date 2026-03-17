@@ -1946,57 +1946,56 @@ const ProductDetail: React.FC = () => {
               );
             })()}
 
-            {/* Total View Count - Social Proof */}
-            {totalViews > 0 && (
-              <div className="flex items-center gap-2 mt-3">
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
-                  style={{
-                    backgroundColor: colors.background.secondary,
-                    borderColor: colors.interactive.primary + "40",
-                    color: colors.text.primary,
-                  }}
-                >
-                  <div className="flex items-center gap-1">
-                    <LucideIcons.Eye
-                      size={18}
-                      style={{ color: colors.interactive.primary }}
-                    />
-                    <span className="font-semibold" style={{ color: colors.interactive.primary }}>
-                      {totalViews.toLocaleString()}
+            {/* Total View Count & Sold Quantity - Social Proof (horizontal) */}
+            {(totalViews > 0 || soldQuantity > 0) && (
+              <div className="flex items-center gap-3 mt-3 flex-wrap">
+                {totalViews > 0 && (
+                  <div
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                    style={{
+                      backgroundColor: colors.background.secondary,
+                      borderColor: colors.interactive.primary + "40",
+                      color: colors.text.primary,
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      <LucideIcons.Eye
+                        size={18}
+                        style={{ color: colors.interactive.primary }}
+                      />
+                      <span className="font-semibold" style={{ color: colors.interactive.primary }}>
+                        {totalViews.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="text-sm" style={{ color: colors.text.secondary }}>
+                      {totalViews === 1 ? "Total view" : "Total views"}
                     </span>
                   </div>
-                  <span className="text-sm" style={{ color: colors.text.secondary }}>
-                    {totalViews === 1 ? "Total view" : "Total views"}
-                  </span>
-                </div>
-              </div>
-            )}
+                )}
 
-            {/* Total Sold Quantity - Social Proof */}
-            {soldQuantity > 0 && (
-              <div className="flex items-center gap-2 mt-3">
-                <div
-                  className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
-                  style={{
-                    backgroundColor: colors.background.secondary,
-                    borderColor: colors.interactive.secondary + "40",
-                    color: colors.text.primary,
-                  }}
-                >
-                  <div className="flex items-center gap-1">
-                    <LucideIcons.ShoppingCart
-                      size={18}
-                      style={{ color: colors.interactive.secondary }}
-                    />
-                    <span className="font-semibold" style={{ color: colors.interactive.secondary }}>
-                      {soldQuantity.toLocaleString()}
+                {soldQuantity > 0 && (
+                  <div
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                    style={{
+                      backgroundColor: colors.background.secondary,
+                      borderColor: colors.interactive.secondary + "40",
+                      color: colors.text.primary,
+                    }}
+                  >
+                    <div className="flex items-center gap-1">
+                      <LucideIcons.ShoppingCart
+                        size={18}
+                        style={{ color: colors.interactive.secondary }}
+                      />
+                      <span className="font-semibold" style={{ color: colors.interactive.secondary }}>
+                        {soldQuantity.toLocaleString()}
+                      </span>
+                    </div>
+                    <span className="text-sm" style={{ color: colors.text.secondary }}>
+                      {soldQuantity === 1 ? "Unit sold" : "Units sold"}
                     </span>
                   </div>
-                  <span className="text-sm" style={{ color: colors.text.secondary }}>
-                    {soldQuantity === 1 ? "Unit sold" : "Units sold"}
-                  </span>
-                </div>
+                )}
               </div>
             )}
 
