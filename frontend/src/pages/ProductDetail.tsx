@@ -3109,7 +3109,7 @@ const ProductDetail: React.FC = () => {
                       color: ${colors.text.primary} !important;
                     }
                     .product-details-content table tbody tr:hover {
-                      background-color: ${colors.background.tertiary || colors.background.accent};
+                      background-color: transparent;
                     }
                     .product-details-content h1,
                     .product-details-content h2,
