@@ -88,6 +88,7 @@ const brandCategories: Record<
       { value: "twin-motion", label: "Twin Motion" },
       { value: "d5-render", label: "D5 Render" },
       { value: "archi-cad", label: "Archi CAD" },
+      { value: "sketch-up", label: "Sketch Up" },
     ],
   },
   "accounting-billing": {
@@ -106,6 +107,10 @@ const brandCategories: Record<
   },
   "recovery-softwares": {
     label: "Recovery Softwares",
+    categories: [],
+  },
+  "3d-rendering-software": {
+    label: "3D Rendering Software",
     categories: [],
   },
 };
