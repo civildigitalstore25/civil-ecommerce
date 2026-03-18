@@ -3,6 +3,7 @@ import Order from '../models/Order';
 import cashfreeService from '../services/cashfreeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
+import { getDownloadEligibility } from '../utils/downloadEligibility';
 
 /**
  * Generate short, human-readable order ID.
@@ -763,7 +764,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
     const total = await Order.countDocuments(query);
 
-    // Populate driveLinks for orders that don't have them
+    // Populate driveLinks and current download eligibility for order items
     const Product = (await import('../models/Product')).default;
     const ordersWithDriveLinks = await Promise.all(
       orders.map(async (order) => {
@@ -771,19 +772,26 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
           order.items.map(async (item: any) => {
             console.log(`🔍 Checking item: ${item.name}, productId: ${item.productId}, existing driveLink: ${item.driveLink}`);
 
-            // If item already has driveLink, keep it
-            if (item.driveLink) {
-              console.log(`✓ Item already has driveLink: ${item.driveLink}`);
-              return item;
-            }
-
-            // Otherwise, fetch from Product
-            const product = await Product.findById(item.productId).select('driveLink').lean();
+            // Fetch latest product state for drive-link and free-offer checks
+            const product = await Product.findById(item.productId)
+              .select('driveLink isFreeProduct freeProductStartDate freeProductEndDate')
+              .lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
+
+            const eligibility = getDownloadEligibility({
+              orderPaymentStatus: order.paymentStatus,
+              orderStatus: order.orderStatus,
+              orderItemPrice: item.price,
+              product,
+            });
 
             return {
               ...item,
-              driveLink: product?.driveLink || null
+              driveLink: item.driveLink || product?.driveLink || null,
+              canDownload: eligibility.canDownload,
+              downloadBlockedReason: eligibility.reason || null,
+              isFreeProduct: eligibility.isFreeProduct,
+              isFreeOfferActive: eligibility.isFreeOfferActive,
             };
           })
         );

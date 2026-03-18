@@ -17,6 +17,10 @@ export interface IOrderItem {
   discount?: number;
   image?: string;
   driveLink?: string; // Google Drive download link
+  canDownload?: boolean;
+  downloadBlockedReason?: string | null;
+  isFreeProduct?: boolean;
+  isFreeOfferActive?: boolean;
 }
 
 export interface IOrder {

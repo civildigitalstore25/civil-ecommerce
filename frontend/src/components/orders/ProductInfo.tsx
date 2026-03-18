@@ -28,6 +28,11 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
     };
 
     const handleDownload = async () => {
+      if (!canDownload) {
+        toast.error(downloadBlockedReason);
+        return;
+      }
+
       if (!product?.productId) {
         toast.error("Product information not found");
         return;
@@ -62,7 +67,12 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
             if (downloadResponse.status === 401) {
               throw new Error('Session expired. Please login again.');
             } else if (downloadResponse.status === 403) {
-              throw new Error('Order must be paid before downloading.');
+              const serverMessage = await downloadResponse
+                .clone()
+                .json()
+                .then((data) => data?.message)
+                .catch(() => null);
+              throw new Error(serverMessage || downloadBlockedReason || 'You are not allowed to download this product.');
             } else {
               throw new Error('Download failed. Please try again.');
             }
@@ -95,9 +105,17 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
     };
 
     // Check if the product has a download link and order is paid/delivered
-    const canDownload = product?.driveLink &&
-      (order.paymentStatus?.toLowerCase() === 'paid' ||
-        order.orderStatus?.toLowerCase() === 'delivered');
+    const legacyOrderDownloadAllowed =
+      order.paymentStatus?.toLowerCase() === 'paid' ||
+      order.orderStatus?.toLowerCase() === 'delivered';
+    const canDownload = Boolean(product?.driveLink) &&
+      (typeof product?.canDownload === 'boolean' ? product.canDownload : legacyOrderDownloadAllowed);
+    const downloadBlockedReason =
+      product?.downloadBlockedReason ||
+      (!legacyOrderDownloadAllowed
+        ? 'Download available after payment confirmation'
+        : 'Download is not available for this product right now.');
+    const isFreeOfferEnded = Boolean(product?.isFreeProduct && product?.isFreeOfferActive === false);
 
     // Debug logging
     console.log('ProductInfo Debug:', {
@@ -191,7 +209,7 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
                   color: colors.text.primary,
                   borderColor: colors.border.primary,
                 }}
-                title={!canDownload ? 'Download available after payment confirmation' : 'Download product'}
+                title={!canDownload ? downloadBlockedReason : 'Download product'}
               >
                 {isDownloading ? (
                   <>
@@ -201,7 +219,13 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
                 ) : (
                   <>
                     <Download className="w-4 h-4" />
-                    <span>{canDownload ? 'DOWNLOAD' : 'DOWNLOAD (Pending Payment)'}</span>
+                    <span>
+                      {canDownload
+                        ? 'DOWNLOAD'
+                        : isFreeOfferEnded
+                          ? 'DOWNLOAD (Offer Ended)'
+                          : 'DOWNLOAD (Unavailable)'}
+                    </span>
                   </>
                 )}
               </button>

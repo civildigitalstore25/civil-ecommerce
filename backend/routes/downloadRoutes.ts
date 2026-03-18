@@ -4,6 +4,7 @@ import Product from '../models/Product';
 import Order from '../models/Order';
 import axios from 'axios';
 import { downloadFile, getFileMetadata, isDriveConfigured } from '../services/driveService';
+import { getDownloadEligibility } from '../utils/downloadEligibility';
 
 const router = express.Router();
 
@@ -67,6 +68,20 @@ router.get('/:orderId/:productId', authenticate, async (req: Request, res: Respo
       return res.status(404).json({
         success: false,
         message: 'Product not found'
+      });
+    }
+
+    const eligibility = getDownloadEligibility({
+      orderPaymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+      orderItemPrice: orderItem.price,
+      product,
+    });
+
+    if (!eligibility.canDownload) {
+      return res.status(403).json({
+        success: false,
+        message: eligibility.reason || 'You are not allowed to download this product'
       });
     }
 
@@ -157,6 +172,20 @@ router.get('/:orderId/:productId/stream', authenticate, async (req: Request, res
       });
     }
 
+    const eligibility = getDownloadEligibility({
+      orderPaymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+      orderItemPrice: orderItem.price,
+      product,
+    });
+
+    if (!eligibility.canDownload) {
+      return res.status(403).json({
+        success: false,
+        message: eligibility.reason || 'You are not allowed to download this product'
+      });
+    }
+
     // Extract the file ID
     const fileId = extractDriveFileId(product.driveLink);
 
@@ -234,16 +263,6 @@ router.get('/:orderId/:productId/secure', authenticate, async (req: Request, res
       });
     }
 
-    // Check if order is paid or delivered
-    const canDownload = order.paymentStatus === 'paid' || order.orderStatus === 'delivered';
-    if (!canDownload) {
-      console.log(`❌ Order not paid/delivered: ${orderId}`);
-      return res.status(403).json({
-        success: false,
-        message: 'This order must be paid or delivered before downloading'
-      });
-    }
-
     // Check if the order contains the requested product
     const orderItem = order.items.find(
       item => item.productId?.toString() === productId
@@ -265,6 +284,21 @@ router.get('/:orderId/:productId/secure', authenticate, async (req: Request, res
       return res.status(404).json({
         success: false,
         message: 'Download link not available for this product'
+      });
+    }
+
+    const eligibility = getDownloadEligibility({
+      orderPaymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+      orderItemPrice: orderItem.price,
+      product,
+    });
+
+    if (!eligibility.canDownload) {
+      console.log(`❌ Download blocked for product ${productId} in order ${orderId}: ${eligibility.reason}`);
+      return res.status(403).json({
+        success: false,
+        message: eligibility.reason || 'You are not allowed to download this product'
       });
     }
 
