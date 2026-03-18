@@ -9,12 +9,23 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { SiX } from "react-icons/si";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+
+// Match header logos (public folder assets)
+const lightLogo = "/softlogo.png";
+const darkLogo = "/darkLogo.png";
 
 const Footer = () => {
+  const { theme } = useAdminTheme();
+
+  // Keep footer background consistent with current brand, but swap logo based on theme
   const footerBg = "#142952";
   const footerTextPrimary = "#fff";
   const footerTextSecondary = "rgba(255,255,255,0.82)";
   const footerBorder = "rgba(255,255,255,0.22)";
+
+  // Use the same logo logic as the header
+  const logoSrc = theme === "light" ? lightLogo : darkLogo;
 
   return (
     <footer
@@ -34,7 +45,7 @@ const Footer = () => {
           <div className="md:col-span-5">
             <div className="flex items-center gap-3 mb-4">
               <img
-                src={"/whitelogo.png"}
+                src={logoSrc}
                 alt="Softzcart Logo"
                 className="h-10 w-auto object-contain"
               />

@@ -107,6 +107,7 @@ const navigationCategories: Category[] = [
       { id: "twin-motion", name: "Twin Motion", href: "/category?brand=architectural-softwares&category=twin-motion" },
       { id: "d5-render", name: "D5 Render", href: "/category?brand=architectural-softwares&category=d5-render" },
       { id: "archi-cad", name: "Archi CAD", href: "/category?brand=architectural-softwares&category=archi-cad" },
+      { id: "sketch-up", name: "Sketch Up", href: "/category?brand=architectural-softwares&category=sketch-up" },
     ],
   },
   {
@@ -131,6 +132,11 @@ const navigationCategories: Category[] = [
     id: "recovery-softwares",
     name: "Recovery Softwares",
     href: "/category?brand=recovery-softwares",
+  },
+  {
+    id: "3d-rendering-software",
+    name: "3D Rendering Software",
+    href: "/category?brand=3d-rendering-software",
   },
   {
     id: "about",

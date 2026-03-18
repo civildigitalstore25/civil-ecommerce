@@ -23,6 +23,7 @@ const brandLabels: Record<string, string> = {
   "accounting-billing": "Billing and Accounting",
   ebook: "Ebook",
   "recovery-softwares": "Recovery Softwares",
+  "3d-rendering-software": "3D Rendering Software",
 };
 
 const categoryLabels: Record<string, string> = {
@@ -69,6 +70,7 @@ const categoryLabels: Record<string, string> = {
   "twin-motion": "Twin Motion",
   "d5-render": "D5 Render",
   "archi-cad": "Archi CAD",
+  "sketch-up": "Sketch Up",
   tally: "Tally",
   vyapar: "Vyapar",
   "civil-engineering": "Civil Engineering",

@@ -5,12 +5,21 @@ import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 
 /**
- * Generate unique order ID
+ * Generate short, human-readable order ID.
+ * Format: XXX-1234 where XXX comes from product name (if available).
  */
-const generateOrderId = (): string => {
-  const timestamp = Date.now().toString(36);
-  const randomStr = Math.random().toString(36).substring(2, 8);
-  return `ORD-${timestamp}-${randomStr}`.toUpperCase();
+const generateOrderId = (productName?: string): string => {
+  // Derive a 3-letter code from product name, fallback to ORD
+  const base = (productName || "ORD")
+    .replace(/[^a-zA-Z0-9]/g, "")
+    .toUpperCase()
+    .slice(0, 3);
+  const code = (base || "ORD").padEnd(3, "X");
+
+  // Short random suffix to keep IDs unique
+  const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+
+  return `${code}-${randomStr}`;
 };
 
 /**
@@ -103,8 +112,11 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       itemsWithDriveLink = items;
     }
 
-    // Generate order ID
-    const orderId = generateOrderId();
+    // Generate order ID (based on first product name if available)
+    const firstItemName = Array.isArray(itemsWithDriveLink) && itemsWithDriveLink.length > 0
+      ? itemsWithDriveLink[0].name
+      : undefined;
+    const orderId = generateOrderId(firstItemName);
 
     // Get next order number
     const orderNumber = await getNextOrderNumber();
@@ -258,8 +270,11 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       };
     });
 
-    // Generate order ID
-    const orderId = generateOrderId();
+    // Generate order ID (based on first product name if available)
+    const firstItemName = Array.isArray(itemsWithDriveLink) && itemsWithDriveLink.length > 0
+      ? itemsWithDriveLink[0].name
+      : undefined;
+    const orderId = generateOrderId(firstItemName);
 
     // Get next order number
     const orderNumber = await getNextOrderNumber();

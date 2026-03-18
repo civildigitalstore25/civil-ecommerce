@@ -11,6 +11,7 @@ export const BRANDS = [
     { value: "accounting-billing", label: "Accounting and Billing" },
     { value: "ebook", label: "Ebook" },
     { value: "recovery-softwares", label: "Recovery Softwares" },
+    { value: "3d-rendering-software", label: "3D Rendering Software" },
     { value: "others", label: "Others" },
 ];
 
@@ -71,6 +72,7 @@ export const BRAND_CATEGORIES: Record<string, { value: string; label: string }[]
         { value: "twin-motion", label: "Twin Motion" },
         { value: "d5-render", label: "D5 Render" },
         { value: "archi-cad", label: "Archi CAD" },
+        { value: "sketch-up", label: "Sketch Up" },
     ],
     "accounting-billing": [
         { value: "tally", label: "Tally" },
@@ -81,6 +83,7 @@ export const BRAND_CATEGORIES: Record<string, { value: string; label: string }[]
         { value: "ai-prompts", label: "AI Prompts" },
     ],
     "recovery-softwares": [],
+    "3d-rendering-software": [],
     others: [],
 };
 
