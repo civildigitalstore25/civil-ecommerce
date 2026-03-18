@@ -11,7 +11,9 @@ import {
   deleteOrder,
   adminDeleteOrder,
   adminCreateOrder,
-  handleWebhook
+  handleWebhook,
+  bulkUpdateOrderStatuses,
+  exportOrders
 } from '../controllers/paymentController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -31,7 +33,9 @@ router.delete('/orders/:orderId', authenticate, deleteOrder);
 // Admin routes
 router.post('/admin/orders', authenticate, requireAdmin, adminCreateOrder);
 router.get('/admin/orders', authenticate, requireAdmin, getAllOrders);
+router.put('/admin/orders/bulk/status', authenticate, requireAdmin, bulkUpdateOrderStatuses);
 router.put('/admin/orders/:orderId/status', authenticate, requireAdmin, updateOrderStatus);
+router.get('/admin/orders/export', authenticate, requireAdmin, exportOrders);
 router.delete('/admin/orders/:orderId', authenticate, requireAdmin, adminDeleteOrder);
 router.post('/refund/:orderId', authenticate, requireAdmin, initiateRefund);
 
