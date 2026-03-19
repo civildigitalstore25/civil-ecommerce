@@ -3,7 +3,11 @@ import { Package, Download } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
 import type { IOrder } from "../../api/types/orderTypes";
-import { getProductDownloadUrl } from "../../api/downloadApi";
+import {
+  downloadSecureProductFile,
+  getProductDownloadMetadata,
+  getProductDownloadUrl,
+} from "../../api/downloadApi";
 import { toast } from "react-hot-toast";
 
 interface ProductInfoProps {
@@ -18,6 +22,23 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
     const { formatPriceWithSymbol } = useCurrency();
     const product = order.items[0];
     const [isDownloading, setIsDownloading] = useState(false);
+    const [fileSizeBytes, setFileSizeBytes] = useState<number | null>(null);
+    const [downloadedBytes, setDownloadedBytes] = useState(0);
+    const [totalBytes, setTotalBytes] = useState<number | null>(null);
+    const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
+
+    const formatFileSize = (bytes: number | null) => {
+      if (bytes === null || Number.isNaN(bytes) || bytes < 0) return "Unknown";
+      if (bytes === 0) return "0 B";
+
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      const power = Math.min(
+        Math.floor(Math.log(bytes) / Math.log(1024)),
+        units.length - 1,
+      );
+      const value = bytes / Math.pow(1024, power);
+      return `${value.toFixed(power === 0 ? 0 : 2)} ${units[power]}`;
+    };
 
     const formatDate = (date: string) => {
       return new Date(date).toLocaleDateString("en-US", {
@@ -39,58 +60,56 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
       }
 
       setIsDownloading(true);
+      setDownloadedBytes(0);
+      setDownloadProgress(0);
+      setTotalBytes(null);
       const loadingToast = toast.loading('Preparing download...');
 
       try {
+        const metadataResponse = await getProductDownloadMetadata(order._id!, product.productId);
+        if (metadataResponse.success && metadataResponse.data) {
+          setFileSizeBytes(metadataResponse.data.sizeBytes);
+          setTotalBytes(metadataResponse.data.sizeBytes);
+        }
+
         const response = await getProductDownloadUrl(order._id!, product.productId);
 
         if (response.success && response.data) {
-          // Get auth token
-          const token = localStorage.getItem('token');
-
-          if (!token) {
-            throw new Error('Please login to download');
-          }
-
           toast.loading('Downloading file...', { id: loadingToast });
 
-          // Fetch with authorization header
-          const downloadResponse = await fetch(response.data.downloadUrl, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`
+          const { blob, fileName, totalBytes: streamedTotalBytes } = await downloadSecureProductFile(
+            response.data.downloadUrl,
+            (update) => {
+              setDownloadedBytes(update.loaded);
+              if (update.total !== null) {
+                setTotalBytes(update.total);
+                setFileSizeBytes(update.total);
+              }
+              setDownloadProgress(update.percent);
             },
-            credentials: 'include'
-          });
-
-          if (!downloadResponse.ok) {
-            if (downloadResponse.status === 401) {
-              throw new Error('Session expired. Please login again.');
-            } else if (downloadResponse.status === 403) {
-              const serverMessage = await downloadResponse
-                .clone()
-                .json()
-                .then((data) => data?.message)
-                .catch(() => null);
-              throw new Error(serverMessage || downloadBlockedReason || 'You are not allowed to download this product.');
-            } else {
-              throw new Error('Download failed. Please try again.');
-            }
-          }
+          );
 
           // Create blob URL and trigger download
-          const blob = await downloadResponse.blob();
           const blobUrl = window.URL.createObjectURL(blob);
 
           const link = document.createElement('a');
           link.href = blobUrl;
-          link.download = product.name || 'download';
+          link.download = fileName || response.data.fileName || product.name || 'download';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
 
           // Clean up blob URL
           setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+
+          const finalSize = streamedTotalBytes ?? blob.size ?? fileSizeBytes;
+          if (finalSize !== null) {
+            setFileSizeBytes(finalSize);
+            setTotalBytes(finalSize);
+          }
+
+          setDownloadProgress(100);
+          setDownloadedBytes(blob.size);
 
           toast.success('Download completed successfully!', { id: loadingToast });
         } else {
@@ -194,6 +213,51 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
               <span className="font-medium">Order Date:</span>{" "}
               {formatDate(order.createdAt)}
             </div>
+
+            {product?.driveLink && (
+              <div
+                className="text-xs sm:text-sm mt-1"
+                style={{ color: colors.text.secondary }}
+              >
+                <span className="font-medium">File Size:</span>{" "}
+                {fileSizeBytes !== null
+                  ? formatFileSize(fileSizeBytes)
+                  : isDownloading
+                    ? "Fetching..."
+                    : "Click download to fetch"}
+              </div>
+            )}
+
+            {isDownloading && (
+              <div className="mt-2">
+                <div
+                  className="text-xs sm:text-sm mb-1"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <span className="font-medium">Download Status:</span>{" "}
+                  {downloadProgress !== null
+                    ? `${Math.round(downloadProgress)}%`
+                    : "In progress"}
+                  {` (${formatFileSize(downloadedBytes)}`}
+                  {totalBytes !== null ? ` / ${formatFileSize(totalBytes)})` : ")"}
+                </div>
+                <div
+                  className="w-full h-1.5 rounded-full overflow-hidden"
+                  style={{ backgroundColor: colors.background.tertiary }}
+                >
+                  <div
+                    className="h-full transition-all duration-200"
+                    style={{
+                      width: `${Math.max(
+                        0,
+                        Math.min(downloadProgress ?? 0, 100),
+                      )}%`,
+                      backgroundColor: colors.interactive.primary,
+                    }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -214,7 +278,11 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
                 {isDownloading ? (
                   <>
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
-                    <span>DOWNLOADING...</span>
+                    <span>
+                      {downloadProgress !== null
+                        ? `DOWNLOADING ${Math.round(downloadProgress)}%`
+                        : 'DOWNLOADING...'}
+                    </span>
                   </>
                 ) : (
                   <>

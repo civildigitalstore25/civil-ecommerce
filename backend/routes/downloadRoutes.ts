@@ -231,6 +231,95 @@ router.get('/:orderId/:productId/stream', authenticate, async (req: Request, res
   }
 });
 
+// Returns secure file metadata so frontend can show file size before download starts
+router.get('/:orderId/:productId/metadata', authenticate, async (req: Request, res: Response) => {
+  try {
+    const { orderId, productId } = req.params;
+    const userId = (req as any).user._id;
+
+    if (!isDriveConfigured()) {
+      return res.status(503).json({
+        success: false,
+        message: 'Secure download is not configured. Please contact support.'
+      });
+    }
+
+    const order = await Order.findOne({
+      _id: orderId,
+      userId: userId
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Order not found or you do not have permission to access this order'
+      });
+    }
+
+    const orderItem = order.items.find(
+      item => item.productId?.toString() === productId
+    );
+
+    if (!orderItem) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found in this order'
+      });
+    }
+
+    const product = await Product.findById(productId);
+
+    if (!product || !product.driveLink) {
+      return res.status(404).json({
+        success: false,
+        message: 'Download link not available for this product'
+      });
+    }
+
+    const eligibility = getDownloadEligibility({
+      orderPaymentStatus: order.paymentStatus,
+      orderStatus: order.orderStatus,
+      orderItemPrice: orderItem.price,
+      product,
+    });
+
+    if (!eligibility.canDownload) {
+      return res.status(403).json({
+        success: false,
+        message: eligibility.reason || 'You are not allowed to download this product'
+      });
+    }
+
+    const fileId = extractDriveFileId(product.driveLink);
+
+    if (!fileId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Google Drive link format'
+      });
+    }
+
+    const metadata = await getFileMetadata(fileId);
+    const fileName = metadata.name || metadata.originalFilename || `${product.name}.zip`;
+
+    res.json({
+      success: true,
+      data: {
+        fileName,
+        mimeType: metadata.mimeType || 'application/octet-stream',
+        sizeBytes: metadata.size ? Number(metadata.size) : null,
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Metadata fetch error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Error fetching download metadata',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
 // Secure download route - streams through server using Google Drive API
 // Users never see the actual Drive link, files can be private in Drive
 router.get('/:orderId/:productId/secure', authenticate, async (req: Request, res: Response) => {
