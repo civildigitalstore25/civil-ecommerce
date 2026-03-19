@@ -23,6 +23,7 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
     const product = order.items[0];
     const [isDownloading, setIsDownloading] = useState(false);
     const [fileSizeBytes, setFileSizeBytes] = useState<number | null>(null);
+    const [suggestedFileName, setSuggestedFileName] = useState<string | null>(null);
     const [downloadedBytes, setDownloadedBytes] = useState(0);
     const [totalBytes, setTotalBytes] = useState<number | null>(null);
     const [downloadProgress, setDownloadProgress] = useState<number | null>(null);
@@ -64,10 +65,13 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
       setDownloadProgress(0);
       setTotalBytes(null);
       const loadingToast = toast.loading('Preparing download...');
+      let metadataFileName: string | null = null;
 
       try {
         const metadataResponse = await getProductDownloadMetadata(order._id!, product.productId);
         if (metadataResponse.success && metadataResponse.data) {
+          metadataFileName = metadataResponse.data.fileName || null;
+          setSuggestedFileName(metadataResponse.data.fileName || null);
           setFileSizeBytes(metadataResponse.data.sizeBytes);
           setTotalBytes(metadataResponse.data.sizeBytes);
         }
@@ -94,7 +98,13 @@ const ProductInfo: React.FC<ProductInfoProps> = React.memo(
 
           const link = document.createElement('a');
           link.href = blobUrl;
-          link.download = fileName || response.data.fileName || product.name || 'download';
+          link.download =
+            fileName ||
+            metadataFileName ||
+            suggestedFileName ||
+            response.data.fileName ||
+            product.name ||
+            'download';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);

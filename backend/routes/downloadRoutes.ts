@@ -3,7 +3,14 @@ import { authenticate } from '../middlewares/auth';
 import Product from '../models/Product';
 import Order from '../models/Order';
 import axios from 'axios';
-import { downloadFile, getFileMetadata, isDriveConfigured } from '../services/driveService';
+import {
+  downloadFile,
+  downloadFolderAsZipStream,
+  getFileMetadata,
+  getFolderDownloadSummary,
+  isDriveConfigured,
+  isDriveFolder,
+} from '../services/driveService';
 import { getDownloadEligibility } from '../utils/downloadEligibility';
 
 const router = express.Router();
@@ -11,6 +18,10 @@ const router = express.Router();
 // Helper function to extract Google Drive file ID from various URL formats
 const extractDriveFileId = (url: string): string | null => {
   try {
+    // Format 0: https://drive.google.com/drive/folders/FOLDER_ID
+    const folderMatch = url.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+    if (folderMatch) return folderMatch[1];
+
     // Format 1: https://drive.google.com/file/d/FILE_ID/view
     const match1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
     if (match1) return match1[1];
@@ -300,14 +311,32 @@ router.get('/:orderId/:productId/metadata', authenticate, async (req: Request, r
     }
 
     const metadata = await getFileMetadata(fileId);
+    const metadataMimeType = metadata.mimeType || 'application/octet-stream';
+
+    if (isDriveFolder(metadataMimeType)) {
+      const folderSummary = await getFolderDownloadSummary(fileId);
+
+      return res.json({
+        success: true,
+        data: {
+          fileName: `${folderSummary.folderName}.zip`,
+          mimeType: 'application/zip',
+          sizeBytes: folderSummary.totalSizeBytes,
+          isFolder: true,
+          fileCount: folderSummary.fileCount,
+        }
+      });
+    }
+
     const fileName = metadata.name || metadata.originalFilename || `${product.name}.zip`;
 
     res.json({
       success: true,
       data: {
         fileName,
-        mimeType: metadata.mimeType || 'application/octet-stream',
+        mimeType: metadataMimeType,
         sizeBytes: metadata.size ? Number(metadata.size) : null,
+        isFolder: false,
       }
     });
   } catch (error: any) {
@@ -407,11 +436,43 @@ router.get('/:orderId/:productId/secure', authenticate, async (req: Request, res
     // Get file metadata from Google Drive
     const metadata = await getFileMetadata(fileId);
     
-    // Set response headers for download
+    const metadataMimeType = metadata.mimeType || 'application/octet-stream';
+
+    if (isDriveFolder(metadataMimeType)) {
+      const { stream, fileName, fileCount } = await downloadFolderAsZipStream(
+        fileId,
+        metadata.name || product.name,
+      );
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+      res.setHeader('X-Download-Type', 'folder');
+      res.setHeader('X-Download-File-Count', String(fileCount));
+
+      console.log(`📦 Streaming folder as ZIP: ${fileName} (${fileCount} files)`);
+
+      stream.on('error', (error) => {
+        console.error('❌ Folder stream error:', error);
+        if (!res.headersSent) {
+          res.status(500).json({
+            success: false,
+            message: 'Error streaming folder'
+          });
+        }
+      });
+
+      stream.on('end', () => {
+        console.log(`✅ Folder download completed: ${fileName} for user ${userId}`);
+      });
+
+      return stream.pipe(res);
+    }
+
+    // Set response headers for file download
     const fileName = metadata.name || metadata.originalFilename || `${product.name}.zip`;
-    res.setHeader('Content-Type', metadata.mimeType || 'application/octet-stream');
+    res.setHeader('Content-Type', metadataMimeType);
     res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-    
+
     if (metadata.size) {
       res.setHeader('Content-Length', metadata.size);
     }
@@ -420,7 +481,7 @@ router.get('/:orderId/:productId/secure', authenticate, async (req: Request, res
 
     // Stream the file from Google Drive through our server
     const fileStream = await downloadFile(fileId);
-    
+
     // Pipe the stream to response
     fileStream.on('error', (error) => {
       console.error('❌ Stream error:', error);
