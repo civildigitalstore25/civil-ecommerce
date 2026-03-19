@@ -14,15 +14,15 @@ import {
   ShoppingCart,
   FileText,
   Plus,
+  Download,
 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import {
   getAllOrders,
-  updateOrderStatus,
   deleteAdminOrder,
   adminCreateOrder,
+  bulkUpdateOrderStatuses,
 } from "../../api/adminOrderApi";
-import FormButton from "../../components/Button/FormButton";
 import AdminPagination from "./components/AdminPagination";
 import Swal from "sweetalert2";
 
@@ -106,14 +106,14 @@ const Orders: React.FC = () => {
   const { colors, theme } = useAdminTheme();
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = useState<string>("");
-  const [editedStatuses, setEditedStatuses] = useState<Record<string, string>>(
-    {},
-  );
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
+  const [bulkStatusDropdown, setBulkStatusDropdown] = useState<string>("");
+  const [exportOpen, setExportOpen] = useState(false);
 
   // Fetch all orders
   const { data, isLoading } = useQuery({
@@ -123,48 +123,6 @@ const Orders: React.FC = () => {
   });
 
 
-
-  // Update order status mutation
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ orderId, status }: { orderId: string; status: string }) => {
-      console.log("📡 Calling API with:", { orderId, status });
-      return updateOrderStatus(orderId, status);
-    },
-    onSuccess: (data) => {
-      console.log("✅ Update successful:", data);
-      Swal.fire({
-        icon: "success",
-        title: "Success",
-        text: "Order status updated successfully",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-      // Invalidate all admin order queries
-      queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
-      // Invalidate all user order queries (this will refresh My Orders page)
-      queryClient.invalidateQueries({ queryKey: ["userOrders"] });
-      // Refetch immediately to ensure UI is up to date
-      queryClient.refetchQueries({ queryKey: ["adminOrders"] });
-      queryClient.refetchQueries({ queryKey: ["userOrders"] });
-      // Clear the edited status after successful update
-      setEditedStatuses({});
-    },
-    onError: (error: any) => {
-      console.error("❌ Update failed:", error);
-      console.error("Error response:", error.response);
-      console.error("Error message:", error.response?.data?.message);
-      console.error("Error status:", error.response?.status);
-
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: error.response?.data?.message || "Failed to update order status",
-        footer: error.response?.status
-          ? `Status Code: ${error.response.status}`
-          : "",
-      });
-    },
-  });
 
   // Delete order mutation (Admin only)
   const deleteOrderMutation = useMutation({
@@ -195,6 +153,152 @@ const Orders: React.FC = () => {
       });
     },
   });
+
+  // Bulk update order statuses mutation
+  const bulkUpdateMutation = useMutation({
+    mutationFn: (updates: Array<{ orderId: string; status: string }>) => {
+      console.log("📦 Bulk updating statuses:", updates);
+      return bulkUpdateOrderStatuses(updates);
+    },
+    onSuccess: (data: any) => {
+      console.log("✅ Bulk update successful:", data);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: `${data.data.successCount} orders updated successfully${data.data.failureCount > 0 ? `, ${data.data.failureCount} failed` : ""}`,
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      setSelectedOrders([]);
+      setBulkStatusDropdown("");
+      queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
+      queryClient.refetchQueries({ queryKey: ["adminOrders"] });
+    },
+    onError: (error: any) => {
+      console.error("❌ Bulk update failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "Failed to update orders",
+      });
+    },
+  });
+
+  // Selection handlers
+  const handleSelectAll = () => {
+    if (selectedOrders.length === paginatedOrders.length) {
+      setSelectedOrders([]);
+    } else {
+      setSelectedOrders(paginatedOrders.map(o => getOrderId(o)));
+    }
+  };
+
+  const handleSelectOrder = (orderId: string) => {
+    setSelectedOrders(prev =>
+      prev.includes(orderId) ? prev.filter(id => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  // Bulk status update handler
+  const handleBulkStatusUpdate = (newStatus: string) => {
+    if (selectedOrders.length === 0) {
+      Swal.fire("Warning", "Please select at least one order", "warning");
+      return;
+    }
+
+    const normalizedStatus = newStatus === "success" ? "delivered" : newStatus;
+
+    const updates = selectedOrders.map(orderId => ({
+      orderId,
+      status: normalizedStatus
+    }));
+
+    Swal.fire({
+      title: "Update Status?",
+      text: `Update ${selectedOrders.length} selected order(s) to ${getStatusLabel(normalizedStatus)}?`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        bulkUpdateMutation.mutate(updates);
+      }
+    });
+  };
+
+  // Export handlers
+  const getExportData = () => {
+    return filteredOrders.map((order: any) => ({
+      'Order ID': order.orderId,
+      'Order Number': order.orderNumber,
+      'Customer Name': order.userId?.fullName || 'N/A',
+      'Customer Email': order.userId?.email || 'N/A',
+      'Customer Phone': order.userId?.phoneNumber || 'N/A',
+      'Order Status': order.orderStatus,
+      'Payment Status': order.paymentStatus,
+      'Subtotal': order.subtotal,
+      'Discount': order.discount || 0,
+      'Total Amount': order.totalAmount,
+      'Items Count': order.items?.length || 0,
+      'Created At': new Date(order.createdAt).toLocaleDateString(),
+      'Notes': order.notes || ''
+    }));
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      if (filteredOrders.length === 0) {
+        Swal.fire("Warning", "No orders to export", "warning");
+        return;
+      }
+
+      const data = getExportData();
+      const XLSX = (await import("xlsx")) as any;
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Orders");
+      XLSX.writeFile(
+        wb,
+        `orders_export_${new Date()
+          .toISOString()
+          .slice(0, 19)
+          .replace(/[:T]/g, "-")}.xlsx`
+      );
+      
+      Swal.fire("Success", "Orders exported to Excel", "success");
+    } catch (err) {
+      Swal.fire("Error", "Failed to export orders to Excel", "error");
+    }
+  };
+
+  const handleExportJSON = async () => {
+    try {
+      if (filteredOrders.length === 0) {
+        Swal.fire("Warning", "No orders to export", "warning");
+        return;
+      }
+
+      const data = getExportData();
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `orders_export_${new Date()
+        .toISOString()
+        .slice(0, 19)
+        .replace(/[:T]/g, "-")}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      Swal.fire("Success", "Orders exported to JSON", "success");
+    } catch (err) {
+      Swal.fire("Error", "Failed to export orders to JSON", "error");
+    }
+  };
 
   // Helper to get the correct order ID (orderId for API, _id as fallback)
   const getOrderId = (order: any): string => {
@@ -250,43 +354,6 @@ const Orders: React.FC = () => {
   const getStatusLabel = (status: string) => {
     if (status.toLowerCase() === "delivered") return "Success";
     return status.charAt(0).toUpperCase() + status.slice(1);
-  };
-
-  const handleStatusSelect = (orderId: string, newStatus: string) => {
-    setEditedStatuses((prev) => ({ ...prev, [orderId]: newStatus }));
-  };
-
-  const handleStatusChange = (orderId: string, newStatus: string) => {
-    console.log("🔄 Attempting to update order:", { orderId, newStatus });
-
-    if (!orderId) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Order ID is missing. Cannot update status.",
-      });
-      console.error("❌ orderId is undefined or empty:", orderId);
-      return;
-    }
-
-    Swal.fire({
-      title: "Update Order Status?",
-      text: `Are you sure you want to change the status to ${getStatusLabel(newStatus)}?`,
-      icon: "question",
-      showCancelButton: true,
-      confirmButtonText: "Yes, update it",
-      cancelButtonText: "Cancel",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        console.log("✅ User confirmed, calling mutation...");
-        updateStatusMutation.mutate({
-          orderId,
-          status: newStatus,
-        });
-      } else {
-        console.log("❌ User cancelled update");
-      }
-    });
   };
 
   const handleViewDetails = (order: any) => {
@@ -345,9 +412,9 @@ const Orders: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center flex-wrap gap-4">
         <h2 className="text-2xl font-bold" style={{ color: colors.text.primary }}>Orders Management</h2>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-3 flex-wrap">
           <button
             className="px-4 py-2 rounded-lg font-medium"
             style={{ background: '#0068ff', color: '#fff' }}
@@ -355,6 +422,49 @@ const Orders: React.FC = () => {
           >
             {showCreateForm ? "Close" : "Create Order"}
           </button>
+          
+          {/* Export Dropdown */}
+          <div className="relative">
+            <button
+              className="px-4 py-2 rounded-lg font-medium flex items-center gap-2"
+              style={{ background: '#00b814', color: '#fff' }}
+              onClick={() => setExportOpen(!exportOpen)}
+            >
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            {exportOpen && (
+              <div
+                className="absolute right-0 mt-2 w-40 rounded-lg shadow-lg z-50 border"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                }}
+              >
+                <button
+                  className="w-full px-4 py-2 text-left hover:opacity-75 transition-opacity"
+                  style={{ color: colors.text.primary }}
+                  onClick={() => {
+                    handleExportExcel();
+                    setExportOpen(false);
+                  }}
+                >
+                  📊 Export to Excel
+                </button>
+                <button
+                  className="w-full px-4 py-2 text-left hover:opacity-75 transition-opacity border-t"
+                  style={{ color: colors.text.primary, borderTopColor: colors.border.primary }}
+                  onClick={() => {
+                    handleExportJSON();
+                    setExportOpen(false);
+                  }}
+                >
+                  📄 Export to JSON
+                </button>
+              </div>
+            )}
+          </div>
+
           <select
             className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
             style={{
@@ -397,6 +507,56 @@ const Orders: React.FC = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
+
+      {/* Sticky Bulk Action Bar */}
+      {selectedOrders.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 md:top-6 md:right-6">
+          <div
+            className="rounded-xl border px-4 py-3 shadow-lg flex items-center gap-3"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <span className="text-sm font-medium" style={{ color: colors.text.primary }}>
+              {selectedOrders.length} selected
+            </span>
+            <select
+              className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.primary,
+                borderColor: colors.border.primary,
+                color: colors.text.primary,
+              }}
+              value={bulkStatusDropdown}
+              onChange={(e) => setBulkStatusDropdown(e.target.value)}
+            >
+              <option value="">Status</option>
+              <option value="processing">Processing</option>
+              <option value="success">Success</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+            <button
+              className="px-4 py-2 rounded-lg font-medium disabled:opacity-50"
+              style={{ background: '#0068ff', color: '#fff' }}
+              onClick={() => handleBulkStatusUpdate(bulkStatusDropdown)}
+              disabled={!bulkStatusDropdown || bulkUpdateMutation.status === "pending"}
+            >
+              Update Status
+            </button>
+            <button
+              className="px-3 py-2 rounded-lg font-medium"
+              style={{ background: '#999', color: '#fff' }}
+              onClick={() => {
+                setSelectedOrders([]);
+                setBulkStatusDropdown("");
+              }}
+            >
+              Clear
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Admin Order Creation Modal */}
       {showCreateForm && (
@@ -977,12 +1137,19 @@ const Orders: React.FC = () => {
 
             >
               <tr>
+                <th className="text-center py-3 px-4 font-medium" style={{ color: colors.text.primary }}>
+                  <input
+                    type="checkbox"
+                    checked={selectedOrders.length === paginatedOrders.length && paginatedOrders.length > 0}
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                </th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Order ID</th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Customer</th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Product</th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Amount</th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Status</th>
-                <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Update Status</th>
                 <th className="text-left py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Date</th>
                 <th className="text-center py-3 px-4 font-medium" style={{ color: colors.text.primary }}>Actions</th>
               </tr>
@@ -1015,6 +1182,14 @@ const Orders: React.FC = () => {
                       e.currentTarget.style.backgroundColor = "transparent";
                     }}
                   >
+                    <td className="text-center py-4 px-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(getOrderId(order))}
+                        onChange={() => handleSelectOrder(getOrderId(order))}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </td>
                     <td
                       className="py-4 px-4 font-medium"
                       style={{ color: colors.interactive.primary }}
@@ -1060,54 +1235,15 @@ const Orders: React.FC = () => {
                         style={{
                           backgroundColor: colors.background.accent,
                           color:
-                            order.paymentStatus === "paid"
+                            order.orderStatus === "delivered"
                               ? colors.status.success
-                              : colors.status.warning,
+                              : order.orderStatus === "cancelled"
+                                ? colors.status.error
+                                : colors.status.warning,
                         }}
                       >
-                        {order.paymentStatus?.charAt(0).toUpperCase() +
-                          order.paymentStatus?.slice(1)}
+                        {getStatusLabel(order.orderStatus || "processing")}
                       </span>
-                    </td>
-                    <td className="py-4 px-4 flex items-center gap-2">
-                      <select
-                        value={
-                          editedStatuses[getOrderId(order)] || order.orderStatus
-                        }
-                        onChange={(e) =>
-                          handleStatusSelect(getOrderId(order), e.target.value)
-                        }
-                        className="border rounded-lg px-3 py-2 focus:ring-2 text-sm transition-colors duration-200"
-                        style={{
-                          backgroundColor: colors.background.secondary,
-                          borderColor: colors.border.primary,
-                          color: colors.text.primary,
-                        }}
-                      >
-                        <option value="processing">Processing</option>
-                        <option value="delivered" style={{ color: '#222', background: '#fff' }}>Success</option>
-                        <option value="cancelled" style={{ color: '#222', background: '#fff' }}>Cancelled</option>
-                      </select>
-                      {editedStatuses[getOrderId(order)] &&
-                        editedStatuses[getOrderId(order)] !==
-                        order.orderStatus && (
-                          <FormButton
-                            onClick={() =>
-                              handleStatusChange(
-                                getOrderId(order),
-                                editedStatuses[getOrderId(order)],
-                              )
-                            }
-                            className="text-sm transition-colors duration-200"
-                            style={{
-                              color: colors.interactive.primary,
-                              backgroundColor: "transparent",
-                              border: "none",
-                            }}
-                          >
-                            Update
-                          </FormButton>
-                        )}
                     </td>
                     <td
                       className="py-4 px-4"

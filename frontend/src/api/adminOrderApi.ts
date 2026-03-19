@@ -85,4 +85,35 @@ export const deleteAdminOrder = async (orderId: string) => {
   return response.data;
 };
 
+/**
+ * Bulk update order statuses (Admin only)
+ */
+export const bulkUpdateOrderStatuses = async (updates: Array<{ orderId: string; status: string }>) => {
+  console.log("📦 AdminOrderAPI - bulkUpdateOrderStatuses called with:", { 
+    count: updates.length,
+    updates 
+  });
+  const response = await api.put("/payments/admin/orders/bulk/status", { updates });
+  console.log("📦 Bulk Update Response:", response.data);
+  return response.data;
+};
+
+/**
+ * Export orders data for download
+ */
+export const exportOrders = async (format: "excel" | "json" = "excel", params?: {
+  status?: string;
+  paymentStatus?: string;
+}) => {
+  console.log("📊 AdminOrderAPI - exportOrders called with:", { format, params });
+  const response = await api.get("/payments/admin/orders/export", {
+    params: {
+      format,
+      ...params
+    },
+    responseType: format === "json" ? "json" : "arraybuffer"
+  });
+  return response.data;
+};
+
 export default api;

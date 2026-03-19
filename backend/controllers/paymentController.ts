@@ -3,6 +3,7 @@ import Order from '../models/Order';
 import cashfreeService from '../services/cashfreeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
+import { getDownloadEligibility } from '../utils/downloadEligibility';
 
 /**
  * Generate short, human-readable order ID.
@@ -763,7 +764,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
     const total = await Order.countDocuments(query);
 
-    // Populate driveLinks for orders that don't have them
+    // Populate driveLinks and current download eligibility for order items
     const Product = (await import('../models/Product')).default;
     const ordersWithDriveLinks = await Promise.all(
       orders.map(async (order) => {
@@ -771,19 +772,26 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
           order.items.map(async (item: any) => {
             console.log(`🔍 Checking item: ${item.name}, productId: ${item.productId}, existing driveLink: ${item.driveLink}`);
 
-            // If item already has driveLink, keep it
-            if (item.driveLink) {
-              console.log(`✓ Item already has driveLink: ${item.driveLink}`);
-              return item;
-            }
-
-            // Otherwise, fetch from Product
-            const product = await Product.findById(item.productId).select('driveLink').lean();
+            // Fetch latest product state for drive-link and free-offer checks
+            const product = await Product.findById(item.productId)
+              .select('driveLink isFreeProduct freeProductStartDate freeProductEndDate')
+              .lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
+
+            const eligibility = getDownloadEligibility({
+              orderPaymentStatus: order.paymentStatus,
+              orderStatus: order.orderStatus,
+              orderItemPrice: item.price,
+              product,
+            });
 
             return {
               ...item,
-              driveLink: product?.driveLink || null
+              driveLink: item.driveLink || product?.driveLink || null,
+              canDownload: eligibility.canDownload,
+              downloadBlockedReason: eligibility.reason || null,
+              isFreeProduct: eligibility.isFreeProduct,
+              isFreeOfferActive: eligibility.isFreeOfferActive,
             };
           })
         );
@@ -1082,6 +1090,171 @@ export const adminDeleteOrder = async (req: Request, res: Response): Promise<voi
     });
   } catch (error: any) {
     console.error('❌ Admin delete order error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Bulk update order statuses (Admin only)
+ */
+export const bulkUpdateOrderStatuses = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { updates } = req.body;
+
+    if (!Array.isArray(updates) || updates.length === 0) {
+      res.status(400).json({
+        success: false,
+        message: 'Invalid updates array'
+      });
+      return;
+    }
+
+    // Validate all updates before processing
+    const validStatuses = ['processing', 'delivered', 'cancelled'];
+    for (const update of updates) {
+      if (!update.orderId || !update.status) {
+        res.status(400).json({
+          success: false,
+          message: 'Each update must have orderId and status'
+        });
+        return;
+      }
+      if (!validStatuses.includes(update.status)) {
+        res.status(400).json({
+          success: false,
+          message: `Invalid status: ${update.status}. Must be one of: ${validStatuses.join(', ')}`
+        });
+        return;
+      }
+    }
+
+    console.log(`📦 Bulk updating ${updates.length} orders...`);
+
+    const results = [];
+    let successCount = 0;
+    let failureCount = 0;
+
+    for (const update of updates) {
+      try {
+        // Try to find by orderId first, then by _id as fallback
+        let order = await Order.findOne({ orderId: update.orderId });
+        if (!order) {
+          order = await Order.findById(update.orderId);
+        }
+
+        if (!order) {
+          failureCount++;
+          results.push({
+            orderId: update.orderId,
+            success: false,
+            message: 'Order not found'
+          });
+          continue;
+        }
+
+        order.orderStatus = update.status;
+        await order.save();
+        successCount++;
+
+        results.push({
+          orderId: order.orderId || update.orderId,
+          success: true,
+          message: `Status updated to ${update.status}`
+        });
+
+        console.log(`✅ Updated order ${update.orderId} to ${update.status}`);
+      } catch (error: any) {
+        failureCount++;
+        results.push({
+          orderId: update.orderId,
+          success: false,
+          message: error.message
+        });
+        console.error(`❌ Failed to update order ${update.orderId}:`, error.message);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `${successCount} orders updated successfully, ${failureCount} failed`,
+      data: {
+        successCount,
+        failureCount,
+        results
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Bulk update error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Internal server error'
+    });
+  }
+};
+
+/**
+ * Export orders data (Admin only)
+ */
+export const exportOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { format = 'json', status, paymentStatus } = req.query;
+
+    const query: any = {};
+
+    if (status) {
+      query.orderStatus = status;
+    }
+
+    if (paymentStatus) {
+      query.paymentStatus = paymentStatus;
+    }
+
+    console.log(`📊 Exporting orders as ${format}...`);
+
+    const orders = await Order.find(query)
+      .populate('userId', 'fullName email phoneNumber')
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Format order data for export
+    const exportData = orders.map((order: any) => ({
+      'Order ID': order.orderId,
+      'Order Number': order.orderNumber,
+      'Customer Name': order.userId?.fullName || 'N/A',
+      'Customer Email': order.userId?.email || 'N/A',
+      'Customer Phone': order.userId?.phoneNumber || 'N/A',
+      'Order Status': order.orderStatus,
+      'Payment Status': order.paymentStatus,
+      'Subtotal': order.subtotal,
+      'Discount': order.discount || 0,
+      'Shipping Charges': order.shippingCharges || 0,
+      'Total Amount': order.totalAmount,
+      'Items Count': order.items?.length || 0,
+      'Created At': order.createdAt?.toISOString() || 'N/A',
+      'Updated At': order.updatedAt?.toISOString() || 'N/A',
+      'Notes': order.notes || ''
+    }));
+
+    if (format === 'excel') {
+      // Return as JSON which will be converted to Excel on frontend
+      res.status(200).json({
+        success: true,
+        data: exportData,
+        format: 'excel'
+      });
+    } else {
+      // Return as JSON
+      res.status(200).json({
+        success: true,
+        data: exportData,
+        format: 'json'
+      });
+    }
+  } catch (error: any) {
+    console.error('❌ Export orders error:', error);
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error'
