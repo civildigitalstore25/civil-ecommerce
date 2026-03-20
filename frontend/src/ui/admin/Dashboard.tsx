@@ -127,6 +127,8 @@ const Dashboard: React.FC = () => {
     const products = productsData?.products || [];
     const orders = ordersData?.data?.orders || [];
     const users = usersData?.users || [];
+    const totalUsers =
+      typeof usersData?.total === "number" ? usersData.total : users.length;
 
     // Calculate total revenue
     const totalRevenue = orders
@@ -163,7 +165,7 @@ const Dashboard: React.FC = () => {
       totalRevenue,
       totalProducts: products.length,
       totalCategories: categories.length,
-      totalUsers: users.length,
+      totalUsers,
       totalOrders: orders.length,
       todayOrders,
       topCompanies: Object.entries(companyCounts)
