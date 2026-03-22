@@ -15,6 +15,7 @@ import {
   FileText,
   Plus,
   Download,
+  Hourglass,
 } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import {
@@ -27,6 +28,26 @@ import AdminPagination from "./components/AdminPagination";
 import Swal from "sweetalert2";
 
 import type { IOrderItem } from "../../api/types/orderTypes";
+
+/** Checkout contact email is stored in notes as `Email: ...` when it differs from account email. */
+function emailFromOrderNotes(notes: string | undefined | null): string {
+  if (!notes || typeof notes !== "string") return "";
+  const m = notes.match(/^Email:\s*(.+)$/im);
+  return m ? m[1].trim() : "";
+}
+
+/** Phone entered at checkout lives on shippingAddress; user profile phone is a fallback. */
+function displayOrderCustomerPhone(order: any): string {
+  return (
+    order.shippingAddress?.phoneNumber ||
+    order.userId?.phoneNumber ||
+    ""
+  );
+}
+
+function displayOrderCustomerEmail(order: any): string {
+  return order.userId?.email || emailFromOrderNotes(order.notes) || "";
+}
 
 const Orders: React.FC = () => {
   // State for admin order creation form (no dropdown, no address, no shipping)
@@ -119,7 +140,10 @@ const Orders: React.FC = () => {
   const { data, isLoading } = useQuery({
     queryKey: ["adminOrders", statusFilter],
     queryFn: () =>
-      getAllOrders({ status: statusFilter || undefined, limit: 100 }),
+      getAllOrders({
+        status: statusFilter ? statusFilter.toLowerCase() : undefined,
+        limit: 100,
+      }),
   });
 
 
@@ -232,9 +256,10 @@ const Orders: React.FC = () => {
     return filteredOrders.map((order: any) => ({
       'Order ID': order.orderId,
       'Order Number': order.orderNumber,
-      'Customer Name': order.userId?.fullName || 'N/A',
-      'Customer Email': order.userId?.email || 'N/A',
-      'Customer Phone': order.userId?.phoneNumber || 'N/A',
+      'Customer Name':
+        order.shippingAddress?.fullName || order.userId?.fullName || 'N/A',
+      'Customer Email': displayOrderCustomerEmail(order) || 'N/A',
+      'Customer Phone': displayOrderCustomerPhone(order) || 'N/A',
       'Order Status': order.orderStatus,
       'Payment Status': order.paymentStatus,
       'Subtotal': order.subtotal,
@@ -265,7 +290,7 @@ const Orders: React.FC = () => {
           .slice(0, 19)
           .replace(/[:T]/g, "-")}.xlsx`
       );
-      
+
       Swal.fire("Success", "Orders exported to Excel", "success");
     } catch (err) {
       Swal.fire("Error", "Failed to export orders to Excel", "error");
@@ -293,7 +318,7 @@ const Orders: React.FC = () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
+
       Swal.fire("Success", "Orders exported to JSON", "success");
     } catch (err) {
       Swal.fire("Error", "Failed to export orders to JSON", "error");
@@ -303,6 +328,11 @@ const Orders: React.FC = () => {
   // Helper to get the correct order ID (orderId for API, _id as fallback)
   const getOrderId = (order: any): string => {
     return order.orderId || order._id;
+  };
+
+  const normOrderStatus = (s: string | undefined) => {
+    const v = (s || "").toLowerCase();
+    return v === "shipped" ? "processing" : v;
   };
 
   const orders = data?.data?.orders || [];
@@ -316,7 +346,18 @@ const Orders: React.FC = () => {
       const userName = order.userId?.fullName?.toLowerCase() || "";
       const userEmail = order.userId?.email?.toLowerCase() || "";
       const shippingName = order.shippingAddress?.fullName?.toLowerCase() || "";
-      return userName.includes(search) || userEmail.includes(search) || shippingName.includes(search);
+      const notesEmail = emailFromOrderNotes(order.notes).toLowerCase();
+      const phone =
+        displayOrderCustomerPhone(order).toLowerCase().replace(/\s/g, "") ||
+        "";
+      const searchCompact = search.replace(/\s/g, "");
+      return (
+        userName.includes(search) ||
+        userEmail.includes(search) ||
+        shippingName.includes(search) ||
+        notesEmail.includes(search) ||
+        (phone && phone.includes(searchCompact))
+      );
     });
   };
 
@@ -341,19 +382,24 @@ const Orders: React.FC = () => {
     console.log("📦 Using ID for updates:", getOrderId(orders[0]));
   }
 
-  const completedOrders = filteredOrders.filter(
-    (o: any) => o.orderStatus === "delivered",
+  const totalOrdersCount = filteredOrders.length;
+  const pendingOrders = filteredOrders.filter(
+    (o: any) => normOrderStatus(o.orderStatus) === "pending",
   );
   const processingOrders = filteredOrders.filter(
-    (o: any) => o.orderStatus === "processing",
+    (o: any) => normOrderStatus(o.orderStatus) === "processing",
+  );
+  const completedOrders = filteredOrders.filter(
+    (o: any) => normOrderStatus(o.orderStatus) === "delivered",
   );
   const cancelledOrders = filteredOrders.filter(
-    (o: any) => o.orderStatus === "cancelled",
+    (o: any) => normOrderStatus(o.orderStatus) === "cancelled",
   );
 
-  const getStatusLabel = (status: string) => {
-    if (status.toLowerCase() === "delivered") return "Success";
-    return status.charAt(0).toUpperCase() + status.slice(1);
+  const getStatusLabel = (status: string | undefined) => {
+    const n = normOrderStatus(status) || "processing";
+    if (n === "delivered") return "Success";
+    return n.charAt(0).toUpperCase() + n.slice(1);
   };
 
   const handleViewDetails = (order: any) => {
@@ -422,7 +468,7 @@ const Orders: React.FC = () => {
           >
             {showCreateForm ? "Close" : "Create Order"}
           </button>
-          
+
           {/* Export Dropdown */}
           <div className="relative">
             <button
@@ -590,11 +636,11 @@ const Orders: React.FC = () => {
             `}</style>
 
             {/* Modal Header */}
-            <div 
+            <div
               className="sticky top-0 z-10 p-6 border-b flex items-center justify-between"
-              style={{ 
+              style={{
                 backgroundColor: colors.background.secondary,
-                borderColor: colors.border.primary 
+                borderColor: colors.border.primary
               }}
             >
               <div>
@@ -618,11 +664,11 @@ const Orders: React.FC = () => {
             {/* Modal Body */}
             <div className="p-6 space-y-6">
               {/* Customer Information Section */}
-              <div 
+              <div
                 className="p-5 rounded-xl border"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary 
+                  borderColor: colors.border.primary
                 }}
               >
                 <h4 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ color: colors.text.primary }}>
@@ -640,10 +686,10 @@ const Orders: React.FC = () => {
                       placeholder="customer@example.com"
                       value={orderForm.email || ""}
                       onChange={e => setOrderForm(f => ({ ...f, email: e.target.value }))}
-                      style={{ 
-                        color: colors.text.primary, 
+                      style={{
+                        color: colors.text.primary,
                         backgroundColor: colors.background.secondary,
-                        borderColor: colors.border.primary 
+                        borderColor: colors.border.primary
                       }}
                     />
                     <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
@@ -654,11 +700,11 @@ const Orders: React.FC = () => {
               </div>
 
               {/* Order Items Section */}
-              <div 
+              <div
                 className="p-5 rounded-xl border"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary 
+                  borderColor: colors.border.primary
                 }}
               >
                 <h4 className="font-semibold text-lg mb-4 flex items-center justify-between" style={{ color: colors.text.primary }}>
@@ -670,11 +716,11 @@ const Orders: React.FC = () => {
 
                 {/* Display Added Items */}
                 {orderForm.items.length === 0 ? (
-                  <div 
+                  <div
                     className="text-center py-8 rounded-lg border-2 border-dashed"
-                    style={{ 
+                    style={{
                       borderColor: colors.border.primary,
-                      color: colors.text.secondary 
+                      color: colors.text.secondary
                     }}
                   >
                     <Package className="w-12 h-12 mx-auto mb-2 opacity-30" />
@@ -683,78 +729,78 @@ const Orders: React.FC = () => {
                 ) : (
                   <div className="space-y-3 mb-4">
                     {orderForm.items.map((item) => (
-                      <div 
-                        key={item.productId} 
+                      <div
+                        key={item.productId}
                         className="product-item-card p-4 rounded-lg border"
-                        style={{ 
+                        style={{
                           backgroundColor: colors.background.secondary,
-                          borderColor: colors.border.primary 
+                          borderColor: colors.border.primary
                         }}
                       >
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
                             <div className="md:col-span-2">
                               <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Product Name</label>
-                              <input 
-                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                                placeholder="Product Name" 
-                                value={item.name} 
-                                onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)} 
-                                style={{ 
-                                  color: colors.text.primary, 
+                              <input
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                                placeholder="Product Name"
+                                value={item.name}
+                                onChange={e => handleOrderItemChange(item.productId, 'name', e.target.value)}
+                                style={{
+                                  color: colors.text.primary,
                                   backgroundColor: colors.background.primary,
-                                  borderColor: colors.border.primary 
-                                }} 
+                                  borderColor: colors.border.primary
+                                }}
                               />
                             </div>
                             <div>
                               <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Quantity</label>
-                              <input 
-                                type="number" 
-                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                                min={1} 
-                                value={item.quantity} 
-                                onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))} 
-                                style={{ 
-                                  color: colors.text.primary, 
+                              <input
+                                type="number"
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                                min={1}
+                                value={item.quantity}
+                                onChange={e => handleOrderItemChange(item.productId, 'quantity', Number(e.target.value))}
+                                style={{
+                                  color: colors.text.primary,
                                   backgroundColor: colors.background.primary,
-                                  borderColor: colors.border.primary 
-                                }} 
+                                  borderColor: colors.border.primary
+                                }}
                               />
                             </div>
                             <div>
                               <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Price (₹)</label>
-                              <input 
-                                type="number" 
-                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                                min={0} 
-                                value={item.price} 
-                                onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))} 
-                                style={{ 
-                                  color: colors.text.primary, 
+                              <input
+                                type="number"
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                                min={0}
+                                value={item.price}
+                                onChange={e => handleOrderItemChange(item.productId, 'price', Number(e.target.value))}
+                                style={{
+                                  color: colors.text.primary,
                                   backgroundColor: colors.background.primary,
-                                  borderColor: colors.border.primary 
-                                }} 
+                                  borderColor: colors.border.primary
+                                }}
                               />
                             </div>
                             <div>
                               <label className="text-xs font-medium block mb-1" style={{ color: colors.text.secondary }}>Discount (₹)</label>
-                              <input 
-                                type="number" 
-                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                                min={0} 
-                                placeholder="0" 
-                                value={item.discount === undefined ? '' : item.discount} 
-                                onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))} 
-                                style={{ 
-                                  color: colors.text.primary, 
+                              <input
+                                type="number"
+                                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                                min={0}
+                                placeholder="0"
+                                value={item.discount === undefined ? '' : item.discount}
+                                onChange={e => handleOrderItemChange(item.productId, 'discount', e.target.value === '' ? undefined : Number(e.target.value))}
+                                style={{
+                                  color: colors.text.primary,
                                   backgroundColor: colors.background.primary,
-                                  borderColor: colors.border.primary 
-                                }} 
+                                  borderColor: colors.border.primary
+                                }}
                               />
                             </div>
                           </div>
-                          <button 
+                          <button
                             className="p-2 rounded-lg hover:bg-red-500 hover:bg-opacity-10 transition-all duration-200 mt-6"
                             onClick={() => handleRemoveOrderItem(item.productId)}
                             title="Remove item"
@@ -771,11 +817,11 @@ const Orders: React.FC = () => {
                 )}
 
                 {/* Add New Product Form */}
-                <div 
+                <div
                   className="mt-4 p-5 rounded-xl border-2 border-dashed"
-                  style={{ 
+                  style={{
                     backgroundColor: colors.background.accent,
-                    borderColor: '#0068ff' + '40' 
+                    borderColor: '#0068ff' + '40'
                   }}
                 >
                   <h5 className="text-sm font-semibold mb-3 flex items-center gap-2" style={{ color: colors.text.primary }}>
@@ -787,87 +833,87 @@ const Orders: React.FC = () => {
                       <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
                         Product ID <span style={{ color: '#ef4444' }}>*</span>
                       </label>
-                      <input 
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                        placeholder="e.g., PROD123" 
-                        id="newProductId" 
-                        style={{ 
-                          color: colors.text.primary, 
+                      <input
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                        placeholder="e.g., PROD123"
+                        id="newProductId"
+                        style={{
+                          color: colors.text.primary,
                           backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary 
-                        }} 
+                          borderColor: colors.border.primary
+                        }}
                       />
                     </div>
                     <div className="md:col-span-2">
                       <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
                         Product Name <span style={{ color: '#ef4444' }}>*</span>
                       </label>
-                      <input 
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                        placeholder="e.g., Software License" 
-                        id="newProductName" 
-                        style={{ 
-                          color: colors.text.primary, 
+                      <input
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                        placeholder="e.g., Software License"
+                        id="newProductName"
+                        style={{
+                          color: colors.text.primary,
                           backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary 
-                        }} 
+                          borderColor: colors.border.primary
+                        }}
                       />
                     </div>
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
                         Quantity <span style={{ color: '#ef4444' }}>*</span>
                       </label>
-                      <input 
-                        type="number" 
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                        min={1} 
-                        defaultValue={1} 
-                        id="newProductQty" 
-                        style={{ 
-                          color: colors.text.primary, 
+                      <input
+                        type="number"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                        min={1}
+                        defaultValue={1}
+                        id="newProductQty"
+                        style={{
+                          color: colors.text.primary,
                           backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary 
-                        }} 
+                          borderColor: colors.border.primary
+                        }}
                       />
                     </div>
                     <div>
                       <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>
                         Price (₹) <span style={{ color: '#ef4444' }}>*</span>
                       </label>
-                      <input 
-                        type="number" 
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                        min={0} 
-                        defaultValue={0} 
-                        id="newProductPrice" 
-                        style={{ 
-                          color: colors.text.primary, 
+                      <input
+                        type="number"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                        min={0}
+                        defaultValue={0}
+                        id="newProductPrice"
+                        style={{
+                          color: colors.text.primary,
                           backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary 
-                        }} 
+                          borderColor: colors.border.primary
+                        }}
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
                     <div className="md:col-span-2">
                       <label className="text-xs font-medium block mb-1" style={{ color: colors.text.primary }}>Discount (₹)</label>
-                      <input 
-                        type="number" 
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition" 
-                        min={0} 
-                        placeholder="Optional" 
-                        id="newProductDiscount" 
-                        style={{ 
-                          color: colors.text.primary, 
+                      <input
+                        type="number"
+                        className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition"
+                        min={0}
+                        placeholder="Optional"
+                        id="newProductDiscount"
+                        style={{
+                          color: colors.text.primary,
                           backgroundColor: colors.background.primary,
-                          borderColor: colors.border.primary 
-                        }} 
+                          borderColor: colors.border.primary
+                        }}
                       />
                     </div>
                     <div className="md:col-span-4 flex items-end">
-                      <button 
-                        className="w-full px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-200" 
-                        style={{ background: '#0068ff', color: '#fff' }} 
+                      <button
+                        className="w-full px-4 py-2 rounded-lg font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-all duration-200"
+                        style={{ background: '#0068ff', color: '#fff' }}
                         onClick={() => {
                           const productId = (document.getElementById("newProductId") as HTMLInputElement).value.trim();
                           const name = (document.getElementById("newProductName") as HTMLInputElement).value.trim();
@@ -875,7 +921,7 @@ const Orders: React.FC = () => {
                           const price = Number((document.getElementById("newProductPrice") as HTMLInputElement).value);
                           const discountValue = (document.getElementById("newProductDiscount") as HTMLInputElement).value;
                           const discount = discountValue === '' ? undefined : Number(discountValue);
-                          
+
                           if (!productId || !name) {
                             Swal.fire({ icon: 'error', title: 'Required Fields', text: 'Please fill in Product ID and Product Name' });
                             return;
@@ -884,7 +930,7 @@ const Orders: React.FC = () => {
                             Swal.fire({ icon: 'error', title: 'Invalid Quantity', text: 'Quantity must be greater than 0' });
                             return;
                           }
-                          
+
                           handleAddProductToOrder({ productId, name, quantity, price, discount });
                           (document.getElementById("newProductId") as HTMLInputElement).value = "";
                           (document.getElementById("newProductName") as HTMLInputElement).value = "";
@@ -902,11 +948,11 @@ const Orders: React.FC = () => {
               </div>
 
               {/* Additional Details Section */}
-              <div 
+              <div
                 className="p-5 rounded-xl border"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.primary,
-                  borderColor: colors.border.primary 
+                  borderColor: colors.border.primary
                 }}
               >
                 <h4 className="font-semibold text-lg mb-4 flex items-center gap-2" style={{ color: colors.text.primary }}>
@@ -918,18 +964,18 @@ const Orders: React.FC = () => {
                     <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
                       Total Discount (₹)
                     </label>
-                    <input 
-                      type="number" 
-                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200" 
-                      min={0} 
-                      placeholder="0" 
-                      value={orderForm.discount || ""} 
-                      onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))} 
-                      style={{ 
-                        color: colors.text.primary, 
+                    <input
+                      type="number"
+                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200"
+                      min={0}
+                      placeholder="0"
+                      value={orderForm.discount || ""}
+                      onChange={e => setOrderForm(f => ({ ...f, discount: e.target.value === '' ? undefined : Number(e.target.value) }))}
+                      style={{
+                        color: colors.text.primary,
                         backgroundColor: colors.background.secondary,
-                        borderColor: colors.border.primary 
-                      }} 
+                        borderColor: colors.border.primary
+                      }}
                     />
                     <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
                       Additional discount on the entire order
@@ -939,28 +985,28 @@ const Orders: React.FC = () => {
                     <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
                       Order Notes
                     </label>
-                    <textarea 
-                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200 resize-none" 
-                      placeholder="Add any special notes or instructions..." 
-                      rows={3} 
-                      value={orderForm.notes || ""} 
-                      onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))} 
-                      style={{ 
-                        color: colors.text.primary, 
+                    <textarea
+                      className="w-full border-2 rounded-xl px-4 py-3 focus:outline-none transition-all duration-200 resize-none"
+                      placeholder="Add any special notes or instructions..."
+                      rows={3}
+                      value={orderForm.notes || ""}
+                      onChange={e => setOrderForm(f => ({ ...f, notes: e.target.value }))}
+                      style={{
+                        color: colors.text.primary,
                         backgroundColor: colors.background.secondary,
-                        borderColor: colors.border.primary 
-                      }} 
+                        borderColor: colors.border.primary
+                      }}
                     />
                   </div>
                 </div>
               </div>
 
               {/* Order Summary */}
-              <div 
+              <div
                 className="p-5 rounded-xl border-2"
-                style={{ 
+                style={{
                   backgroundColor: colors.background.accent,
-                  borderColor: '#0068ff' + '40' 
+                  borderColor: '#0068ff' + '40'
                 }}
               >
                 <h4 className="font-semibold text-lg mb-4" style={{ color: colors.text.primary }}>
@@ -992,19 +1038,19 @@ const Orders: React.FC = () => {
             </div>
 
             {/* Modal Footer */}
-            <div 
+            <div
               className="sticky bottom-0 p-6 border-t flex justify-end gap-3"
-              style={{ 
+              style={{
                 backgroundColor: colors.background.secondary,
-                borderColor: colors.border.primary 
+                borderColor: colors.border.primary
               }}
             >
               <button
                 className="px-6 py-3 rounded-xl font-medium border-2 transition-all duration-200 hover:bg-opacity-10"
-                style={{ 
-                  borderColor: colors.border.primary, 
+                style={{
+                  borderColor: colors.border.primary,
                   color: colors.text.primary,
-                  backgroundColor: 'transparent' 
+                  backgroundColor: 'transparent'
                 }}
                 onClick={() => setShowCreateForm(false)}
               >
@@ -1043,19 +1089,94 @@ const Orders: React.FC = () => {
         </div>
       )}
 
-      {/* Order Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {/* Order Statistics (matches table statuses; counts respect search + status filter) */}
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6">
         <div
-          className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
+          className="rounded-xl p-5 shadow-sm border transition-colors duration-200 min-w-0"
           style={{
             backgroundColor: colors.background.secondary,
             borderColor: colors.border.primary,
           }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Success Orders
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
+                Total Orders
+              </p>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.text.primary }}
+              >
+                {totalOrdersCount}
+              </h3>
+            </div>
+            <ShoppingCart
+              className="w-10 h-10 shrink-0"
+              style={{ color: colors.text.primary, opacity: 0.2 }}
+            />
+          </div>
+        </div>
+        <div
+          className="rounded-xl p-5 shadow-sm border transition-colors duration-200 min-w-0"
+          style={{
+            backgroundColor: colors.background.secondary,
+            borderColor: colors.border.primary,
+          }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
+                Pending
+              </p>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.status.info }}
+              >
+                {pendingOrders.length}
+              </h3>
+            </div>
+            <Hourglass
+              className="w-10 h-10 shrink-0"
+              style={{ color: colors.status.info, opacity: 0.25 }}
+            />
+          </div>
+        </div>
+        <div
+          className="rounded-xl p-5 shadow-sm border transition-colors duration-200 min-w-0"
+          style={{
+            backgroundColor: colors.background.secondary,
+            borderColor: colors.border.primary,
+          }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
+                Processing
+              </p>
+              <h3
+                className="text-3xl font-bold mt-1"
+                style={{ color: colors.status.warning }}
+              >
+                {processingOrders.length}
+              </h3>
+            </div>
+            <Clock
+              className="w-10 h-10 shrink-0"
+              style={{ color: colors.status.warning, opacity: 0.25 }}
+            />
+          </div>
+        </div>
+        <div
+          className="rounded-xl p-5 shadow-sm border transition-colors duration-200 min-w-0"
+          style={{
+            backgroundColor: colors.background.secondary,
+            borderColor: colors.border.primary,
+          }}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
+                Success
               </p>
               <h3
                 className="text-3xl font-bold mt-1"
@@ -1065,47 +1186,22 @@ const Orders: React.FC = () => {
               </h3>
             </div>
             <CheckCircle
-              className="w-12 h-12"
+              className="w-10 h-10 shrink-0"
               style={{ color: colors.status.success, opacity: 0.2 }}
             />
           </div>
         </div>
         <div
-          className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
+          className="rounded-xl p-5 shadow-sm border transition-colors duration-200 min-w-0"
           style={{
             backgroundColor: colors.background.secondary,
             borderColor: colors.border.primary,
           }}
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Processing Orders
-              </p>
-              <h3
-                className="text-3xl font-bold mt-1"
-                style={{ color: "#fff" }}
-              >
-                {processingOrders.length}
-              </h3>
-            </div>
-            <Clock
-              className="w-12 h-12"
-              style={{ color: colors.interactive.primary, opacity: 0.2 }}
-            />
-          </div>
-        </div>
-        <div
-          className="rounded-xl p-6 shadow-sm border transition-colors duration-200"
-          style={{
-            backgroundColor: colors.background.secondary,
-            borderColor: colors.border.primary,
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm" style={{ color: colors.text.secondary }}>
-                Cancelled Orders
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm truncate" style={{ color: colors.text.secondary }}>
+                Cancelled
               </p>
               <h3
                 className="text-3xl font-bold mt-1"
@@ -1115,7 +1211,7 @@ const Orders: React.FC = () => {
               </h3>
             </div>
             <XCircle
-              className="w-12 h-12"
+              className="w-10 h-10 shrink-0"
               style={{ color: colors.status.error, opacity: 0.2 }}
             />
           </div>
@@ -1206,12 +1302,19 @@ const Orders: React.FC = () => {
                           "N/A"}
                       </div>
                       <div
-                        className="text-sm"
+                        className="text-sm space-y-0.5"
                         style={{ color: colors.text.secondary }}
                       >
-                        {order.userId?.email ||
-                          order.shippingAddress?.phoneNumber ||
-                          ""}
+                        {displayOrderCustomerEmail(order) && (
+                          <div className="truncate" title={displayOrderCustomerEmail(order)}>
+                            {displayOrderCustomerEmail(order)}
+                          </div>
+                        )}
+                        {displayOrderCustomerPhone(order) && (
+                          <div className="truncate" title={displayOrderCustomerPhone(order)}>
+                            {displayOrderCustomerPhone(order)}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td
@@ -1235,11 +1338,13 @@ const Orders: React.FC = () => {
                         style={{
                           backgroundColor: colors.background.accent,
                           color:
-                            order.orderStatus === "delivered"
+                            normOrderStatus(order.orderStatus) === "delivered"
                               ? colors.status.success
-                              : order.orderStatus === "cancelled"
+                              : normOrderStatus(order.orderStatus) === "cancelled"
                                 ? colors.status.error
-                                : colors.status.warning,
+                                : normOrderStatus(order.orderStatus) === "pending"
+                                  ? colors.status.info
+                                  : colors.status.warning,
                         }}
                       >
                         {getStatusLabel(order.orderStatus || "processing")}
@@ -1384,11 +1489,13 @@ const Orders: React.FC = () => {
                     className="text-lg font-semibold capitalize"
                     style={{
                       color:
-                        selectedOrder.orderStatus === "delivered"
+                        normOrderStatus(selectedOrder.orderStatus) === "delivered"
                           ? colors.status.success
-                          : selectedOrder.orderStatus === "cancelled"
+                          : normOrderStatus(selectedOrder.orderStatus) === "cancelled"
                             ? colors.status.error
-                            : colors.interactive.primary,
+                            : normOrderStatus(selectedOrder.orderStatus) === "pending"
+                              ? colors.status.info
+                              : colors.status.warning,
                     }}
                   >
                     {getStatusLabel(selectedOrder.orderStatus)}
@@ -1471,7 +1578,9 @@ const Orders: React.FC = () => {
                         className="font-medium"
                         style={{ color: '#000' }}
                       >
-                        {selectedOrder.shippingAddress.fullName}
+                        {selectedOrder.shippingAddress?.fullName ||
+                          selectedOrder.userId?.fullName ||
+                          "N/A"}
                       </p>
                     </div>
                   </div>
@@ -1491,11 +1600,11 @@ const Orders: React.FC = () => {
                         className="font-medium"
                         style={{ color: '#000' }}
                       >
-                        {selectedOrder.shippingAddress.phoneNumber}
+                        {displayOrderCustomerPhone(selectedOrder) || "N/A"}
                       </p>
                     </div>
                   </div>
-                  {selectedOrder.userId?.email && (
+                  {displayOrderCustomerEmail(selectedOrder) && (
                     <div className="flex items-start gap-3">
                       <Mail
                         className="w-5 h-5 mt-0.5"
@@ -1512,7 +1621,7 @@ const Orders: React.FC = () => {
                           className="font-medium"
                           style={{ color: '#000' }}
                         >
-                          {selectedOrder.userId.email}
+                          {displayOrderCustomerEmail(selectedOrder)}
                         </p>
                       </div>
                     </div>

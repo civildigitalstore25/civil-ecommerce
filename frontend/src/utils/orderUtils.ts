@@ -17,7 +17,6 @@ export const getStatusColor = (status: string): string => {
     DELIVERED: "#10b981", // green
     PENDING: "#f59e0b", // yellow
     CANCELLED: "#ef4444", // red
-    SHIPPED: "#fbbf24", // yellow (primary)
     PROCESSING: "#3b82f6", // blue
     PAID: "#10b981", // green
     FAILED: "#ef4444", // red
