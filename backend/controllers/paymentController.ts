@@ -49,6 +49,15 @@ const getNextOrderNumber = async (retries = 5): Promise<number> => {
   return 1001 + Math.floor(Math.random() * 1000000);
 };
 
+const emailFromOrderNotes = (notes: string | undefined | null): string => {
+  if (!notes || typeof notes !== 'string') return '';
+  const m = notes.match(/^Email:\s*(.+)$/im);
+  return m ? m[1].trim() : '';
+};
+
+const exportCustomerPhone = (order: { shippingAddress?: { phoneNumber?: string }; userId?: { phoneNumber?: string } | null }): string =>
+  order.shippingAddress?.phoneNumber || (order.userId as { phoneNumber?: string } | undefined)?.phoneNumber || '';
+
 /**
  * Admin Create Order (Admin only - no payment gateway)
  */
@@ -1226,9 +1235,9 @@ export const exportOrders = async (req: Request, res: Response): Promise<void> =
     const exportData = orders.map((order: any) => ({
       'Order ID': order.orderId,
       'Order Number': order.orderNumber,
-      'Customer Name': order.userId?.fullName || 'N/A',
-      'Customer Email': order.userId?.email || 'N/A',
-      'Customer Phone': order.userId?.phoneNumber || 'N/A',
+      'Customer Name': order.shippingAddress?.fullName || order.userId?.fullName || 'N/A',
+      'Customer Email': order.userId?.email || emailFromOrderNotes(order.notes) || 'N/A',
+      'Customer Phone': exportCustomerPhone(order) || 'N/A',
       'Order Status': order.orderStatus,
       'Payment Status': order.paymentStatus,
       'Subtotal': order.subtotal,

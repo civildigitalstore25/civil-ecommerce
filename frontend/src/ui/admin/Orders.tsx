@@ -29,6 +29,26 @@ import Swal from "sweetalert2";
 
 import type { IOrderItem } from "../../api/types/orderTypes";
 
+/** Checkout contact email is stored in notes as `Email: ...` when it differs from account email. */
+function emailFromOrderNotes(notes: string | undefined | null): string {
+  if (!notes || typeof notes !== "string") return "";
+  const m = notes.match(/^Email:\s*(.+)$/im);
+  return m ? m[1].trim() : "";
+}
+
+/** Phone entered at checkout lives on shippingAddress; user profile phone is a fallback. */
+function displayOrderCustomerPhone(order: any): string {
+  return (
+    order.shippingAddress?.phoneNumber ||
+    order.userId?.phoneNumber ||
+    ""
+  );
+}
+
+function displayOrderCustomerEmail(order: any): string {
+  return order.userId?.email || emailFromOrderNotes(order.notes) || "";
+}
+
 const Orders: React.FC = () => {
   // State for admin order creation form (no dropdown, no address, no shipping)
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -236,9 +256,10 @@ const Orders: React.FC = () => {
     return filteredOrders.map((order: any) => ({
       'Order ID': order.orderId,
       'Order Number': order.orderNumber,
-      'Customer Name': order.userId?.fullName || 'N/A',
-      'Customer Email': order.userId?.email || 'N/A',
-      'Customer Phone': order.userId?.phoneNumber || 'N/A',
+      'Customer Name':
+        order.shippingAddress?.fullName || order.userId?.fullName || 'N/A',
+      'Customer Email': displayOrderCustomerEmail(order) || 'N/A',
+      'Customer Phone': displayOrderCustomerPhone(order) || 'N/A',
       'Order Status': order.orderStatus,
       'Payment Status': order.paymentStatus,
       'Subtotal': order.subtotal,
@@ -325,7 +346,18 @@ const Orders: React.FC = () => {
       const userName = order.userId?.fullName?.toLowerCase() || "";
       const userEmail = order.userId?.email?.toLowerCase() || "";
       const shippingName = order.shippingAddress?.fullName?.toLowerCase() || "";
-      return userName.includes(search) || userEmail.includes(search) || shippingName.includes(search);
+      const notesEmail = emailFromOrderNotes(order.notes).toLowerCase();
+      const phone =
+        displayOrderCustomerPhone(order).toLowerCase().replace(/\s/g, "") ||
+        "";
+      const searchCompact = search.replace(/\s/g, "");
+      return (
+        userName.includes(search) ||
+        userEmail.includes(search) ||
+        shippingName.includes(search) ||
+        notesEmail.includes(search) ||
+        (phone && phone.includes(searchCompact))
+      );
     });
   };
 
@@ -1270,12 +1302,19 @@ const Orders: React.FC = () => {
                           "N/A"}
                       </div>
                       <div
-                        className="text-sm"
+                        className="text-sm space-y-0.5"
                         style={{ color: colors.text.secondary }}
                       >
-                        {order.userId?.email ||
-                          order.shippingAddress?.phoneNumber ||
-                          ""}
+                        {displayOrderCustomerEmail(order) && (
+                          <div className="truncate" title={displayOrderCustomerEmail(order)}>
+                            {displayOrderCustomerEmail(order)}
+                          </div>
+                        )}
+                        {displayOrderCustomerPhone(order) && (
+                          <div className="truncate" title={displayOrderCustomerPhone(order)}>
+                            {displayOrderCustomerPhone(order)}
+                          </div>
+                        )}
                       </div>
                     </td>
                     <td
@@ -1539,7 +1578,9 @@ const Orders: React.FC = () => {
                         className="font-medium"
                         style={{ color: '#000' }}
                       >
-                        {selectedOrder.shippingAddress.fullName}
+                        {selectedOrder.shippingAddress?.fullName ||
+                          selectedOrder.userId?.fullName ||
+                          "N/A"}
                       </p>
                     </div>
                   </div>
@@ -1559,11 +1600,11 @@ const Orders: React.FC = () => {
                         className="font-medium"
                         style={{ color: '#000' }}
                       >
-                        {selectedOrder.shippingAddress.phoneNumber}
+                        {displayOrderCustomerPhone(selectedOrder) || "N/A"}
                       </p>
                     </div>
                   </div>
-                  {selectedOrder.userId?.email && (
+                  {displayOrderCustomerEmail(selectedOrder) && (
                     <div className="flex items-start gap-3">
                       <Mail
                         className="w-5 h-5 mt-0.5"
@@ -1580,7 +1621,7 @@ const Orders: React.FC = () => {
                           className="font-medium"
                           style={{ color: '#000' }}
                         >
-                          {selectedOrder.userId.email}
+                          {displayOrderCustomerEmail(selectedOrder)}
                         </p>
                       </div>
                     </div>
