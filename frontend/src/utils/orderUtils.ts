@@ -12,10 +12,7 @@ export const canDeleteOrder = (order: IOrder): boolean => {
  * Get status color based on order status
  */
 export const getStatusColor = (status: string): string => {
-  const normalizedStatus =
-    status.toLowerCase() === "shipped"
-      ? "PROCESSING"
-      : status.toUpperCase();
+  const normalizedStatus = status.toUpperCase();
   const statusColors = {
     DELIVERED: "#10b981", // green
     PENDING: "#f59e0b", // yellow
@@ -34,9 +31,7 @@ export const getStatusColor = (status: string): string => {
  * Get status label for display
  */
 export const getStatusLabel = (status: string): string => {
-  const lower = status.toLowerCase();
-  if (lower === "shipped") return "Processing";
-  if (lower === "delivered") return "Success";
+  if (status.toLowerCase() === "delivered") return "Success";
   return status.charAt(0).toUpperCase() + status.slice(1);
 }; /**
  * Format order date for display

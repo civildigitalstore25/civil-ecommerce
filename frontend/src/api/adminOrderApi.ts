@@ -67,8 +67,7 @@ export const updateOrderStatus = async (
   console.log("🌐 Request URL:", `/payments/admin/orders/${orderId}/status`);
   console.log("🌐 Request body:", { orderStatus });
 
-  const id = encodeURIComponent(String(orderId));
-  const response = await api.put(`/payments/admin/orders/${id}/status`, {
+  const response = await api.put(`/payments/admin/orders/${orderId}/status`, {
     orderStatus,
   });
 
@@ -81,8 +80,7 @@ export const updateOrderStatus = async (
  */
 export const deleteAdminOrder = async (orderId: string) => {
   console.log("🗑️ AdminOrderAPI - deleteAdminOrder called with:", { orderId });
-  const id = encodeURIComponent(String(orderId));
-  const response = await api.delete(`/payments/admin/orders/${id}`);
+  const response = await api.delete(`/payments/admin/orders/${orderId}`);
   console.log("🗑️ Delete Response:", response.data);
   return response.data;
 };

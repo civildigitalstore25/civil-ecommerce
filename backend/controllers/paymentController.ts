@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Order from '../models/Order';
+import Order, { coerceLegacyOrderStatus } from '../models/Order';
 import cashfreeService from '../services/cashfreeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
@@ -778,9 +778,10 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
               .lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
 
+            const effectiveOrderStatus = coerceLegacyOrderStatus(order.orderStatus);
             const eligibility = getDownloadEligibility({
               orderPaymentStatus: order.paymentStatus,
-              orderStatus: order.orderStatus,
+              orderStatus: effectiveOrderStatus,
               orderItemPrice: item.price,
               product,
             });
@@ -797,6 +798,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
         );
         return {
           ...order,
+          orderStatus: coerceLegacyOrderStatus(order.orderStatus),
           items: itemsWithDriveLinks
         };
       })
@@ -886,7 +888,7 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
     console.log('🔧 Full body:', req.body);
 
     // Validate status
-    const validStatuses = ['pending', 'processing', 'delivered', 'cancelled'];
+    const validStatuses = ['processing', 'delivered', 'cancelled'];
     if (!orderStatus || !validStatuses.includes(orderStatus)) {
       console.log('❌ Backend - Invalid status:', orderStatus);
       res.status(400).json({
@@ -1029,7 +1031,8 @@ export const deleteOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     // Only allow deletion of pending or failed orders
-    if (order.paymentStatus === 'paid' || order.orderStatus === 'processing' || order.orderStatus === 'delivered') {
+    const st = coerceLegacyOrderStatus(order.orderStatus);
+    if (order.paymentStatus === 'paid' || st === 'processing' || st === 'delivered') {
       res.status(400).json({
         success: false,
         message: 'Cannot delete orders that are paid or being processed'
@@ -1113,7 +1116,7 @@ export const bulkUpdateOrderStatuses = async (req: Request, res: Response): Prom
     }
 
     // Validate all updates before processing
-    const validStatuses = ['pending', 'processing', 'delivered', 'cancelled'];
+    const validStatuses = ['processing', 'delivered', 'cancelled'];
     for (const update of updates) {
       if (!update.orderId || !update.status) {
         res.status(400).json({

@@ -133,6 +133,43 @@ const OrderSchema = new Schema<IOrder>({
   timestamps: true
 });
 
+OrderSchema.set('toJSON', {
+  transform(_doc, ret) {
+    if ((ret.orderStatus as string) === 'shipped') {
+      ret.orderStatus = 'processing';
+    }
+    return ret;
+  },
+});
+OrderSchema.set('toObject', {
+  transform(_doc, ret) {
+    if ((ret.orderStatus as string) === 'shipped') {
+      ret.orderStatus = 'processing';
+    }
+    return ret;
+  },
+});
+
+OrderSchema.pre('validate', function (next) {
+  const doc = this as mongoose.Document & { orderStatus?: string };
+  if (doc.orderStatus === 'shipped') {
+    doc.orderStatus = 'processing';
+  }
+  next();
+});
+
+/** Normalize legacy `shipped` documents for API/business rules */
+export const coerceLegacyOrderStatus = (
+  status: string | undefined | null
+): 'pending' | 'processing' | 'delivered' | 'cancelled' => {
+  const s = (status || '').toLowerCase();
+  if (s === 'shipped') return 'processing';
+  if (s === 'pending' || s === 'processing' || s === 'delivered' || s === 'cancelled') {
+    return s;
+  }
+  return 'pending';
+};
+
 // Index for faster queries
 OrderSchema.index({ userId: 1, createdAt: -1 });
 OrderSchema.index({ cashfreeOrderId: 1 });
