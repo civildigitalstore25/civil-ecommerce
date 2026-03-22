@@ -35,7 +35,7 @@ export interface IOrder {
   totalAmount: number;
   shippingAddress: IShippingAddress;
   paymentStatus: "pending" | "paid" | "failed" | "refunded";
-  orderStatus: "pending" | "processing" | "shipped" | "delivered" | "cancelled";
+  orderStatus: "pending" | "processing" | "delivered" | "cancelled";
   cashfreeOrderId?: string;
   paymentSessionId?: string;
   cashfreePaymentId?: string;

@@ -35,7 +35,7 @@ export interface IOrder extends Document {
   couponCode?: string;
   notes?: string;
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
-  orderStatus: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  orderStatus: 'pending' | 'processing' | 'delivered' | 'cancelled';
   cashfreeOrderId?: string;
   paymentSessionId?: string;
   cashfreePaymentId?: string;
@@ -113,7 +113,7 @@ const OrderSchema = new Schema<IOrder>({
   },
   orderStatus: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'processing', 'delivered', 'cancelled'],
     default: 'pending'
   },
   cashfreeOrderId: {

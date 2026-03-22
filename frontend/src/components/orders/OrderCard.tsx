@@ -15,7 +15,10 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
     const { colors } = useAdminTheme();
 
     const getStatusColor = (status: string) => {
-      const normalizedStatus = status.toUpperCase();
+      const normalizedStatus =
+        status.toLowerCase() === "shipped"
+          ? "PROCESSING"
+          : status.toUpperCase();
       switch (normalizedStatus) {
         case "DELIVERED":
           return colors.status.success;
@@ -23,8 +26,6 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
           return colors.status.warning;
         case "CANCELLED":
           return colors.status.error;
-        case "SHIPPED":
-          return colors.interactive.primary;
         case "PROCESSING":
           return colors.interactive.primary;
         case "PAID":
@@ -37,7 +38,9 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
     };
 
     const getStatusLabel = (status: string) => {
-      if (status.toLowerCase() === "delivered") return "Success";
+      const lower = status.toLowerCase();
+      if (lower === "shipped") return "Processing";
+      if (lower === "delivered") return "Success";
       return status.charAt(0).toUpperCase() + status.slice(1);
     };
 

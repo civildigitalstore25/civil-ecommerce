@@ -886,7 +886,7 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
     console.log('🔧 Full body:', req.body);
 
     // Validate status
-    const validStatuses = ['processing', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'processing', 'delivered', 'cancelled'];
     if (!orderStatus || !validStatuses.includes(orderStatus)) {
       console.log('❌ Backend - Invalid status:', orderStatus);
       res.status(400).json({
@@ -1029,7 +1029,7 @@ export const deleteOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     // Only allow deletion of pending or failed orders
-    if (order.paymentStatus === 'paid' || order.orderStatus === 'processing' || order.orderStatus === 'shipped' || order.orderStatus === 'delivered') {
+    if (order.paymentStatus === 'paid' || order.orderStatus === 'processing' || order.orderStatus === 'delivered') {
       res.status(400).json({
         success: false,
         message: 'Cannot delete orders that are paid or being processed'
@@ -1113,7 +1113,7 @@ export const bulkUpdateOrderStatuses = async (req: Request, res: Response): Prom
     }
 
     // Validate all updates before processing
-    const validStatuses = ['processing', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'processing', 'delivered', 'cancelled'];
     for (const update of updates) {
       if (!update.orderId || !update.status) {
         res.status(400).json({
