@@ -1084,7 +1084,7 @@ const Orders: React.FC = () => {
               </p>
               <h3
                 className="text-3xl font-bold mt-1"
-                style={{ color: "#fff" }}
+                style={{ color: colors.status.warning }}
               >
                 {processingOrders.length}
               </h3>
