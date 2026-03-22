@@ -4,6 +4,7 @@ import cashfreeService from '../services/cashfreeService';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 import { getDownloadEligibility } from '../utils/downloadEligibility';
+import { postPaymentOrderStatusForOrderItems } from '../utils/orderEbookStatus';
 
 /**
  * Generate short, human-readable order ID.
@@ -95,12 +96,13 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
 
     // If all productIds are valid ObjectIds, fetch driveLinks; otherwise, skip driveLink logic
     let itemsWithDriveLink = items;
+    let adminPostPayStatus: 'delivered' | 'processing' = 'processing';
     const allProductIdsAreObjectIds = items.every((item: any) => mongoose.Types.ObjectId.isValid(item.productId));
     if (allProductIdsAreObjectIds) {
       const Product = (await import('../models/Product')).default;
       const productIds = items.map((item: any) => item.productId);
       console.log('🔍 Admin order - Fetching products for IDs:', productIds);
-      const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
+      const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name company brand').lean();
       console.log('📦 Products found with driveLinks:', products.map(p => ({
         id: p._id,
         name: (p as any).name,
@@ -117,6 +119,10 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
           driveLink
         };
       });
+      const productBrandMapAdmin = new Map(
+        products.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
+      );
+      adminPostPayStatus = postPaymentOrderStatusForOrderItems(itemsWithDriveLink, productBrandMapAdmin);
     } else {
       // Arbitrary product IDs: just pass through, no driveLink
       itemsWithDriveLink = items;
@@ -151,7 +157,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       },
       notes: notes || 'Order created by admin',
       paymentStatus: 'paid', // Admin orders are marked as paid
-      orderStatus: 'processing'
+      orderStatus: adminPostPayStatus
     });
 
     await order.save();
@@ -260,7 +266,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     const Product = (await import('../models/Product')).default;
     const productIds = items.map((item: any) => item.productId);
     console.log('🔍 Creating order - Fetching products for IDs:', productIds);
-    const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name').lean();
+    const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name company brand').lean();
     console.log('📦 Products found with driveLinks:', products.map(p => ({
       id: p._id,
       name: (p as any).name,
@@ -269,6 +275,9 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
 
     // Create a map for quick lookup
     const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
+    const productBrandMap = new Map(
+      products.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
+    );
 
     // Add driveLink to each item
     const itemsWithDriveLink = items.map((item: any) => {
@@ -295,6 +304,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     // For free orders (₹0), skip payment gateway and create order as paid
     if (isFreeOrder) {
       const couponCodeUpper = couponCode ? String(couponCode).toUpperCase() : null;
+      const freeOrderStatus = postPaymentOrderStatusForOrderItems(itemsWithDriveLink, productBrandMap);
       const order = new Order({
         userId: user._id,
         orderId,
@@ -310,7 +320,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         cashfreeOrderId: undefined,
         paymentSessionId: undefined,
         paymentStatus: 'paid',
-        orderStatus: 'processing'
+        orderStatus: freeOrderStatus
       });
 
       await order.save();
@@ -511,9 +521,15 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
 
     order.cashfreePaymentId = cfPaymentId;
     order.paymentStatus = 'paid';
-    order.orderStatus = 'processing';
+    const Product = (await import('../models/Product')).default;
+    const paidItemIds = order.items.map((i) => i.productId).filter((id) => mongoose.Types.ObjectId.isValid(id));
+    const paidProducts = await Product.find({ _id: { $in: paidItemIds } }).select('_id company brand').lean();
+    const paidBrandMap = new Map(
+      paidProducts.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
+    );
+    order.orderStatus = postPaymentOrderStatusForOrderItems(order.items, paidBrandMap);
     await order.save();
-    console.log('✅ Order status updated to processing');
+    console.log(`✅ Order status updated to ${order.orderStatus}`);
 
     // Apply coupon if used
     if (order.couponCode) {
@@ -1333,10 +1349,16 @@ export const handleWebhook = async (req: Request, res: Response): Promise<void> 
 
         dbOrder.cashfreePaymentId = cfPaymentId;
         dbOrder.paymentStatus = 'paid';
-        dbOrder.orderStatus = 'processing';
+        const Product = (await import('../models/Product')).default;
+        const whIds = dbOrder.items.map((i) => i.productId).filter((id) => mongoose.Types.ObjectId.isValid(id));
+        const whProducts = await Product.find({ _id: { $in: whIds } }).select('_id company brand').lean();
+        const whBrandMap = new Map(
+          whProducts.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
+        );
+        dbOrder.orderStatus = postPaymentOrderStatusForOrderItems(dbOrder.items, whBrandMap);
         await dbOrder.save();
 
-        console.log(`✅ Order ${orderId} marked as paid via webhook`);
+        console.log(`✅ Order ${orderId} marked as paid via webhook (${dbOrder.orderStatus})`);
 
         // Apply coupon if used
         if (dbOrder.couponCode) {
