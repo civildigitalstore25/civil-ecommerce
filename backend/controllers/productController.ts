@@ -25,21 +25,6 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
       productData.image = productData.imageUrl;
     }
 
-    if (productData.isFreeProduct) {
-      productData.price1 = 0;
-      productData.price1INR = 0;
-      productData.price1USD = 0;
-      productData.price3 = 0;
-      productData.price3INR = 0;
-      productData.price3USD = 0;
-      productData.priceLifetime = 0;
-      productData.priceLifetimeINR = 0;
-      productData.priceLifetimeUSD = 0;
-      productData.membershipPrice = 0;
-      productData.membershipPriceINR = 0;
-      productData.membershipPriceUSD = 0;
-    }
-
     if (productData.subscriptionDurations && productData.subscriptionDurations.length > 0) {
       productData.price1 = productData.subscriptionDurations[0].price;
       if (productData.subscriptionDurations.length > 1) {
@@ -393,7 +378,14 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
   console.log('DriveLink value:', req.body.driveLink);
   
   try {
-    const productData = { ...req.body };
+    const productData: any = { ...req.body };
+
+    // Never send these in an update document — they can break or no-op the save (MongoDB cannot change _id; __v can confuse versioning).
+    delete productData._id;
+    delete productData.id;
+    delete productData.__v;
+    delete productData.createdAt;
+    delete productData.updatedAt;
 
     console.log('📝 Updating product with data:', {
       id: req.params.id,
@@ -420,52 +412,6 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
       productData.priceLifetime = Number(productData.lifetimePrice);
     }
 
-    // Free product: after other pricing logic, save pre-free prices then force all to 0
-    if (productData.isFreeProduct) {
-      const existing = await Product.findById(req.params.id).lean();
-      if (existing) {
-        if (existing.preFreePricing) {
-          productData.preFreePricing = existing.preFreePricing;
-        } else {
-          const hasExistingPrices =
-            (existing.price1INR && existing.price1INR > 0) ||
-            (existing.price1 && existing.price1 > 0) ||
-            (existing.subscriptionDurations && existing.subscriptionDurations.length > 0);
-          if (hasExistingPrices) {
-            productData.preFreePricing = {
-              subscriptionDurations: existing.subscriptionDurations,
-              price1: existing.price1,
-              price1INR: existing.price1INR,
-              price1USD: existing.price1USD,
-              price3: existing.price3,
-              price3INR: existing.price3INR,
-              price3USD: existing.price3USD,
-              priceLifetime: existing.priceLifetime,
-              priceLifetimeINR: existing.priceLifetimeINR,
-              priceLifetimeUSD: existing.priceLifetimeUSD,
-              membershipPrice: existing.membershipPrice,
-              membershipPriceINR: existing.membershipPriceINR,
-              membershipPriceUSD: existing.membershipPriceUSD,
-              hasLifetime: existing.hasLifetime,
-              hasMembership: existing.hasMembership,
-            };
-          }
-        }
-      }
-      productData.price1 = 0;
-      productData.price1INR = 0;
-      productData.price1USD = 0;
-      productData.price3 = 0;
-      productData.price3INR = 0;
-      productData.price3USD = 0;
-      productData.priceLifetime = 0;
-      productData.priceLifetimeINR = 0;
-      productData.priceLifetimeUSD = 0;
-      productData.membershipPrice = 0;
-      productData.membershipPriceINR = 0;
-      productData.membershipPriceUSD = 0;
-    }
-
     // Explicitly ensure driveLink is included
     if (productData.driveLink !== undefined) {
       console.log('✅ driveLink is present in productData:', productData.driveLink);
@@ -474,12 +420,12 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id, 
-      productData, 
+      req.params.id,
+      { $set: productData },
       {
         new: true,
         runValidators: true,
-        strict: false // Allow fields not in schema (in case of schema sync issues)
+        strict: false, // Allow fields not in schema (e.g. slug) until schema catches up
       }
     );
     

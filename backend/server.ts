@@ -69,7 +69,7 @@ app.use(
 // app.options(/.*/, cors()); // Removed - causing route parsing error
 app.set('trust proxy', true);
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 
 // Serve email footer icons (use project root so it works in dist builds)
 app.use(

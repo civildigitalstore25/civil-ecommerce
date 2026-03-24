@@ -10,6 +10,9 @@ const calculateItemTotal = (price: number, quantity: number): number => {
 
 // Helper function to get price by license type
 const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPlan?: any): number => {
+  if (subscriptionPlan?.planId === 'free') {
+    return 0;
+  }
   console.log(`Getting price for product: ${product.name}, licenseType: ${licenseType}`);
   console.log('Subscription plan details:', subscriptionPlan);
   console.log('Product subscription data:', {
@@ -178,7 +181,8 @@ export const addToCart = async (req: Request, res: Response): Promise<void> => {
     const price = getPriceByLicenseType(product, licenseType, subscriptionPlan);
     console.log(`Final price for ${product.name} with ${licenseType}: ₹${price}`);
 
-    if (price <= 0) {
+    const isFreePlan = subscriptionPlan?.planId === 'free';
+    if (!isFreePlan && price <= 0) {
       console.error(`Invalid price for product ${product.name} with license ${licenseType}. Price: ${price}`);
       console.error('Subscription plan details:', subscriptionPlan);
       res.status(400).json({

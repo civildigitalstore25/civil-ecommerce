@@ -239,9 +239,11 @@ const DraftProducts: React.FC = () => {
     const handleSaveProduct = (productData: any) => {
         console.log('💾 Frontend - Saving draft product with driveLink:', productData.driveLink || 'NOT PROVIDED');
 
-        if (editingProduct && editingProduct._id) {
+        const editingId =
+            editingProduct?._id ?? (editingProduct as { id?: string })?.id;
+        if (editingProduct && editingId) {
             updateProduct.mutate(
-                { id: editingProduct._id, updatedProduct: productData },
+                { id: String(editingId), updatedProduct: productData },
                 {
                     onSuccess: () => {
                         setIsModalOpen(false);

@@ -320,10 +320,12 @@ const Products: React.FC = () => {
   const handleSaveProduct = (productData: any) => {
     console.log('💾 Frontend - Saving product with driveLink:', productData.driveLink || 'NOT PROVIDED');
 
-    if (editingProduct && editingProduct._id) {
+    const editingId =
+      editingProduct?._id ?? (editingProduct as { id?: string })?.id;
+    if (editingProduct && editingId) {
       updateProductMutation.mutate(
         {
-          id: editingProduct._id,
+          id: String(editingId),
           updatedProduct: productData,
         },
         {
@@ -421,7 +423,8 @@ const Products: React.FC = () => {
   };
 
   const handleToggleBestSeller = (product: Product) => {
-    if (!product._id) return;
+    const pid = product._id ?? (product as { id?: string }).id;
+    if (!pid) return;
 
     const updatedProduct = {
       ...product,
@@ -430,7 +433,7 @@ const Products: React.FC = () => {
 
     updateProductMutation.mutate(
       {
-        id: product._id,
+        id: String(pid),
         updatedProduct: updatedProduct,
       },
       {
@@ -458,7 +461,8 @@ const Products: React.FC = () => {
   };
 
   const handleToggleOutOfStock = (product: Product) => {
-    if (!product._id) return;
+    const pid = product._id ?? (product as { id?: string }).id;
+    if (!pid) return;
 
     const updatedProduct = {
       ...product,
@@ -467,7 +471,7 @@ const Products: React.FC = () => {
 
     updateProductMutation.mutate(
       {
-        id: product._id,
+        id: String(pid),
         updatedProduct: updatedProduct,
       },
       {

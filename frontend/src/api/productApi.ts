@@ -138,7 +138,10 @@ export const useUpdateProduct = () => {
       console.log("🔍 API - driveLink in payload:", updatedProduct.driveLink || 'NOT PROVIDED');
       console.log("🔍 API - Full product payload:", JSON.stringify(updatedProduct, null, 2));
 
-      const { data } = await apiClient.put(`/${id}`, updatedProduct);
+      const { data } = await apiClient.put(
+        `/${encodeURIComponent(id)}`,
+        updatedProduct,
+      );
 
       console.log("✅ API - Product updated, response:", data);
       console.log("✅ API - driveLink in response:", data.driveLink || 'NOT IN RESPONSE');
@@ -148,6 +151,7 @@ export const useUpdateProduct = () => {
     onSuccess: () => {
       console.log("Update product mutation success, invalidating queries");
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
     },
     onError: (error: any) => {
       console.error("Update product error:", error);

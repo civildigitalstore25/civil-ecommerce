@@ -574,6 +574,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
     const htmlDetailsDescription = newProduct.detailsDescription || (isDraft ? '' : '');
     // Also generate Markdown (kept for reference / compatibility)
 
+    const freeStartTimeNorm =
+      (newProduct.freeProductStartTime || "00:00").trim() || "00:00";
+    const freeEndTimeNorm =
+      (newProduct.freeProductEndTime || "23:59").trim() || "23:59";
+
     // Transform new product structure to match current backend expectations
     const productData = {
       // Basic Information
@@ -590,38 +595,30 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       company: defaultBrand, // For backward compatibility
       brand: defaultBrand, // New field
 
-      // Pricing handling - always send explicit values (use 0 when cleared) so backend updates them.
-      // Undefined keys are omitted in JSON and backend won't update those fields.
-      // When free product is enabled, force price to 0 so backend and product detail show free.
+      // Pricing: always from form. Free promo is driven by isFreeProduct + dates; storefront shows ₹0 during the window.
       price1:
-        newProduct.isFreeProduct
-          ? 0
-          : defaultBrand === "ebook"
+        defaultBrand === "ebook"
           ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
           : (newProduct.subscriptionDurations[0]?.price ? Number(newProduct.subscriptionDurations[0].price) : 0),
-      price3: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0)),
+      price3: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0),
       priceLifetime:
-        newProduct.isFreeProduct
-          ? 0
-          : defaultBrand === "ebook"
+        defaultBrand === "ebook"
           ? 0
           : (newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : newProduct.hasLifetime && newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : 0),
 
       // Dual currency pricing
-      price1INR: newProduct.isFreeProduct
-        ? 0
-        : defaultBrand === "ebook"
-        ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
-        : (newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : 0),
-      price1USD: newProduct.isFreeProduct
-        ? 0
-        : defaultBrand === "ebook"
-        ? (newProduct.ebookPriceUSD ? Number(newProduct.ebookPriceUSD) : 0)
-        : (newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : 0),
-      price3INR: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0)),
-      price3USD: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0)),
-      priceLifetimeINR: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0)),
-      priceLifetimeUSD: newProduct.isFreeProduct ? 0 : (defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0)),
+      price1INR:
+        defaultBrand === "ebook"
+          ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
+          : (newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : 0),
+      price1USD:
+        defaultBrand === "ebook"
+          ? (newProduct.ebookPriceUSD ? Number(newProduct.ebookPriceUSD) : 0)
+          : (newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : 0),
+      price3INR: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0),
+      price3USD: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0),
+      priceLifetimeINR: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0),
+      priceLifetimeUSD: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0),
 
       // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
       subscriptionDurations: defaultBrand === "ebook" ? [] : newProduct.subscriptionDurations
@@ -665,13 +662,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       // Membership pricing - send 0 when cleared so backend updates
       hasMembership: newProduct.hasMembership,
       membershipPrice:
-        newProduct.isFreeProduct
-          ? 0
-          : newProduct.hasMembership && (newProduct.membershipPriceINR || newProduct.membershipPrice)
+        newProduct.hasMembership && (newProduct.membershipPriceINR || newProduct.membershipPrice)
           ? Number(newProduct.membershipPriceINR || newProduct.membershipPrice)
           : 0,
-      membershipPriceINR: newProduct.isFreeProduct ? 0 : (newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : 0),
-      membershipPriceUSD: newProduct.isFreeProduct ? 0 : (newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : 0),
+      membershipPriceINR: newProduct.hasMembership && newProduct.membershipPriceINR ? Number(newProduct.membershipPriceINR) : 0,
+      membershipPriceUSD: newProduct.hasMembership && newProduct.membershipPriceUSD ? Number(newProduct.membershipPriceUSD) : 0,
 
       // Strikethrough Price (MRP) - send 0 when cleared so backend updates
       strikethroughPriceINR: newProduct.strikethroughPriceINR ? Number(newProduct.strikethroughPriceINR) : 0,
@@ -766,12 +761,14 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         : [],
       // Free product (show on homepage for limited time, ₹0)
       isFreeProduct: newProduct.isFreeProduct || false,
-      freeProductStartDate: newProduct.isFreeProduct && newProduct.freeProductStartDate && newProduct.freeProductStartTime
-        ? new Date(`${newProduct.freeProductStartDate}T${newProduct.freeProductStartTime}`)
-        : null,
-      freeProductEndDate: newProduct.isFreeProduct && newProduct.freeProductEndDate && newProduct.freeProductEndTime
-        ? new Date(`${newProduct.freeProductEndDate}T${newProduct.freeProductEndTime}`)
-        : null,
+      freeProductStartDate:
+        newProduct.isFreeProduct && newProduct.freeProductStartDate
+          ? new Date(`${newProduct.freeProductStartDate}T${freeStartTimeNorm}`)
+          : null,
+      freeProductEndDate:
+        newProduct.isFreeProduct && newProduct.freeProductEndDate
+          ? new Date(`${newProduct.freeProductEndDate}T${freeEndTimeNorm}`)
+          : null,
     };
 
     // Validation - Only validate when not saving as draft
@@ -850,19 +847,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       }
     }
 
-    // Free product: require start and end date/time
+    // Free product: require start and end dates (times default to 00:00 / 23:59 if empty)
     if (!isDraft && productData.isFreeProduct) {
-      if (!newProduct.freeProductStartDate || !newProduct.freeProductStartTime ||
-          !newProduct.freeProductEndDate || !newProduct.freeProductEndTime) {
+      if (!newProduct.freeProductStartDate || !newProduct.freeProductEndDate) {
         Swal.fire({
           title: "Validation Error",
-          text: "Free product requires Start and End date & time for homepage visibility",
+          text: "Free product requires Start and End dates for homepage visibility (times optional; default start 00:00, end 23:59).",
           icon: "error",
         });
         return;
       }
-      const start = new Date(`${newProduct.freeProductStartDate}T${newProduct.freeProductStartTime}`);
-      const end = new Date(`${newProduct.freeProductEndDate}T${newProduct.freeProductEndTime}`);
+      const start = new Date(`${newProduct.freeProductStartDate}T${freeStartTimeNorm}`);
+      const end = new Date(`${newProduct.freeProductEndDate}T${freeEndTimeNorm}`);
       if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) {
         Swal.fire({
           title: "Validation Error",
@@ -2500,9 +2496,27 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                 type="checkbox"
                 id="isFreeProduct"
                 checked={newProduct.isFreeProduct}
-                onChange={(e) =>
-                  setNewProduct((prev) => ({ ...prev, isFreeProduct: e.target.checked }))
-                }
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setNewProduct((prev) => {
+                    if (!checked) {
+                      return { ...prev, isFreeProduct: false };
+                    }
+                    return {
+                      ...prev,
+                      isFreeProduct: true,
+                      // Empty time inputs fail validation; sensible defaults so date-only setup still saves.
+                      freeProductStartTime:
+                        prev.freeProductStartTime.trim() !== ""
+                          ? prev.freeProductStartTime
+                          : "00:00",
+                      freeProductEndTime:
+                        prev.freeProductEndTime.trim() !== ""
+                          ? prev.freeProductEndTime
+                          : "23:59",
+                    };
+                  });
+                }}
                 className="w-4 h-4 rounded focus:ring-2"
                 style={{ accentColor: colors.interactive.primary }}
               />
@@ -2554,7 +2568,6 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                           borderColor: colors.border.primary,
                           color: colors.text.primary,
                         }}
-                        required={newProduct.isFreeProduct}
                       />
                     </div>
                   </div>
@@ -2589,13 +2602,12 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
                           borderColor: colors.border.primary,
                           color: colors.text.primary,
                         }}
-                        required={newProduct.isFreeProduct}
                       />
                     </div>
                   </div>
                 </div>
                 <p className="text-sm" style={{ color: colors.text.secondary }}>
-                  💡 Product will appear in &quot;Free for limited time&quot; on the homepage only between these dates. Set price to ₹0 (e.g. in Subscription/Lifetime/Membership or E-book price). Orders will be created without payment gateway.
+                  💡 During this window the storefront shows <strong>₹0</strong> and checkout skips the payment gateway. <strong>List prices you set above are saved as usual</strong> so the admin grid and post-promo pricing stay correct; you can edit them anytime, even while this is checked.
                 </p>
               </div>
             )}

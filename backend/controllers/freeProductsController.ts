@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import Product from '../models/Product';
 
 /**
- * Get all active free products (within their time window, price 0, active, not out of stock).
- * Used by homepage "Free for limited time" section.
+ * Get all active free products (within their time window, active, not out of stock).
+ * List prices may stay non-zero in DB; storefront shows ₹0 during the window via flags/dates.
  */
 export const getActiveFreeProducts = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -14,11 +14,6 @@ export const getActiveFreeProducts = async (req: Request, res: Response): Promis
       freeProductEndDate: { $gte: now },
       status: 'active',
       isOutOfStock: { $ne: true },
-      $or: [
-        { price1INR: 0 },
-        { price1: 0 },
-        { price1INR: { $exists: false }, price1: 0 }
-      ]
     }).sort({ freeProductEndDate: 1 }).lean();
 
     res.json({ success: true, products, count: products.length });

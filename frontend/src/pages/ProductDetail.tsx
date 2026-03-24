@@ -853,7 +853,7 @@ const ProductDetail: React.FC = () => {
     }
   }, [product]);
 
-  // Determine if the product is currently in its active free period
+  // Active free promo: flag + window only (DB may keep normal list prices for after promo ends)
   const isActiveFreeProduct = React.useMemo(() => {
     if (!product) return false;
     const now = new Date();
@@ -861,8 +861,6 @@ const ProductDetail: React.FC = () => {
       product.isFreeProduct &&
       product.freeProductStartDate &&
       product.freeProductEndDate &&
-      ((product.price1INR === 0 || product.price1 === 0) ||
-        (product.price1INR == null && product.price1 == null)) &&
       now >= new Date(product.freeProductStartDate) &&
       now <= new Date(product.freeProductEndDate)
     );
@@ -1550,11 +1548,12 @@ const ProductDetail: React.FC = () => {
 
   // Handle Product Edit
   const handleEditProduct = (productData: any) => {
-    if (!product?._id) return;
+    const pid = product?._id ?? (product as { id?: string })?.id;
+    if (!pid) return;
 
     updateProductMutation.mutate(
       {
-        id: product._id,
+        id: String(pid),
         updatedProduct: productData,
       },
       {

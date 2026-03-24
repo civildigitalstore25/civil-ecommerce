@@ -27,6 +27,7 @@ interface Requirement {
 
 export interface IProduct extends Document {
   name: string;
+  slug?: string;
   version?: string;
   shortDescription?: string;
   description?: string;
@@ -140,6 +141,7 @@ const requirementSchema = new Schema({
 const productSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
+    slug: { type: String }, // URL slug from admin (optional; used by storefront routing)
     version: { type: String },
     shortDescription: { type: String },
     description: { type: String },

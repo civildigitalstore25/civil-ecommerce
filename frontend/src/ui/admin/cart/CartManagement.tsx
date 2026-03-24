@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { ChevronDown, ChevronUp, Mail, Phone, ShoppingCart } from "lucide-react";
+import { ChevronDown, ChevronUp, ShoppingCart } from "lucide-react";
 import { useAdminCarts } from "../../../api/cartApi";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 
@@ -128,28 +128,7 @@ const CartManagement: React.FC = () => {
 
                 {isExpanded && (
                   <div className="px-4 pb-4 border-t" style={{ borderColor: colors.border.primary }}>
-                    <div className="flex flex-wrap gap-2 mt-3 mb-3">
-                      {user.email && (
-                        <a
-                          href={`mailto:${user.email}`}
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm"
-                          style={{ backgroundColor: `${colors.interactive.primary}20`, color: colors.interactive.primary }}
-                        >
-                          <Mail size={14} /> Email
-                        </a>
-                      )}
-                      {user.phoneNumber && (
-                        <a
-                          href={`tel:${user.phoneNumber}`}
-                          className="inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm"
-                          style={{ backgroundColor: `${colors.status.success}20`, color: colors.status.success }}
-                        >
-                          <Phone size={14} /> Call
-                        </a>
-                      )}
-                    </div>
-
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto mt-3">
                       <table className="w-full text-sm">
                         <thead>
                           <tr style={{ color: colors.text.secondary }}>
