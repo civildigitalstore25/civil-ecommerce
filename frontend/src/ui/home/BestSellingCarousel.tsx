@@ -81,7 +81,7 @@ const BestSellingCarousel: React.FC = () => {
         </p>
       </div>
 
-      <div className="relative best-selling-track w-full">
+      <div className="best-selling-track w-full">
         <div className="flex animate-scroll-best-selling gap-6">
           {allProducts.map((product: any, index: number) => (
             <div
@@ -131,19 +131,6 @@ const BestSellingCarousel: React.FC = () => {
             </div>
           ))}
         </div>
-
-        <div
-          className="absolute top-0 left-0 bottom-0 w-32 md:w-48 pointer-events-none z-10"
-          style={{
-            background: `linear-gradient(to right, ${colors.background.primary} 0%, ${colors.background.primary} 30%, transparent 100%)`,
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 bottom-0 w-32 md:w-48 pointer-events-none z-10"
-          style={{
-            background: `linear-gradient(to left, ${colors.background.primary} 0%, ${colors.background.primary} 30%, transparent 100%)`,
-          }}
-        />
       </div>
     </section>
   );

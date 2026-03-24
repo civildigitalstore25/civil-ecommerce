@@ -12,7 +12,7 @@ import { SiX } from "react-icons/si";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 // Match header logos (public folder assets)
-const lightLogo = "/softlogo.png";
+const lightLogo = "/darkLogo.png";
 const darkLogo = "/darkLogo.png";
 
 const Footer = () => {

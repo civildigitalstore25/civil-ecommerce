@@ -313,14 +313,18 @@ const CheckoutPage: React.FC = () => {
             </div>
           `,
           showCancelButton: true,
-          confirmButtonText: "View Orders",
+          confirmButtonText: "My Orders",
           cancelButtonText: "Continue Shopping",
           confirmButtonColor: "#10b981",
           cancelButtonColor: "#6b7280",
+          timer: 3000,
+          timerProgressBar: true,
           allowOutsideClick: false,
           allowEscapeKey: false,
         }).then((result) => {
           if (result.isConfirmed) {
+            navigate("/my-orders");
+          } else if (result.dismiss === Swal.DismissReason.timer) {
             navigate("/my-orders");
           } else {
             navigate("/");
@@ -435,14 +439,18 @@ const CheckoutPage: React.FC = () => {
                   </div>
                 `,
                 showCancelButton: true,
-                confirmButtonText: "View Orders",
+                confirmButtonText: "My Orders",
                 cancelButtonText: "Continue Shopping",
                 confirmButtonColor: "#10b981",
                 cancelButtonColor: "#6b7280",
+                timer: 3000,
+                timerProgressBar: true,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
               }).then((result) => {
                 if (result.isConfirmed) {
+                  navigate("/my-orders");
+                } else if (result.dismiss === Swal.DismissReason.timer) {
                   navigate("/my-orders");
                 } else {
                   navigate("/");

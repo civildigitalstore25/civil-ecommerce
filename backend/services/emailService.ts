@@ -552,6 +552,8 @@ class EmailService {
       purchaseDate,
       downloadLinks
     } = orderDetails;
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const myOrdersUrl = `${frontendUrl.replace(/\/$/, '')}/my-orders`;
 
     // Format items list for customer
     const itemsList = items.map((item: any) => {
@@ -607,6 +609,9 @@ class EmailService {
             .download-section { background: #eff6ff; border: 1px solid #bfdbfe; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; }
             .download-section h3 { color: #1e40af; margin-bottom: 15px; }
             .download-section p { color: #1e40af; margin-bottom: 20px; }
+            .orders-section { background: #ecfdf5; border: 1px solid #a7f3d0; padding: 25px; border-radius: 8px; margin: 25px 0; text-align: center; }
+            .orders-section h3 { color: #065f46; margin-bottom: 12px; }
+            .orders-btn { display: inline-block; background: #10b981; color: #ffffff !important; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: 700; margin: 10px 0; }
             .support-section { background: #fefce8; border: 1px solid #fde047; padding: 20px; border-radius: 8px; margin: 25px 0; text-align: center; }
             .support-section h4 { color: #a16207; margin-bottom: 10px; }
             .footer { background: #f9fafb; padding: 30px; text-align: center; color: #6b7280; border-top: 1px solid #e5e7eb; }
@@ -693,6 +698,12 @@ class EmailService {
                 <h3>📥 Your Digital Products Are Ready!</h3>
                 <p>Your digital products are now available for download. Click the download links in the products table above to access your files anytime.</p>
                 <p><strong>Note:</strong> Download links are valid indefinitely and can be accessed anytime from your account.</p>
+              </div>
+
+              <div class="orders-section">
+                <h3>📦 View Your Orders Anytime</h3>
+                <p style="color: #065f46; margin-bottom: 16px;">Click below to go directly to your order history page.</p>
+                <a href="${myOrdersUrl}" class="orders-btn">View My Orders</a>
               </div>
 
               <div class="support-section">
