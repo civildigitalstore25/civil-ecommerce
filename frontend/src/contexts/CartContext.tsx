@@ -37,10 +37,10 @@ interface CartContextType {
     licenseType: "1year" | "3year" | "lifetime",
     quantity?: number,
     subscriptionPlan?: { planId: string; planLabel: string; planType: string },
-  ) => void;
-  removeItem: (itemId: string) => void;
-  updateQuantity: (itemId: string, quantity: number) => void;
-  clearCart: () => void;
+  ) => Promise<void>;
+  removeItem: (itemId: string) => Promise<void>;
+  updateQuantity: (itemId: string, quantity: number) => Promise<void> | void;
+  clearCart: () => Promise<void>;
   getItemCount: () => number;
   getTotalPrice: () => number;
   isItemInCart: (
@@ -146,10 +146,45 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
 
+    const toPositiveNumber = (value: unknown): number => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+    };
+
+    const resolveLicenseType = (): "1year" | "3year" | "lifetime" => {
+      if (subscriptionPlan) return licenseType;
+
+      const productAny = product as any;
+      const has1YearPrice =
+        toPositiveNumber(productAny?.price1INR) > 0 ||
+        toPositiveNumber(productAny?.price1) > 0;
+      const has3YearPrice =
+        toPositiveNumber(productAny?.price3INR) > 0 ||
+        toPositiveNumber(productAny?.price3) > 0;
+      const hasLifetimePrice =
+        toPositiveNumber(productAny?.lifetimePriceINR) > 0 ||
+        toPositiveNumber(productAny?.priceLifetimeINR) > 0 ||
+        toPositiveNumber(productAny?.priceLifetime) > 0;
+
+      if (licenseType === "1year" && !has1YearPrice) {
+        if (hasLifetimePrice) return "lifetime";
+        if (has3YearPrice) return "3year";
+      }
+
+      if (licenseType === "3year" && !has3YearPrice) {
+        if (has1YearPrice) return "1year";
+        if (hasLifetimePrice) return "lifetime";
+      }
+
+      return licenseType;
+    };
+
+    const effectiveLicenseType = resolveLicenseType();
+
     try {
       await addToCartMutation.mutateAsync({
         productId: product._id!,
-        licenseType,
+        licenseType: effectiveLicenseType,
         quantity,
         subscriptionPlan,
       });
@@ -159,6 +194,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Failed to add item to cart:", error);
       showErrorToast("Failed to add item to cart");
+      throw error;
     }
   };
 
@@ -169,6 +205,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Failed to remove item from cart:", error);
       showErrorToast("Failed to remove item from cart");
+      throw error;
     }
   };
 
@@ -187,6 +224,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     } catch (error) {
       console.error("Failed to clear cart:", error);
       showErrorToast("Failed to clear cart");
+      throw error;
     }
   };
 

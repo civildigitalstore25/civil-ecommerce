@@ -6,7 +6,7 @@ export interface IUser extends Document {
   fullName: string;
   phoneNumber?: string;
   role: 'superadmin' | 'admin' | 'user';
-  permissions?: string[]; // For admins: dashboard, users, products, categories, companies, orders, reviews, banners, coupons
+  permissions?: string[]; // For admins: dashboard, users, products, categories, companies, orders, reviews, banners, coupons, carts
   googleId?: string;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;

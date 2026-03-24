@@ -38,6 +38,52 @@ export interface AddToCartRequest {
   };
 }
 
+export interface AdminCartItemProduct {
+  _id: string;
+  name: string;
+  image?: string;
+  company?: string;
+  brand?: string;
+  category?: string;
+  version?: string;
+}
+
+export interface AdminCartItem {
+  _id: string;
+  product: AdminCartItemProduct;
+  licenseType: "1year" | "3year" | "lifetime";
+  quantity: number;
+  price: number;
+  totalPrice: number;
+}
+
+export interface AdminCart {
+  _id: string;
+  user: {
+    _id: string;
+    fullName?: string;
+    email?: string;
+    phoneNumber?: string;
+  };
+  items: AdminCartItem[];
+  summary: CartSummary;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export interface AdminCartsResponse {
+  success: boolean;
+  data: {
+    carts: AdminCart[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      totalCarts: number;
+      pageSize: number;
+    };
+  };
+}
+
 export const cartApi = {
   getCart: async (): Promise<CartResponse> => {
     const response = await api.get("/");
@@ -66,6 +112,15 @@ export const cartApi = {
     const response = await api.delete("/clear");
     return response.data;
   },
+  getAdminCarts: async (params?: {
+    search?: string;
+    status?: "all" | "has-items" | "abandoned";
+    page?: number;
+    limit?: number;
+  }): Promise<AdminCartsResponse> => {
+    const response = await api.get("/admin/carts", { params });
+    return response.data;
+  },
 };
 
 export const useCart = () => {
@@ -81,7 +136,8 @@ export const useAddToCart = () => {
 
   return useMutation({
     mutationFn: cartApi.addToCart,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["cart"], data);
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
@@ -93,7 +149,8 @@ export const useUpdateCartItem = () => {
   return useMutation({
     mutationFn: ({ itemId, quantity }: { itemId: string; quantity: number }) =>
       cartApi.updateCartItem(itemId, quantity),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["cart"], data);
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
@@ -104,7 +161,8 @@ export const useRemoveFromCart = () => {
 
   return useMutation({
     mutationFn: (itemId: string) => cartApi.removeFromCart(itemId),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["cart"], data);
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
@@ -115,8 +173,22 @@ export const useClearCart = () => {
 
   return useMutation({
     mutationFn: cartApi.clearCart,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.setQueryData(["cart"], data);
       queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
+  });
+};
+
+export const useAdminCarts = (params?: {
+  search?: string;
+  status?: "all" | "has-items" | "abandoned";
+  page?: number;
+  limit?: number;
+}) => {
+  return useQuery<AdminCartsResponse>({
+    queryKey: ["admin-carts", params],
+    queryFn: () => cartApi.getAdminCarts(params),
+    enabled: !!localStorage.getItem("token"),
   });
 };

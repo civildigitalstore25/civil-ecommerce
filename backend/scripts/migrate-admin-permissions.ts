@@ -24,6 +24,7 @@ const DEFAULT_PERMISSIONS = [
   'reviews',
   'banners',
   'coupons',
+  'carts',
 ];
 
 async function migrateAdminPermissions() {

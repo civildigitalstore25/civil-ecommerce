@@ -12,6 +12,7 @@ const AVAILABLE_PERMISSIONS = [
     { value: 'reviews', label: 'Reviews' },
     { value: 'banners', label: 'Banner' },
     { value: 'coupons', label: 'Coupons' },
+    { value: 'carts', label: 'Carts' },
 ];
 
 interface Props {

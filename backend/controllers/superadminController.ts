@@ -9,7 +9,7 @@ export const createAdmin = async (req: Request, res: Response) => {
     }
 
     // Validate permissions if provided
-    const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons'];
+    const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons', 'carts'];
     const adminPermissions = permissions && Array.isArray(permissions)
       ? permissions.filter((p: string) => validPermissions.includes(p))
       : [];
@@ -87,7 +87,7 @@ export const updateAdminPermissions = async (req: Request, res: Response) => {
     }
 
     // Validate permissions
-    const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons'];
+    const validPermissions = ['dashboard', 'users', 'products', 'categories', 'companies', 'orders', 'reviews', 'banners', 'coupons', 'carts'];
     const adminPermissions = permissions && Array.isArray(permissions)
       ? permissions.filter((p: string) => validPermissions.includes(p))
       : [];
