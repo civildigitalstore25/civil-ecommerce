@@ -50,7 +50,6 @@ const Reviews: React.FC = () => {
     const bgColor = colors.interactive.primary || "#3B82F6";
     const textColor = "#ffffff";
 
-    // Create SVG data URL for initials avatar
     const svg = `
       <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
         <circle cx="24" cy="24" r="24" fill="${bgColor}"/>
@@ -81,10 +80,10 @@ const Reviews: React.FC = () => {
   }
 
   if (reviews.length === 0) {
-    return null; // Don't show section if no reviews
+    return null;
   }
 
-  // Duplicate reviews multiple times for seamless infinite scroll
+  // Duplicate reviews for seamless infinite scroll
   const allReviews = [...reviews, ...reviews];
 
   return (
@@ -131,7 +130,7 @@ const Reviews: React.FC = () => {
       </div>
 
       {/* Continuous Scrolling Container */}
-      <div className="relative reviews-track w-full">
+      <div className="reviews-track w-full">
         <div className="flex animate-scroll-reviews gap-6">
           {allReviews.map((review, index) => (
             <div
@@ -187,20 +186,6 @@ const Reviews: React.FC = () => {
             </div>
           ))}
         </div>
-
-        {/* Gradient Overlays for fade effect */}
-        <div
-          className="absolute top-0 left-0 bottom-0 w-32 md:w-48 pointer-events-none z-10"
-          style={{
-            background: `linear-gradient(to right, ${colors.background.primary} 0%, ${colors.background.primary} 30%, transparent 100%)`
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 bottom-0 w-32 md:w-48 pointer-events-none z-10"
-          style={{
-            background: `linear-gradient(to left, ${colors.background.primary} 0%, ${colors.background.primary} 30%, transparent 100%)`
-          }}
-        />
       </div>
     </section>
   );
