@@ -312,3 +312,93 @@ export const clearCart = async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getAdminCarts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const {
+      search = '',
+      status = 'all',
+      page = 1,
+      limit = 20,
+      abandonedHours = 24,
+    } = req.query as {
+      search?: string;
+      status?: 'all' | 'has-items' | 'abandoned';
+      page?: string;
+      limit?: string;
+      abandonedHours?: string;
+    };
+
+    const pageNumber = Math.max(Number(page) || 1, 1);
+    const pageSize = Math.min(Math.max(Number(limit) || 20, 1), 100);
+    const skip = (pageNumber - 1) * pageSize;
+    const abandonedThreshold = new Date(
+      Date.now() - Math.max(Number(abandonedHours) || 24, 1) * 60 * 60 * 1000,
+    );
+
+    const filter: any = {
+      'summary.itemCount': { $gt: 0 },
+    };
+    if (status === 'abandoned') {
+      filter.updatedAt = { $lt: abandonedThreshold };
+    }
+
+    const baseQuery = Cart.find(filter)
+      .populate('user', 'fullName email phoneNumber')
+      .populate('items.product', 'name image company brand category version price1 price1INR')
+      .sort({ updatedAt: -1 });
+
+    const carts = search.trim()
+      ? await baseQuery.lean()
+      : await baseQuery.skip(skip).limit(pageSize).lean();
+
+    const searchTerm = search.trim().toLowerCase();
+    const filteredCarts = searchTerm
+      ? carts.filter((cart: any) => {
+          const user = cart.user || {};
+          const userFields = [
+            user.fullName || '',
+            user.email || '',
+            user.phoneNumber || '',
+          ].join(' ').toLowerCase();
+
+          const productFields = (cart.items || [])
+            .map((item: any) => {
+              const product = item.product || {};
+              return [
+                product.name || '',
+                product.company || '',
+                product.brand || '',
+                product.category || '',
+                product.version || '',
+              ].join(' ');
+            })
+            .join(' ')
+            .toLowerCase();
+
+          return userFields.includes(searchTerm) || productFields.includes(searchTerm);
+        })
+      : carts;
+
+    const total = searchTerm ? filteredCarts.length : await Cart.countDocuments(filter);
+    const paginated = searchTerm ? filteredCarts.slice(skip, skip + pageSize) : filteredCarts;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        carts: paginated,
+        pagination: {
+          currentPage: pageNumber,
+          totalPages: Math.ceil(total / pageSize),
+          totalCarts: total,
+          pageSize,
+        },
+      },
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch carts',
+    });
+  }
+};

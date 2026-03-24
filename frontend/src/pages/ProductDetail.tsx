@@ -137,6 +137,14 @@ const ProductDetail: React.FC = () => {
     }
   }
 
+  const normalizeText = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .replace(/\s+/g, " ");
+
   // You may need to update useProductDetail to support fetching by name+version, or filter after fetching all products
   // For now, try to fetch all products and filter (replace with API call if available)
   const { data: productList, isLoading } = useProductDetail(); // Assume this returns all products if no param
@@ -147,22 +155,29 @@ const ProductDetail: React.FC = () => {
     // Clean both slugs for comparison
     const cleanInputSlug = slug.replace(/-+$/, "").toLowerCase();
     const cleanStoredSlug = p.slug?.replace(/-+$/, "").toLowerCase();
+    const normalizedInput = normalizeText(cleanInputSlug.replace(/-/g, " "));
 
     if (cleanStoredSlug && cleanStoredSlug === cleanInputSlug) return true;
+    if (cleanStoredSlug && normalizeText(cleanStoredSlug.replace(/-/g, " ")) === normalizedInput) {
+      return true;
+    }
 
     // Strategy 1: Try matching with parsed name and version
-    const nameMatch = p.name?.toLowerCase().replace(/\s+/g, " ").trim() === productName.toLowerCase().trim();
+    const normalizedProductName = normalizeText((p.name || "").toString());
+    const normalizedParsedName = normalizeText(productName);
+    const normalizedVersion = normalizeText((p.version || "").toString());
+    const normalizedParsedVersion = normalizeText(productVersion);
+
+    const nameMatch = normalizedProductName === normalizedParsedName;
     const versionMatch = productVersion
-      ? p.version?.toString().toLowerCase().trim() === productVersion.toLowerCase().trim()
-      : !p.version || !p.version.toString().trim();
+      ? normalizedVersion === normalizedParsedVersion
+      : !normalizedVersion;
 
     if (nameMatch && versionMatch) return true;
 
-    // Strategy 2: Try matching entire slug as product name (no version)
-    // This handles cases like "project-2024-professional" matching "Project 2024 Professional"
-    const fullSlugAsName = cleanInputSlug.replace(/-/g, " ");
-    const fullNameMatch = p.name?.toLowerCase().trim() === fullSlugAsName.trim();
-    const noVersionOrEmpty = !p.version || !p.version.toString().trim();
+    // Strategy 2: Match against full product name only
+    const fullNameMatch = normalizedProductName === normalizedInput;
+    const noVersionOrEmpty = !normalizedVersion;
 
     return fullNameMatch && noVersionOrEmpty;
   });

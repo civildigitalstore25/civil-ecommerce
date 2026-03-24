@@ -15,6 +15,7 @@ import Dashboard from "./Dashboard";
 import Products from "./products/Products";
 import DraftProducts from "./products/DraftProducts";
 import Orders from "./Orders";
+import CartManagement from "./cart/CartManagement";
 
 import UserManagement from "./users/UserManagement";
 
@@ -33,6 +34,7 @@ type MenuType =
   | "draft-products"
   // Removed "categories" and "companies"
   | "orders"
+  | "carts"
   | "settings"
   | "banner"
   | "coupons"
@@ -63,6 +65,7 @@ const AdminDashboardContent: React.FC = () => {
     { id: "draft-products", label: "Draft Products", icon: FileText, permission: "products" },
     // Removed Categories and Companies menu items
     { id: "orders", label: "Orders", icon: ShoppingCart, permission: "orders" },
+    { id: "carts", label: "Carts", icon: ShoppingCart, permission: "carts" },
     { id: "reviews", label: "Reviews", icon: MessageSquare, permission: "reviews" },
     { id: "enquiries", label: "Enquiries", icon: Mail, permission: "enquiries" },
     { id: "banner", label: "Banner", icon: Image, permission: "banners" },
@@ -111,6 +114,8 @@ const AdminDashboardContent: React.FC = () => {
       // Removed Categories and Companies content
       case "orders":
         return <Orders />;
+      case "carts":
+        return <CartManagement />;
       case "reviews":
         return <Reviews />;
       case "enquiries":
@@ -161,11 +166,15 @@ const AdminDashboardContent: React.FC = () => {
             {menuItems.map((item) => {
               const IconComponent = item.icon;
               const isActive = activeMenu === item.id;
+              const compactMenuIds = ["dashboard", "users", "products", "draft-products"];
+              const isCompactMenu = compactMenuIds.includes(item.id);
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveMenu(item.id as MenuType)}
-                  className="flex items-center space-x-2 py-4 border-b-2 transition-colors whitespace-nowrap font-medium"
+                  className={`flex items-center border-b-2 transition-colors whitespace-nowrap font-medium ${
+                    isCompactMenu ? "space-x-1.5 py-3 text-sm" : "space-x-2 py-4"
+                  }`}
                   style={{
                     borderBottom: isActive
                       ? `2px solid ${colors.text.primary}`
@@ -185,7 +194,7 @@ const AdminDashboardContent: React.FC = () => {
                     }
                   }}
                 >
-                  <IconComponent className="w-5 h-5" />
+                  <IconComponent className={isCompactMenu ? "w-4 h-4" : "w-5 h-5"} />
                   <span>{item.label}</span>
                 </button>
               );

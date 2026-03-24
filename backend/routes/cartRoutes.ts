@@ -4,9 +4,10 @@ import {
   addToCart,
   updateCartItem,
   removeFromCart,
-  clearCart
+  clearCart,
+  getAdminCarts,
 } from '../controllers/cartController';
-import { authenticate } from '../middlewares/auth';
+import { authenticate, requirePermission } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -14,6 +15,7 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get('/', getCart);
+router.get('/admin/carts', requirePermission('carts'), getAdminCarts);
 router.post('/add', addToCart);
 router.put('/item/:itemId', updateCartItem);
 router.delete('/item/:itemId', removeFromCart);
