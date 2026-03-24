@@ -189,7 +189,7 @@ const Products: React.FC = () => {
   // Search and filter states
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedCompany, setSelectedCompany] = useState("All Companies");
+  const [selectedCompany, setSelectedCompany] = useState("All Brands");
   const [selectedStatus, setSelectedStatus] = useState("All Status");
   const [showBestSellers, setShowBestSellers] = useState(false);
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -214,7 +214,7 @@ const Products: React.FC = () => {
     search: debouncedSearch || undefined,
     category:
       selectedCategory !== "All Categories" ? selectedCategory : undefined,
-    company: selectedCompany !== "All Companies" ? selectedCompany : undefined,
+    company: selectedCompany !== "All Brands" ? selectedCompany : undefined,
     limit: 1000, // Fetch up to 1000 products for admin panel
   };
   const { data: productsData, isLoading, error } = useProducts(queryParams);
@@ -415,7 +415,7 @@ const Products: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setSelectedCategory("All Categories");
-    setSelectedCompany("All Companies");
+    setSelectedCompany("All Brands");
     setSelectedStatus("All Status");
     setShowBestSellers(false);
   };
@@ -822,7 +822,7 @@ const Products: React.FC = () => {
                 color: colors.text.primary,
               }}
             >
-              <option>All Companies</option>
+              <option>All Brands</option>
               {companies.map((company) => (
                 <option key={company} value={company}>
                   {company}
@@ -859,7 +859,7 @@ const Products: React.FC = () => {
 
             {(searchTerm ||
               selectedCategory !== "All Categories" ||
-              selectedCompany !== "All Companies" ||
+              selectedCompany !== "All Brands" ||
               selectedStatus !== "All Status" ||
               showBestSellers) && (
                 <button
