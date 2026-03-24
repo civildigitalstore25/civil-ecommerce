@@ -1948,10 +1948,10 @@ const ProductDetail: React.FC = () => {
 
             {/* Total View Count & Sold Quantity - Social Proof (horizontal) */}
             {(totalViews > 0 || soldQuantity > 0) && (
-              <div className="flex items-center gap-3 mt-3 flex-wrap">
+              <div className="flex items-center gap-2 mt-3 flex-nowrap overflow-x-auto">
                 {totalViews > 0 && (
                   <div
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap shrink-0"
                     style={{
                       backgroundColor: colors.background.secondary,
                       borderColor: colors.interactive.primary + "40",
@@ -1975,7 +1975,7 @@ const ProductDetail: React.FC = () => {
 
                 {soldQuantity > 0 && (
                   <div
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300"
+                    className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap shrink-0"
                     style={{
                       backgroundColor: colors.background.secondary,
                       borderColor: colors.interactive.secondary + "40",
