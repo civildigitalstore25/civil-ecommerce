@@ -2,6 +2,12 @@ import { Request, Response } from 'express';
 import Product, { IProduct } from '../models/Product';
 import viewerTracker from '../services/viewerTracker';
 
+const escapeRegex = (value: string): string =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const buildExactCaseInsensitiveRegex = (value: string): RegExp =>
+  new RegExp(`^${escapeRegex(value.trim())}$`, 'i');
+
 // Create new product
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -62,21 +68,38 @@ export const getProducts = async (req: Request, res: Response): Promise<void> =>
     const { search, category, company, page = 1, limit = 10 } = req.query;
 
     const filter: any = {};
+    const andFilters: any[] = [];
 
     if (search) {
-      filter.$or = [
-        { name: { $regex: search as string, $options: 'i' } },
-        { description: { $regex: search as string, $options: 'i' } },
-        { version: { $regex: search as string, $options: 'i' } }
-      ];
+      andFilters.push({
+        $or: [
+          { name: { $regex: search as string, $options: 'i' } },
+          { description: { $regex: search as string, $options: 'i' } },
+          { version: { $regex: search as string, $options: 'i' } }
+        ]
+      });
     }
 
     if (category) {
-      filter.category = { $regex: category as string, $options: 'i' };
+      andFilters.push({
+        category: buildExactCaseInsensitiveRegex(category as string)
+      });
     }
 
     if (company) {
-      filter.company = { $regex: company as string, $options: 'i' };
+      const companyRegex = buildExactCaseInsensitiveRegex(company as string);
+      andFilters.push({
+        $or: [
+          { company: companyRegex },
+          { brand: companyRegex }
+        ]
+      });
+    }
+
+    if (andFilters.length === 1) {
+      Object.assign(filter, andFilters[0]);
+    } else if (andFilters.length > 1) {
+      filter.$and = andFilters;
     }
 
     const products: IProduct[] = await Product.find(filter)
@@ -142,7 +165,7 @@ export const getProductsByCategory = async (req: Request, res: Response): Promis
     }
 
     const filter = {
-      category: { $regex: category as string, $options: 'i' }
+      category: buildExactCaseInsensitiveRegex(category as string)
     };
 
     const sortOption: any = {};
@@ -179,10 +202,11 @@ export const getProductsByCompany = async (req: Request, res: Response): Promise
     }
 
     // Search in both company and brand fields for backward compatibility
+    const companyRegex = buildExactCaseInsensitiveRegex(company as string);
     const filter = {
       $or: [
-        { company: { $regex: company as string, $options: 'i' } },
-        { brand: { $regex: company as string, $options: 'i' } }
+        { company: companyRegex },
+        { brand: companyRegex }
       ]
     };
 
@@ -234,14 +258,15 @@ export const getProductsWithFilters = async (req: Request, res: Response): Promi
 
     // Category filter
     if (category) {
-      filter.category = { $regex: category as string, $options: 'i' };
+      filter.category = buildExactCaseInsensitiveRegex(category as string);
     }
 
     // Company/Brand filter
     if (company) {
+      const companyRegex = buildExactCaseInsensitiveRegex(company as string);
       filter.$or = [
-        { company: { $regex: company as string, $options: 'i' } },
-        { brand: { $regex: company as string, $options: 'i' } }
+        { company: companyRegex },
+        { brand: companyRegex }
       ];
     }
 

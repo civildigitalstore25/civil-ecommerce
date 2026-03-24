@@ -10,6 +10,9 @@ import Swal from "sweetalert2";
 import { getCategoryListingSEO } from "../utils/seo";
 
 
+const normalizeFilterValue = (value: string): string =>
+  value.toLowerCase().trim().replace(/[\s_]+/g, "-");
+
 // Brand-Category mapping for display names
 const brandLabels: Record<string, string> = {
   autodesk: "Autodesk",
@@ -112,8 +115,23 @@ const BrandCategoryListing: React.FC = () => {
 
   const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
     useProducts(queryParams);
-  // Filter to only show active products to users (exclude draft and inactive)
-  const rawProducts = (data.products || []).filter((p: any) => p.status === 'active' || !p.status);
+  // Filter to only show active products to users (exclude draft and inactive),
+  // and enforce exact brand/category match to avoid fuzzy backend matches like
+  // "autocad" unintentionally including "autocad-mep".
+  const rawProducts = (data.products || []).filter((p: any) => {
+    if (!(p.status === "active" || !p.status)) return false;
+
+    const matchesCategory = category
+      ? normalizeFilterValue(p.category || "") === normalizeFilterValue(category)
+      : true;
+
+    const productBrandValue = p.company || p.brand || "";
+    const matchesBrand = brand
+      ? normalizeFilterValue(productBrandValue) === normalizeFilterValue(brand)
+      : true;
+
+    return matchesCategory && matchesBrand;
+  });
 
   const [sortBy, setSortBy] = useState<SortOption>("name-desc");
   const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
