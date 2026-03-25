@@ -871,6 +871,26 @@ const ProductDetail: React.FC = () => {
     if (!product) return [];
 
     const now = new Date();
+    const productBrand = String((product as any).brand || (product as any).company || "").toLowerCase();
+    const isEbook = productBrand === "ebook";
+    
+    // Helper to get price (deal price if active, otherwise regular price)
+    const getPrice = (regularINR: number, regularUSD: number, dealINR?: number, dealUSD?: number) => {
+      if (isActiveDeal && dealINR && dealINR > 0) {
+        return {
+          priceINR: dealINR,
+          priceUSD: dealUSD || dealINR / 83,
+          originalPriceINR: regularINR,
+          originalPriceUSD: regularUSD,
+          isDeal: true,
+        };
+      }
+      return {
+        priceINR: regularINR,
+        priceUSD: regularUSD,
+        isDeal: false,
+      };
+    };
 
     if (isActiveFreeProduct) {
       return [{
@@ -903,6 +923,29 @@ const ProductDetail: React.FC = () => {
         badge: string | null;
         savings: string | null;
       }> = [];
+      if (isEbook) {
+        // For ebooks we only show lifetime, and older data may have been stored in pre.price1*.
+        const lifetimeFromPre =
+          (pre.priceLifetimeINR ?? pre.priceLifetime ?? 0) ||
+          (pre.price1INR ?? pre.price1 ?? 0);
+        const lifetimeUsdFromPre =
+          pre.priceLifetimeUSD ?? pre.price1USD ?? (lifetimeFromPre ? lifetimeFromPre / 83 : 0);
+        if (lifetimeFromPre > 0) {
+          return [
+            {
+              id: "lifetime",
+              label: "Lifetime Access",
+              priceINR: lifetimeFromPre,
+              priceUSD: lifetimeUsdFromPre,
+              type: "lifetime",
+              trialDays: undefined,
+              badge: "Best Value",
+              savings: null,
+            },
+          ];
+        }
+      }
+
       if (pre.subscriptionDurations && pre.subscriptionDurations.length > 0) {
         pre.subscriptionDurations.forEach((sub: any, index: number) => {
           if (
@@ -977,25 +1020,46 @@ const ProductDetail: React.FC = () => {
       if (options.length > 0) return options;
     }
 
-    const options = [];
-
-    // Helper to get price (deal price if active, otherwise regular price)
-    const getPrice = (regularINR: number, regularUSD: number, dealINR?: number, dealUSD?: number) => {
-      if (isActiveDeal && dealINR && dealINR > 0) {
-        return {
-          priceINR: dealINR,
-          priceUSD: dealUSD || dealINR / 83,
-          originalPriceINR: regularINR,
-          originalPriceUSD: regularUSD,
-          isDeal: true,
-        };
+    // Ebook: show only lifetime plan (fallback to old price1* if needed)
+    if (isEbook) {
+      const lifetimeINR =
+        (product as any).lifetimePriceINR ||
+        (product as any).priceLifetimeINR ||
+        (product as any).priceLifetime ||
+        (product as any).lifetimePrice ||
+        (product as any).price1INR ||
+        (product as any).price1 ||
+        0;
+      const lifetimeUSD =
+        (product as any).lifetimePriceUSD ||
+        (product as any).priceLifetimeUSD ||
+        (product as any).price1USD ||
+        (lifetimeINR ? lifetimeINR / 83 : 0);
+      const dealLifetimePriceINR = (product as any).dealPriceLifetimeINR;
+      const dealLifetimePriceUSD = (product as any).dealPriceLifetimeUSD;
+      if (lifetimeINR > 0) {
+        const pricing = getPrice(
+          lifetimeINR,
+          lifetimeUSD,
+          dealLifetimePriceINR,
+          dealLifetimePriceUSD,
+        );
+        return [
+          {
+            id: "lifetime",
+            label: "Lifetime Access",
+            ...pricing,
+            type: "lifetime",
+            trialDays: undefined,
+            badge: "Best Value",
+            savings: null,
+          },
+        ];
       }
-      return {
-        priceINR: regularINR,
-        priceUSD: regularUSD,
-        isDeal: false,
-      };
-    };
+      return [];
+    }
+
+    const options = [];
 
     // Add subscription durations if available (main pricing options)
     if (

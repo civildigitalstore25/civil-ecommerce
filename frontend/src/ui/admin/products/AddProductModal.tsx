@@ -120,19 +120,29 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
           hasLifetime:
             product.hasLifetime ||
             !!product.priceLifetime ||
-            !!product.lifetimePrice,
+            !!product.lifetimePrice ||
+            (productBrand === "ebook" &&
+              (!!(product as any).price1INR || !!(product as any).price1)),
           lifetimePrice:
             product.lifetimePrice?.toString() ||
             product.priceLifetime?.toString() ||
-            "",
+            (productBrand === "ebook"
+              ? (product as any).price1INR?.toString() ||
+                  (product as any).price1?.toString() ||
+                  ""
+              : ""),
           lifetimePriceINR:
             product.lifetimePriceINR?.toString() ||
             product.priceLifetimeINR?.toString() ||
-            "",
+            (productBrand === "ebook"
+              ? (product as any).price1INR?.toString() ||
+                  (product as any).price1?.toString() ||
+                  ""
+              : ""),
           lifetimePriceUSD:
             product.lifetimePriceUSD?.toString() ||
             product.priceLifetimeUSD?.toString() ||
-            "",
+            (productBrand === "ebook" ? (product as any).price1USD?.toString() || "" : ""),
           hasMembership: product.hasMembership || !!product.membershipPrice,
           membershipPrice: product.membershipPrice?.toString() || "",
           membershipPriceINR: product.membershipPriceINR?.toString() || "",
@@ -325,10 +335,11 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         ? {
           subscriptionDurations: [],
           subscriptions: [],
-          hasLifetime: false,
-          lifetimePrice: "",
-          lifetimePriceINR: "",
-          lifetimePriceUSD: "",
+          hasLifetime: true,
+          // Preserve any previously entered values so switching feels seamless.
+          lifetimePrice: prev.ebookPriceINR || "",
+          lifetimePriceINR: prev.ebookPriceINR || "",
+          lifetimePriceUSD: prev.ebookPriceUSD || "",
           hasMembership: false,
           membershipPrice: "",
           membershipPriceINR: "",
@@ -598,27 +609,37 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
       // Pricing: always from form. Free promo is driven by isFreeProduct + dates; storefront shows ₹0 during the window.
       price1:
         defaultBrand === "ebook"
-          ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
+          ? 0
           : (newProduct.subscriptionDurations[0]?.price ? Number(newProduct.subscriptionDurations[0].price) : 0),
       price3: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.price ? Number(newProduct.subscriptionDurations[1].price) : 0),
       priceLifetime:
         defaultBrand === "ebook"
-          ? 0
+          ? (newProduct.hasLifetime && newProduct.lifetimePriceINR
+              ? Number(newProduct.lifetimePriceINR)
+              : newProduct.hasLifetime && newProduct.lifetimePrice
+                ? Number(newProduct.lifetimePrice)
+                : 0)
           : (newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : newProduct.hasLifetime && newProduct.lifetimePrice ? Number(newProduct.lifetimePrice) : 0),
 
       // Dual currency pricing
       price1INR:
         defaultBrand === "ebook"
-          ? (newProduct.ebookPriceINR ? Number(newProduct.ebookPriceINR) : 0)
+          ? 0
           : (newProduct.subscriptionDurations[0]?.priceINR ? Number(newProduct.subscriptionDurations[0].priceINR) : 0),
       price1USD:
         defaultBrand === "ebook"
-          ? (newProduct.ebookPriceUSD ? Number(newProduct.ebookPriceUSD) : 0)
+          ? 0
           : (newProduct.subscriptionDurations[0]?.priceUSD ? Number(newProduct.subscriptionDurations[0].priceUSD) : 0),
       price3INR: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceINR ? Number(newProduct.subscriptionDurations[1].priceINR) : 0),
       price3USD: defaultBrand === "ebook" ? 0 : (newProduct.subscriptionDurations[1]?.priceUSD ? Number(newProduct.subscriptionDurations[1].priceUSD) : 0),
-      priceLifetimeINR: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0),
-      priceLifetimeUSD: defaultBrand === "ebook" ? 0 : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0),
+      priceLifetimeINR:
+        defaultBrand === "ebook"
+          ? (newProduct.hasLifetime && newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0)
+          : (newProduct.lifetimePriceINR ? Number(newProduct.lifetimePriceINR) : 0),
+      priceLifetimeUSD:
+        defaultBrand === "ebook"
+          ? (newProduct.hasLifetime && newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0)
+          : (newProduct.lifetimePriceUSD ? Number(newProduct.lifetimePriceUSD) : 0),
 
       // Subscription durations structure (only from subscriptionDurations, not from subscriptions)
       subscriptionDurations: defaultBrand === "ebook" ? [] : newProduct.subscriptionDurations
@@ -714,12 +735,18 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
         ? Number(newProduct.dealEbookPriceUSD)
         : 0,
       // Deal prices for lifetime
-      dealPriceLifetimeINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceINR
-        ? Number(newProduct.dealLifetimePriceINR)
-        : 0,
-      dealPriceLifetimeUSD: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealLifetimePriceUSD
-        ? Number(newProduct.dealLifetimePriceUSD)
-        : 0,
+      dealPriceLifetimeINR:
+        newProduct.isDeal &&
+        ((defaultBrand === "ebook" && newProduct.dealEbookPriceINR) ||
+          (defaultBrand !== "ebook" && newProduct.dealLifetimePriceINR))
+          ? Number(defaultBrand === "ebook" ? newProduct.dealEbookPriceINR : newProduct.dealLifetimePriceINR)
+          : 0,
+      dealPriceLifetimeUSD:
+        newProduct.isDeal &&
+        ((defaultBrand === "ebook" && newProduct.dealEbookPriceUSD) ||
+          (defaultBrand !== "ebook" && newProduct.dealLifetimePriceUSD))
+          ? Number(defaultBrand === "ebook" ? newProduct.dealEbookPriceUSD : newProduct.dealLifetimePriceUSD)
+          : 0,
       // Deal prices for membership
       dealMembershipPriceINR: newProduct.isDeal && defaultBrand !== "ebook" && newProduct.dealMembershipPriceINR
         ? Number(newProduct.dealMembershipPriceINR)
@@ -1456,41 +1483,76 @@ const AddProductModal: React.FC<AddProductModalProps> = ({
 
             <div className="space-y-4">
 
-              {/* For ebook brand show simple single-price inputs */}
+              {/* For ebook brand show only Lifetime licensing */}
               {newProduct.brand === 'ebook' ? (
-                <div className="p-4 border rounded-lg transition-colors duration-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-                    <div>
-                      <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
-                        Price INR (₹)
-                      </label>
-                      <input
-                        type="number"
-                        value={newProduct.ebookPriceINR}
-                        onChange={(e) => handleInputChange('ebookPriceINR', e.target.value)}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1" style={{ color: colors.text.secondary }}>
-                        Price USD ($)
-                      </label>
-                      <input
-                        type="number"
-                        value={newProduct.ebookPriceUSD}
-                        onChange={(e) => handleInputChange('ebookPriceUSD', e.target.value)}
-                        placeholder="0.00"
-                        step="0.01"
-                        min="0"
-                        className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
-                        style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
-                      />
-                    </div>
+                <div className="space-y-4 p-4 border rounded-lg transition-colors duration-200">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="hasLifetimeEbook"
+                      checked={newProduct.hasLifetime}
+                      onChange={(e) =>
+                        setNewProduct((prev) => ({
+                          ...prev,
+                          hasLifetime: e.target.checked,
+                        }))
+                      }
+                      className="rounded focus:ring-2 transition-colors duration-200"
+                      style={{
+                        borderColor: colors.border.primary,
+                        backgroundColor: colors.background.primary,
+                        color: colors.interactive.primary,
+                      }}
+                    />
+                    <label
+                      htmlFor="hasLifetimeEbook"
+                      className="text-sm font-medium"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Offer Lifetime License
+                    </label>
                   </div>
+
+                  {newProduct.hasLifetime && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                      <div>
+                        <label
+                          className="block text-sm font-medium mb-1"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Lifetime Price INR (₹)
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.lifetimePriceINR}
+                          onChange={(e) => handleInputChange('lifetimePriceINR', e.target.value)}
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
+                        />
+                      </div>
+                      <div>
+                        <label
+                          className="block text-sm font-medium mb-1"
+                          style={{ color: colors.text.secondary }}
+                        >
+                          Lifetime Price USD ($)
+                        </label>
+                        <input
+                          type="number"
+                          value={newProduct.lifetimePriceUSD}
+                          onChange={(e) => handleInputChange('lifetimePriceUSD', e.target.value)}
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 transition-colors duration-200"
+                          style={{ backgroundColor: colors.background.primary, borderColor: colors.border.primary, color: colors.text.primary }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* existing pricing durations UI for non-ebook brands */
