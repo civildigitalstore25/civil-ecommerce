@@ -2611,6 +2611,13 @@ const ProductDetail: React.FC = () => {
                       <LucideIcons.MessageSquare size={20} />
                       Enquiry
                     </button>
+
+                    <h5
+                      className="text-small text-center pt-1 font-bold"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Instant Download Available in  My Orders Page After Purchase.
+                    </h5>
                   </div>
 
                   {/* Mobile Sticky Buttons - Above bottom navigation */}
@@ -2624,6 +2631,12 @@ const ProductDetail: React.FC = () => {
                       right: 0,
                     }}
                   >
+                    <p className="font-bold"
+                      
+                      style={{ color: colors.text.secondary }}
+                    >
+                      Instant download in My Orders page after purchase.
+                    </p>
                     <div className="flex gap-1.5">
                       {!isActiveFreeProduct && (
                         <button

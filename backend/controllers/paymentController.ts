@@ -59,6 +59,114 @@ const emailFromOrderNotes = (notes: string | undefined | null): string => {
 const exportCustomerPhone = (order: { shippingAddress?: { phoneNumber?: string }; userId?: { phoneNumber?: string } | null }): string =>
   order.shippingAddress?.phoneNumber || (order.userId as { phoneNumber?: string } | undefined)?.phoneNumber || '';
 
+type OrderDateRangeType = 'all' | 'date' | 'week' | 'month' | 'year' | 'custom';
+
+const startOfDay = (date: Date): Date => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const endOfDay = (date: Date): Date => {
+  const d = new Date(date);
+  d.setHours(23, 59, 59, 999);
+  return d;
+};
+
+const readQueryString = (value: unknown): string | undefined => {
+  if (typeof value === 'string') return value;
+  if (Array.isArray(value) && typeof value[0] === 'string') return value[0];
+  return undefined;
+};
+
+const parseDateInput = (value: string): Date | null => {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const buildOrderDateRange = (
+  dateRangeTypeRaw: string | undefined,
+  fromDateRaw: string | undefined,
+  toDateRaw: string | undefined,
+): { startDate?: Date; endDate?: Date; error?: string } => {
+  const dateRangeType = (dateRangeTypeRaw || 'all').toLowerCase() as OrderDateRangeType;
+
+  if (!['all', 'date', 'week', 'month', 'year', 'custom'].includes(dateRangeType)) {
+    return { error: 'Invalid dateRangeType. Use one of: all, date, week, month, year, custom' };
+  }
+
+  if (dateRangeType === 'all') {
+    return {};
+  }
+
+  if (fromDateRaw || toDateRaw) {
+    if (!fromDateRaw || !toDateRaw) {
+      return { error: 'Both fromDate and toDate are required when one is provided' };
+    }
+
+    const fromDate = parseDateInput(fromDateRaw);
+    const toDate = parseDateInput(toDateRaw);
+
+    if (!fromDate || !toDate) {
+      return { error: 'Invalid fromDate or toDate format' };
+    }
+
+    const startDate = startOfDay(fromDate);
+    const endDate = endOfDay(toDate);
+
+    if (startDate > endDate) {
+      return { error: 'fromDate cannot be later than toDate' };
+    }
+
+    return { startDate, endDate };
+  }
+
+  const now = new Date();
+
+  if (dateRangeType === 'date') {
+    return {
+      startDate: startOfDay(now),
+      endDate: endOfDay(now),
+    };
+  }
+
+  if (dateRangeType === 'week') {
+    const day = now.getDay(); // Sunday=0, Monday=1
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    const weekStart = new Date(now);
+    weekStart.setDate(now.getDate() + diffToMonday);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    return {
+      startDate: startOfDay(weekStart),
+      endDate: endOfDay(weekEnd),
+    };
+  }
+
+  if (dateRangeType === 'month') {
+    const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+    return {
+      startDate: startOfDay(startDate),
+      endDate: endOfDay(endDate),
+    };
+  }
+
+  if (dateRangeType === 'year') {
+    const startDate = new Date(now.getFullYear(), 0, 1);
+    const endDate = new Date(now.getFullYear(), 11, 31);
+    return {
+      startDate: startOfDay(startDate),
+      endDate: endOfDay(endDate),
+    };
+  }
+
+  return {
+    error: 'For custom date range, please provide fromDate and toDate',
+  };
+};
+
 /**
  * Admin Create Order (Admin only - no payment gateway)
  */
@@ -860,6 +968,9 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const { page = 1, limit = 10, status, paymentStatus } = req.query;
+    const dateRangeType = readQueryString(req.query.dateRangeType);
+    const fromDate = readQueryString(req.query.fromDate);
+    const toDate = readQueryString(req.query.toDate);
 
     const query: any = {};
 
@@ -869,6 +980,22 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
 
     if (paymentStatus) {
       query.paymentStatus = paymentStatus;
+    }
+
+    const dateRange = buildOrderDateRange(dateRangeType, fromDate, toDate);
+    if (dateRange.error) {
+      res.status(400).json({
+        success: false,
+        message: dateRange.error,
+      });
+      return;
+    }
+
+    if (dateRange.startDate && dateRange.endDate) {
+      query.createdAt = {
+        $gte: dateRange.startDate,
+        $lte: dateRange.endDate,
+      };
     }
 
     const orders = await Order.find(query)
@@ -1229,6 +1356,9 @@ export const bulkUpdateOrderStatuses = async (req: Request, res: Response): Prom
 export const exportOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const { format = 'json', status, paymentStatus } = req.query;
+    const dateRangeType = readQueryString(req.query.dateRangeType);
+    const fromDate = readQueryString(req.query.fromDate);
+    const toDate = readQueryString(req.query.toDate);
 
     const query: any = {};
 
@@ -1238,6 +1368,22 @@ export const exportOrders = async (req: Request, res: Response): Promise<void> =
 
     if (paymentStatus) {
       query.paymentStatus = paymentStatus;
+    }
+
+    const dateRange = buildOrderDateRange(dateRangeType, fromDate, toDate);
+    if (dateRange.error) {
+      res.status(400).json({
+        success: false,
+        message: dateRange.error,
+      });
+      return;
+    }
+
+    if (dateRange.startDate && dateRange.endDate) {
+      query.createdAt = {
+        $gte: dateRange.startDate,
+        $lte: dateRange.endDate,
+      };
     }
 
     console.log(`📊 Exporting orders as ${format}...`);

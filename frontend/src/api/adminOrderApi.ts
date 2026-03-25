@@ -48,6 +48,9 @@ export const getAllOrders = async (params?: {
   limit?: number;
   status?: string;
   paymentStatus?: string;
+  dateRangeType?: "all" | "date" | "week" | "month" | "year" | "custom";
+  fromDate?: string;
+  toDate?: string;
 }): Promise<AdminOrdersResponse> => {
   const response = await api.get("/payments/admin/orders", { params });
   return response.data;
@@ -104,14 +107,16 @@ export const bulkUpdateOrderStatuses = async (updates: Array<{ orderId: string; 
 export const exportOrders = async (format: "excel" | "json" = "excel", params?: {
   status?: string;
   paymentStatus?: string;
+  dateRangeType?: "all" | "date" | "week" | "month" | "year" | "custom";
+  fromDate?: string;
+  toDate?: string;
 }) => {
   console.log("📊 AdminOrderAPI - exportOrders called with:", { format, params });
   const response = await api.get("/payments/admin/orders/export", {
     params: {
       format,
       ...params
-    },
-    responseType: format === "json" ? "json" : "arraybuffer"
+    }
   });
   return response.data;
 };

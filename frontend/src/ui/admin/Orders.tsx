@@ -23,6 +23,7 @@ import {
   deleteAdminOrder,
   adminCreateOrder,
   bulkUpdateOrderStatuses,
+  exportOrders,
 } from "../../api/adminOrderApi";
 import AdminPagination from "./components/AdminPagination";
 import Swal from "sweetalert2";
@@ -47,6 +48,41 @@ function displayOrderCustomerPhone(order: any): string {
 
 function displayOrderCustomerEmail(order: any): string {
   return order.userId?.email || emailFromOrderNotes(order.notes) || "";
+}
+
+type ExportRangeType = "all" | "date" | "week" | "month" | "year" | "custom";
+
+function formatDateForParam(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function parseWeekToDateRange(weekValue: string): { fromDate: string; toDate: string } | null {
+  const match = weekValue.match(/^(\d{4})-W(\d{2})$/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const week = Number(match[2]);
+  if (Number.isNaN(year) || Number.isNaN(week) || week < 1 || week > 53) return null;
+
+  // ISO week: week 1 is the week containing Jan 4.
+  const jan4 = new Date(year, 0, 4);
+  const jan4Day = jan4.getDay() || 7;
+  const week1Monday = new Date(jan4);
+  week1Monday.setDate(jan4.getDate() - jan4Day + 1);
+
+  const start = new Date(week1Monday);
+  start.setDate(week1Monday.getDate() + (week - 1) * 7);
+
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+
+  return {
+    fromDate: formatDateForParam(start),
+    toDate: formatDateForParam(end),
+  };
 }
 
 const Orders: React.FC = () => {
@@ -135,6 +171,13 @@ const Orders: React.FC = () => {
   const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [bulkStatusDropdown, setBulkStatusDropdown] = useState<string>("");
   const [exportOpen, setExportOpen] = useState(false);
+  const [exportRangeType, setExportRangeType] = useState<ExportRangeType>("all");
+  const [exportDate, setExportDate] = useState<string>("");
+  const [exportWeek, setExportWeek] = useState<string>("");
+  const [exportMonth, setExportMonth] = useState<string>("");
+  const [exportYear, setExportYear] = useState<string>(String(new Date().getFullYear()));
+  const [exportCustomFromDate, setExportCustomFromDate] = useState<string>("");
+  const [exportCustomToDate, setExportCustomToDate] = useState<string>("");
 
   // Fetch all orders
   const { data, isLoading } = useQuery({
@@ -251,34 +294,113 @@ const Orders: React.FC = () => {
     });
   };
 
-  // Export handlers
-  const getExportData = () => {
-    return filteredOrders.map((order: any) => ({
-      'Order ID': order.orderId,
-      'Order Number': order.orderNumber,
-      'Customer Name':
-        order.shippingAddress?.fullName || order.userId?.fullName || 'N/A',
-      'Customer Email': displayOrderCustomerEmail(order) || 'N/A',
-      'Customer Phone': displayOrderCustomerPhone(order) || 'N/A',
-      'Order Status': order.orderStatus,
-      'Payment Status': order.paymentStatus,
-      'Subtotal': order.subtotal,
-      'Discount': order.discount || 0,
-      'Total Amount': order.totalAmount,
-      'Items Count': order.items?.length || 0,
-      'Created At': new Date(order.createdAt).toLocaleDateString(),
-      'Notes': order.notes || ''
-    }));
+  const getSelectedExportRange = (): {
+    fromDate?: string;
+    toDate?: string;
+    error?: string;
+  } => {
+    if (exportRangeType === "all") return {};
+
+    if (exportRangeType === "date") {
+      if (!exportDate) return { error: "Please select a date for export" };
+      return { fromDate: exportDate, toDate: exportDate };
+    }
+
+    if (exportRangeType === "week") {
+      if (!exportWeek) return { error: "Please select a week for export" };
+      const weekRange = parseWeekToDateRange(exportWeek);
+      if (!weekRange) return { error: "Invalid week selected" };
+      return weekRange;
+    }
+
+    if (exportRangeType === "month") {
+      if (!exportMonth) return { error: "Please select a month for export" };
+      const [yearText, monthText] = exportMonth.split("-");
+      const year = Number(yearText);
+      const monthIndex = Number(monthText) - 1;
+      if (Number.isNaN(year) || Number.isNaN(monthIndex)) {
+        return { error: "Invalid month selected" };
+      }
+      const start = new Date(year, monthIndex, 1);
+      const end = new Date(year, monthIndex + 1, 0);
+      return {
+        fromDate: formatDateForParam(start),
+        toDate: formatDateForParam(end),
+      };
+    }
+
+    if (exportRangeType === "year") {
+      const year = Number(exportYear);
+      if (Number.isNaN(year) || year < 1970 || year > 9999) {
+        return { error: "Please enter a valid year" };
+      }
+      return {
+        fromDate: `${year}-01-01`,
+        toDate: `${year}-12-31`,
+      };
+    }
+
+    if (exportRangeType === "custom") {
+      if (!exportCustomFromDate || !exportCustomToDate) {
+        return { error: "Please select both from and to dates" };
+      }
+      if (exportCustomFromDate > exportCustomToDate) {
+        return { error: "From date cannot be later than to date" };
+      }
+      return { fromDate: exportCustomFromDate, toDate: exportCustomToDate };
+    }
+
+    return {};
+  };
+
+  const filterExportRowsBySearch = (rows: any[]) => {
+    if (!searchTerm.trim()) return rows;
+
+    const search = searchTerm.toLowerCase();
+    const searchCompact = search.replace(/\s/g, "");
+
+    return rows.filter((row: any) => {
+      const customerName = String(row["Customer Name"] || "").toLowerCase();
+      const customerEmail = String(row["Customer Email"] || "").toLowerCase();
+      const customerPhone = String(row["Customer Phone"] || "")
+        .toLowerCase()
+        .replace(/\s/g, "");
+      return (
+        customerName.includes(search) ||
+        customerEmail.includes(search) ||
+        (customerPhone && customerPhone.includes(searchCompact))
+      );
+    });
+  };
+
+  const getExportDataFromBackend = async () => {
+    const { fromDate, toDate, error } = getSelectedExportRange();
+
+    if (error) {
+      Swal.fire("Warning", error, "warning");
+      return [];
+    }
+
+    const response = await exportOrders("json", {
+      status: statusFilter ? statusFilter.toLowerCase() : undefined,
+      dateRangeType: exportRangeType,
+      fromDate,
+      toDate,
+    });
+
+    const rows = Array.isArray(response?.data) ? response.data : [];
+    return filterExportRowsBySearch(rows);
   };
 
   const handleExportExcel = async () => {
     try {
-      if (filteredOrders.length === 0) {
+      const data = await getExportDataFromBackend();
+
+      if (data.length === 0) {
         Swal.fire("Warning", "No orders to export", "warning");
         return;
       }
 
-      const data = getExportData();
       const XLSX = (await import("xlsx")) as any;
       const ws = XLSX.utils.json_to_sheet(data);
       const wb = XLSX.utils.book_new();
@@ -299,12 +421,13 @@ const Orders: React.FC = () => {
 
   const handleExportJSON = async () => {
     try {
-      if (filteredOrders.length === 0) {
+      const data = await getExportDataFromBackend();
+
+      if (data.length === 0) {
         Swal.fire("Warning", "No orders to export", "warning");
         return;
       }
 
-      const data = getExportData();
       const json = JSON.stringify(data, null, 2);
       const blob = new Blob([json], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -468,6 +591,113 @@ const Orders: React.FC = () => {
           >
             {showCreateForm ? "Close" : "Create Order"}
           </button>
+
+          <div className="flex items-center gap-2 flex-wrap">
+            <select
+              className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+              style={{
+                backgroundColor: colors.background.secondary,
+                borderColor: colors.border.primary,
+                color: colors.text.primary,
+              }}
+              value={exportRangeType}
+              onChange={(e) => setExportRangeType(e.target.value as ExportRangeType)}
+              title="Export date filter"
+            >
+              <option value="all">All Dates</option>
+              <option value="date">Date Wise</option>
+              <option value="week">Week Wise</option>
+              <option value="month">Month Wise</option>
+              <option value="year">Year Wise</option>
+              <option value="custom">From - To</option>
+            </select>
+
+            {exportRangeType === "date" && (
+              <input
+                type="date"
+                className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                value={exportDate}
+                onChange={(e) => setExportDate(e.target.value)}
+              />
+            )}
+
+            {exportRangeType === "week" && (
+              <input
+                type="week"
+                className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                value={exportWeek}
+                onChange={(e) => setExportWeek(e.target.value)}
+              />
+            )}
+
+            {exportRangeType === "month" && (
+              <input
+                type="month"
+                className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                value={exportMonth}
+                onChange={(e) => setExportMonth(e.target.value)}
+              />
+            )}
+
+            {exportRangeType === "year" && (
+              <input
+                type="number"
+                min={1970}
+                max={9999}
+                className="border rounded-lg px-3 py-2 w-28 focus:ring-2 transition-colors duration-200"
+                style={{
+                  backgroundColor: colors.background.secondary,
+                  borderColor: colors.border.primary,
+                  color: colors.text.primary,
+                }}
+                value={exportYear}
+                onChange={(e) => setExportYear(e.target.value)}
+                placeholder="YYYY"
+              />
+            )}
+
+            {exportRangeType === "custom" && (
+              <>
+                <input
+                  type="date"
+                  className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                  value={exportCustomFromDate}
+                  onChange={(e) => setExportCustomFromDate(e.target.value)}
+                />
+                <input
+                  type="date"
+                  className="border rounded-lg px-3 py-2 focus:ring-2 transition-colors duration-200"
+                  style={{
+                    backgroundColor: colors.background.secondary,
+                    borderColor: colors.border.primary,
+                    color: colors.text.primary,
+                  }}
+                  value={exportCustomToDate}
+                  onChange={(e) => setExportCustomToDate(e.target.value)}
+                />
+              </>
+            )}
+          </div>
 
           {/* Export Dropdown */}
           <div className="relative">
