@@ -129,8 +129,67 @@ const Reviews: React.FC = () => {
         </h2>
       </div>
 
-      {/* Continuous Scrolling Container */}
-      <div className="reviews-track w-full">
+      {/* Mobile: manual horizontal scroll (no auto movement) */}
+      <div className="md:hidden w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory pb-2" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+        <div className="flex gap-4">
+          {reviews.map((review) => (
+            <div
+              key={review._id}
+              className="flex-shrink-0 snap-start w-[300px] rounded-2xl shadow-md p-5 flex flex-col justify-between transition-all duration-300"
+              style={{ backgroundColor: colors.background.primary }}
+            >
+              {/* Stars */}
+              <div className="flex justify-center mb-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-5 w-5 ${i < review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`}
+                  />
+                ))}
+              </div>
+
+              {/* Review text */}
+              <p
+                className="italic mb-4 font-lato transition-colors duration-200 line-clamp-4 text-center"
+                style={{ color: colors.text.secondary }}
+              >
+                "{review.comment}"
+              </p>
+
+              {/* Profile */}
+              <div className="flex items-center justify-center space-x-4">
+                <div
+                  className="w-12 h-12 rounded-full border-2 transition-colors duration-200 overflow-hidden flex-shrink-0"
+                  style={{ borderColor: colors.interactive.primary }}
+                >
+                  <img
+                    src={getInitialsAvatar(review.user?.fullName || review.anonymousName || 'Anonymous')}
+                    alt={review.user?.fullName || review.anonymousName || 'Anonymous'}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div>
+                  <h4
+                    className="font-poppins font-semibold transition-colors duration-200"
+                    style={{ color: colors.text.primary }}
+                  >
+                    {review.user?.fullName || review.anonymousName || 'Anonymous'}
+                  </h4>
+                  <p
+                    className="text-sm font-lato transition-colors duration-200"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    {formatTimeAgo(review.createdAt)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: continuous auto-moving track */}
+      <div className="hidden md:block reviews-track w-full">
         <div className="flex animate-scroll-reviews gap-6">
           {allReviews.map((review, index) => (
             <div

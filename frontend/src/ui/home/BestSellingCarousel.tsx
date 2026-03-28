@@ -81,7 +81,61 @@ const BestSellingCarousel: React.FC = () => {
         </p>
       </div>
 
-      <div className="best-selling-track w-full">
+      {/* Mobile: manual horizontal scroll (no auto movement) */}
+      <div className="md:hidden w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory pb-2" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+        <div className="flex gap-4">
+          {products.map((product: any) => (
+            <div
+              key={product._id}
+              onClick={() => navigate(`/product/${getSlug(product)}`)}
+              className="flex-shrink-0 snap-start w-[260px] rounded-2xl shadow-md overflow-hidden flex flex-col cursor-pointer transition-all duration-300"
+              style={{
+                backgroundColor: colors.background.primary,
+                border: `1px solid ${colors.border.primary}`,
+              }}
+            >
+              <div
+                className="h-40 flex items-center justify-center p-4"
+                style={{ backgroundColor: colors.background.secondary }}
+              >
+                <img
+                  src={product.image || product.imageUrl}
+                  alt={product.name}
+                  className="object-contain max-h-full w-full"
+                />
+              </div>
+              <div className="p-4 flex flex-col flex-1">
+                <h3
+                  className="font-semibold text-sm line-clamp-2 mb-1"
+                  style={{ color: colors.text.primary }}
+                >
+                  {product.name}
+                  {product.version && (
+                    <span
+                      className="font-normal ml-1"
+                      style={{ color: colors.text.secondary }}
+                    >
+                      ({product.version})
+                    </span>
+                  )}
+                </h3>
+                {(product.soldCount ?? 0) > 0 && (
+                  <div
+                    className="flex items-center gap-1.5 mt-2 text-xs"
+                    style={{ color: colors.text.secondary }}
+                  >
+                    <ShoppingBag className="w-3.5 h-3.5" />
+                    <span>{product.soldCount} sold</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Desktop: continuous auto-moving track */}
+      <div className="hidden md:block best-selling-track w-full">
         <div className="flex animate-scroll-best-selling gap-6">
           {allProducts.map((product: any, index: number) => (
             <div

@@ -81,7 +81,86 @@ const FreeProductsSection: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Mobile: manual horizontal scroll (no auto movement) */}
+        <div className="md:hidden w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory pb-2" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
+          <div className="flex gap-4">
+            {products.map((product: any) => {
+              const slug = getSlug(product);
+              return (
+                <div
+                  key={product._id}
+                  onClick={() => navigate(`/product/${slug}`)}
+                  className="flex-shrink-0 snap-start w-[260px] rounded-2xl shadow-md overflow-hidden border transition-all duration-300 cursor-pointer flex flex-col"
+                  style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                  }}
+                >
+                  <div
+                    className="h-40 flex items-center justify-center p-4 relative"
+                    style={{ backgroundColor: colors.background.secondary }}
+                  >
+                    <img
+                      src={product.image || product.imageUrl}
+                      alt={product.name}
+                      className="object-contain max-h-full w-full"
+                    />
+                    <div
+                      className="absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-bold"
+                      style={{
+                        backgroundColor: colors.status?.success || "#10b981",
+                        color: "#fff",
+                      }}
+                    >
+                      FREE
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col flex-1">
+                    <h3
+                      className="font-semibold text-sm line-clamp-2 mb-1"
+                      style={{ color: colors.text.primary }}
+                    >
+                      {product.name}
+                      {product.version && (
+                        <span className="font-normal ml-1" style={{ color: colors.text.secondary }}>
+                          ({product.version})
+                        </span>
+                      )}
+                    </h3>
+                    {product.freeProductEndDate && (
+                      <div className="mt-2">
+                        <div className="text-xs font-semibold mb-1" style={{ color: colors.text.secondary }}>
+                          Ends in:
+                        </div>
+                        <CountdownTimer
+                          dealEndDate={new Date(product.freeProductEndDate)}
+                          colors={colors}
+                        />
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/product/${slug}`);
+                      }}
+                      className="mt-4 w-full py-2.5 rounded-lg font-semibold transition-all duration-200"
+                      style={{
+                        backgroundColor: colors.interactive.primary,
+                        color: colors.text?.inverse ?? "#fff",
+                      }}
+                    >
+                      Get it free
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: grid layout */}
+        <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product: any) => {
             const slug = getSlug(product);
             return (
