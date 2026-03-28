@@ -235,7 +235,7 @@ const ProductDetail: React.FC = () => {
   // Show more reviews (initially show 2, expand on click)
   const [showAllReviews, setShowAllReviews] = useState(false);
   const REVIEWS_INITIAL_COUNT = 2;
-  
+
   // Track which review comments are expanded
   const [expandedReviewComments, setExpandedReviewComments] = useState<Set<string>>(new Set());
   // Track which reply comments are expanded
@@ -853,27 +853,41 @@ const ProductDetail: React.FC = () => {
     }
   }, [product]);
 
-  // Active free promo: flag + window only (DB may keep normal list prices for after promo ends)
-  const isActiveFreeProduct = React.useMemo(() => {
-    if (!product) return false;
-    const now = new Date();
-    return (
-      product.isFreeProduct &&
-      product.freeProductStartDate &&
-      product.freeProductEndDate &&
-      now >= new Date(product.freeProductStartDate) &&
-      now <= new Date(product.freeProductEndDate)
-    );
+  // Keep free offer timing/state in one place and reuse it across pricing + UI
+  const freeOfferSchedule = React.useMemo(() => {
+    if (!product?.isFreeProduct || !product.freeProductStartDate || !product.freeProductEndDate) {
+      return null;
+    }
+
+    const start = new Date(product.freeProductStartDate);
+    const end = new Date(product.freeProductEndDate);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return null;
+
+    const now = Date.now();
+    const startMs = start.getTime();
+    const endMs = end.getTime();
+
+    let status: "upcoming" | "active" | "ended" = "active";
+    if (now < startMs) status = "upcoming";
+    else if (now > endMs) status = "ended";
+
+    return {
+      start,
+      end,
+      status,
+    };
   }, [product]);
+
+  // Active free promo: flag + active window only
+  const isActiveFreeProduct = freeOfferSchedule?.status === "active";
 
   // Get all available pricing options
   const getAllPricingOptions = () => {
     if (!product) return [];
 
-    const now = new Date();
     const productBrand = String((product as any).brand || (product as any).company || "").toLowerCase();
     const isEbook = productBrand === "ebook";
-    
+
     // Helper to get price (deal price if active, otherwise regular price)
     const getPrice = (regularINR: number, regularUSD: number, dealINR?: number, dealUSD?: number) => {
       if (isActiveDeal && dealINR && dealINR > 0) {
@@ -907,9 +921,7 @@ const ProductDetail: React.FC = () => {
 
     // Free period ended: show old prices from preFreePricing snapshot
     const freePeriodEnded =
-      product.isFreeProduct &&
-      product.freeProductEndDate &&
-      now > new Date(product.freeProductEndDate) &&
+      freeOfferSchedule?.status === "ended" &&
       product.preFreePricing;
     if (freePeriodEnded && product.preFreePricing) {
       const pre = product.preFreePricing;
@@ -2499,6 +2511,16 @@ const ProductDetail: React.FC = () => {
               </div>
             )}
 
+            {freeOfferSchedule?.status === "active" && (
+              <div className="mt-4">
+                <CountdownTimer
+                  dealEndDate={freeOfferSchedule.end}
+                  colors={colors}
+                  variant="featured"
+                />
+              </div>
+            )}
+
             {/* Inline share removed – see floating Share bar on the left */}
 
             {/* Action Buttons: Add to Cart & Buy Now side-by-side, Request Inquiry full-width below */}
@@ -2632,7 +2654,7 @@ const ProductDetail: React.FC = () => {
                     }}
                   >
                     <p className="font-bold"
-                      
+
                       style={{ color: colors.text.secondary }}
                     >
                       Instant download in My Orders page after purchase.
