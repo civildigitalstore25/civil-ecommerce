@@ -1,5 +1,5 @@
 import React from "react";
-import { User, Menu, Package, MessageSquare } from "lucide-react";
+import { User, LayoutGrid, Package, MessageSquare } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
@@ -19,8 +19,8 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
 
   const navItems = [
     {
-      icon: Menu,
-      label: "Menu",
+      icon: LayoutGrid,
+      label: "Categories",
       onClick: onMenuToggle,
       path: null, // Special item - doesn't have a route
     },
@@ -30,7 +30,7 @@ const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ onMenuToggle }) => {
       onClick: () => handleNavigate("/profile"),
       path: "/profile",
     },
-    
+
     {
       icon: Package,
       label: "Orders",

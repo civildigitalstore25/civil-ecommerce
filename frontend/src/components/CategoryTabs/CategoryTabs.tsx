@@ -33,11 +33,11 @@ const CategoryTabs: React.FC = () => {
     useProducts({
       company: companyFilter,
       ...(categoryFilter ? { category: categoryFilter } : {}),
-      limit: 5,
+      limit: 6,
     });
 
 
-  // Prioritize active and non-'others' products, but always show up to 5
+  // Prioritize active and non-'others' products.
   const allProducts = data.products || [];
   // 1. Active and not 'others'
   const primary = allProducts.filter((p: any) => {
@@ -60,8 +60,9 @@ const CategoryTabs: React.FC = () => {
     return p.status !== 'active' && b === "others";
   });
 
-  // Concatenate in order of priority and take up to 5
-  const displayedProducts = [...primary, ...secondary, ...tertiary, ...fallback].slice(0, 5);
+  // Concatenate in order of priority and take up to 6.
+  // UX requirement: show 6 cards on mobile, but only 5 on desktop.
+  const displayedProducts = [...primary, ...secondary, ...tertiary, ...fallback].slice(0, 6);
 
   const interactiveTint =
     colors.interactive.primary &&
@@ -170,10 +171,10 @@ const CategoryTabs: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 md:gap-6">
-            {displayedProducts.map((product: any) => (
+            {displayedProducts.map((product: any, index: number) => (
               <div
                 key={product._id}
-                className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
+                className={`rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] ${index >= 5 ? "lg:hidden" : ""}`}
                 style={{
                   background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
                   border: `1.5px solid ${colors.border.primary}`,

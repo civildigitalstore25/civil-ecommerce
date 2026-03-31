@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet";
 import { useAppForm } from "../hooks/useAppForm";
 import { useSubmitContactForm } from "../api/contactApi";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { MapPin, Phone, Mail} from "lucide-react";
+import { MapPinned, PhoneCall, Mail } from "lucide-react";
 import { getContactSEO } from "../utils/seo";
 
 interface ContactFormData {
@@ -125,12 +125,12 @@ const ContactPage: React.FC = () => {
                 >
                   How to Reach Us
                 </h2>
-               
+
               </div>
 
               <div className="space-y-6 flex-1">
                 <div
-                  className="flex gap-4 rounded-lg border-l-4 p-5"
+                  className="flex gap-4 rounded-lg border-l-4 p-5 overflow-hidden"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
                     border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
@@ -138,24 +138,24 @@ const ContactPage: React.FC = () => {
                   }}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-lg"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm"
                     style={{
                       background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
                       color: "#fff",
                     }}
                   >
-                    <Phone size={20} />
+                    <PhoneCall size={15} strokeWidth={2.25} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3
                       className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       Phone & WhatsApp Support
                     </h3>
-                  
+
                     <p
-                      className="font-semibold mb-1"
+                      className="font-semibold mb-1 break-words"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       <a href="tel:+919042993986" className="hover:underline" style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}>
@@ -169,7 +169,7 @@ const ContactPage: React.FC = () => {
                 </div>
 
                 <div
-                  className="flex gap-4 rounded-lg border-l-4 p-5"
+                  className="flex gap-4 rounded-lg border-l-4 p-5 overflow-hidden"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
                     border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
@@ -177,27 +177,33 @@ const ContactPage: React.FC = () => {
                   }}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-lg"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm"
                     style={{
                       background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
                       color: "#fff",
                     }}
                   >
-                    <Mail size={20} />
+                    <Mail size={15} strokeWidth={2.25} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3
                       className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
                       Email Support
                     </h3>
-                  
+
                     <p
-                      className="font-semibold mb-1"
+                      className="font-semibold mb-1 break-all"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
                     >
-                      softzcart@gmail.com
+                      <a
+                        href="mailto:softzcart@gmail.com"
+                        className="hover:underline"
+                        style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
+                      >
+                        softzcart@gmail.com
+                      </a>
                     </p>
                     <p className="text-sm" style={{ color: theme === "light" ? "#475569" : colors.text.secondary }}>
                       We typically respond within 1 to 6 hours depending on the query volume.
@@ -205,10 +211,10 @@ const ContactPage: React.FC = () => {
                   </div>
                 </div>
 
-             
+
 
                 <div
-                  className="flex gap-4 rounded-lg border-l-4 p-5"
+                  className="flex gap-4 rounded-lg border-l-4 p-5 overflow-hidden"
                   style={{
                     backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
                     border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
@@ -216,15 +222,15 @@ const ContactPage: React.FC = () => {
                   }}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-lg"
+                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full shadow-sm"
                     style={{
                       background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
                       color: "#fff",
                     }}
                   >
-                    <MapPin size={20} />
+                    <MapPinned size={15} strokeWidth={2.25} />
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <h3
                       className="text-lg font-semibold mb-2"
                       style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
