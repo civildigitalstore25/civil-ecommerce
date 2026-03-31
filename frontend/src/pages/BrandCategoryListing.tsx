@@ -6,6 +6,8 @@ import { useProducts } from "../api/productApi";
 import { useUser } from "../api/userQueries";
 import { useCartContext } from "../contexts/CartContext";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { useCurrency } from "../contexts/CurrencyContext";
+import { getMinimumProductPrice } from "../utils/productPricing";
 import Swal from "sweetalert2";
 import { getCategoryListingSEO } from "../utils/seo";
 
@@ -169,6 +171,7 @@ const BrandCategoryListing: React.FC = () => {
   const { addItem } = useCartContext();
   const { data: user } = useUser();
   const { colors } = useAdminTheme();
+  const { formatPriceWithSymbol } = useCurrency();
   const interactiveTint =
     colors.interactive.primary &&
       typeof colors.interactive.primary === "string" &&
@@ -338,9 +341,8 @@ const BrandCategoryListing: React.FC = () => {
                               setSortBy(option.value);
                               setSortDropdownOpen(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-sm transition-colors duration-200 ${
-                              sortBy === option.value ? "font-semibold" : ""
-                            }`}
+                            className={`w-full px-4 py-2 text-left text-sm transition-colors duration-200 ${sortBy === option.value ? "font-semibold" : ""
+                              }`}
                             style={{
                               color: sortBy === option.value ? colors.interactive.primary : colors.text.primary,
                               backgroundColor: sortBy === option.value ? `${colors.interactive.primary}15` : "transparent",
@@ -404,7 +406,7 @@ const BrandCategoryListing: React.FC = () => {
               {products.map((product: any) => (
                 <div
                   key={product._id}
-                  className="rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
+                  className="group rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02]"
                   style={{
                     backgroundColor: colors.background.primary,
                   }}
@@ -424,6 +426,26 @@ const BrandCategoryListing: React.FC = () => {
                       alt={product.name}
                       className="object-contain w-full h-full transition-transform duration-300 hover:scale-105"
                     />
+
+                    {(() => {
+                      const min = getMinimumProductPrice(product);
+                      if (!min) return null;
+                      const label = formatPriceWithSymbol(min.priceINR, min.priceUSD);
+                      return (
+                        <div className="absolute inset-x-2 bottom-2 flex justify-center pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
+                          <div
+                            className="text-[10px] md:text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm"
+                            style={{
+                              backgroundColor: colors.background.primary,
+                              border: `1px solid ${colors.border.primary}`,
+                              color: colors.text.primary,
+                            }}
+                          >
+                            From {label}
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {/* Best Seller Ribbon */}
                     {product.isBestSeller && (
                       <div className="absolute top-1 right-1 md:top-3 md:right-3 z-10 transform transition-all duration-300 hover:scale-110">
