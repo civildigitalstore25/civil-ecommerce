@@ -159,6 +159,9 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
   const navigate = useNavigate();
   const { colors } = useAdminTheme();
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [hoveredCategoryId, setHoveredCategoryId] = useState<string | null>(
+    null,
+  );
 
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) =>
@@ -201,7 +204,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
           z-50
         `}
         style={{
-          backgroundColor: colors.background.primary,
+          // Match the mega-menu dropdown left-panel feel
+          backgroundColor: colors.background.secondary,
           borderRight: isOpen ? `1px solid ${colors.border.primary}` : "none",
           borderBottom: isOpen ? `1px solid ${colors.border.primary}` : "none",
         }}
@@ -257,68 +261,73 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
           <nav className="py-2">
             {navigationCategories.map((category) => (
               <div key={category.id} className="mb-0">
-                <button
-                  onClick={() => {
-                    if (category.subcategories && category.subcategories.length > 0) {
-                      toggleCategory(category.id);
-                    } else {
-                      handleNavigation(category.href || "/");
-                    }
-                  }}
-                  className="w-full px-6 py-4 text-left transition-all duration-200 flex items-center justify-between group border-l-4"
-                  style={{
-                    backgroundColor: expandedCategories.includes(category.id)
-                      ? (colors.background.accent ?? colors.background.secondary)
-                      : "transparent",
-                    borderLeftColor: expandedCategories.includes(category.id)
-                      ? colors.interactive.primary
-                      : "transparent",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!expandedCategories.includes(category.id)) {
-                      e.currentTarget.style.backgroundColor = colors.background.secondary ?? "rgba(0,0,0,0.04)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!expandedCategories.includes(category.id)) {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }
-                  }}
-                >
-                  <div>
-                    <div
-                      className="font-semibold text-base mb-0.5"
-                      style={{
-                        color: expandedCategories.includes(category.id)
-                          ? colors.interactive.primary
-                          : colors.text.primary,
+                {(() => {
+                  const isExpanded = expandedCategories.includes(category.id);
+                  const isHovered = hoveredCategoryId === category.id;
+                  const isActive = isExpanded || isHovered;
+
+                  return (
+                    <button
+                      onClick={() => {
+                        if (category.subcategories && category.subcategories.length > 0) {
+                          toggleCategory(category.id);
+                        } else {
+                          handleNavigation(category.href || "/");
+                        }
                       }}
+                      className="w-full px-6 py-4 text-left transition-all duration-200 flex items-center justify-between group border-l-4"
+                      style={{
+                        backgroundColor: isActive
+                          ? (colors.background.accent ?? colors.background.secondary)
+                          : "transparent",
+                        borderLeftColor: isActive
+                          ? colors.interactive.primary
+                          : "transparent",
+                      }}
+                      onMouseEnter={() => setHoveredCategoryId(category.id)}
+                      onMouseLeave={() => setHoveredCategoryId(null)}
                     >
-                      {category.name}
-                    </div>
-                    {category.subcategories && category.subcategories.length > 0 && (
-                      <div className="text-xs" style={{ color: colors.text.secondary }}>
-                        {category.subcategories.length} products
-                      </div>
-                    )}
-                  </div>
-                  {category.subcategories && category.subcategories.length > 0 && (
-                    <span className="transition-transform duration-200">
-                      {expandedCategories.includes(category.id) ? (
-                        <ChevronDown
-                          className="w-5 h-5"
+                      <div>
+                        <div
+                          className="font-semibold text-base mb-0.5"
                           style={{
-                            color: expandedCategories.includes(category.id)
-                              ? colors.interactive.primary
-                              : colors.text.secondary,
+                            color: isActive ? colors.interactive.primary : colors.text.primary,
                           }}
-                        />
-                      ) : (
-                        <ChevronRight className="w-5 h-5" style={{ color: colors.text.secondary }} />
+                        >
+                          {category.name}
+                        </div>
+                        {category.subcategories && category.subcategories.length > 0 && (
+                          <div className="text-xs" style={{ color: colors.text.secondary }}>
+                            {category.subcategories.length} products
+                          </div>
+                        )}
+                      </div>
+                      {category.subcategories && category.subcategories.length > 0 && (
+                        <span className="transition-transform duration-200">
+                          {isExpanded ? (
+                            <ChevronDown
+                              className="w-5 h-5"
+                              style={{
+                                color: isActive
+                                  ? colors.interactive.primary
+                                  : colors.text.secondary,
+                              }}
+                            />
+                          ) : (
+                            <ChevronRight
+                              className="w-5 h-5"
+                              style={{
+                                color: isActive
+                                  ? colors.interactive.primary
+                                  : colors.text.secondary,
+                              }}
+                            />
+                          )}
+                        </span>
                       )}
-                    </span>
-                  )}
-                </button>
+                    </button>
+                  );
+                })()}
 
                 {category.subcategories &&
                   category.subcategories.length > 0 &&
