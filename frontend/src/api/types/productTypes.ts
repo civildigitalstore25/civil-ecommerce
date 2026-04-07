@@ -25,6 +25,8 @@ export interface Requirement {
 
 export interface Product {
   _id?: string;
+  /** URL slug when returned from API (used for routing / matching) */
+  slug?: string;
   name: string;
   version: string;
   shortDescription?: string;

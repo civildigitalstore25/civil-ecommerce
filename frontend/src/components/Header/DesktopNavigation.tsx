@@ -5,10 +5,10 @@ import MicrosoftDropdown from "./MicrosoftDropdown";
 import AdobeDropdown from "./AdobeDropdown";
 import AntivirusDropdown from "./AntivirusDropdown";
 import OffersDropdown from "./OffersDropdown";
-import { ChevronDown } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import ProductSearchBar from "./ProductSearchBar";
+import { DesktopNavBrandDropdown } from "./DesktopNavBrandDropdown";
 
 interface DesktopNavigationProps {
   onNavigate: (href: string) => void;
@@ -31,12 +31,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
   const { colors } = useAdminTheme();
   const offers = headerConfig.offers;
   const offersButtonRef = useRef<HTMLDivElement>(null);
-
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-
-  const handleDropdownToggle = (name: string | null) => {
-    setActiveDropdown(name);
-  };
 
   const handleNavigate = (href: string) => {
     onNavigate(href);
@@ -45,195 +40,111 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
 
   return (
     <nav className="hidden lg:flex items-center space-x-2 xl:space-x-4 mr-2">
-      <div className="relative">
-        <div
-          ref={allCategoriesButtonRef}
-          onMouseEnter={() => handleDropdownToggle("categories")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            All Categories
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "categories" && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("categories")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <AllCategoriesDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={allCategoriesButtonRef}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="categories"
+        label="All Categories"
+        colors={colors}
+        buttonRef={allCategoriesButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={false}
+      >
+        <AllCategoriesDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={allCategoriesButtonRef}
+        />
+      </DesktopNavBrandDropdown>
 
-      <div className="relative">
-        <div
-          ref={autodeskButtonRef}
-          onMouseEnter={() => handleDropdownToggle("autodesk")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            Autodesk
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "autodesk" && autodeskButtonRef.current && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("autodesk")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <AutodeskDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={autodeskButtonRef}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="autodesk"
+        label="Autodesk"
+        colors={colors}
+        buttonRef={autodeskButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={true}
+      >
+        <AutodeskDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={autodeskButtonRef}
+        />
+      </DesktopNavBrandDropdown>
 
-      <div className="relative">
-        <div
-          ref={adobeButtonRef}
-          onMouseEnter={() => handleDropdownToggle("adobe")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            Adobe
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "adobe" && adobeButtonRef.current && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("adobe")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <AdobeDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={adobeButtonRef}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="adobe"
+        label="Adobe"
+        colors={colors}
+        buttonRef={adobeButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={true}
+      >
+        <AdobeDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={adobeButtonRef}
+        />
+      </DesktopNavBrandDropdown>
 
-      <div className="relative">
-        <div
-          ref={microsoftButtonRef}
-          onMouseEnter={() => handleDropdownToggle("microsoft")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            Microsoft
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "microsoft" && microsoftButtonRef.current && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("microsoft")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <MicrosoftDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={microsoftButtonRef}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="microsoft"
+        label="Microsoft"
+        colors={colors}
+        buttonRef={microsoftButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={true}
+      >
+        <MicrosoftDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={microsoftButtonRef}
+        />
+      </DesktopNavBrandDropdown>
 
-      <div className="relative">
-        <div
-          ref={antivirusButtonRef}
-          onMouseEnter={() => handleDropdownToggle("antivirus")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            Antivirus
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "antivirus" && antivirusButtonRef.current && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("antivirus")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <AntivirusDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={antivirusButtonRef}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="antivirus"
+        label="Antivirus"
+        colors={colors}
+        buttonRef={antivirusButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={true}
+      >
+        <AntivirusDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={antivirusButtonRef}
+        />
+      </DesktopNavBrandDropdown>
 
-      <div className="relative">
-        <div
-          ref={offersButtonRef}
-          onMouseEnter={() => handleDropdownToggle("offers")}
-          onMouseLeave={() => handleDropdownToggle(null)}
-          className="inline-block"
-        >
-          <button
-            className="flex items-center text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
-            style={{ color: colors.text.secondary }}
-          >
-            Offers
-            <ChevronDown className="ml-0.5 w-3.5 h-3.5" />
-          </button>
-          {activeDropdown === "offers" && offersButtonRef.current && (
-            <div
-              className="absolute left-0 z-50"
-              onMouseEnter={() => handleDropdownToggle("offers")}
-              onMouseLeave={() => handleDropdownToggle(null)}
-            >
-              <OffersDropdown
-                isOpen={true}
-                onClose={() => setActiveDropdown(null)}
-                onNavigate={handleNavigate}
-                buttonRef={offersButtonRef}
-                offers={offers}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      <DesktopNavBrandDropdown
+        dropdownId="offers"
+        label="Offers"
+        colors={colors}
+        buttonRef={offersButtonRef}
+        activeDropdown={activeDropdown}
+        onSetDropdown={setActiveDropdown}
+        requireRefForPanel={true}
+      >
+        <OffersDropdown
+          isOpen={true}
+          onClose={() => setActiveDropdown(null)}
+          onNavigate={handleNavigate}
+          buttonRef={offersButtonRef}
+          offers={offers}
+        />
+      </DesktopNavBrandDropdown>
 
-      
       <button
+        type="button"
         onClick={() => onNavigate("/blog")}
         className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
@@ -241,6 +152,7 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         Blog
       </button>
       <button
+        type="button"
         onClick={() => onNavigate("/about-us")}
         className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
@@ -248,13 +160,13 @@ const DesktopNavigation: React.FC<DesktopNavigationProps> = ({
         About Us
       </button>
       <button
+        type="button"
         onClick={() => onNavigate("/contact")}
         className="text-sm font-medium transition-all duration-200 whitespace-nowrap hover:opacity-80"
         style={{ color: colors.text.secondary }}
       >
         Contact Us
       </button>
-      {/* Move search next to Contact Us and reduce width on desktop */}
       <ProductSearchBar className="hidden lg:block w-36 xl:w-40" />
     </nav>
   );

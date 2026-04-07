@@ -1,21 +1,10 @@
-import React, { createContext, useContext, useCallback, useState } from "react";
-// Custom debounce implementation - no lodash dependency
-const debounce = <T extends (...args: any[]) => any>(
-  func: T,
-  wait: number,
-): ((...args: Parameters<T>) => void) => {
-  let timeoutId: NodeJS.Timeout | null = null;
-
-  return (...args: Parameters<T>) => {
-    if (timeoutId) {
-      clearTimeout(timeoutId);
-    }
-
-    timeoutId = setTimeout(() => {
-      func(...args);
-    }, wait);
-  };
-};
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useState,
+  useMemo,
+} from "react";
 import {
   useCart as useCartApi,
   useAddToCart as useAddToCartApi,
@@ -25,7 +14,16 @@ import {
 } from "../api/cartApi";
 import { useUser } from "../api/userQueries";
 import type { CartItem, CartSummary, Product } from "../types/cartTypes";
-import Swal from "sweetalert2";
+import { debounce } from "../utils/debounce";
+import { mapCartResponseToContext } from "./cart/mapCartResponseToContext";
+import {
+  resolveEffectiveLicenseType,
+  type CartLicenseType,
+} from "./cart/resolveEffectiveLicenseType";
+import {
+  showCartErrorToast,
+  showCartSuccessToast,
+} from "./cart/cartMutationToasts";
 
 interface CartContextType {
   items: CartItem[];
@@ -34,7 +32,7 @@ interface CartContextType {
   error: string | null;
   addItem: (
     product: Product,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: CartLicenseType,
     quantity?: number,
     subscriptionPlan?: { planId: string; planLabel: string; planType: string },
   ) => Promise<void>;
@@ -43,15 +41,11 @@ interface CartContextType {
   clearCart: () => Promise<void>;
   getItemCount: () => number;
   getTotalPrice: () => number;
-  isItemInCart: (
-    productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
-  ) => boolean;
+  isItemInCart: (productId: string, licenseType: CartLicenseType) => boolean;
   getItemQuantity: (
     productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: CartLicenseType,
   ) => number;
-  // UI controls for cart drawer
   isCartOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
@@ -70,116 +64,39 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const removeFromCartMutation = useRemoveFromCartApi();
   const clearCartMutation = useClearCartApi();
 
-  // Silent update - no toast notifications for quantity updates
   const silentUpdateQuantity = useCallback(
     debounce(async (itemId: string, quantity: number) => {
       try {
         await updateCartItemMutation.mutateAsync({ itemId, quantity });
-        // No success toast for silent updates
-      } catch (error) {
-        console.error("Failed to update item quantity:", error);
-        // Only show error toasts
-        Swal.fire({
-          icon: "error",
-          title: "Failed to update cart",
-          toast: true,
-          position: "top-end",
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
+      } catch (err) {
+        console.error("Failed to update item quantity:", err);
+        showCartErrorToast("Failed to update cart");
       }
-    }, 800), // Slightly longer debounce for less frequent API calls
+    }, 800),
     [updateCartItemMutation],
   );
 
-  const showSuccessToast = (message: string) => {
-    Swal.fire({
-      icon: "success",
-      title: message,
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 2000,
-      timerProgressBar: true,
-    });
-  };
-
-  const showErrorToast = (message: string) => {
-    Swal.fire({
-      icon: "error",
-      title: message,
-      toast: true,
-      position: "top-end",
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  };
-
-  const items: CartItem[] =
-    cartData?.items.map((item) => ({
-      id: item._id,
-      product: item.product,
-      licenseType: item.licenseType,
-      quantity: item.quantity,
-      price: item.price,
-      totalPrice: item.totalPrice,
-      subscriptionPlan: (item as any).subscriptionPlan,
-    })) || [];
-
-  const summary: CartSummary = cartData?.summary || {
-    subtotal: 0,
-    discount: 0,
-    total: 0,
-    itemCount: 0,
-  };
+  const { items, summary } = useMemo(
+    () => mapCartResponseToContext(cartData),
+    [cartData],
+  );
 
   const addItem = async (
     product: Product,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: CartLicenseType,
     quantity: number = 1,
     subscriptionPlan?: { planId: string; planLabel: string; planType: string },
   ) => {
     if (!user) {
-      showErrorToast("Please login to add items to cart");
+      showCartErrorToast("Please login to add items to cart");
       return;
     }
 
-    const toPositiveNumber = (value: unknown): number => {
-      const parsed = Number(value);
-      return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
-    };
-
-    const resolveLicenseType = (): "1year" | "3year" | "lifetime" => {
-      if (subscriptionPlan) return licenseType;
-
-      const productAny = product as any;
-      const has1YearPrice =
-        toPositiveNumber(productAny?.price1INR) > 0 ||
-        toPositiveNumber(productAny?.price1) > 0;
-      const has3YearPrice =
-        toPositiveNumber(productAny?.price3INR) > 0 ||
-        toPositiveNumber(productAny?.price3) > 0;
-      const hasLifetimePrice =
-        toPositiveNumber(productAny?.lifetimePriceINR) > 0 ||
-        toPositiveNumber(productAny?.priceLifetimeINR) > 0 ||
-        toPositiveNumber(productAny?.priceLifetime) > 0;
-
-      if (licenseType === "1year" && !has1YearPrice) {
-        if (hasLifetimePrice) return "lifetime";
-        if (has3YearPrice) return "3year";
-      }
-
-      if (licenseType === "3year" && !has3YearPrice) {
-        if (has1YearPrice) return "1year";
-        if (hasLifetimePrice) return "lifetime";
-      }
-
-      return licenseType;
-    };
-
-    const effectiveLicenseType = resolveLicenseType();
+    const effectiveLicenseType = resolveEffectiveLicenseType(
+      product,
+      licenseType,
+      subscriptionPlan,
+    );
 
     try {
       await addToCartMutation.mutateAsync({
@@ -188,28 +105,26 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         quantity,
         subscriptionPlan,
       });
-      showSuccessToast("Item added to cart!");
-      // Open cart drawer on successful add
+      showCartSuccessToast("Item added to cart!");
       setIsCartOpen(true);
-    } catch (error) {
-      console.error("Failed to add item to cart:", error);
-      showErrorToast("Failed to add item to cart");
-      throw error;
+    } catch (err) {
+      console.error("Failed to add item to cart:", err);
+      showCartErrorToast("Failed to add item to cart");
+      throw err;
     }
   };
 
   const removeItem = async (itemId: string) => {
     try {
       await removeFromCartMutation.mutateAsync(itemId);
-      showSuccessToast("Item removed from cart");
-    } catch (error) {
-      console.error("Failed to remove item from cart:", error);
-      showErrorToast("Failed to remove item from cart");
-      throw error;
+      showCartSuccessToast("Item removed from cart");
+    } catch (err) {
+      console.error("Failed to remove item from cart:", err);
+      showCartErrorToast("Failed to remove item from cart");
+      throw err;
     }
   };
 
-  // This is the key - silent quantity update with no UI feedback
   const updateQuantity = useCallback(
     (itemId: string, quantity: number) => {
       silentUpdateQuantity(itemId, quantity);
@@ -220,11 +135,11 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const clearCart = async () => {
     try {
       await clearCartMutation.mutateAsync();
-      showSuccessToast("Cart cleared");
-    } catch (error) {
-      console.error("Failed to clear cart:", error);
-      showErrorToast("Failed to clear cart");
-      throw error;
+      showCartSuccessToast("Cart cleared");
+    } catch (err) {
+      console.error("Failed to clear cart:", err);
+      showCartErrorToast("Failed to clear cart");
+      throw err;
     }
   };
 
@@ -233,7 +148,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const isItemInCart = (
     productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: CartLicenseType,
   ) => {
     return items.some(
       (item) =>
@@ -243,7 +158,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const getItemQuantity = (
     productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: CartLicenseType,
   ) => {
     const item = items.find(
       (item) =>
