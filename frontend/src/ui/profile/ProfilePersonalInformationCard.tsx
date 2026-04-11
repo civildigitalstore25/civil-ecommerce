@@ -3,6 +3,7 @@ import type { FieldErrors, UseFormRegister, UseFormWatch } from "react-hook-form
 import type { User } from "../../api/auth";
 import FormInput from "../../components/Input/FormInput";
 import PhoneInput from "../../components/Input/PhoneInput";
+import { normalizeDuplicateIndiaCountryInPhone } from "../../utils/normalizePhoneNumber";
 
 type FormValues = { fullName: string; phoneNumber: string };
 
@@ -101,7 +102,8 @@ export function ProfilePersonalInformationCard({
             className="transition-colors duration-200"
             style={{ color: colors.text.primary }}
           >
-            {user?.phoneNumber || "Not provided"}
+            {normalizeDuplicateIndiaCountryInPhone(user?.phoneNumber || "") ||
+              "Not provided"}
           </p>
         </div>
       </div>

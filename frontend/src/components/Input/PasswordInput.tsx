@@ -57,7 +57,8 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors duration-200"
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          className="absolute inset-y-0 right-0 flex cursor-pointer items-center px-3 transition-colors duration-200"
           style={{ color: colors.text.secondary }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = colors.text.primary;
@@ -67,9 +68,9 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           }}
         >
           {showPassword ? (
-            <EyeOff className="w-5 h-5" />
+            <EyeOff className="h-5 w-5 shrink-0" aria-hidden />
           ) : (
-            <Eye className="w-5 h-5" />
+            <Eye className="h-5 w-5 shrink-0" aria-hidden />
           )}
         </button>
       </div>
