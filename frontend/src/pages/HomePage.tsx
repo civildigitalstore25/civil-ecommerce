@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
 import HeroSection from "../ui/home/HeroSection";
 import HomeProducts from "../ui/home/HomeProducts";
 import MarqueeBanner from "../ui/home/MarqueeBanner";
@@ -9,12 +10,13 @@ import LatestBlogsCarousel from "../ui/home/LatestBlogsCarousel";
 import BestSellingCarousel from "../ui/home/BestSellingCarousel";
 import FreeProductsSection from "../ui/home/FreeProductsSection";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { getHomeSEO } from "../utils/seo";
+import { getHomeSEO, buildCanonicalUrl } from "../utils/seo";
 import DealsPage from "./Deals";
 import { useActiveDeals } from "../api/dealsApi";
 
 const HomePage: React.FC = () => {
   const { colors } = useAdminTheme();
+  const { pathname } = useLocation();
   const seoData = getHomeSEO();
   const { data: dealsData } = useActiveDeals();
   const hasDeals = (dealsData?.deals || []).length > 0;
@@ -28,7 +30,8 @@ const HomePage: React.FC = () => {
         <meta property="og:title" content={seoData.ogTitle} />
         <meta property="og:description" content={seoData.ogDescription} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={window.location.href} />
+        <meta property="og:url" content={buildCanonicalUrl(pathname)} />
+        <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
 
       <div

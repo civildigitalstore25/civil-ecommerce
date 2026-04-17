@@ -1,5 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
+import { buildCanonicalUrl } from "../../utils/seo";
 
 /** Shape returned by getProductSEO for product pages */
 export type ProductDetailSeoData = {
@@ -22,7 +24,8 @@ export const ProductDetailSeoHelmet: React.FC<Props> = ({
   ogImage,
   priceInr,
 }) => {
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const { pathname } = useLocation();
+  const url = buildCanonicalUrl(pathname);
 
   const title = seoData?.title || "Product Detail - Softzcart";
   const description = seoData?.description || "Discover premium software products with genuine licenses and instant delivery.";

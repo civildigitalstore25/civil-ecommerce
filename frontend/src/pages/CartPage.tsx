@@ -1,15 +1,16 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useCartContext } from "../contexts/CartContext";
 import { CartItem, CartSummary, CartEmpty } from "../ui/Cart";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import RelatedProducts from "../components/RelatedProducts";
 import Swal from "sweetalert2";
-import { getCartSEO } from "../utils/seo";
+import { getCartSEO, buildCanonicalUrl } from "../utils/seo";
 
 const CartPage: React.FC = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { items, summary, isLoading, removeItem, updateQuantity, clearCart } =
     useCartContext();
   const { colors } = useAdminTheme();
@@ -99,7 +100,7 @@ const CartPage: React.FC = () => {
         <meta name="description" content={seoData.description} />
         <meta name="keywords" content={seoData.keywords} />
         <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
       <div
       className="min-h-screen transition-colors duration-200 pt-16 sm:pt-20"

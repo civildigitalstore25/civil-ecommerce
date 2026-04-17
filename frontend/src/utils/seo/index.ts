@@ -1,4 +1,5 @@
 export type { SEOMetadata } from "./seoTypes";
+export { getPublicSiteOrigin, buildCanonicalUrl } from "./siteOrigin";
 export { BRAND_SEO_CONFIG } from "./brandSeoConfig";
 export { CATEGORY_SEO_CONFIG } from "./categorySeoConfig";
 export { getProductSEO } from "./getProductSEO";

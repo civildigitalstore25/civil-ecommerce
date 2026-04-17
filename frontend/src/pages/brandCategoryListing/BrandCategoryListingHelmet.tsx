@@ -1,5 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
+import { useLocation } from "react-router-dom";
+import { buildCanonicalUrl } from "../../utils/seo";
 
 type Seo = {
   title?: string;
@@ -12,7 +14,8 @@ type Seo = {
 type Props = { seoData: Seo };
 
 export const BrandCategoryListingHelmet: React.FC<Props> = ({ seoData }) => {
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const { pathname } = useLocation();
+  const url = buildCanonicalUrl(pathname);
   const title = String(seoData.title ?? "");
   const description = String(seoData.description ?? "");
   const keywords = String(seoData.keywords ?? "");
@@ -27,6 +30,7 @@ export const BrandCategoryListingHelmet: React.FC<Props> = ({ seoData }) => {
       <meta property="og:title" content={ogTitle} />
       <meta property="og:description" content={ogDescription} />
       <meta property="og:type" content="website" />
+      <meta property="og:url" content={url} />
       <link rel="canonical" href={url} />
     </Helmet>
   );
