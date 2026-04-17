@@ -1,0 +1,42 @@
+---
+description: DRY, reuse, shared constants, file size, non-UI tests, and regression safety for civil-ecommerce
+alwaysApply: true
+---
+
+# DRY and project coding standards
+
+## DRY (Don’t Repeat Yourself)
+
+- Extract repeated logic, strings, API shapes, and UI patterns into one place (hooks, utils, shared components, `constants/`, API modules).
+- When you fix a bug or change behavior, update the single source of truth so duplicates do not drift.
+- Prefer composition (small components + hooks) over copy-paste across pages or admin UI.
+
+## Reusable UI
+
+- Prefer existing components under `frontend/src/components/` (e.g. `common/`, form controls, layout) and established patterns in `ui/` before adding new one-off markup.
+- New UI that appears in more than one screen should become a shared component with clear props; avoid duplicating large JSX blocks.
+
+## Discover before you implement
+
+- Before adding features, search the repo for existing hooks, API clients (`frontend/src/api/`), utils, backend controllers/services, and shared types.
+- Extend existing modules when they fit; only create new files when responsibility is genuinely different.
+
+## Constants and shared styling
+
+- Move magic strings, repeated literals, static colors, spacing tokens, and cross-file config into appropriate shared modules (e.g. `frontend/src/constants/`, theme/tokens, or Tailwind-oriented central definitions).
+- Do not scatter the same hex/RGB values or labels across many files if they mean the same thing.
+
+## Automated checks without the browser (scripts folder)
+
+- Prefer adding **non-UI** verification in a top-level `scripts/` folder (e.g. Node/TS scripts run with `npx tsx` or `node`, or backend-oriented checks colocated with `backend/scripts/` when they need the server stack).
+- Scripts should be documented briefly in `package.json` `scripts` when they are meant to be run regularly.
+
+## Regression safety
+
+- Preserve public behavior and API contracts unless the task explicitly changes them.
+- After edits, run existing `lint` / `build` commands for the touched app; do not remove behavior users rely on without an explicit requirement.
+
+## File size (≤ 200 lines per file)
+
+- Treat **200 lines** as a soft cap: split large components into subcomponents, extract hooks and helpers, and move types/constants to dedicated files.
+- When splitting, keep imports coherent and avoid circular dependencies.

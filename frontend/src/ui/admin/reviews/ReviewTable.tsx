@@ -2,6 +2,14 @@ import React from "react";
 import { Edit, Trash2 } from "lucide-react";
 import type { Review } from "../../../api/reviewApi";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
+import ReviewStarRating from "./ReviewStarRating";
+
+function productName(product: Review["product"]): string {
+  if (typeof product === "object" && product !== null && "name" in product) {
+    return product.name;
+  }
+  return "Unknown Product";
+}
 
 interface ReviewTableProps {
   reviews: Review[];
@@ -10,11 +18,6 @@ interface ReviewTableProps {
   handleSelectReview: (id: string) => void;
   handleEditReview: (review: Review) => void;
   handleDeleteReview: (reviewId: string) => void;
-  renderStars: (
-    rating: number,
-    interactive?: boolean,
-    onRatingChange?: (rating: number) => void,
-  ) => React.ReactNode;
 }
 
 const ReviewTable: React.FC<ReviewTableProps> = ({
@@ -24,7 +27,6 @@ const ReviewTable: React.FC<ReviewTableProps> = ({
   handleSelectReview,
   handleEditReview,
   handleDeleteReview,
-  renderStars,
 }) => {
   const { colors } = useAdminTheme();
 
@@ -120,10 +122,15 @@ const ReviewTable: React.FC<ReviewTableProps> = ({
                   </td>
                   <td className="py-4 px-4">
                     <div className="font-medium" style={{ color: colors.text.primary }}>
-                      {(review as any).product?.name || "Unknown Product"}
+                      {productName(review.product)}
                     </div>
                   </td>
-                  <td className="py-4 px-4">{renderStars(review.rating)}</td>
+                  <td className="py-4 px-4">
+                    <ReviewStarRating
+                      rating={review.rating}
+                      mutedStarColor={colors.text.secondary}
+                    />
+                  </td>
                   <td className="py-4 px-4 max-w-xs">
                     <div
                       className="truncate"

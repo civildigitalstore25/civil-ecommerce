@@ -4,6 +4,8 @@ export interface Banner {
   description: string;
   ctaButtonText: string;
   ctaButtonLink?: string; // optional
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
   startDate: string;
   endDate: string;
   position: string;

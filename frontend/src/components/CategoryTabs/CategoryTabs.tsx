@@ -1,166 +1,29 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Star, Shield } from "lucide-react";
-import { useProducts } from "../../api/productApi";
-import { useUser } from "../../api/userQueries";
-import { useCartContext } from "../../contexts/CartContext";
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
-import { useCurrency } from "../../contexts/CurrencyContext";
-import { getMinimumProductPrice } from "../../utils/productPricing";
-import Swal from "sweetalert2";
+import { CATEGORY_TABS } from "./categoryTabsConfig";
+import { useCategoryTabs } from "./useCategoryTabs";
+import { CategoryTabsTabBar } from "./CategoryTabsTabBar";
+import { CategoryTabsProductCard } from "./CategoryTabsProductCard";
 
-const CATEGORY_TABS = [
-  // For all tabs we filter only by company, so the brand tab shows all products for that brand
-  { id: "autocad", label: "AutoDesk", company: "autodesk", category: "", image: "/mobilelogo/autocad.png", color: "#f59e0b" },
-  { id: "microsoft", label: "Microsoft", company: "microsoft", category: "", image: "/mobilelogo/Microsoft_Logo.png", color: "#3b82f6" },
-  { id: "antivirus", label: "Antivirus", company: "antivirus", category: "", icon: Shield, color: "#10b981" },
-  { id: "adobe", label: "Adobe", company: "adobe", category: "", image: "/mobilelogo/adobe.png", color: "#ec4899" },
-  { id: "corel", label: "Corel", company: "corel", category: "", image: "/mobilelogo/corel.jpg", color: "#06b6d4" },
-];
-
-const CategoryTabs: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(CATEGORY_TABS[0].id);
-  const navigate = useNavigate();
-  const { addItem } = useCartContext();
-  const { data: user } = useUser();
-  const { colors } = useAdminTheme();
-  const { formatPriceWithSymbol } = useCurrency();
-
-  // Get the active category's company and category so only related products show
-  const activeCategory = CATEGORY_TABS.find((tab) => tab.id === activeTab);
-  const companyFilter = activeCategory?.company || "";
-  const categoryFilter = activeCategory?.category || "";
-
-  // Fetch products filtered by company AND category (e.g. AutoCAD only, not all Autodesk/Revit)
-  const { data = { products: [], totalPages: 0, currentPage: 0, total: 0 } } =
-    useProducts({
-      company: companyFilter,
-      ...(categoryFilter ? { category: categoryFilter } : {}),
-      limit: 6,
-    });
-
-
-  // Prioritize active and non-'others' products.
-  const allProducts = data.products || [];
-  // 1. Active and not 'others'
-  const primary = allProducts.filter((p: any) => {
-    const b = (p.brand || p.company || "").toString().toLowerCase();
-    return (p.status === 'active' || !p.status) && b !== "others";
-  });
-  // 2. Active and 'others'
-  const secondary = allProducts.filter((p: any) => {
-    const b = (p.brand || p.company || "").toString().toLowerCase();
-    return (p.status === 'active' || !p.status) && b === "others";
-  });
-  // 3. Inactive but not 'others'
-  const tertiary = allProducts.filter((p: any) => {
-    const b = (p.brand || p.company || "").toString().toLowerCase();
-    return p.status !== 'active' && b !== "others";
-  });
-  // 4. Inactive and 'others'
-  const fallback = allProducts.filter((p: any) => {
-    const b = (p.brand || p.company || "").toString().toLowerCase();
-    return p.status !== 'active' && b === "others";
-  });
-
-  // Concatenate in order of priority and take up to 6.
-  // UX requirement: show 6 cards on mobile, but only 5 on desktop.
-  const displayedProducts = [...primary, ...secondary, ...tertiary, ...fallback].slice(0, 6);
-
-  const interactiveTint =
-    colors.interactive.primary &&
-      typeof colors.interactive.primary === "string" &&
-      colors.interactive.primary.startsWith("linear-gradient")
-      ? `${colors.interactive.secondary}20`
-      : `${colors.interactive.primary}20`;
-
-  const handleAddToCart = async (
-    product: any,
-    licenseType: "1year" = "1year"
-  ) => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-      await addItem(product, licenseType, 1);
-      Swal.fire({
-        title: "Added to Cart!",
-        text: `${product.name} has been added to your cart`,
-        icon: "success",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 2000,
-        timerProgressBar: true,
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "Error",
-        text: "Failed to add item to cart",
-        icon: "error",
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-      });
-    }
-  };
+const CategoryTabs = () => {
+  const {
+    activeTab,
+    setActiveTab,
+    colors,
+    displayedProducts,
+    interactiveTint,
+    formatPriceWithSymbol,
+    navigate,
+    handleAddToCart,
+  } = useCategoryTabs();
 
   return (
     <div className="transition-colors duration-200 w-full">
-      {/* Tabs */}
-      <div className="mb-6 md:mb-8">
-        <div className="flex flex-wrap gap-2 md:gap-4 justify-center">
-          {CATEGORY_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl font-semibold text-sm md:text-lg transition-all duration-300 hover:scale-105 flex items-center gap-2 ${activeTab === tab.id ? "shadow-lg" : "shadow-md"
-                }`}
-              style={{
-                background:
-                  activeTab === tab.id
-                    ? "#0068ff"
-                    : colors.background.secondary,
-                color:
-                  activeTab === tab.id
-                    ? "#fff"
-                    : colors.text.primary,
-                border:
-                  activeTab === tab.id
-                    ? "2px solid #0068ff"
-                    : `1.5px solid ${colors.border.primary}`,
-              }}
-            >
-              {/* Icon/Image */}
-              <div
-                className="w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{
-                  backgroundColor: activeTab === tab.id ? "rgba(255, 255, 255, 0.2)" : `${tab.color}20`
-                }}
-              >
-                {tab.image ? (
-                  <img
-                    src={tab.image}
-                    alt={tab.label}
-                    className="w-3 h-3 md:w-4 md:h-4 object-contain"
-                  />
-                ) : (
-                  tab.icon && React.createElement(tab.icon, {
-                    className: "w-3 h-3 md:w-4 md:h-4",
-                    style: { color: activeTab === tab.id ? "#fff" : tab.color }
-                  })
-                )}
-              </div>
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      <CategoryTabsTabBar
+        tabs={CATEGORY_TABS}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        colors={colors}
+      />
 
-      {/* Products Grid */}
       <div className="w-full">
         {displayedProducts.length === 0 ? (
           <div
@@ -174,168 +37,17 @@ const CategoryTabs: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 md:gap-6">
-            {displayedProducts.map((product: any, index: number) => (
-              <div
-                key={product._id}
-                className={`group rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] ${index >= 5 ? "lg:hidden" : ""}`}
-                style={{
-                  background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
-                  border: `1.5px solid ${colors.border.primary}`,
-                }}
-              >
-                {/* Image */}
-                <div
-                  className="rounded-md md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
-                  style={{ backgroundColor: colors.background.secondary }}
-                  onClick={() => {
-                    const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
-                    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-                    navigate(`/product/${slug}`);
-                  }}
-                >
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="object-contain w-full h-full transition-transform duration-300 hover:scale-105"
-                  />
-
-                  {(() => {
-                    const min = getMinimumProductPrice(product);
-                    if (!min) return null;
-                    const label = formatPriceWithSymbol(min.priceINR, min.priceUSD);
-                    return (
-                      <div className="absolute inset-x-2 bottom-2 flex justify-center pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-                        <div
-                          className="text-[10px] md:text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm"
-                          style={{
-                            backgroundColor: colors.background.primary,
-                            border: `1px solid ${colors.border.primary}`,
-                            color: colors.text.primary,
-                          }}
-                        >
-                          From {label}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                  {/* Best Seller Ribbon */}
-                  {product.isBestSeller && (
-                    <div className="absolute top-1 right-1 md:top-3 md:right-3 z-10 transform transition-all duration-300 hover:scale-110">
-                      <div className="relative">
-                        <div className="bg-gradient-to-r from-amber-400 via-orange-500 to-red-500 text-black text-[8px] md:text-xs font-bold px-1.5 py-0.5 md:px-4 md:py-2 rounded-sm md:rounded-md shadow-2xl border border-white/50 backdrop-blur-sm">
-                          <div className="flex items-center space-x-0.5 md:space-x-1.5">
-                            <Star className="w-2 h-2 md:w-3.5 md:h-3.5 fill-current text-yellow-100 animate-pulse" />
-                            <span className="tracking-wide hidden md:inline">
-                              BEST SELLER
-                            </span>
-                            <span className="tracking-wide md:hidden">BEST</span>
-                          </div>
-                        </div>
-                        <div className="absolute inset-0 bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 rounded-full blur-sm opacity-20 -z-10"></div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Badges */}
-                <div className="flex flex-wrap gap-1 md:gap-2 mb-1.5 md:mb-2">
-                  <span
-                    className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200 font-medium"
-                    style={{
-                      backgroundColor: interactiveTint,
-                      color:
-                        typeof colors.interactive.primary === "string" &&
-                          colors.interactive.primary.startsWith("linear-gradient")
-                          ? colors.interactive.secondary
-                          : colors.interactive.primary,
-                    }}
-                  >
-                    {product.category
-                      ? product.category.charAt(0).toUpperCase() +
-                      product.category.slice(1)
-                      : ""}
-                  </span>
-                  <span
-                    className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200 font-medium"
-                    style={{
-                      backgroundColor: colors.background.secondary,
-                      color: colors.text.secondary,
-                    }}
-                  >
-                    {product.company
-                      ? product.company.charAt(0).toUpperCase() +
-                      product.company.slice(1)
-                      : ""}
-                  </span>
-                </div>
-
-                {/* Name */}
-                <h2
-                  className="text-[11px] md:text-lg font-semibold mb-1 md:mb-1 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] md:min-h-[3rem]"
-                  style={{ color: colors.text.primary }}
-                >
-                  {product.name}
-                  {product.version && (
-                    <span
-                      className="font-normal ml-1 transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                    >
-                      ({product.version})
-                    </span>
-                  )}
-                </h2>
-
-                {/* Stars & Ratings
-                <div className="flex items-center text-[10px] md:text-sm mb-2 md:mb-3">
-                  <span className="text-yellow-400 mr-0.5 md:mr-1">
-                    {"★".repeat(Math.round(product.rating || 4))}
-                  </span>
-                  <span
-                    className="transition-colors duration-200 text-[9px] md:text-xs"
-                    style={{ color: colors.text.accent }}
-                  >
-                    {product.ratingCount ? `(${product.ratingCount})` : ""}
-                  </span>
-                </div> */}
-
-                {/* Actions */}
-                <div className="flex flex-col gap-1.5 md:gap-2 mt-auto">
-                  <button
-                    className="w-full font-bold rounded-md md:rounded-lg py-1.5 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
-                    style={{
-                      ...(product.isOutOfStock
-                        ? {
-                          background: colors.background.accent,
-                          color: colors.status.error,
-                          border: `1px solid ${colors.status.error}`,
-                          cursor: "not-allowed",
-                        }
-                        : {
-                          background: "#0068ff",
-                          color: "#fff",
-                          border: "1.5px solid #0068ff",
-                        }),
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!product.isOutOfStock) {
-                        e.currentTarget.style.background =
-                          colors.interactive.primaryHover;
-                        e.currentTarget.style.color = "#fff";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!product.isOutOfStock) {
-                        e.currentTarget.style.background = "#0068ff";
-                        e.currentTarget.style.color = "#fff";
-                      }
-                    }}
-                    onClick={() => handleAddToCart(product)}
-                    disabled={product.isOutOfStock}
-                  >
-                    {product.isOutOfStock ? "Out of Stock" : "Add to Cart"}
-                  </button>
-                </div>
-              </div>
+            {displayedProducts.map((product, index) => (
+              <CategoryTabsProductCard
+                key={product._id ?? `product-${index}`}
+                product={product}
+                index={index}
+                colors={colors}
+                interactiveTint={interactiveTint}
+                formatPriceWithSymbol={formatPriceWithSymbol}
+                navigate={navigate}
+                onAddToCart={handleAddToCart}
+              />
             ))}
           </div>
         )}

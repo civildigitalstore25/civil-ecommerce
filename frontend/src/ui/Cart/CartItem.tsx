@@ -1,9 +1,13 @@
-import React, { useRef, useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import type { CartItem as CartItemType } from "../../types/cartTypes";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
-import Swal from "sweetalert2";
+import {
+  getLicenseBadgeStyle,
+  getLicenseLabel,
+} from "./cartItemLicenseDisplay";
+import { useCartItemQuantityDom } from "./useCartItemQuantityDom";
 
 interface CartItemProps {
   item: CartItemType;
@@ -18,157 +22,23 @@ const CartItem: React.FC<CartItemProps> = ({
 }) => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
-
   const navigate = useNavigate();
 
-  // Refs for direct DOM manipulation
-  const quantityDisplayRef = useRef<HTMLSpanElement>(null);
-  const totalPriceRef = useRef<HTMLDivElement>(null);
-  const decreaseButtonRef = useRef<HTMLButtonElement>(null);
-
-  // Store current quantity in ref to avoid re-renders
-  const currentQuantityRef = useRef(item.quantity);
-
-  // Update refs when item changes from external sources (initial load, etc.)
-  useEffect(() => {
-    currentQuantityRef.current = item.quantity;
-    if (quantityDisplayRef.current) {
-      quantityDisplayRef.current.textContent = item.quantity.toString();
-    }
-    if (totalPriceRef.current) {
-      totalPriceRef.current.textContent = formatPriceWithSymbol(
-        item.totalPrice,
-      );
-    }
-    if (decreaseButtonRef.current) {
-      decreaseButtonRef.current.disabled = item.quantity <= 1;
-    }
-  }, [item.quantity, item.totalPrice, formatPriceWithSymbol]);
-
-  // Direct DOM update function - NO STATE CHANGE
-  const updateUIDirectly = useCallback(
-    (newQuantity: number) => {
-      const newTotalPrice = newQuantity * item.price;
-
-      // Update quantity display
-      if (quantityDisplayRef.current) {
-        quantityDisplayRef.current.textContent = newQuantity.toString();
-      }
-
-      // Update total price display
-      if (totalPriceRef.current) {
-        totalPriceRef.current.textContent =
-          formatPriceWithSymbol(newTotalPrice);
-      }
-
-      // Update decrease button state
-      if (decreaseButtonRef.current) {
-        decreaseButtonRef.current.disabled = newQuantity <= 1;
-      }
-
-      // Update the ref
-      currentQuantityRef.current = newQuantity;
-    },
-    [item.price, formatPriceWithSymbol],
-  );
-
-  const handleQuantityChange = useCallback(
-    async (newQuantity: number) => {
-      if (newQuantity < 1) return;
-
-      if (newQuantity > 10) {
-        Swal.fire(
-          "Maximum Quantity",
-          "You can only add up to 10 of this item",
-          "warning",
-        );
-        return;
-      }
-
-      // Update UI immediately without re-render
-      updateUIDirectly(newQuantity);
-
-      // Call API in background (this might cause parent re-render, but this component won't)
-      onUpdateQuantity(item.id, newQuantity);
-    },
-    [item.id, onUpdateQuantity, updateUIDirectly],
-  );
-
-  const handleIncrease = useCallback(() => {
-    handleQuantityChange(currentQuantityRef.current + 1);
-  }, [handleQuantityChange]);
-
-  const handleDecrease = useCallback(() => {
-    handleQuantityChange(currentQuantityRef.current - 1);
-  }, [handleQuantityChange]);
+  const {
+    quantityDisplayRef,
+    totalPriceRef,
+    decreaseButtonRef,
+    handleIncrease,
+    handleDecrease,
+  } = useCartItemQuantityDom({
+    item,
+    formatPriceWithSymbol,
+    onUpdateQuantity,
+  });
 
   const handleRemove = useCallback(() => {
     onRemoveItem(item.id);
   }, [item.id, onRemoveItem]);
-
-  const getLicenseBadgeStyle = (
-    licenseType: string,
-    subscriptionPlan?: any,
-  ) => {
-    // Use theme-aware background and border for readable badge in dark and light themes.
-    // Provide a small accent on the left to indicate license type while keeping text readable.
-    const base = {
-      backgroundColor: colors.background.secondary,
-      color: colors.text.primary,
-      border: `1px solid ${colors.border.primary}`,
-      padding: undefined,
-    } as any;
-
-    const withAccent = (accentColor: string) => ({
-      ...base,
-      borderLeft: `4px solid ${accentColor}`,
-    });
-
-    if (subscriptionPlan && subscriptionPlan.planType) {
-      switch (subscriptionPlan.planType) {
-        case "admin-subscription":
-          return withAccent(colors.interactive.primary);
-        case "subscription":
-          return withAccent(colors.status.success);
-        case "membership":
-          return withAccent(colors.interactive.secondary);
-        case "lifetime":
-          return withAccent(colors.interactive.secondary);
-        default:
-          return base;
-      }
-    }
-
-    switch (licenseType) {
-      case "1year":
-        return withAccent(colors.interactive.primary);
-      case "3year":
-        return withAccent(colors.status.success);
-      case "lifetime":
-        return withAccent(colors.interactive.secondary);
-      default:
-        return base;
-    }
-  };
-
-  const getLicenseLabel = (licenseType: string, subscriptionPlan?: any) => {
-    // If subscription plan details are available, use them
-    if (subscriptionPlan && subscriptionPlan.planLabel) {
-      return subscriptionPlan.planLabel;
-    }
-
-    // Otherwise, use generic license labels
-    switch (licenseType) {
-      case "1year":
-        return "1 Year License";
-      case "3year":
-        return "3 Year License";
-      case "lifetime":
-        return "Lifetime License";
-      default:
-        return "License";
-    }
-  };
 
   return (
     <div
@@ -179,7 +49,6 @@ const CartItem: React.FC<CartItemProps> = ({
       }}
     >
       <div className="flex flex-row flex-wrap items-start gap-3 sm:gap-4">
-        {/* Product Image */}
         <div className="flex-shrink-0 mr-3">
           <div
             className="w-20 h-20 sm:w-28 sm:h-28 rounded-md sm:rounded-lg overflow-hidden transition-colors duration-200"
@@ -193,23 +62,25 @@ const CartItem: React.FC<CartItemProps> = ({
           </div>
         </div>
 
-        {/* Product Details */}
         <div className="flex-1 min-w-0 flex flex-col">
-          {/* Header: Title and Remove Button */}
           <div className="flex justify-between items-start gap-2 mb-1.5 sm:mb-2">
             <div className="flex-1 min-w-0">
               <h3
                 className="text-sm sm:text-lg font-semibold truncate transition-colors duration-200"
-                style={{ color: colors.text.primary, cursor: 'pointer', textDecoration: 'underline' }}
+                style={{
+                  color: colors.text.primary,
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                }}
                 onClick={() => {
                   if (item.product._id) {
                     navigate(`/product/${item.product._id}`);
                   }
                 }}
-                onMouseEnter={e => {
+                onMouseEnter={(e) => {
                   e.currentTarget.style.color = colors.interactive.primary;
                 }}
-                onMouseLeave={e => {
+                onMouseLeave={(e) => {
                   e.currentTarget.style.color = colors.text.primary;
                 }}
               >
@@ -219,7 +90,10 @@ const CartItem: React.FC<CartItemProps> = ({
                 className="text-xs sm:text-sm transition-colors duration-200"
                 style={{ color: colors.text.secondary }}
               >
-                {item.product.company ? item.product.company.charAt(0).toUpperCase() + item.product.company.slice(1) : ""}
+                {item.product.company
+                  ? item.product.company.charAt(0).toUpperCase() +
+                    item.product.company.slice(1)
+                  : ""}
               </p>
             </div>
             <button
@@ -250,11 +124,11 @@ const CartItem: React.FC<CartItemProps> = ({
             </button>
           </div>
 
-          {/* License Type Badge */}
           <div className="mb-2 sm:mb-3">
             <span
               className="inline-block px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full text-xs font-medium transition-colors duration-200"
               style={getLicenseBadgeStyle(
+                colors,
                 item.licenseType,
                 item.subscriptionPlan,
               )}
@@ -263,12 +137,7 @@ const CartItem: React.FC<CartItemProps> = ({
             </span>
           </div>
 
-          {/* Product Description */}
-          {/* Description intentionally removed to streamline cart UI on mobile */}
-
-          {/* Bottom Section: Quantity and Price */}
           <div className="mt-auto flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 sm:gap-4">
-            {/* Quantity Controls */}
             <div className="flex-shrink-0">
               <p
                 className="text-xs font-medium mb-2 transition-colors duration-200"
@@ -346,7 +215,6 @@ const CartItem: React.FC<CartItemProps> = ({
               </div>
             </div>
 
-            {/* Price */}
             <div className="flex-shrink-0 sm:text-right">
               <p
                 className="text-xs font-medium mb-1 transition-colors duration-200"

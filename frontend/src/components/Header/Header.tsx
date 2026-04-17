@@ -1,158 +1,48 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import {
   User,
   ShoppingCart,
   Menu,
   X,
-  LogOut,
-  Settings,
-  Package,
-  ChevronDown,
-  Mail,
 } from "lucide-react";
 import { headerConfig } from "./HeaderConfig";
 import DesktopNavigation from "./DesktopNavigation";
 import AuthDropdown from "./AuthDropdown";
 import MobileMenu from "./MobileMenu";
-import AdminDashboard from "../../ui/admin/AdminDashboard";
-// Dropdowns now imported only in DesktopNavigation
-import { useNavigate } from "react-router-dom";
-import { clearAuth, isAdmin } from "../../utils/auth";
-import { useUser, useUserInvalidate, useLogout } from "../../api/userQueries";
-import { useCartContext } from "../../contexts/CartContext";
+import { HeaderAdminDashboardChrome } from "./HeaderAdminDashboardChrome";
+import { HeaderDesktopUserMenu } from "./HeaderDesktopUserMenu";
+import { useHeaderController } from "./useHeaderController";
 import AdminThemeToggle from "../ThemeToggle/AdminThemeToggle";
-import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import CurrencyDropdown from "../CurrencyDropdown/CurrencyDropdown";
-// Use PNG logo from public folder
-const lightLogo = "/softlogo.png";
-const darkLogo = "/darkLogo.png";
+import { headerDarkLogo, headerLightLogo } from "./headerLogos";
 
 const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  // Only keep dropdown state for user/auth (not desktop nav)
-  const [openDropdown, setOpenDropdown] = useState<null | 'auth' | 'user'>(null);
-  // const [searchQuery, setSearchQuery] = useState("");
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false);
-
-  const autodeskButtonRef = useRef<HTMLDivElement>(null);
-  const microsoftButtonRef = useRef<HTMLDivElement>(null);
-  const adobeButtonRef = useRef<HTMLDivElement>(null);
-  const antivirusButtonRef = useRef<HTMLDivElement>(null);
-  const allCategoriesButtonRef = useRef<HTMLDivElement>(null);
-
-  const { data: user } = useUser();
-  const invalidateUser = useUserInvalidate();
-  const navigate = useNavigate();
-  const { getItemCount } = useCartContext();
-  const { colors, theme } = useAdminTheme();
-
-  // Prevent body scroll when mobile menu is open
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-
-    // Cleanup function
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isMenuOpen]);
-
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  // Only for user/auth dropdowns
-  const handleDropdownOpen = (key: typeof openDropdown) => setOpenDropdown(key);
-  const handleDropdownClose = () => setOpenDropdown(null);
-
-  // const handleSearch = () => {
-  //   if (searchQuery.trim()) {
-  //     navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`);
-  //   }
-  // };
-
-  // const handleKeyPress = (e: React.KeyboardEvent) => {
-  //   if (e.key === "Enter") {
-  //     handleSearch();
-  //   }
-  // };
-
-  const handleNavigation = (href: string) => {
-    if (href === "/admin-login") {
-      setShowAdminDashboard(true);
-    } else if (href === "/") {
-      setShowAdminDashboard(false);
-      navigate("/");
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } else if (href === "/logout") {
-      handleLogout();
-    } else {
-      navigate(href);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    setIsMenuOpen(false);
-    // No longer needed: all dropdowns handled by CSS except user/auth
-  };
-
-  const logoutMutation = useLogout();
-
-  const handleLogout = () => {
-    logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        clearAuth();
-        invalidateUser();
-        navigate("/");
-        window.location.reload();
-      },
-      onError: () => {
-        clearAuth();
-        invalidateUser();
-        navigate("/");
-        window.location.reload();
-      },
-    });
-  };
+  const {
+    refs,
+    isMenuOpen,
+    toggleMenu,
+    setIsMenuOpen,
+    openDropdown,
+    handleDropdownOpen,
+    handleDropdownClose,
+    showAdminDashboard,
+    setShowAdminDashboard,
+    handleNavigation,
+    handleLogout,
+    user,
+    getItemCount,
+    colors,
+    theme,
+    isAdminUser,
+  } = useHeaderController();
 
   if (showAdminDashboard) {
     return (
-      <div>
-        <header className="bg-white shadow-sm border-b border-gray-200 w-full">
-          <div className="w-full">
-            <div className="flex items-center justify-between py-2 sm:py-4 px-2 sm:px-4 lg:px-8">
-              <div className="flex items-center flex-shrink-0">
-                <button
-                  onClick={() => handleNavigation(headerConfig.logo.href)}
-                  className="flex items-center"
-                >
-                  <img
-                    src={theme === "dark" ? darkLogo : lightLogo}
-                    alt="Logo"
-                    className="h-10 w-[140px] sm:h-10 sm:w-[140px] md:h-12 md:w-[165px] object-contain object-left"
-                  />
-                </button>
-              </div>
-
-              <div className="flex-1 flex items-center justify-center">
-                <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-lg">
-                  <span className="text-sm font-medium">
-                    Admin Panel Active
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => setShowAdminDashboard(false)}
-                  className="bg-gray-500 text-white px-3 py-2 rounded-lg text-sm hover:bg-gray-600 transition-colors"
-                >
-                  Exit Admin
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-        <AdminDashboard />
-      </div>
+      <HeaderAdminDashboardChrome
+        theme={theme}
+        onLogoNavigate={() => handleNavigation(headerConfig.logo.href)}
+        onExitAdmin={() => setShowAdminDashboard(false)}
+      />
     );
   }
 
@@ -164,41 +54,37 @@ const Header: React.FC = () => {
         borderColor: colors.border.primary,
       }}
     >
-      {/* Main header content */}
       <div className="w-full">
         <div className="flex items-center justify-between py-3 sm:py-4 px-3 sm:px-4 lg:px-8">
-          {/* Logo flush left */}
           <div className="flex items-center flex-shrink-0">
             <button
+              type="button"
               onClick={() => handleNavigation("/")}
               className="flex items-center"
             >
               <img
-                src={theme === "dark" ? darkLogo : lightLogo}
+                src={theme === "dark" ? headerDarkLogo : headerLightLogo}
                 alt="Logo"
                 className="h-10 w-[140px] sm:h-10 sm:w-[140px] md:h-12 md:w-[165px] object-contain object-left"
               />
             </button>
           </div>
 
-          {/* Center section - Desktop */}
           <div className="flex-1 flex items-center justify-center px-2 lg:px-4 gap-2">
-            {/* Desktop Navigation */}
             <DesktopNavigation
               onNavigate={handleNavigation}
-              allCategoriesButtonRef={allCategoriesButtonRef}
-              autodeskButtonRef={autodeskButtonRef}
-              microsoftButtonRef={microsoftButtonRef}
-              adobeButtonRef={adobeButtonRef}
-              antivirusButtonRef={antivirusButtonRef}
+              allCategoriesButtonRef={refs.allCategoriesButtonRef}
+              autodeskButtonRef={refs.autodeskButtonRef}
+              microsoftButtonRef={refs.microsoftButtonRef}
+              adobeButtonRef={refs.adobeButtonRef}
+              antivirusButtonRef={refs.antivirusButtonRef}
               hideHomeMenu
             />
           </div>
 
-          {/* Right side actions */}
           <div className="flex items-center gap-1.5 sm:gap-2 lg:gap-3 pr-2 lg:pr-3 min-h-[56px]">
-            {/* Cart */}
             <button
+              type="button"
               onClick={() => handleNavigation("/cart")}
               className="relative flex items-center hover:opacity-80 px-1 lg:px-2"
               style={{ color: colors.text.secondary }}
@@ -218,136 +104,44 @@ const Header: React.FC = () => {
               )}
             </button>
 
-            {/* User dropdown or Auth dropdown */}
             {user ? (
-              <div className="hidden sm:block relative user-dropdown-group group">
-                <button
-                  className="flex items-center hover:opacity-80 px-1 lg:px-2"
-                  style={{ color: colors.text.secondary }}
-                >
-                  <User className="w-5 h-5 lg:w-5 lg:h-5" />
-                  <ChevronDown className="w-3 h-3 ml-1" />
-                </button>
-                <div
-                  className="user-dropdown-panel absolute right-0 mt-0 w-48 rounded-md shadow-lg border py-2 z-50 hidden group-hover:block"
-                  style={{
-                    backgroundColor: colors.background.primary,
-                    borderColor: colors.border.primary,
-                  }}
-                >
-                  {isAdmin(user) && (
-                    <button
-                      onClick={() => handleNavigation("/admin-dashboard")}
-                      className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
-                      style={{ color: colors.text.secondary }}
-                      onMouseEnter={e => {
-                        e.currentTarget.style.backgroundColor = colors.background.secondary;
-                        e.currentTarget.style.color = colors.interactive.primary;
-                      }}
-                      onMouseLeave={e => {
-                        e.currentTarget.style.backgroundColor = "transparent";
-                        e.currentTarget.style.color = colors.text.secondary;
-                      }}
-                    >
-                      <Settings className="w-4 h-4" />
-                      <span>Admin Dashboard</span>
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleNavigation("/profile")}
-                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = colors.background.secondary;
-                      e.currentTarget.style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                  >
-                    <User className="w-4 h-4" />
-                    <span>Profile</span>
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/my-orders")}
-                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = colors.background.secondary;
-                      e.currentTarget.style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                  >
-                    <Package className="w-4 h-4" />
-                    <span>My Orders</span>
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/my-enquiries")}
-                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = colors.background.secondary;
-                      e.currentTarget.style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                  >
-                    <Mail className="w-4 h-4" />
-                    <span>My Enquiries</span>
-                  </button>
-                  <button
-                    onClick={() => handleNavigation("/logout")}
-                    className="flex items-center space-x-3 w-full px-4 py-2 text-sm transition-colors duration-200"
-                    style={{ color: colors.text.secondary }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.backgroundColor = colors.background.secondary;
-                      e.currentTarget.style.color = colors.interactive.primary;
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color = colors.text.secondary;
-                    }}
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span>Logout</span>
-                  </button>
-                </div>
-              </div>
+              <HeaderDesktopUserMenu
+                colors={colors}
+                isAdminUser={isAdminUser}
+                onNavigate={handleNavigation}
+              />
             ) : (
-              <div className="hidden sm:block relative auth-dropdown-group"
-                onMouseEnter={() => handleDropdownOpen('auth')}
+              <div
+                className="hidden sm:block relative auth-dropdown-group"
+                onMouseEnter={() => handleDropdownOpen("auth")}
                 onMouseLeave={handleDropdownClose}
               >
                 <button
+                  type="button"
                   className="flex items-center hover:opacity-80 px-1 lg:px-2"
                   style={{ color: colors.text.secondary }}
                 >
                   <User className="w-5 h-5 lg:w-5 lg:h-5" />
                 </button>
                 <AuthDropdown
-                  isOpen={openDropdown === 'auth'}
+                  isOpen={openDropdown === "auth"}
                   onClose={handleDropdownClose}
                   onNavigate={handleNavigation}
                 />
               </div>
             )}
 
-            {/* Currency Selector */}
             <CurrencyDropdown className="hidden sm:block" compact />
 
-            {/* Theme Toggle - Always visible */}
-            <span className="flex items-center" style={{ fontSize: 18, padding: '0 2px' }}>
+            <span
+              className="flex items-center"
+              style={{ fontSize: 18, padding: "0 2px" }}
+            >
               <AdminThemeToggle iconSize={18} />
             </span>
 
-            {/* Mobile menu button */}
             <button
+              type="button"
               onClick={toggleMenu}
               className="lg:hidden p-2 sm:p-2 rounded-md hover:opacity-80 ml-1"
               style={{ color: colors.text.secondary }}
@@ -361,7 +155,6 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         <MobileMenu
           isOpen={isMenuOpen}
           onClose={() => setIsMenuOpen(false)}
@@ -370,9 +163,6 @@ const Header: React.FC = () => {
           onLogout={handleLogout}
         />
       </div>
-
-      {/* Overlay to close dropdowns */}
-      {/* No overlay for CSS hover dropdowns */}
     </header>
   );
 };
