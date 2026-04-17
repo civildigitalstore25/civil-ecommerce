@@ -3,13 +3,13 @@ import type { SEOMetadata } from "./seoTypes";
 export function getHomeSEO(): SEOMetadata {
   return {
     title:
-      "Softzcart - Buy AutoCAD, Autodesk, Microsoft, Adobe Software Online | Best Prices",
+      "Softzcart | Buy Genuine Software Licenses Online | AutoCAD, Microsoft, Adobe",
     description:
       "Shop genuine AutoCAD, Autodesk, Microsoft Office, Adobe Creative Cloud and other professional software at best prices. Authorized reseller with instant delivery and support.",
     keywords:
       "software store, autocad price, autodesk software, microsoft office, adobe creative cloud, buy software online, genuine software licenses",
     ogTitle:
-      "Softzcart - Authorized Software Reseller | AutoCAD, Microsoft, Adobe",
+      "Softzcart | Buy Genuine Software Licenses Online | AutoCAD, Microsoft, Adobe",
     ogDescription:
       "Buy genuine AutoCAD, Microsoft Office, Adobe and other professional software with instant delivery and best prices.",
   };

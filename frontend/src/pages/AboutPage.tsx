@@ -1,10 +1,11 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { getAboutSEO } from "../utils/seo";
+import { getAboutSEO, buildCanonicalUrl } from "../utils/seo";
 
 const AboutPage: React.FC = () => {
+    const { pathname } = useLocation();
     const { colors, theme } = useAdminTheme();
     const seoData = getAboutSEO();
 
@@ -17,7 +18,7 @@ const AboutPage: React.FC = () => {
                 <meta property="og:title" content={seoData.title} />
                 <meta property="og:description" content={seoData.description} />
                 <meta property="og:type" content="website" />
-                <link rel="canonical" href={window.location.href} />
+                <link rel="canonical" href={buildCanonicalUrl(pathname)} />
             </Helmet>
             <div
                 className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"

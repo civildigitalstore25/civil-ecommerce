@@ -4,6 +4,7 @@ import { useProducts } from "../api/productApi";
 import type { Product } from "../api/types/productTypes";
 import { Loader2 } from "lucide-react";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
+import { productPathFromProduct } from "../utils/sitemap/productSlugPath";
 
 const SitemapPage: React.FC = () => {
   const navigate = useNavigate();
@@ -36,11 +37,7 @@ const SitemapPage: React.FC = () => {
   }, [activeProducts]);
 
   const handleProductClick = (product: Product) => {
-    const namePart = product.name.toLowerCase().replace(/\s+/g, "-");
-    const versionPart = product.version ? `-${product.version.toString().toLowerCase().replace(/\s+/g, "-")}` : "";
-    const slug = `${namePart}${versionPart}`;
-
-    navigate(`/product/${slug}`);
+    navigate(productPathFromProduct(product));
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

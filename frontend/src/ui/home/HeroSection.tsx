@@ -87,14 +87,14 @@ const HeroSection: React.FC = () => {
             className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
-            SoftzCart — Software & Ebooks for Engineers
+            Softzcart – Authorized Software Reseller
           </h1>
 
           <p
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Discover premium engineering software and ebooks in one place. SoftzCart offers authentic software licenses and ebooks with instant
+            Discover premium engineering software and ebooks in one place. Softzcart offers authentic software licenses and ebooks with instant
             delivery and lifetime support for all your engineering needs.
           </p>
 
