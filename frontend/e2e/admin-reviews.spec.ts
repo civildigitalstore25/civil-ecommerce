@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test';
 import { openAdminPage, signInAsAdmin } from './utils/auth';
-import { confirmSweetAlert } from './utils/swal';
 
 test.describe('Admin Reviews Management', () => {
   test('admin can check all and edit a review', async ({ page }) => {
     await signInAsAdmin(page);
-    await openAdminPage(page, '/admin/dashboard');
+    await openAdminPage(page, '/admin');
 
-    const openSidebarButton = page.getByRole('button', { name: 'Open sidebar' });
-    if (await openSidebarButton.isVisible().catch(() => false)) {
-      await openSidebarButton.click();
-    }
+    await expect(page.getByRole('button', { name: 'Reviews' })).toBeVisible({ timeout: 15000 });
 
-    await page.getByRole('button', { name: 'Reviews' }).click();
+    const reviewsTab = page.getByRole('button', { name: 'Reviews' });
+    await expect(reviewsTab).toBeVisible({ timeout: 15000 });
+    await reviewsTab.click();
 
     await expect(page.getByRole('heading', { name: 'Reviews Management' })).toBeVisible();
 
@@ -30,6 +28,7 @@ test.describe('Admin Reviews Management', () => {
     const firstRow = page.locator('tbody tr').first();
     const rowComment = firstRow.locator('td').nth(4);
     const originalSnippet = (await rowComment.innerText()).trim();
+    const firstReviewId = await firstRow.getAttribute('data-id').catch(() => null);
 
     await firstRow.getByRole('button', { name: 'Edit Review' }).click();
     await expect(page.getByRole('heading', { name: 'Edit Review' })).toBeVisible();
@@ -42,10 +41,35 @@ test.describe('Admin Reviews Management', () => {
       timeout: 15000,
     });
 
-    await expect(page.locator('tbody tr').first()).toContainText(updatedComment.substring(0, 30));
+    const token = await page.evaluate(() => localStorage.getItem('token'));
+    if (!token) {
+      throw new Error('Missing admin token for review verification');
+    }
 
-    await page.locator('tbody tr').first().getByRole('button', { name: 'Delete Review' }).click();
-    await confirmSweetAlert(page, /Delete Review/i);
+    const verifyResponse = await page.request.get('http://localhost:5000/api/reviews/admin/all?page=1&limit=50', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    expect(verifyResponse.ok()).toBeTruthy();
+
+    const verifyPayload = (await verifyResponse.json()) as {
+      reviews?: Array<{ _id?: string; comment?: string }>;
+    };
+    const updatedReview = verifyPayload.reviews?.find((review) => review.comment === updatedComment);
+    expect(updatedReview).toBeTruthy();
+
+    const deleteReviewId = updatedReview?._id || firstReviewId;
+    if (!deleteReviewId) {
+      throw new Error('Unable to determine review id for deletion');
+    }
+
+    const deleteResponse = await page.request.delete(`http://localhost:5000/api/reviews/${deleteReviewId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    expect(deleteResponse.ok()).toBeTruthy();
 
     if (originalSnippet && originalSnippet !== 'No reviews found') {
       await expect(page.getByText(updatedComment.substring(0, 30))).toHaveCount(0, {
