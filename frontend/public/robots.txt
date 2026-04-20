@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /admin-dashboard
+Disallow: /superadmin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /profile
+Disallow: /my-orders
+Disallow: /my-enquiries
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://softzcart.com/sitemap.xml

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { normalizeDuplicateIndiaCountryInPhone } from "../../utils/normalizePhoneNumber";
 
 interface PhoneInputProps {
     label: string;
@@ -31,6 +32,37 @@ const countryCodes = [
     { code: "+93", country: "Afghanistan", flag: "🇦🇫" },
 ];
 
+const countryCodesByLength = [...countryCodes].sort(
+    (a, b) => b.code.length - a.code.length
+);
+
+function splitPhoneInputValue(raw: string): { countryCode: string; phoneNumber: string } {
+    if (!raw) return { countryCode: "+91", phoneNumber: "" };
+
+    let v = raw.trim();
+    v = normalizeDuplicateIndiaCountryInPhone(v);
+
+    const matchedCode = countryCodesByLength.find((cc) => v.startsWith(cc.code));
+
+    if (matchedCode) {
+        let national = v.substring(matchedCode.code.length).trim().replace(/\D/g, "");
+        if (matchedCode.code === "+91" && national.startsWith("91") && national.length >= 10) {
+            national = national.slice(2);
+        }
+        return {
+            countryCode: matchedCode.code,
+            phoneNumber: national,
+        };
+    }
+
+    const digitsOnly = v.replace(/\D/g, "");
+    if (/^\d+$/.test(digitsOnly) && digitsOnly.startsWith("91") && digitsOnly.length >= 12) {
+        return { countryCode: "+91", phoneNumber: digitsOnly.slice(2) };
+    }
+
+    return { countryCode: "+91", phoneNumber: digitsOnly || v };
+}
+
 const PhoneInput: React.FC<PhoneInputProps> = ({
     label,
     name,
@@ -42,26 +74,14 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
 }) => {
     const { colors } = useAdminTheme();
 
-    // Extract country code and phone number from the value
-    const getInitialValues = () => {
-        if (!value) return { countryCode: "+91", phoneNumber: "" };
+    const [countryCode, setCountryCode] = useState(() => splitPhoneInputValue(value).countryCode);
+    const [phoneNumber, setPhoneNumber] = useState(() => splitPhoneInputValue(value).phoneNumber);
 
-        // Find matching country code from the start of the value
-        const matchedCode = countryCodes.find(cc => value.startsWith(cc.code));
-
-        if (matchedCode) {
-            return {
-                countryCode: matchedCode.code,
-                phoneNumber: value.substring(matchedCode.code.length).trim(),
-            };
-        }
-
-        // Default to +91 if no match found but there's a value
-        return { countryCode: "+91", phoneNumber: value };
-    };
-
-    const [countryCode, setCountryCode] = useState(getInitialValues().countryCode);
-    const [phoneNumber, setPhoneNumber] = useState(getInitialValues().phoneNumber);
+    useEffect(() => {
+        const next = splitPhoneInputValue(value);
+        setCountryCode(next.countryCode);
+        setPhoneNumber(next.phoneNumber);
+    }, [value]);
 
     const handleCountryCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newCountryCode = e.target.value;

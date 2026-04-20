@@ -35,7 +35,7 @@ export function PasswordResetFormFields({
 
   return (
     <>
-      <div className="relative">
+      <div>
         <Controller
           name="email"
           control={control}
@@ -53,41 +53,47 @@ export function PasswordResetFormFields({
               value={field.value}
               onChange={field.onChange}
               placeholder="Enter your email address"
-              className={`pl-10 ${errors.email
+              className={`${errors.email
                 ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                 : email && !errors.email
                   ? "border-green-300 focus:border-green-500 focus:ring-green-500"
                   : ""
                 }`}
+              startAdornment={
+                <Mail
+                  className="h-5 w-5 shrink-0"
+                  style={{
+                    color: errors.email
+                      ? colors.status.error
+                      : email && !errors.email
+                        ? colors.status.success
+                        : colors.text.secondary,
+                  }}
+                  aria-hidden
+                />
+              }
+              endAdornment={
+                email && !errors.email ? (
+                  <span
+                    className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3"
+                    aria-hidden
+                  >
+                    <CheckCircle
+                      className="h-5 w-5 shrink-0"
+                      style={{ color: colors.status.success }}
+                    />
+                  </span>
+                ) : undefined
+              }
             />
           )}
         />
-        <div className="absolute left-3 top-10 pointer-events-none">
-          <Mail
-            className="h-5 w-5"
-            style={{
-              color: errors.email
-                ? colors.status.error
-                : email && !errors.email
-                  ? colors.status.success
-                  : colors.text.secondary,
-            }}
-          />
-        </div>
-        {email && !errors.email && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-            <CheckCircle
-              className="h-5 w-5"
-              style={{ color: colors.status.success }}
-            />
-          </div>
-        )}
         {errors.email && (
           <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
         )}
       </div>
 
-      <div className="relative">
+      <div>
         <Controller
           name="password"
           control={control}
@@ -112,34 +118,36 @@ export function PasswordResetFormFields({
               value={field.value}
               onChange={field.onChange}
               placeholder="Enter your new password"
-              className="pr-10"
+              endAdornment={
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center px-3 transition-colors"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = colors.text.primary;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = colors.text.secondary;
+                  }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5 shrink-0" aria-hidden />
+                  ) : (
+                    <Eye className="h-5 w-5 shrink-0" aria-hidden />
+                  )}
+                </button>
+              }
             />
           )}
         />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors z-10"
-          style={{ color: colors.text.secondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.text.primary;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.text.secondary;
-          }}
-          onClick={() => setShowPassword(!showPassword)}
-        >
-          {showPassword ? (
-            <EyeOff className="h-5 w-5" />
-          ) : (
-            <Eye className="h-5 w-5" />
-          )}
-        </button>
         {errors.password && (
           <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
         )}
       </div>
 
-      <div className="relative">
+      <div>
         <Controller
           name="confirmPassword"
           control={control}
@@ -154,35 +162,40 @@ export function PasswordResetFormFields({
               value={field.value}
               onChange={field.onChange}
               placeholder="Confirm your new password"
-              className={`pr-10 ${errors.confirmPassword
+              className={`${errors.confirmPassword
                 ? "border-red-300 focus:border-red-500 focus:ring-red-500"
                 : confirmPassword &&
-                  password === confirmPassword &&
-                  password
+                    password === confirmPassword &&
+                    password
                   ? "border-green-300 focus:border-green-500 focus:ring-green-500"
                   : ""
                 }`}
+              endAdornment={
+                <button
+                  type="button"
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
+                  className="absolute inset-y-0 right-0 z-10 flex cursor-pointer items-center px-3 transition-colors"
+                  style={{ color: colors.text.secondary }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = colors.text.primary;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = colors.text.secondary;
+                  }}
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  {showConfirmPassword ? (
+                    <EyeOff className="h-5 w-5 shrink-0" aria-hidden />
+                  ) : (
+                    <Eye className="h-5 w-5 shrink-0" aria-hidden />
+                  )}
+                </button>
+              }
             />
           )}
         />
-        <button
-          type="button"
-          className="absolute right-3 top-1/2 -translate-y-1/2 transition-colors z-10"
-          style={{ color: colors.text.secondary }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = colors.text.primary;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = colors.text.secondary;
-          }}
-          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-        >
-          {showConfirmPassword ? (
-            <EyeOff className="h-5 w-5" />
-          ) : (
-            <Eye className="h-5 w-5" />
-          )}
-        </button>
         {errors.confirmPassword && (
           <p className="text-red-500 text-sm mt-1">
             {errors.confirmPassword.message}

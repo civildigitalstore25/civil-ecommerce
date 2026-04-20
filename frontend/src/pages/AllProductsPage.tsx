@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { getCategoryListingSEO } from "../utils/seo";
+import { getCategoryListingSEO, buildCanonicalUrl } from "../utils/seo";
 import { AllProductsBrandList } from "./allProducts/AllProductsBrandList";
 import { AllProductsCategoriesDisplay } from "./allProducts/AllProductsCategoriesDisplay";
 import { AllProductsMobileView } from "./allProducts/AllProductsMobileView";
 
 const AllProductsPage: React.FC = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const { colors } = useAdminTheme();
   const [expandedBrand, setExpandedBrand] = useState<string | null>(null);
 
@@ -35,7 +36,7 @@ const AllProductsPage: React.FC = () => {
         <meta property="og:title" content={seoData.ogTitle} />
         <meta property="og:description" content={seoData.ogDescription} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
 
       <div

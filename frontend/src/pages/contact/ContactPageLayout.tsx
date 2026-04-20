@@ -1,5 +1,7 @@
 import { Helmet } from "react-helmet";
 import type { ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+import { buildCanonicalUrl } from "../../utils/seo";
 import type { ThemeColors, ThemeMode } from "../../contexts/AdminThemeContext";
 
 interface ContactSeoShape {
@@ -21,6 +23,7 @@ export function ContactPageLayout({
   theme,
   children,
 }: ContactPageLayoutProps) {
+  const { pathname } = useLocation();
   return (
     <>
       <Helmet>
@@ -30,7 +33,7 @@ export function ContactPageLayout({
         <meta property="og:title" content={seoData.title} />
         <meta property="og:description" content={seoData.description} />
         <meta property="og:type" content="website" />
-        <link rel="canonical" href={window.location.href} />
+        <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
       <div
         className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"

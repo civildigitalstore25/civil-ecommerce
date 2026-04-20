@@ -3,6 +3,7 @@ import { useAppForm } from "../../hooks/useAppForm";
 import { useCurrentUser, useUpdateProfile } from "../../api/auth";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import Swal from "sweetalert2";
+import { normalizeDuplicateIndiaCountryInPhone } from "../../utils/normalizePhoneNumber";
 
 export function useProfilePage() {
   const { data: user, isLoading, error, refetch } = useCurrentUser();
@@ -27,7 +28,7 @@ export function useProfilePage() {
   } = useAppForm({
     defaultValues: {
       fullName: user?.fullName || "",
-      phoneNumber: user?.phoneNumber || "",
+      phoneNumber: normalizeDuplicateIndiaCountryInPhone(user?.phoneNumber || ""),
     },
   });
 
@@ -35,17 +36,20 @@ export function useProfilePage() {
     if (user) {
       reset({
         fullName: user.fullName || "",
-        phoneNumber: user.phoneNumber || "",
+        phoneNumber: normalizeDuplicateIndiaCountryInPhone(user.phoneNumber || ""),
       });
       setAvatarPreview((user as { avatarUrl?: string }).avatarUrl || null);
     }
   }, [user, reset]);
 
   const onSubmit = async (data: { fullName: string; phoneNumber: string }) => {
-    if (
-      data.fullName === user?.fullName &&
-      data.phoneNumber === user?.phoneNumber
-    ) {
+    const normalizedPhone = normalizeDuplicateIndiaCountryInPhone(
+      data.phoneNumber.trim()
+    );
+    const normalizedUserPhone = normalizeDuplicateIndiaCountryInPhone(
+      user?.phoneNumber || ""
+    );
+    if (data.fullName === user?.fullName && normalizedPhone === normalizedUserPhone) {
       Swal.fire({
         title: "No Changes",
         text: "You haven't made any changes to your profile.",
@@ -56,7 +60,10 @@ export function useProfilePage() {
       return;
     }
     try {
-      await updateProfileMutation.mutateAsync(data);
+      await updateProfileMutation.mutateAsync({
+        ...data,
+        phoneNumber: normalizedPhone || data.phoneNumber.trim(),
+      });
       await refetch();
       setIsEditing(false);
       Swal.fire({
@@ -76,7 +83,7 @@ export function useProfilePage() {
     if (user) {
       reset({
         fullName: user.fullName || "",
-        phoneNumber: user.phoneNumber || "",
+        phoneNumber: normalizeDuplicateIndiaCountryInPhone(user.phoneNumber || ""),
       });
     }
     setIsEditing(false);
