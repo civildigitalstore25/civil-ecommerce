@@ -51,28 +51,13 @@ export async function signUpAsTestUser(
 
   expect(response.ok()).toBeTruthy();
 
-  const authData = await response.json() as {
-    token: string;
-    user: {
-      id: string;
-      email: string;
-      role: string;
-      fullName?: string;
-    };
-  };
+  await page.goto('/signin', { waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('heading', { name: 'Welcome Back' })).toBeVisible();
+  await page.locator('input[type="email"]').first().fill(email);
+  await page.locator('input[type="password"]').first().fill(password);
+  await page.getByRole('button', { name: 'Sign In' }).click();
+  await expect(page).toHaveURL(/\/$/, { timeout: 20000 });
 
-  await page.goto('/');
-  await page.evaluate((data) => {
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('email', data.user.email);
-    localStorage.setItem('role', data.user.role);
-    localStorage.setItem('userId', data.user.id);
-    if (data.user.fullName) {
-      localStorage.setItem('fullName', data.user.fullName);
-    }
-  }, authData);
-
-  await page.goto('/');
   await expect(page.getByRole('button', { name: 'Explore Products' })).toBeVisible({
     timeout: 20000,
   });

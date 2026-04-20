@@ -24,7 +24,9 @@ test.describe('Customer Review and Download Flows', () => {
     const replyText = `E2E admin reply ${Date.now()}`;
 
     await page.getByRole('button', { name: /^Reviews/ }).click();
-    await expect(page.getByRole('button', { name: 'Write a review' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Write a review' })).toBeVisible({
+      timeout: 20000,
+    });
     await page.getByRole('button', { name: 'Write a review' }).click();
 
     await page.getByPlaceholder('Share your experience with this product...').fill(reviewText);

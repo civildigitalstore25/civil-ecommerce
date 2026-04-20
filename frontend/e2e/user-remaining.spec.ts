@@ -97,7 +97,9 @@ test.describe('User Remaining Feature Coverage', () => {
 
     await page.reload();
 
-    await expect(page.getByText('Your cart is empty')).toBeVisible({ timeout: 20000 });
+    await expect(
+      page.getByRole('main').getByRole('heading', { name: 'Your cart is empty' }),
+    ).toBeVisible({ timeout: 20000 });
   });
 
   test('user sees my orders and receives admin status updates', async ({ page }) => {

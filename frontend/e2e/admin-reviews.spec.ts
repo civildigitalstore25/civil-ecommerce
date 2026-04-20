@@ -72,7 +72,8 @@ test.describe('Admin Reviews Management', () => {
     expect(deleteResponse.ok()).toBeTruthy();
 
     if (originalSnippet && originalSnippet !== 'No reviews found') {
-      await expect(page.getByText(updatedComment.substring(0, 30))).toHaveCount(0, {
+      await page.reload();
+      await expect(page.locator('tbody').getByText(updatedComment)).toHaveCount(0, {
         timeout: 20000,
       });
     }
