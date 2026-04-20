@@ -8,16 +8,9 @@ Playwright has been installed as a dev dependency. The configuration is in `play
 
 ## Video Recording
 
-Videos are configured to be retained on test failure by default:
-- **retain-on-failure**: Videos saved only when tests fail
-- Videos stored in: `test-results/` directory
+In `playwright.config.ts`, **local** runs use `video: on` (full recording). On **CI** (`CI=true`), video mode is **`retain-on-failure`** to save disk and time. Outputs go under `test-results/` (gitignored).
 
-To change video recording behavior, edit `playwright.config.ts`:
-```typescript
-video: 'on', // Always record
-video: 'off', // Never record
-video: 'retain-on-failure', // Only on failure (default)
-```
+To change behavior, edit the `video` block in `playwright.config.ts`.
 
 ## Test Files
 
@@ -101,3 +94,17 @@ Edit test files to match your actual UI selectors:
 - Replace generic selectors with your actual HTML ids/classes
 - Example: `await page.fill('input[name="email"]', email);`
 - Use browser DevTools to find correct selectors during test editing
+
+## Merge checklist (automate / PR hygiene)
+
+**Sitemap (`frontend/public/sitemap.xml`).** It is generated during `npm run build` by `frontend/scripts/generate-sitemap.ts`, which calls `VITE_API_BASE_URL` (default `http://127.0.0.1:5000`). A local build therefore embeds whatever products exist in that API. Do not merge a PR that replaces production URLs with local/E2E data. Either restore `sitemap.xml` from `main` or regenerate with production API and `VITE_PUBLIC_SITE_URL` set, then document both in the PR.
+
+**Backend HTTP tests.** From repo root: `cd backend && npm test` (Vitest + Supertest). Shared mocks live in `backend/tests/httpTestEnv.ts` (loaded via `setupFiles` in `backend/vitest.config.ts`).
+
+**Playwright `auth.spec` / `signInAsAdmin`.** [`e2e/utils/auth.ts`](e2e/utils/auth.ts) signs in with a fixed email/password (`softzcart@gmail.com`). Your MongoDB must contain that user with a matching password, or those tests will stay on `/signin`. Other flows can register via API (`signUpAsTestUser`).
+
+**Paste for GitHub PR description (optional).**
+
+- Backend: `cd backend && npm test`
+- Frontend E2E: `cd frontend && npm run test:e2e` (starts backend + frontend dev servers per `playwright.config.ts`; seed admin above for auth specs)
+- Sitemap: only commit changes generated against the intended production API and site URL; never from default localhost unless that file is not meant for production.

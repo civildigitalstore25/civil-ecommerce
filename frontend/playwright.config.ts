@@ -29,9 +29,8 @@ export default defineConfig({
     baseURL: 'http://localhost:5173',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    /* Record video for every test run so results are always visible */
     video: {
-      mode: 'on',
+      mode: isCI ? 'retain-on-failure' : 'on',
       size: { width: 1280, height: 720 },
     },
     viewport: { width: 1280, height: 720 },
