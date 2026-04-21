@@ -7,40 +7,49 @@ type ProductDetailTabFaqProps = {
   product: Product;
 };
 
+/** Shown on the product FAQ tab only when the admin has not added any FAQs for the product. */
 const DEFAULT_FAQS: { question: string; answer: string }[] = [
   {
-    question: "How do I activate my license?",
+    question: "How long does activation take?",
     answer:
-      "After purchase, you'll receive an email with your license key and activation instructions. You can also watch our activation video demo above for step-by-step guidance. The process typically takes just a few minutes and requires an internet connection for initial activation.",
+      "Most subscriptions are activated within a few hours after your payment is confirmed. In some cases, it may take up to 24 hours.",
   },
   {
-    question: "What's the difference between Yearly and Lifetime licenses?",
+    question: "How do renewals work?",
     answer:
-      "Yearly licenses provide access for 12 months with all updates and support included. Lifetime licenses give you permanent access with no expiration date and all future updates, making them the most cost-effective option for long-term users. Both license types include full technical support.",
+      "We will notify you before your subscription expires. You can renew your plan to continue using the software without interruption.",
   },
   {
-    question: "Do you provide technical support?",
+    question: "Is there a refund policy?",
     answer:
-      "Yes! We provide comprehensive technical support for all licensed users. Our support team is available via email, live chat, and phone during business hours (9 AM - 6 PM EST, Monday-Friday). We also have an extensive knowledge base and video tutorials available 24/7.",
+      "Refunds follow Autodesk's official policy. Once a subscription is activated or the license is assigned, refunds may no longer be available.",
   },
   {
-    question: "Can I use this on multiple devices?",
+    question: "Do you accept card/bank transfer?",
     answer:
-      "Your license allows installation on up to 3 devices for personal use, as long as you're the primary user. For commercial or team use with multiple users, please contact us for multi-user licensing options. We offer volume discounts for businesses and educational institutions.",
+      "Yes. We accept bank transfers, card payments, and other approved digital payment methods.",
   },
   {
-    question: "What are the system requirements?",
+    question: "Installation help",
     answer:
-      "Please check the 'Requirements' tab above for detailed system specifications. Generally, you'll need a modern operating system (Windows 10/11 or macOS 10.15+), at least 8GB RAM, and a compatible graphics card. For optimal performance, we recommend 16GB RAM and a dedicated graphics card.",
-  },
-  {
-    question: "Is there a money-back guarantee?",
-    answer:
-      "Yes, we offer a 30-day money-back guarantee on all purchases. If you're not completely satisfied with your purchase, contact our support team within 30 days for a full refund. The software must be uninstalled from all devices to process the refund.",
+      "Yes. We provide basic installation guidance. For complex issues, Autodesk's official support team can also assist you.",
   },
 ];
 
+function getAdminFaqs(product: Product) {
+  const list = product.faqs ?? [];
+  return list.filter(
+    (faq) =>
+      (faq.question && faq.question.trim() !== "") ||
+      (faq.answer && faq.answer.trim() !== ""),
+  );
+}
+
 export function ProductDetailTabFaq({ colors, product }: ProductDetailTabFaqProps) {
+  const adminFaqs = getAdminFaqs(product);
+  const useDefaults = adminFaqs.length === 0;
+  const faqsToShow = useDefaults ? DEFAULT_FAQS : adminFaqs;
+
   return (
     <div>
       <h3
@@ -54,31 +63,15 @@ export function ProductDetailTabFaq({ colors, product }: ProductDetailTabFaqProp
       </p>
 
       <div className="space-y-4">
-        {product.faqs && product.faqs.length > 0 ? (
-          product.faqs.map(
-            (faq: { question?: string; answer?: string }, index: number) => (
-              <ProductDetailFAQItem
-                key={index}
-                question={faq.question || ""}
-                answer={faq.answer || ""}
-                index={index}
-                colors={colors}
-              />
-            )
-          )
-        ) : (
-          <>
-            {DEFAULT_FAQS.map((faq, index) => (
-              <ProductDetailFAQItem
-                key={faq.question}
-                question={faq.question}
-                answer={faq.answer}
-                index={index}
-                colors={colors}
-              />
-            ))}
-          </>
-        )}
+        {faqsToShow.map((faq, index) => (
+          <ProductDetailFAQItem
+            key={useDefaults ? faq.question : index}
+            question={faq.question || ""}
+            answer={faq.answer || ""}
+            index={index}
+            colors={colors}
+          />
+        ))}
       </div>
     </div>
   );
