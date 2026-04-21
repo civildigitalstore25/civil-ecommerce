@@ -5,6 +5,8 @@ export interface IOrderItem {
   name: string;
   quantity: number;
   price: number;
+  /** Per-line discount in INR (subtracted before order-level discount). */
+  discount?: number;
   image?: string;
   version?: string;
   pricingPlan?: string;
@@ -65,6 +67,7 @@ const OrderSchema = new Schema<IOrder>({
     name: { type: String, required: true },
     quantity: { type: Number, required: true, min: 1 },
     price: { type: Number, required: true, min: 0 },
+    discount: { type: Number, default: 0, min: 0 },
     image: { type: String },
     version: { type: String },
     pricingPlan: { type: String },

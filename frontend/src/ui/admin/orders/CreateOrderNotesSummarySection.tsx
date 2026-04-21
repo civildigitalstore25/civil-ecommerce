@@ -2,6 +2,7 @@ import React from "react";
 import { FileText } from "lucide-react";
 import type { ThemeColors } from "../../../contexts/AdminThemeContext";
 import type { AdminOrderFormState } from "./useAdminOrderCreateForm";
+import { sumItemsGross, sumLineDiscounts } from "./orderCreateFormMoney";
 
 type Props = {
   colors: ThemeColors;
@@ -9,7 +10,11 @@ type Props = {
   setOrderForm: React.Dispatch<React.SetStateAction<AdminOrderFormState>>;
 };
 
-const CreateOrderNotesSummarySection: React.FC<Props> = ({ colors, orderForm, setOrderForm }) => (
+const CreateOrderNotesSummarySection: React.FC<Props> = ({ colors, orderForm, setOrderForm }) => {
+  const gross = sumItemsGross(orderForm.items);
+  const lineDisc = sumLineDiscounts(orderForm.items);
+
+  return (
   <>
     <div
       className="p-5 rounded-xl border"
@@ -83,15 +88,31 @@ const CreateOrderNotesSummarySection: React.FC<Props> = ({ colors, orderForm, se
         Order Summary
       </h4>
       <div className="space-y-3">
+        {orderForm.items.length > 0 && (
+          <div className="flex justify-between items-center text-sm">
+            <span style={{ color: colors.text.secondary }}>Items (before line discounts):</span>
+            <span className="font-medium" style={{ color: colors.text.primary }}>
+              ₹{gross.toLocaleString()}
+            </span>
+          </div>
+        )}
+        {lineDisc > 0 && (
+          <div className="flex justify-between items-center text-sm">
+            <span style={{ color: colors.text.secondary }}>Line item discounts:</span>
+            <span className="font-medium" style={{ color: "#ef4444" }}>
+              -₹{lineDisc.toLocaleString()}
+            </span>
+          </div>
+        )}
         <div className="flex justify-between items-center">
           <span style={{ color: colors.text.secondary }}>Subtotal:</span>
           <span className="font-semibold text-lg" style={{ color: colors.text.primary }}>
             ₹{orderForm.subtotal.toLocaleString()}
           </span>
         </div>
-        {orderForm.discount && orderForm.discount > 0 && (
+        {orderForm.discount != null && orderForm.discount > 0 && (
           <div className="flex justify-between items-center">
-            <span style={{ color: colors.text.secondary }}>Discount:</span>
+            <span style={{ color: colors.text.secondary }}>Order discount:</span>
             <span className="font-semibold" style={{ color: "#ef4444" }}>
               -₹{orderForm.discount.toLocaleString()}
             </span>
@@ -111,6 +132,7 @@ const CreateOrderNotesSummarySection: React.FC<Props> = ({ colors, orderForm, se
       </div>
     </div>
   </>
-);
+  );
+};
 
 export default CreateOrderNotesSummarySection;

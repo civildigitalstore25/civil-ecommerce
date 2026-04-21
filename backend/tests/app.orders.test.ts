@@ -104,6 +104,8 @@ describe('order flows', () => {
       .set(authHeader('admin-token'))
       .send({
         email: 'customer@example.com',
+        customerName: 'Test Customer',
+        customerPhone: '9876543210',
         items: [
           {
             productId: '507f1f77bcf86cd799439012',

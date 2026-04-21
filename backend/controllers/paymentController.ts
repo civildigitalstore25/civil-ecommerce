@@ -10,6 +10,36 @@ import { postPaymentOrderStatusForOrderItems } from '../utils/orderEbookStatus';
  * Generate short, human-readable order ID.
  * Format: XXX-1234 where XXX comes from product name (if available).
  */
+/** Normalize admin order line items and cap per-line discount at line gross. */
+function normalizeAdminOrderItems(items: any[]): any[] {
+  return items.map((item) => {
+    const quantity = Math.max(1, Number(item.quantity) || 1);
+    const price = Math.max(0, Number(item.price) || 0);
+    const lineGross = quantity * price;
+    const rawDiscount = Math.max(0, Number(item.discount) || 0);
+    const discount = Math.min(rawDiscount, lineGross);
+    return { ...item, quantity, price, discount };
+  });
+}
+
+function computeAdminOrderMoney(
+  items: Array<{ quantity: number; price: number; discount?: number }>,
+  orderLevelDiscount: number,
+) {
+  let gross = 0;
+  let lineDiscountSum = 0;
+  for (const it of items) {
+    const lineGross = it.quantity * it.price;
+    const lineDisc = Math.min(Math.max(0, Number(it.discount) || 0), lineGross);
+    gross += lineGross;
+    lineDiscountSum += lineDisc;
+  }
+  const subtotal = Math.max(0, gross - lineDiscountSum);
+  const disc = Math.max(0, Number(orderLevelDiscount) || 0);
+  const totalAmount = Math.max(0, subtotal - disc);
+  return { gross, lineDiscountSum, subtotal, totalAmount };
+}
+
 const generateOrderId = (productName?: string): string => {
   // Derive a 3-letter code from product name, fallback to ORD
   const base = (productName || "ORD")
@@ -184,14 +214,19 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
 
     const {
       email,
+      customerName,
+      customerPhone,
       items,
-      subtotal,
       discount = 0,
-      totalAmount,
       notes
     } = req.body;
 
-    console.log('📝 Admin creating order:', { email, items, subtotal, discount, totalAmount });
+    const customerNameTrim =
+      typeof customerName === 'string' ? customerName.trim() : '';
+    const customerPhoneTrim =
+      typeof customerPhone === 'string' ? customerPhone.trim() : '';
+
+    console.log('📝 Admin creating order:', { email, customerName: customerNameTrim, items, discount });
 
     // Validation
     if (!items || items.length === 0) {
@@ -202,8 +237,23 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       return;
     }
 
-    // If all productIds are valid ObjectIds, fetch driveLinks; otherwise, skip driveLink logic
-    let itemsWithDriveLink = items;
+    if (!customerNameTrim) {
+      res.status(400).json({
+        success: false,
+        message: 'Customer name is required'
+      });
+      return;
+    }
+
+    if (!customerPhoneTrim) {
+      res.status(400).json({
+        success: false,
+        message: 'Customer number (phone) is required'
+      });
+      return;
+    }
+
+    let itemsWithDriveLink = normalizeAdminOrderItems(items);
     let adminPostPayStatus: 'delivered' | 'processing' = 'processing';
     const allProductIdsAreObjectIds = items.every((item: any) => mongoose.Types.ObjectId.isValid(item.productId));
     if (allProductIdsAreObjectIds) {
@@ -218,8 +268,8 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       })));
       // Create a map for quick lookup
       const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
-      // Add driveLink to each item
-      itemsWithDriveLink = items.map((item: any) => {
+      // Add driveLink to each item (keep normalized prices/discounts)
+      itemsWithDriveLink = itemsWithDriveLink.map((item: any) => {
         const driveLink = productMap.get(item.productId) || null;
         console.log(`📎 Adding driveLink to order item: ${item.name} - ${driveLink ? 'has driveLink' : 'NO driveLink'}`);
         return {
@@ -231,10 +281,8 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
         products.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
       );
       adminPostPayStatus = postPaymentOrderStatusForOrderItems(itemsWithDriveLink, productBrandMapAdmin);
-    } else {
-      // Arbitrary product IDs: just pass through, no driveLink
-      itemsWithDriveLink = items;
     }
+    // else: itemsWithDriveLink already normalized without driveLink
 
     // Generate order ID (based on first product name if available)
     const firstItemName = Array.isArray(itemsWithDriveLink) && itemsWithDriveLink.length > 0
@@ -245,18 +293,21 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
     // Get next order number
     const orderNumber = await getNextOrderNumber();
 
+    const orderLevelDiscount = Math.max(0, Number(discount) || 0);
+    const { subtotal, totalAmount } = computeAdminOrderMoney(itemsWithDriveLink, orderLevelDiscount);
+
     // Create order in database (admin-created)
     const order = new Order({
       orderId,
       orderNumber,
       items: itemsWithDriveLink,
       subtotal,
-      discount,
+      discount: orderLevelDiscount,
       shippingCharges: 0, // No shipping for digital products
       totalAmount,
       shippingAddress: {
-        fullName: email || 'Admin Created',
-        phoneNumber: 'N/A',
+        fullName: customerNameTrim,
+        phoneNumber: customerPhoneTrim,
         addressLine1: 'N/A',
         city: 'N/A',
         state: 'N/A',
@@ -278,7 +329,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
         const customerOrderDetails = {
           orderId: order.orderId,
           orderNumber: order.orderNumber,
-          customerName: email.split('@')[0], // Use part before @ as name if no proper name
+          customerName: customerNameTrim || (email ? email.split('@')[0] : 'Customer'),
           customerEmail: email,
           items: itemsWithDriveLink.map((item: any) => ({
             productId: item.productId || null,
@@ -290,7 +341,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
             driveLink: item.driveLink || null
           })),
           subtotal,
-          discount,
+          discount: orderLevelDiscount,
           totalAmount,
           purchaseDate: order.createdAt || new Date(),
           downloadLinks: itemsWithDriveLink.map((item: any) => ({

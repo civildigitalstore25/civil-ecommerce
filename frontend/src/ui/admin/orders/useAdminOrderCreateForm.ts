@@ -4,9 +4,12 @@ import { adminCreateOrder } from "../../../api/adminOrderApi";
 import type { IOrderItem } from "../../../api/types/orderTypes";
 import { swalError, swalFire, swalSuccessBrief } from "../../../utils/swal";
 import { axiosErrorMessage } from "../../../utils/axiosErrorMessage";
+import { orderSubtotalAfterLineDiscounts, orderTotalAfterDiscounts } from "./orderCreateFormMoney";
 
 export type AdminOrderFormState = {
   email?: string;
+  customerName?: string;
+  customerPhone?: string;
   items: IOrderItem[];
   subtotal: number;
   discount?: number;
@@ -55,8 +58,8 @@ export function useAdminOrderCreateForm() {
   };
 
   useEffect(() => {
-    const subtotal = orderForm.items.reduce((sum, i) => sum + i.price * i.quantity, 0);
-    const totalAmount = subtotal - (orderForm.discount || 0);
+    const subtotal = orderSubtotalAfterLineDiscounts(orderForm.items);
+    const totalAmount = orderTotalAfterDiscounts(orderForm.items, orderForm.discount);
     setOrderForm((prev) => ({ ...prev, subtotal, totalAmount }));
   }, [orderForm.items, orderForm.discount]);
 
@@ -68,8 +71,12 @@ export function useAdminOrderCreateForm() {
       setOrderForm({
         items: [],
         subtotal: 0,
-        discount: 0,
+        discount: undefined,
         totalAmount: 0,
+        email: undefined,
+        customerName: undefined,
+        customerPhone: undefined,
+        notes: undefined,
       });
       queryClient.invalidateQueries({ queryKey: ["adminOrders"] });
     },
@@ -84,6 +91,22 @@ export function useAdminOrderCreateForm() {
         icon: "error",
         title: "Required Field",
         text: "Please enter customer email",
+      });
+      return;
+    }
+    if (!orderForm.customerName?.trim()) {
+      void swalFire({
+        icon: "error",
+        title: "Required Field",
+        text: "Please enter customer name",
+      });
+      return;
+    }
+    if (!orderForm.customerPhone?.trim()) {
+      void swalFire({
+        icon: "error",
+        title: "Required Field",
+        text: "Please enter customer number (phone)",
       });
       return;
     }

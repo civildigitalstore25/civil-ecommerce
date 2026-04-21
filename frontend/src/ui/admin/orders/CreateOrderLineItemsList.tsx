@@ -2,6 +2,7 @@ import React from "react";
 import { Trash2 } from "lucide-react";
 import type { ThemeColors } from "../../../contexts/AdminThemeContext";
 import type { IOrderItem } from "../../../api/types/orderTypes";
+import { lineDiscountApplied, lineGross } from "./orderCreateFormMoney";
 
 type Props = {
   colors: ThemeColors;
@@ -113,7 +114,9 @@ const CreateOrderLineItemsList: React.FC<Props> = ({
           </button>
         </div>
         <div className="mt-2 text-xs flex items-center gap-2" style={{ color: colors.text.secondary }}>
-          <span>Total: ₹{(item.price * item.quantity - (item.discount || 0)).toLocaleString()}</span>
+          <span>
+            Line total: ₹{(lineGross(item) - lineDiscountApplied(item)).toLocaleString()}
+          </span>
         </div>
       </div>
     ))}
