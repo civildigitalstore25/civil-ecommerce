@@ -2,6 +2,7 @@ import React from "react";
 import { Building2, ExternalLink, Star, Tag } from "lucide-react";
 import type { Product } from "../../../../api/types/productTypes";
 import { ProductViewModalRichContent } from "./ProductViewModalRichContent";
+import { useProductViewModalTheme } from "./useProductViewModalTheme";
 
 type Props = {
   product: Product;
@@ -20,13 +21,17 @@ function displayCategory(product: Product): string {
 }
 
 export const ProductViewModalSummaryPanel: React.FC<Props> = ({ product }) => {
+  const t = useProductViewModalTheme();
+  const { colors } = t;
+  const starEmpty = t.isDark ? "#64748b" : "#9ca3af";
+
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-3xl font-bold" style={{ color: "black" }}>
+        <h3 className="text-3xl font-bold" style={t.heading}>
           {product.name}
         </h3>
-        <p className="text-lg mt-1" style={{ color: "gray" }}>
+        <p className="text-lg mt-1" style={t.muted}>
           Version {product.version}
         </p>
         {product.shortDescription && <ProductViewModalRichContent htmlContent={product.shortDescription} />}
@@ -42,15 +47,15 @@ export const ProductViewModalSummaryPanel: React.FC<Props> = ({ product }) => {
                     key={star}
                     className="w-5 h-5"
                     style={{
-                      color: star <= product.rating! ? "gold" : "gray",
-                      fill: star <= product.rating! ? "gold" : "none",
+                      color: star <= product.rating! ? "#eab308" : starEmpty,
+                      fill: star <= product.rating! ? "#eab308" : "none",
                     }}
                   />
                 ))}
               </div>
-              <span style={{ color: "gray" }}>{product.rating}</span>
+              <span style={t.muted}>{product.rating}</span>
               {product.ratingCount && (
-                <span style={{ color: "gray" }}>({product.ratingCount} reviews)</span>
+                <span style={t.muted}>({product.ratingCount} reviews)</span>
               )}
             </div>
           )}
@@ -62,8 +67,8 @@ export const ProductViewModalSummaryPanel: React.FC<Props> = ({ product }) => {
                   key={index}
                   className="inline-flex items-center px-2 py-1 rounded-full text-sm"
                   style={{
-                    backgroundColor: "lightgray",
-                    color: "black",
+                    backgroundColor: t.surfaceMuted.backgroundColor,
+                    color: colors.text.primary,
                   }}
                 >
                   <Tag className="w-3 h-3 mr-1" />
@@ -75,44 +80,42 @@ export const ProductViewModalSummaryPanel: React.FC<Props> = ({ product }) => {
         </div>
       )}
 
-      <div className="rounded-lg p-4" style={{ backgroundColor: "white" }}>
-        <h4 className="text-lg font-semibold mb-3 flex items-center" style={{ color: "black" }}>
+      <div className="rounded-lg p-4 border" style={{ ...t.surface, borderColor: t.borderColor }}>
+        <h4 className="text-lg font-semibold mb-3 flex items-center" style={t.heading}>
           <Building2 className="w-5 h-5 mr-2" />
           Brand & Category
         </h4>
         <div className="space-y-2">
           <div>
-            <span className="text-sm font-medium" style={{ color: "gray" }}>
+            <span className="text-sm font-medium" style={t.muted}>
               Brand:
             </span>
-            <span className="ml-2" style={{ color: "black" }}>
+            <span className="ml-2" style={t.body}>
               {displayBrand(product)}
             </span>
           </div>
           <div>
-            <span className="text-sm font-medium" style={{ color: "gray" }}>
+            <span className="text-sm font-medium" style={t.muted}>
               Category:
             </span>
             <span
               className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-sm"
-              style={{
-                backgroundColor: "lightblue",
-                color: "black",
-              }}
+              style={t.categoryPill}
             >
               {displayCategory(product)}
             </span>
           </div>
           {product.driveLink && (
             <div>
-              <span className="text-sm font-medium" style={{ color: "gray" }}>
+              <span className="text-sm font-medium" style={t.muted}>
                 Download Link:
               </span>
               <a
                 href={product.driveLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 text-blue-500 hover:underline inline-flex items-center"
+                className="ml-2 hover:underline inline-flex items-center"
+                style={{ color: colors.text.accent }}
               >
                 <ExternalLink className="w-4 h-4 mr-1" />
                 View Drive Link
@@ -120,7 +123,7 @@ export const ProductViewModalSummaryPanel: React.FC<Props> = ({ product }) => {
             </div>
           )}
           <div>
-            <span className="text-sm font-medium" style={{ color: "gray" }}>
+            <span className="text-sm font-medium" style={t.muted}>
               Stock Status:
             </span>
             <span

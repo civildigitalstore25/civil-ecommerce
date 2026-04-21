@@ -10,9 +10,11 @@ import { ProductViewModalPricingSection } from "./productViewModal/ProductViewMo
 import { ProductViewModalRichTextGrid } from "./productViewModal/ProductViewModalRichTextGrid";
 import { ProductViewModalSummaryPanel } from "./productViewModal/ProductViewModalSummaryPanel";
 import { ProductViewModalVideos } from "./productViewModal/ProductViewModalVideos";
+import { useProductViewModalTheme } from "./productViewModal/useProductViewModalTheme";
 import "./AddProductModal.css";
 
 const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, onClose }) => {
+  const t = useProductViewModalTheme();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
@@ -35,8 +37,9 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
   return (
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
       <div
-        className="rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-200"
-        style={{ backgroundColor: "white" }}
+        className="rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto transition-colors duration-200 shadow-xl"
+        data-admin-theme={t.theme}
+        style={t.surface}
       >
         <ProductViewModalHeader product={product} onClose={onClose} />
 
@@ -61,8 +64,8 @@ const ProductViewModal: React.FC<ProductViewModalProps> = ({ product, isOpen, on
         <div
           className="sticky bottom-0 border-t px-6 py-4 flex justify-end transition-colors duration-200"
           style={{
-            backgroundColor: "white",
-            borderColor: "gray",
+            ...t.surface,
+            borderTopColor: t.borderColor,
           }}
         >
           <FormButton type="button" variant="primary" onClick={onClose}>

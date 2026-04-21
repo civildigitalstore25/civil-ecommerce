@@ -1,5 +1,6 @@
 import React from "react";
 import type { Product } from "../../../../api/types/productTypes";
+import { useProductViewModalTheme } from "./useProductViewModalTheme";
 
 type Props = {
   product: Product;
@@ -14,9 +15,11 @@ export const ProductViewModalGallery: React.FC<Props> = ({
   selectedImageIndex,
   onSelectImage,
 }) => {
+  const t = useProductViewModalTheme();
+
   return (
     <div className="space-y-4">
-      <div className="aspect-square rounded-lg overflow-hidden" style={{ backgroundColor: "lightgray" }}>
+      <div className="aspect-square rounded-lg overflow-hidden" style={t.surfaceMuted}>
         <img
           src={allImages[selectedImageIndex] || product.imageUrl || product.image}
           alt={product.name}
@@ -30,9 +33,8 @@ export const ProductViewModalGallery: React.FC<Props> = ({
               key={index}
               type="button"
               onClick={() => onSelectImage(index)}
-              className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 ${
-                selectedImageIndex === index ? "border-yellow-500" : "border-gray-600"
-              }`}
+              className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors"
+              style={selectedImageIndex === index ? t.thumbSelected : t.thumbDefault}
             >
               <img
                 src={image}

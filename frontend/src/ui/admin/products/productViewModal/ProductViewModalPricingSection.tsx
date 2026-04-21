@@ -1,156 +1,63 @@
 import React from "react";
-import { CreditCard, DollarSign } from "lucide-react";
+import { DollarSign } from "lucide-react";
 import type { Product } from "../../../../api/types/productTypes";
+import { buildAdminProductPricingGroups } from "../adminProductPricingDisplay";
+import { useProductViewModalTheme } from "./useProductViewModalTheme";
 
 type Props = {
   product: Product;
 };
 
+/**
+ * Uses the same pricing grouping as {@link ProductTablePricingCell} so the modal
+ * never omits tiers that appear in the admin table (e.g. subscriptions vs
+ * subscriptionDurations, INR 0 vs legacy price).
+ */
 export const ProductViewModalPricingSection: React.FC<Props> = ({ product }) => {
-  const hasSubs = product.subscriptionDurations && product.subscriptionDurations.length > 0;
+  const t = useProductViewModalTheme();
+  const groups = buildAdminProductPricingGroups(product);
 
   return (
-    <div className="rounded-lg p-6 mb-8" style={{ backgroundColor: "white" }}>
-      <h3 className="text-xl font-semibold mb-4 flex items-center" style={{ color: "black" }}>
+    <div
+      className="rounded-lg p-6 mb-8 border transition-colors duration-200"
+      style={{ ...t.surface, borderColor: t.borderColor }}
+    >
+      <h3 className="text-xl font-semibold mb-4 flex items-center" style={t.heading}>
         <DollarSign className="w-6 h-6 mr-2" />
-        Pricing Plans
+        Pricing plans
       </h3>
 
-      {hasSubs && (
-        <div className="mb-6">
-          <h4 className="text-lg font-medium mb-3 flex items-center" style={{ color: "black" }}>
-            <CreditCard className="w-5 h-5 mr-2" />
-            Subscription Plans
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {product.subscriptionDurations!.map((sub, index) => (
-              <div
-                key={index}
-                className="rounded-lg p-4 border"
-                style={{
-                  backgroundColor: "white",
-                  borderColor: "gray",
-                }}
-              >
-                <div className="text-center">
-                  <div className="text-2xl font-bold" style={{ color: "black" }}>
-                    ₹{sub.price?.toLocaleString()}
-                  </div>
-                  <div className="text-sm" style={{ color: "gray" }}>
-                    {sub.duration}
-                    {sub.trialDays && (
-                      <div style={{ color: "gray", fontSize: "12px" }}>{sub.trialDays} Days</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!hasSubs && (
-        <div className="mb-6">
-          <h4 className="text-lg font-medium mb-3" style={{ color: "black" }}>
-            License Plans
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {product.price1 && (
-              <div
-                className="rounded-lg p-4 border"
-                style={{ backgroundColor: "white", borderColor: "gray" }}
-              >
-                <div className="text-center">
-                  <div className="text-2xl font-bold" style={{ color: "black" }}>
-                    ₹{product.price1.toLocaleString()}
-                  </div>
-                  <div className="text-sm" style={{ color: "gray" }}>
-                    1-Year License
-                  </div>
-                  {product.oldPrice1 && (
-                    <div className="text-sm line-through" style={{ color: "gray" }}>
-                      ₹{product.oldPrice1.toLocaleString()}
+      {groups.length === 0 ? (
+        <p className="text-sm" style={t.muted}>
+          No pricing configured for this product.
+        </p>
+      ) : (
+        <div className="space-y-8">
+          {groups.map((group) => (
+            <div key={group.title}>
+              <h4 className="text-lg font-medium mb-3" style={t.heading}>
+                {group.title}
+              </h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {group.lines.map((line) => (
+                  <div
+                    key={`${group.title}-${line.label}`}
+                    className="rounded-lg p-4 border transition-colors duration-200"
+                    style={{ ...t.surface, borderColor: t.borderColor }}
+                  >
+                    <div className="text-center">
+                      <div className="text-2xl font-bold" style={t.heading}>
+                        ₹{line.price.toLocaleString()}
+                      </div>
+                      <div className="text-sm mt-1" style={t.muted}>
+                        {line.label}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            )}
-            {product.price3 && (
-              <div
-                className="rounded-lg p-4 border"
-                style={{ backgroundColor: "white", borderColor: "gray" }}
-              >
-                <div className="text-center">
-                  <div className="text-2xl font-bold" style={{ color: "black" }}>
-                    ₹{product.price3.toLocaleString()}
                   </div>
-                  <div className="text-sm" style={{ color: "gray" }}>
-                    3-Year License
-                  </div>
-                  {product.oldPrice3 && (
-                    <div className="text-sm line-through" style={{ color: "gray" }}>
-                      ₹{product.oldPrice3.toLocaleString()}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-            {product.priceLifetime && (
-              <div
-                className="rounded-lg p-4 border"
-                style={{ backgroundColor: "white", borderColor: "gray" }}
-              >
-                <div className="text-center">
-                  <div className="text-2xl font-bold" style={{ color: "black" }}>
-                    ₹{product.priceLifetime.toLocaleString()}
-                  </div>
-                  <div className="text-sm" style={{ color: "gray" }}>
-                    Lifetime License
-                  </div>
-                  {product.oldPriceLifetime && (
-                    <div className="text-sm line-through" style={{ color: "gray" }}>
-                      ₹{product.oldPriceLifetime.toLocaleString()}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-
-      {(product.hasLifetime || product.hasMembership) && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {product.hasLifetime && product.lifetimePrice && (
-            <div
-              className="rounded-lg p-4 border"
-              style={{ backgroundColor: "white", borderColor: "gray" }}
-            >
-              <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: "black" }}>
-                  ₹{product.lifetimePrice.toLocaleString()}
-                </div>
-                <div className="text-sm" style={{ color: "gray" }}>
-                  Lifetime Access
-                </div>
+                ))}
               </div>
             </div>
-          )}
-          {product.hasMembership && product.membershipPrice && (
-            <div
-              className="rounded-lg p-4 border"
-              style={{ backgroundColor: "white", borderColor: "gray" }}
-            >
-              <div className="text-center">
-                <div className="text-2xl font-bold" style={{ color: "black" }}>
-                  ₹{product.membershipPrice.toLocaleString()}
-                </div>
-                <div className="text-sm" style={{ color: "gray" }}>
-                  Membership
-                </div>
-              </div>
-            </div>
-          )}
+          ))}
         </div>
       )}
     </div>

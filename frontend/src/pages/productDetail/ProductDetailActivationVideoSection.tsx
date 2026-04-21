@@ -1,6 +1,7 @@
 import React from "react";
 import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
+import { resolveProductVideoPlayer } from "../../utils/resolveProductVideoPlayer";
 
 type Props = {
   product: Product;
@@ -10,6 +11,9 @@ type Props = {
 export const ProductDetailActivationVideoSection: React.FC<Props> = ({ product, colors }) => {
   const url = product.activationVideoUrl;
   if (!url) return null;
+
+  const player = resolveProductVideoPlayer(url);
+  if (!player) return null;
 
   return (
     <div className="mt-8 lg:mt-16">
@@ -27,16 +31,24 @@ export const ProductDetailActivationVideoSection: React.FC<Props> = ({ product, 
           Watch this step-by-step guide to activate your {product.name} license
         </p>
         <div className="aspect-video bg-black rounded-xl overflow-hidden">
-          {url.includes("youtube.com") || url.includes("youtu.be") ? (
+          {player.kind === "iframe" ? (
             <iframe
-              src={url.replace("watch?v=", "embed/")}
-              className="w-full h-full"
+              src={player.src}
+              className="w-full h-full border-0"
+              allow={player.allow}
               frameBorder={0}
               allowFullScreen
               title="Activation Video Demo"
+              loading="lazy"
             />
           ) : (
-            <video src={url} className="w-full h-full" controls title="Activation Video Demo" />
+            <video
+              src={player.src}
+              className="w-full h-full"
+              controls
+              playsInline
+              title="Activation Video Demo"
+            />
           )}
         </div>
       </div>

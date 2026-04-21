@@ -2,6 +2,7 @@ import React from "react";
 import * as LucideIcons from "lucide-react";
 import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
+import { resolveProductVideoPlayer } from "../../utils/resolveProductVideoPlayer";
 
 type Props = {
   product: Product;
@@ -30,29 +31,36 @@ export const ProductDetailMediaGallery: React.FC<Props> = ({
   zoomOriginX,
   zoomOriginY,
 }) => {
+  const mainVideoPlayer =
+    currentMainImage && currentMainImage.startsWith("video:")
+      ? resolveProductVideoPlayer(currentMainImage.slice("video:".length))
+      : null;
+
   return (
     <div className="space-y-3 lg:space-y-4">
       <div className="aspect-square flex items-center justify-center p-2 lg:p-4">
         {currentMainImage && currentMainImage.startsWith("video:") ? (
           <div className="w-full h-full flex items-center justify-center">
-            <div className="aspect-video w-full max-w-sm lg:max-w-md rounded-lg lg:rounded-xl overflow-hidden shadow-lg">
-              {currentMainImage.replace("video:", "").includes("youtube.com") ||
-              currentMainImage.replace("video:", "").includes("youtu.be") ? (
+            <div className="aspect-video w-full max-w-sm lg:max-w-md rounded-lg lg:rounded-xl overflow-hidden shadow-lg bg-black">
+              {mainVideoPlayer?.kind === "iframe" ? (
                 <iframe
-                  src={currentMainImage.replace("video:", "").replace("watch?v=", "embed/")}
-                  className="w-full h-full"
+                  src={mainVideoPlayer.src}
+                  className="w-full h-full border-0"
+                  allow={mainVideoPlayer.allow}
                   frameBorder={0}
                   allowFullScreen
                   title="Product Demo Video"
+                  loading="lazy"
                 />
-              ) : (
+              ) : mainVideoPlayer?.kind === "video" ? (
                 <video
-                  src={currentMainImage.replace("video:", "")}
+                  src={mainVideoPlayer.src}
                   className="w-full h-full"
                   controls
+                  playsInline
                   title="Product Demo Video"
                 />
-              )}
+              ) : null}
             </div>
           </div>
         ) : (
