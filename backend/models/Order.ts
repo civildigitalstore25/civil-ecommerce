@@ -26,6 +26,8 @@ export interface IShippingAddress {
 
 export interface IOrder extends Document {
   userId?: mongoose.Types.ObjectId;
+  /** Checkout / guest contact email, or admin-entered email when userId is absent */
+  customerEmail?: string;
   orderId: string;
   orderNumber: number; // Sequential order number (required)
   items: IOrderItem[];
@@ -51,6 +53,11 @@ const OrderSchema = new Schema<IOrder>({
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: false
+  },
+  customerEmail: {
+    type: String,
+    trim: true,
+    lowercase: true,
   },
   orderId: {
     type: String,

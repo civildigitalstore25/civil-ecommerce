@@ -26,6 +26,8 @@ export interface IOrderItem {
 export interface IOrder {
   _id: string;
   userId: string;
+  /** Contact email saved on the document (e.g. admin-created orders). */
+  customerEmail?: string;
   orderId: string;
   orderNumber: number;
   items: IOrderItem[];

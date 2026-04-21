@@ -9,6 +9,8 @@ export type AdminOrderLike = {
   _id?: string;
   orderId?: string;
   orderNumber?: number;
+  /** Stored on the order for admin-created orders (no linked user). */
+  customerEmail?: string;
   orderStatus?: string;
   paymentStatus?: string;
   notes?: string;
@@ -44,6 +46,8 @@ export function displayOrderCustomerPhone(order: AdminOrderLike): string {
 }
 
 export function displayOrderCustomerEmail(order: AdminOrderLike): string {
+  const direct = order.customerEmail?.trim();
+  if (direct) return direct;
   return order.userId?.email || emailFromOrderNotes(order.notes) || "";
 }
 
@@ -186,6 +190,7 @@ export function filterOrdersBySearch<T extends AdminOrderLike>(
   return orders.filter((order) => {
     const userName = order.userId?.fullName?.toLowerCase() || "";
     const userEmail = order.userId?.email?.toLowerCase() || "";
+    const storedEmail = order.customerEmail?.toLowerCase() || "";
     const shippingName = order.shippingAddress?.fullName?.toLowerCase() || "";
     const notesEmail = emailFromOrderNotes(order.notes).toLowerCase();
     const phone =
@@ -193,6 +198,7 @@ export function filterOrdersBySearch<T extends AdminOrderLike>(
     return (
       userName.includes(search) ||
       userEmail.includes(search) ||
+      storedEmail.includes(search) ||
       shippingName.includes(search) ||
       notesEmail.includes(search) ||
       (phone && phone.includes(searchCompact))

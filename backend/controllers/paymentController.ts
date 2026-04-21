@@ -297,6 +297,8 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
     const { subtotal, totalAmount } = computeAdminOrderMoney(itemsWithDriveLink, orderLevelDiscount);
 
     // Create order in database (admin-created)
+    const emailTrim = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
     const order = new Order({
       orderId,
       orderNumber,
@@ -305,6 +307,7 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
       discount: orderLevelDiscount,
       shippingCharges: 0, // No shipping for digital products
       totalAmount,
+      customerEmail: emailTrim || undefined,
       shippingAddress: {
         fullName: customerNameTrim,
         phoneNumber: customerPhoneTrim,
@@ -464,6 +467,8 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     if (isFreeOrder) {
       const couponCodeUpper = couponCode ? String(couponCode).toUpperCase() : null;
       const freeOrderStatus = postPaymentOrderStatusForOrderItems(itemsWithDriveLink, productBrandMap);
+      const checkoutEmail =
+        (typeof user.email === 'string' && user.email.trim()) || emailFromOrderNotes(notes) || '';
       const order = new Order({
         userId: user._id,
         orderId,
@@ -474,6 +479,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
         shippingCharges,
         totalAmount: totalNum,
         shippingAddress,
+        customerEmail: checkoutEmail ? checkoutEmail.toLowerCase() : undefined,
         couponCode: couponCodeUpper,
         notes,
         cashfreeOrderId: undefined,
@@ -573,6 +579,8 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     }
 
     // Create order in database
+    const checkoutEmailPaid =
+      (typeof user.email === 'string' && user.email.trim()) || emailFromOrderNotes(notes) || '';
     const order = new Order({
       userId: user._id,
       orderId,
@@ -583,6 +591,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       shippingCharges,
       totalAmount,
       shippingAddress,
+      customerEmail: checkoutEmailPaid ? checkoutEmailPaid.toLowerCase() : undefined,
       couponCode: couponCode ? couponCode.toUpperCase() : null,
       notes,
       cashfreeOrderId: cashfreeOrder.orderId,
@@ -755,7 +764,11 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
       } else {
         // Fallback: try to populate order with user details
         await order.populate('userId', 'name email');
-        customerEmail = (order as any).userId?.email || order.notes?.replace('Email: ', '') || 'N/A';
+        customerEmail =
+          (order as any).customerEmail ||
+          (order as any).userId?.email ||
+          order.notes?.replace('Email: ', '') ||
+          'N/A';
         console.log('⚠️ Using fallback email method:', customerEmail);
       }
 
@@ -1449,7 +1462,11 @@ export const exportOrders = async (req: Request, res: Response): Promise<void> =
       'Order ID': order.orderId,
       'Order Number': order.orderNumber,
       'Customer Name': order.shippingAddress?.fullName || order.userId?.fullName || 'N/A',
-      'Customer Email': order.userId?.email || emailFromOrderNotes(order.notes) || 'N/A',
+      'Customer Email':
+        order.customerEmail ||
+        order.userId?.email ||
+        emailFromOrderNotes(order.notes) ||
+        'N/A',
       'Customer Phone': exportCustomerPhone(order) || 'N/A',
       'Order Status': order.orderStatus,
       'Payment Status': order.paymentStatus,
