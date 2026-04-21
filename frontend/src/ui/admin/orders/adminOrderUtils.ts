@@ -38,6 +38,7 @@ export type AdminOrderLike = {
     image?: string;
     version?: string;
     pricingPlan?: string;
+    licenseType?: string;
   }>;
 };
 

@@ -6,6 +6,7 @@ import OrderDetailsOverviewGrid from "./OrderDetailsOverviewGrid";
 import OrderDetailsCustomerCard from "./OrderDetailsCustomerCard";
 import OrderDetailsItemsList from "./OrderDetailsItemsList";
 import OrderDetailsSummaryBlocks from "./OrderDetailsSummaryBlocks";
+import { useEnrichedOrderLineItems } from "./useEnrichedOrderLineItems";
 
 type Props = {
   colors: ThemeColors;
@@ -14,7 +15,8 @@ type Props = {
 };
 
 const OrderDetailsModal: React.FC<Props> = ({ colors, order, onClose }) => {
-  const items = Array.isArray(order.items) ? order.items : [];
+  const rawItems = Array.isArray(order.items) ? order.items : [];
+  const items = useEnrichedOrderLineItems(rawItems) as typeof rawItems;
 
   return (
     <div
