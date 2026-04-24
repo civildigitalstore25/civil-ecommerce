@@ -8,6 +8,7 @@ import Reviews from "../ui/home/Reviews";
 import WhyChooseUs from "../ui/home/WhyChooseUs";
 import LatestBlogsCarousel from "../ui/home/LatestBlogsCarousel";
 import BestSellingCarousel from "../ui/home/BestSellingCarousel";
+import LatestArrivalsCarousel from "../ui/home/LatestArrivalsCarousel";
 import FreeProductsSection from "../ui/home/FreeProductsSection";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getHomeSEO, buildCanonicalUrl } from "../utils/seo";
@@ -77,12 +78,14 @@ const HomePage: React.FC = () => {
           </section>
 
           <section className="px-4 sm:px-6 lg:px-8">
-            <BestSellingCarousel />
+            <LatestArrivalsCarousel />
           </section>
 
           <section className="px-4 sm:px-6 lg:px-8">
-            <WhyChooseUs />
+            <BestSellingCarousel />
           </section>
+
+          
 
           <section className="px-4 sm:px-6 lg:px-8">
             <LatestBlogsCarousel />
@@ -97,6 +100,9 @@ const HomePage: React.FC = () => {
 
           <section className="px-4 sm:px-6 lg:px-8">
             <Reviews />
+          </section>
+          <section className="px-4 sm:px-6 lg:px-8">
+            <WhyChooseUs />
           </section>
         </main>
       </div>

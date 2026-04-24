@@ -702,3 +702,26 @@ export const getBestSellingProducts = async (req: Request, res: Response): Promi
     res.status(500).json({ message: error.message });
   }
 };
+
+// Get top N latest active products (new arrivals)
+export const getLatestProducts = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 20);
+
+    const products = await Product.find({
+      status: { $in: ['active', undefined, null] }
+    })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    res.json({
+      success: true,
+      products,
+      message: 'Latest products retrieved successfully'
+    });
+  } catch (error: any) {
+    console.error('❌ Get latest products error:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

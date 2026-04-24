@@ -9,6 +9,8 @@ export {
   useCompanies,
   useBestSellingProducts,
   getBestSellingProducts,
+  useLatestProducts,
+  getLatestProducts,
 } from "./products/productQueries";
 
 export {
