@@ -95,13 +95,13 @@ const LatestArrivalsCarousel: React.FC = () => {
             textShadow: `0 2px 8px ${colors.background.primary}80`,
           }}
         >
-          Latest Product Arrivals
+          New Arrivals
         </h2>
         <p
           className="text-sm md:text-base font-lato"
           style={{ color: colors.text.secondary }}
         >
-          Freshly added products you can explore now
+          Discover the newest additions to our catalog
         </p>
       </div>
 
