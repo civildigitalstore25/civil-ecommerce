@@ -75,3 +75,19 @@ export const useBestSellingProducts = (limit = 10) => {
     queryFn: () => getBestSellingProducts(limit),
   });
 };
+
+export const getLatestProducts = async (
+  limit = 10,
+): Promise<{ products: Product[] }> => {
+  const { data } = await productApiClient.get("/filter/latest", {
+    params: { limit },
+  });
+  return data;
+};
+
+export const useLatestProducts = (limit = 10) => {
+  return useQuery<{ products: Product[] }>({
+    queryKey: ["products", "latest", limit],
+    queryFn: () => getLatestProducts(limit),
+  });
+};

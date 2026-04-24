@@ -14,8 +14,18 @@ type Seo = {
 type Props = { seoData: Seo };
 
 export const BrandCategoryListingHelmet: React.FC<Props> = ({ seoData }) => {
-  const { pathname } = useLocation();
-  const url = buildCanonicalUrl(pathname);
+  const { pathname, search } = useLocation();
+  const params = new URLSearchParams(search);
+  const canonicalParams = new URLSearchParams();
+  const brand = (params.get("brand") || "").trim();
+  const category = (params.get("category") || "").trim();
+
+  if (brand) canonicalParams.set("brand", brand);
+  if (category) canonicalParams.set("category", category);
+
+  const baseCanonical = buildCanonicalUrl(pathname);
+  const queryString = canonicalParams.toString();
+  const url = queryString ? `${baseCanonical}?${queryString}` : baseCanonical;
   const title = String(seoData.title ?? "");
   const description = String(seoData.description ?? "");
   const keywords = String(seoData.keywords ?? "");

@@ -20,7 +20,8 @@ import {
     incrementProductViewCount,
     getProductViewCount,
     getProductSoldQuantity,
-    getBestSellingProducts
+    getBestSellingProducts,
+    getLatestProducts
 } from '../controllers/productController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
@@ -39,6 +40,7 @@ router.get('/filter/category/:category', getProductsByCategory);
 router.get('/filter/company/:company', getProductsByCompany);
 router.get('/filter/advanced', getProductsWithFilters);
 router.get('/filter/best-selling', getBestSellingProducts);
+router.get('/filter/latest', getLatestProducts);
 
 // Viewer tracking routes (MUST come before /:id route)
 router.post('/:id/track-viewer', trackProductViewer);

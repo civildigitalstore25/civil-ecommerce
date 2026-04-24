@@ -3,13 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useActiveFreeProducts } from "../../api/freeProductsApi";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { CountdownTimer } from "../../components/CountdownTimer/CountdownTimer";
-
-const getSlug = (product: any) => {
-  const versionPart = product.version?.trim()
-    ? `-${product.version.toString().trim().toLowerCase()}`
-    : "";
-  return `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-};
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 
 const FreeProductsSection: React.FC = () => {
   const { colors } = useAdminTheme();
@@ -85,7 +79,7 @@ const FreeProductsSection: React.FC = () => {
         <div className="md:hidden w-full overflow-x-auto overflow-y-hidden scroll-smooth snap-x snap-mandatory pb-2" style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}>
           <div className="flex gap-4">
             {products.map((product: any) => {
-              const slug = getSlug(product);
+              const slug = productSlugFromProduct(product);
               return (
                 <div
                   key={product._id}
@@ -162,7 +156,7 @@ const FreeProductsSection: React.FC = () => {
         {/* Desktop: grid layout */}
         <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {products.map((product: any) => {
-            const slug = getSlug(product);
+            const slug = productSlugFromProduct(product);
             return (
               <div
                 key={product._id}

@@ -28,7 +28,7 @@ export const currencies: Record<CurrencyType, CurrencyInfo> = {
   },
 };
 
-interface CurrencyContextType {
+export interface CurrencyContextType {
   selectedCurrency: CurrencyType;
   setCurrency: (currency: CurrencyType) => void;
   getCurrencyInfo: (currency?: CurrencyType) => CurrencyInfo;

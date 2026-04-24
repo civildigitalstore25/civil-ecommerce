@@ -1,24 +1,22 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ShoppingBag } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
-import { useBestSellingProducts } from "../../api/productApi";
+import { useLatestProducts } from "../../api/productApi";
 import type { Product } from "../../api/types/productTypes";
 import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 import { ProductCarouselFromPriceOverlay } from "./ProductCarouselFromPriceOverlay";
 
-type BestSellingProduct = Product & { soldCount?: number };
-
 const sectionGradient = (primary: string, secondary: string) =>
   `linear-gradient(120deg, ${primary} 60%, ${secondary} 100%)`;
 
-const BestSellingCarousel: React.FC = () => {
+const LatestArrivalsCarousel: React.FC = () => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const navigate = useNavigate();
-  const { data, isLoading } = useBestSellingProducts(10);
-  const products = (data?.products ?? []) as BestSellingProduct[];
+  const { data, isLoading } = useLatestProducts(10);
+  const products = (data?.products ?? []) as Product[];
 
   const allProducts = useMemo(() => {
     if (products.length === 0) return [];
@@ -34,7 +32,7 @@ const BestSellingCarousel: React.FC = () => {
         }}
       >
         <div className="text-center px-4">
-          <div style={{ color: colors.text.secondary }}>Loading best sellers...</div>
+          <div style={{ color: colors.text.secondary }}>Loading latest arrivals...</div>
         </div>
       </section>
     );
@@ -46,22 +44,22 @@ const BestSellingCarousel: React.FC = () => {
 
   return (
     <section
-      id="best-selling-section"
+      id="latest-arrivals-section"
       className="w-full py-16 transition-colors duration-200 overflow-hidden"
       style={{
         background: sectionGradient(colors.background.primary, colors.background.secondary),
       }}
     >
       <style>{`
-        @keyframes scroll-best-selling {
+        @keyframes scroll-latest-arrivals {
           from { transform: translateX(0); }
           to { transform: translateX(-50%); }
         }
-        .animate-scroll-best-selling {
-          animation: scroll-best-selling ${products.length * 4}s linear infinite;
+        .animate-scroll-latest-arrivals {
+          animation: scroll-latest-arrivals ${products.length * 4}s linear infinite;
           will-change: transform;
         }
-        .best-selling-track:hover .animate-scroll-best-selling {
+        .latest-arrivals-track:hover .animate-scroll-latest-arrivals {
           animation-play-state: paused;
         }
       `}</style>
@@ -74,10 +72,10 @@ const BestSellingCarousel: React.FC = () => {
             textShadow: `0 2px 8px ${colors.background.primary}80`,
           }}
         >
-          Best Selling Products
+          New Arrivals
         </h2>
         <p className="text-sm md:text-base font-lato" style={{ color: colors.text.secondary }}>
-          Most ordered by our customers
+          Discover the newest additions to our catalog
         </p>
       </div>
 
@@ -88,7 +86,7 @@ const BestSellingCarousel: React.FC = () => {
         <div className="flex gap-4">
           {products.map((product) => (
             <div
-              key={product._id}
+              key={product._id ?? `latest-mobile-${productSlugFromProduct(product)}`}
               onClick={() => navigate(`/product/${productSlugFromProduct(product)}`)}
               className="group flex-shrink-0 snap-start w-[260px] rounded-2xl shadow-md overflow-hidden flex flex-col cursor-pointer transition-all duration-300"
               style={{
@@ -123,23 +121,21 @@ const BestSellingCarousel: React.FC = () => {
                     </span>
                   )}
                 </h3>
-                {(product.soldCount ?? 0) > 0 && (
-                  <div
-                    className="flex items-center gap-1.5 mt-2 text-xs"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    <span>{product.soldCount} sold</span>
-                  </div>
-                )}
+                <div
+                  className="flex items-center gap-1.5 mt-2 text-xs"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>New arrival</span>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="hidden md:block best-selling-track w-full">
-        <div className="flex animate-scroll-best-selling gap-6">
+      <div className="hidden md:block latest-arrivals-track w-full">
+        <div className="flex animate-scroll-latest-arrivals gap-6">
           {allProducts.map((product, index) => (
             <div
               key={`${product._id}-${index}`}
@@ -177,15 +173,13 @@ const BestSellingCarousel: React.FC = () => {
                     </span>
                   )}
                 </h3>
-                {(product.soldCount ?? 0) > 0 && (
-                  <div
-                    className="flex items-center gap-1.5 mt-2 text-xs"
-                    style={{ color: colors.text.secondary }}
-                  >
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    <span>{product.soldCount} sold</span>
-                  </div>
-                )}
+                <div
+                  className="flex items-center gap-1.5 mt-2 text-xs"
+                  style={{ color: colors.text.secondary }}
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>New arrival</span>
+                </div>
               </div>
             </div>
           ))}
@@ -195,4 +189,4 @@ const BestSellingCarousel: React.FC = () => {
   );
 };
 
-export default BestSellingCarousel;
+export default LatestArrivalsCarousel;
