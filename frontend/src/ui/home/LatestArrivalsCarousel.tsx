@@ -5,53 +5,30 @@ import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
 import { useLatestProducts } from "../../api/productApi";
 import type { Product } from "../../api/types/productTypes";
-import { getMinimumProductPrice } from "../../utils/productPricing";
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
+import { ProductCarouselFromPriceOverlay } from "./ProductCarouselFromPriceOverlay";
+
+const sectionGradient = (primary: string, secondary: string) =>
+  `linear-gradient(120deg, ${primary} 60%, ${secondary} 100%)`;
 
 const LatestArrivalsCarousel: React.FC = () => {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const navigate = useNavigate();
   const { data, isLoading } = useLatestProducts(10);
-  const products = data?.products ?? [];
+  const products = (data?.products ?? []) as Product[];
 
   const allProducts = useMemo(() => {
     if (products.length === 0) return [];
     return [...products, ...products];
   }, [products]);
 
-  const getSlug = (product: any) => {
-    const versionPart = product.version?.trim()
-      ? `-${product.version.toString().trim().toLowerCase()}`
-      : "";
-    return `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-  };
-
-  const renderFromPriceOverlay = (product: Product) => {
-    const min = getMinimumProductPrice(product);
-    if (!min) return null;
-    const label = formatPriceWithSymbol(min.priceINR, min.priceUSD);
-    return (
-      <div className="absolute inset-x-2 bottom-2 flex justify-center pointer-events-none opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200">
-        <div
-          className="text-[10px] md:text-xs font-semibold px-2.5 py-1 rounded-md shadow-sm"
-          style={{
-            backgroundColor: colors.background.primary,
-            border: `1px solid ${colors.border.primary}`,
-            color: colors.text.primary,
-          }}
-        >
-          From {label}
-        </div>
-      </div>
-    );
-  };
-
   if (isLoading) {
     return (
       <section
         className="w-full py-16 transition-colors duration-200"
         style={{
-          background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+          background: sectionGradient(colors.background.primary, colors.background.secondary),
         }}
       >
         <div className="text-center px-4">
@@ -70,7 +47,7 @@ const LatestArrivalsCarousel: React.FC = () => {
       id="latest-arrivals-section"
       className="w-full py-16 transition-colors duration-200 overflow-hidden"
       style={{
-        background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+        background: sectionGradient(colors.background.primary, colors.background.secondary),
       }}
     >
       <style>{`
@@ -97,10 +74,7 @@ const LatestArrivalsCarousel: React.FC = () => {
         >
           New Arrivals
         </h2>
-        <p
-          className="text-sm md:text-base font-lato"
-          style={{ color: colors.text.secondary }}
-        >
+        <p className="text-sm md:text-base font-lato" style={{ color: colors.text.secondary }}>
           Discover the newest additions to our catalog
         </p>
       </div>
@@ -110,10 +84,10 @@ const LatestArrivalsCarousel: React.FC = () => {
         style={{ WebkitOverflowScrolling: "touch", scrollbarWidth: "thin" }}
       >
         <div className="flex gap-4">
-          {products.map((product: any) => (
+          {products.map((product) => (
             <div
-              key={product._id}
-              onClick={() => navigate(`/product/${getSlug(product)}`)}
+              key={product._id ?? `latest-mobile-${productSlugFromProduct(product)}`}
+              onClick={() => navigate(`/product/${productSlugFromProduct(product)}`)}
               className="group flex-shrink-0 snap-start w-[260px] rounded-2xl shadow-md overflow-hidden flex flex-col cursor-pointer transition-all duration-300"
               style={{
                 backgroundColor: colors.background.primary,
@@ -129,7 +103,11 @@ const LatestArrivalsCarousel: React.FC = () => {
                   alt={product.name}
                   className="object-contain max-h-full w-full"
                 />
-                {renderFromPriceOverlay(product as Product)}
+                <ProductCarouselFromPriceOverlay
+                  colors={colors}
+                  formatPriceWithSymbol={formatPriceWithSymbol}
+                  product={product}
+                />
               </div>
               <div className="p-4 flex flex-col flex-1">
                 <h3
@@ -138,10 +116,7 @@ const LatestArrivalsCarousel: React.FC = () => {
                 >
                   {product.name}
                   {product.version && (
-                    <span
-                      className="font-normal ml-1"
-                      style={{ color: colors.text.secondary }}
-                    >
+                    <span className="font-normal ml-1" style={{ color: colors.text.secondary }}>
                       ({product.version})
                     </span>
                   )}
@@ -161,10 +136,10 @@ const LatestArrivalsCarousel: React.FC = () => {
 
       <div className="hidden md:block latest-arrivals-track w-full">
         <div className="flex animate-scroll-latest-arrivals gap-6">
-          {allProducts.map((product: any, index: number) => (
+          {allProducts.map((product, index) => (
             <div
               key={`${product._id}-${index}`}
-              onClick={() => navigate(`/product/${getSlug(product)}`)}
+              onClick={() => navigate(`/product/${productSlugFromProduct(product)}`)}
               className="group flex-shrink-0 w-64 md:w-72 rounded-2xl shadow-md overflow-hidden flex flex-col cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-105"
               style={{
                 backgroundColor: colors.background.primary,
@@ -180,7 +155,11 @@ const LatestArrivalsCarousel: React.FC = () => {
                   alt={product.name}
                   className="object-contain max-h-full w-full"
                 />
-                {renderFromPriceOverlay(product as Product)}
+                <ProductCarouselFromPriceOverlay
+                  colors={colors}
+                  formatPriceWithSymbol={formatPriceWithSymbol}
+                  product={product}
+                />
               </div>
               <div className="p-4 flex flex-col flex-1">
                 <h3
@@ -189,10 +168,7 @@ const LatestArrivalsCarousel: React.FC = () => {
                 >
                   {product.name}
                   {product.version && (
-                    <span
-                      className="font-normal ml-1"
-                      style={{ color: colors.text.secondary }}
-                    >
+                    <span className="font-normal ml-1" style={{ color: colors.text.secondary }}>
                       ({product.version})
                     </span>
                   )}

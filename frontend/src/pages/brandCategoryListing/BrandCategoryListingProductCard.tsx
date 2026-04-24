@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
 import { getMinimumProductPrice } from "../../utils/productPricing";
-import { productSlugFromProduct } from "./productSlugFromProduct";
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 
 type Props = {
   product: Product;

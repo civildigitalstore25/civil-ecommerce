@@ -1,4 +1,4 @@
-/** Build storefront product URL slug from listing product shape */
+/** Build storefront product URL slug from name + optional version */
 export function productSlugFromProduct(product: {
   name?: string;
   version?: string;
