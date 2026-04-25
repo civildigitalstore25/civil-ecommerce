@@ -17,6 +17,12 @@ export function AllCategoriesDropdownBody({
   onBrandClick,
   onCategoryClick,
 }: AllCategoriesDropdownBodyProps) {
+  const orderedBrandEntries = Object.entries(brandCategories).sort(([brandA], [brandB]) => {
+    if (brandA === "projects") return 1;
+    if (brandB === "projects") return -1;
+    return 0;
+  });
+
   return (
     <div className="flex" style={{ minHeight: "400px", maxHeight: "70vh" }}>
       <div
@@ -27,7 +33,7 @@ export function AllCategoriesDropdownBody({
         }}
       >
         <div className="py-2 flex-1 min-h-0 overflow-y-auto all-categories-dropdown">
-          {Object.entries(brandCategories).map(([brandKey, brandData]) => (
+          {orderedBrandEntries.map(([brandKey, brandData]) => (
             <button
               key={brandKey}
               type="button"

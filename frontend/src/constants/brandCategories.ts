@@ -62,6 +62,20 @@ export const brandCategories: Record<
       { value: "eset", label: "ESET" },
     ],
   },
+  projects: {
+    label: "Projects",
+    categories: [
+      { value: "autocad-files", label: "Autocad Files" },
+      { value: "3ds-max-files", label: "3ds Max Files" },
+      { value: "revit-files", label: "Revit Files" },
+      { value: "excel-sheet-files", label: "Excel Sheet Files" },
+      { value: "photoshop-files", label: "Photoshop Files" },
+      { value: "after-effects-files", label: "After Effects Files" },
+      { value: "premier-pro-files", label: "Premier Pro Files" },
+      { value: "lumion-files", label: "Lumion Files" },
+      { value: "others-files", label: "Others Files" },
+    ],
+  },
   "structural-softwares": {
     label: "Structural Softwares",
     categories: [

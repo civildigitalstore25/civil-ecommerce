@@ -77,6 +77,22 @@ export const leftSidebarNavigationCategories: LeftSidebarCategory[] = [
     ],
   },
   {
+    id: "projects",
+    name: "Projects",
+    href: "/projects",
+    subcategories: [
+      { id: "autocad-files", name: "Autocad Files", href: "/category?brand=projects&category=autocad-files" },
+      { id: "3ds-max-files", name: "3ds Max Files", href: "/category?brand=projects&category=3ds-max-files" },
+      { id: "revit-files", name: "Revit Files", href: "/category?brand=projects&category=revit-files" },
+      { id: "excel-sheet-files", name: "Excel Sheet Files", href: "/category?brand=projects&category=excel-sheet-files" },
+      { id: "photoshop-files", name: "Photoshop Files", href: "/category?brand=projects&category=photoshop-files" },
+      { id: "after-effects-files", name: "After Effects Files", href: "/category?brand=projects&category=after-effects-files" },
+      { id: "premier-pro-files", name: "Premier Pro Files", href: "/category?brand=projects&category=premier-pro-files" },
+      { id: "lumion-files", name: "Lumion Files", href: "/category?brand=projects&category=lumion-files" },
+      { id: "others-files", name: "Others Files", href: "/category?brand=projects&category=others-files" },
+    ],
+  },
+  {
     id: "structural-softwares",
     name: "Structural Softwares",
     href: "/category?brand=structural-softwares",

@@ -36,6 +36,7 @@ const initialMenus = [
       { name: 'Autodesk', slug: 'autodesk', order: 2, type: 'subcategory' },
       { name: 'Adobe', slug: 'adobe', order: 3, type: 'subcategory' },
       { name: 'Antivirus', slug: 'antivirus', order: 4, type: 'subcategory' },
+      { name: 'Projects', slug: 'projects', order: 5, type: 'subcategory' },
     ],
   },
   
@@ -115,12 +116,34 @@ const initialMenus = [
     ],
   },
 
+  // Projects Files
+  {
+    name: 'Projects',
+    slug: 'projects',
+    parentId: null,
+    order: 5,
+    type: 'category',
+    isActive: true,
+    children: [
+      { name: 'Autocad Files', slug: 'autocad-files', order: 0, type: 'brand' },
+      { name: '3ds Max Files', slug: '3ds-max-files', order: 1, type: 'brand' },
+      { name: 'Revit Files', slug: 'revit-files', order: 2, type: 'brand' },
+      { name: 'Excel Sheet Files', slug: 'excel-sheet-files', order: 3, type: 'brand' },
+      { name: 'Photoshop Files', slug: 'photoshop-files', order: 4, type: 'brand' },
+      { name: 'After Effects Files', slug: 'after-effects-files', order: 5, type: 'brand' },
+      { name: 'Premier Pro Files', slug: 'premier-pro-files', order: 6, type: 'brand' },
+      { name: 'Lumion Files', slug: 'lumion-files', order: 7, type: 'brand' },
+      { name: 'Others Files', slug: 'others-files', order: 8, type: 'brand' },
+      { name: 'View All', slug: 'projects', order: 9, type: 'subcategory' },
+    ],
+  },
+
   // Special Offers
   {
     name: 'Special Offers',
     slug: 'special-offers',
     parentId: null,
-    order: 5,
+    order: 6,
     type: 'category',
     isActive: true,
     children: [

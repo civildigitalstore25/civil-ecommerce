@@ -18,7 +18,7 @@ export function getCategoryListingSEO(params: {
   let keywords = "";
 
   if (brand && category && categoryConfig) {
-    const isMajorBrand = ["autodesk", "microsoft", "adobe"].includes(brandLower);
+    const isMajorBrand = ["autodesk", "microsoft", "adobe", "projects"].includes(brandLower);
 
     if (isMajorBrand) {
       title = `Buy ${categoryConfig.name} - ${brand.charAt(0).toUpperCase() + brand.slice(1)} Software | Best Prices`;

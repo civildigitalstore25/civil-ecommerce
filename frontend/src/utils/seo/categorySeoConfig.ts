@@ -85,6 +85,51 @@ export const CATEGORY_SEO_CONFIG: Record<
     keywords: "premiere pro, video editing software, video production",
     description: "Adobe Premiere Pro for professional video editing",
   },
+  "autocad-files": {
+    name: "Autocad Files",
+    keywords: "autocad files, cad project files, dwg files, architecture drawings",
+    description: "Download-ready Autocad project files for architecture and engineering",
+  },
+  "3ds-max-files": {
+    name: "3ds Max Files",
+    keywords: "3ds max files, 3d project files, rendering assets, 3d scene files",
+    description: "Professional 3ds Max project files for modeling and rendering",
+  },
+  "revit-files": {
+    name: "Revit Files",
+    keywords: "revit files, BIM project files, revit templates, architectural BIM",
+    description: "BIM-ready Revit files for construction and architecture workflows",
+  },
+  "excel-sheet-files": {
+    name: "Excel Sheet Files",
+    keywords: "excel sheet files, templates, estimation sheets, office automation",
+    description: "Ready-to-use Excel sheet files for planning, estimation, and reporting",
+  },
+  "photoshop-files": {
+    name: "Photoshop Files",
+    keywords: "photoshop files, psd templates, design assets, graphic templates",
+    description: "Editable Photoshop files for designers and creative teams",
+  },
+  "after-effects-files": {
+    name: "After Effects Files",
+    keywords: "after effects files, motion graphics templates, animation assets",
+    description: "After Effects project files for motion graphics and video production",
+  },
+  "premier-pro-files": {
+    name: "Premier Pro Files",
+    keywords: "premier pro files, video editing project files, timeline templates",
+    description: "Premier Pro project files for fast and professional video editing",
+  },
+  "lumion-files": {
+    name: "Lumion Files",
+    keywords: "lumion files, architectural render files, visualization projects",
+    description: "Lumion project files for architecture visualization and rendering",
+  },
+  "others-files": {
+    name: "Others Files",
+    keywords: "project files, digital assets, software resources",
+    description: "Additional project files and digital resources across categories",
+  },
   antivirus: {
     name: "Antivirus Software",
     keywords: "antivirus software, security software, malware protection",

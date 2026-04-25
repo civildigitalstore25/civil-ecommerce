@@ -21,4 +21,10 @@ export const BRAND_SEO_CONFIG = {
       "adobe software, creative cloud, photoshop, illustrator, design software",
     description: "creative and multimedia software solutions",
   },
+  projects: {
+    brandName: "Projects",
+    keywords:
+      "project files, autocad files, revit files, excel sheets, photoshop files",
+    description: "ready-to-use project files for architecture, media, and office work",
+  },
 } as const;

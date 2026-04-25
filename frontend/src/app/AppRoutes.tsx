@@ -177,6 +177,7 @@ export function AppRoutes() {
       <Route path="/microsoft" element={<BrandSubcategoriesPage />} />
       <Route path="/adobe" element={<BrandSubcategoriesPage />} />
       <Route path="/antivirus" element={<BrandSubcategoriesPage />} />
+      <Route path="/projects" element={<BrandSubcategoriesPage />} />
       <Route path="/brand/:brand/:category" element={<BrandCategoryListing />} />
       <Route
         path="/checkout"

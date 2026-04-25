@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Shield } from "lucide-react";
+import { FolderOpen, Shield } from "lucide-react";
 
 export interface CategoryTabConfig {
   id: string;
@@ -43,6 +43,14 @@ export const CATEGORY_TABS: CategoryTabConfig[] = [
     category: "",
     image: "/mobilelogo/adobe.png",
     color: "#ec4899",
+  },
+  {
+    id: "projects",
+    label: "Projects",
+    company: "projects",
+    category: "",
+    icon: FolderOpen,
+    color: "#a16207",
   },
   {
     id: "corel",

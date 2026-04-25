@@ -104,6 +104,8 @@ test.describe('Admin Remaining Feature Coverage', () => {
   test('admin can create order, update status in bulk, view details and delete order', async ({ page }) => {
     const stamp = Date.now();
     const customerEmail = `order-e2e-${stamp}@example.com`;
+    const customerName = `E2E Customer ${stamp}`;
+    const customerPhone = '9876543210';
     const productId = `e2e-product-${stamp}`;
 
     await signInAsAdmin(page);
@@ -120,6 +122,8 @@ test.describe('Admin Remaining Feature Coverage', () => {
         },
         data: {
           email: customerEmail,
+          customerName,
+          customerPhone,
           items: [
             {
               productId,

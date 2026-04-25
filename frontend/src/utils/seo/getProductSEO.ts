@@ -13,7 +13,7 @@ export function getProductSEO(product: {
     : null;
   const brandLower = product.company?.toLowerCase() || "";
 
-  const isMajorBrand = ["autodesk", "microsoft", "adobe"].some(
+  const isMajorBrand = ["autodesk", "microsoft", "adobe", "projects"].some(
     (brand) =>
       brandLower.includes(brand) || product.category?.includes(brand),
   );

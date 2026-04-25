@@ -196,4 +196,56 @@ export const brandSubcategoriesBySlug: Record<string, BrandData> = {
       },
     ],
   },
+  projects: {
+    name: "projects",
+    displayName: "Projects",
+    description: "Download-ready project files for design, BIM, office, and media work",
+    subcategories: [
+      {
+        name: "Files",
+        category: "autocad-files",
+        displayName: "Autocad Files",
+      },
+      {
+        name: "Files",
+        category: "3ds-max-files",
+        displayName: "3ds Max Files",
+      },
+      {
+        name: "Files",
+        category: "revit-files",
+        displayName: "Revit Files",
+      },
+      {
+        name: "Files",
+        category: "excel-sheet-files",
+        displayName: "Excel Sheet Files",
+      },
+      {
+        name: "Files",
+        category: "photoshop-files",
+        displayName: "Photoshop Files",
+      },
+      {
+        name: "Files",
+        category: "after-effects-files",
+        displayName: "After Effects Files",
+      },
+      {
+        name: "Files",
+        category: "premier-pro-files",
+        displayName: "Premier Pro Files",
+      },
+      {
+        name: "Files",
+        category: "lumion-files",
+        displayName: "Lumion Files",
+      },
+      {
+        name: "Files",
+        category: "others-files",
+        displayName: "Others Files",
+      },
+    ],
+  },
 };

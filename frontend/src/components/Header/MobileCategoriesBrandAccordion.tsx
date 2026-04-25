@@ -16,6 +16,12 @@ export function MobileCategoriesBrandAccordion({
   navigate,
   colors,
 }: MobileCategoriesBrandAccordionProps) {
+  const orderedBrandEntries = Object.entries(brandCategories).sort(([brandA], [brandB]) => {
+    if (brandA === "projects") return 1;
+    if (brandB === "projects") return -1;
+    return 0;
+  });
+
   const handleCategoryClick = (brand: string, category: string) => {
     navigate(`/category?brand=${brand}&category=${category}`);
   };
@@ -31,7 +37,7 @@ export function MobileCategoriesBrandAccordion({
         style={{ borderColor: colors.border.primary }}
       />
 
-      {Object.entries(brandCategories).map(([brandKey, brandData]) => (
+      {orderedBrandEntries.map(([brandKey, brandData]) => (
         <div key={brandKey}>
           <button
             type="button"
