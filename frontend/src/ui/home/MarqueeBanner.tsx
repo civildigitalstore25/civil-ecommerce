@@ -11,7 +11,7 @@ const MarqueeBanner: React.FC = () => {
         background: colors.interactive.primary,
       }}
     >
-      <div className="relative flex overflow-hidden">
+      <div className="marquee-banner-track flex overflow-hidden">
         <div
           className="animate-marquee flex items-center space-x-12 py-2 text-base font-medium transition-colors duration-200"
           style={{ color: colors.text.inverse }}
@@ -54,7 +54,7 @@ const MarqueeBanner: React.FC = () => {
             min-inline-size: 100%;
             animation: marquee 25s linear infinite;
           }
-          .relative:hover .animate-marquee {
+          .marquee-banner-track:hover .animate-marquee {
             animation-play-state: paused;
           }
         `}

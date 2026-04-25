@@ -43,7 +43,7 @@ const HomePage: React.FC = () => {
 
         {/* Main Content */}
         <main className="flex-grow pt-20">
-          <section className="px-4 sm:px-6 lg:px-8">
+          <section>
             <MarqueeBanner />
           </section>
 
