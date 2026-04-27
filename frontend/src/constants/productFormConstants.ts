@@ -59,6 +59,9 @@ export const BRAND_CATEGORIES: Record<string, { value: string; label: string }[]
                 { value: "after-effects-files", label: "After Effects Files" },
                 { value: "premier-pro-files", label: "Premier Pro Files" },
                 { value: "lumion-files", label: "Lumion Files" },
+                { value: "coreldraw-files", label: "Coreldraw Files" },
+                { value: "sketchup-files", label: "SketchUp Files" },
+                { value: "vray-files", label: "Vray Files" },
                 { value: "others-files", label: "Others Files" },
         ],
     coreldraw: [

@@ -56,6 +56,18 @@ const projectSections: ProjectSection[] = [
         href: "/category?brand=projects&category=lumion-files",
       },
       {
+        name: "Coreldraw Files",
+        href: "/category?brand=projects&category=coreldraw-files",
+      },
+      {
+        name: "SketchUp Files",
+        href: "/category?brand=projects&category=sketchup-files",
+      },
+      {
+        name: "Vray Files",
+        href: "/category?brand=projects&category=vray-files",
+      },
+      {
         name: "Others Files",
         href: "/category?brand=projects&category=others-files",
       },

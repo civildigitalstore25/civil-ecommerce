@@ -243,6 +243,21 @@ export const brandSubcategoriesBySlug: Record<string, BrandData> = {
       },
       {
         name: "Files",
+        category: "coreldraw-files",
+        displayName: "Coreldraw Files",
+      },
+      {
+        name: "Files",
+        category: "sketchup-files",
+        displayName: "SketchUp Files",
+      },
+      {
+        name: "Files",
+        category: "vray-files",
+        displayName: "Vray Files",
+      },
+      {
+        name: "Files",
         category: "others-files",
         displayName: "Others Files",
       },

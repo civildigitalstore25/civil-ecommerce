@@ -24,7 +24,7 @@ export const BRAND_SEO_CONFIG = {
   projects: {
     brandName: "Projects",
     keywords:
-      "project files, autocad files, revit files, excel sheets, photoshop files",
+      "project files, autocad files, revit files, excel sheets, coreldraw files, sketchup files, vray files",
     description: "ready-to-use project files for architecture, media, and office work",
   },
 } as const;
