@@ -68,6 +68,9 @@ const HomePage: React.FC = () => {
           </div>
         </section> */}
 
+          <section className="px-4 sm:px-6 lg:px-8">
+            <LatestArrivalsCarousel />
+          </section>
 
           <section className="px-4 sm:px-6 lg:px-8">
             <HomeProducts />
@@ -78,14 +81,10 @@ const HomePage: React.FC = () => {
           </section>
 
           <section className="px-4 sm:px-6 lg:px-8">
-            <LatestArrivalsCarousel />
-          </section>
-
-          <section className="px-4 sm:px-6 lg:px-8">
             <BestSellingCarousel />
           </section>
 
-          
+
 
           <section className="px-4 sm:px-6 lg:px-8">
             <LatestBlogsCarousel />
