@@ -125,6 +125,21 @@ export const CATEGORY_SEO_CONFIG: Record<
     keywords: "lumion files, architectural render files, visualization projects",
     description: "Lumion project files for architecture visualization and rendering",
   },
+  "coreldraw-files": {
+    name: "Coreldraw Files",
+    keywords: "coreldraw files, cdr templates, vector project files, design assets",
+    description: "Coreldraw project files and editable vector resources for design work",
+  },
+  "sketchup-files": {
+    name: "SketchUp Files",
+    keywords: "sketchup files, skp models, 3d architectural models, sketchup assets",
+    description: "SketchUp project files and 3D models for architecture and interior design",
+  },
+  "vray-files": {
+    name: "Vray Files",
+    keywords: "vray files, rendering scenes, vray materials, visualization project files",
+    description: "Vray-ready project files for realistic rendering and visualization workflows",
+  },
   "others-files": {
     name: "Others Files",
     keywords: "project files, digital assets, software resources",

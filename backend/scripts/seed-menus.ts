@@ -133,8 +133,11 @@ const initialMenus = [
       { name: 'After Effects Files', slug: 'after-effects-files', order: 5, type: 'brand' },
       { name: 'Premier Pro Files', slug: 'premier-pro-files', order: 6, type: 'brand' },
       { name: 'Lumion Files', slug: 'lumion-files', order: 7, type: 'brand' },
-      { name: 'Others Files', slug: 'others-files', order: 8, type: 'brand' },
-      { name: 'View All', slug: 'projects', order: 9, type: 'subcategory' },
+      { name: 'Coreldraw Files', slug: 'coreldraw-files', order: 8, type: 'brand' },
+      { name: 'SketchUp Files', slug: 'sketchup-files', order: 9, type: 'brand' },
+      { name: 'Vray Files', slug: 'vray-files', order: 10, type: 'brand' },
+      { name: 'Others Files', slug: 'others-files', order: 11, type: 'brand' },
+      { name: 'View All', slug: 'projects', order: 12, type: 'subcategory' },
     ],
   },
 
