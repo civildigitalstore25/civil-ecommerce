@@ -1062,23 +1062,34 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
       };
     }
 
-    const orders = await Order.find(query)
+    const query_limit = limit ? Number(limit) : null;
+    let ordersQuery = Order.find(query)
       .populate('userId', 'fullName email phoneNumber')
-      .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit));
+      .sort({ createdAt: -1 });
+    
+    if (query_limit) {
+      ordersQuery = ordersQuery.limit(query_limit).skip((Number(page) - 1) * query_limit);
+    }
+    
+    const orders = await ordersQuery;
 
     const total = await Order.countDocuments(query);
+
+    const pagination = query_limit ? {
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / query_limit),
+      totalOrders: total
+    } : {
+      currentPage: 1,
+      totalPages: 1,
+      totalOrders: total
+    };
 
     res.status(200).json({
       success: true,
       data: {
         orders,
-        pagination: {
-          currentPage: Number(page),
-          totalPages: Math.ceil(total / Number(limit)),
-          totalOrders: total
-        }
+        pagination
       }
     });
   } catch (error: any) {
