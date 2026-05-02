@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import User, { IUser } from '../models/User';
 import bcrypt from 'bcryptjs';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 export const getAllUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { page = 1, limit = 10, search = '', role = '' } = req.query;
+    const { search = '', role = '' } = req.query;
+    const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
 
     const query: any = {};
 
@@ -19,18 +21,21 @@ export const getAllUsers = async (req: Request, res: Response): Promise<void> =>
       query.role = role;
     }
 
-    const users = await User.find(query)
+    let userQuery = User.find(query)
       .select('-password')
-      .sort({ createdAt: -1 })
-      .limit(Number(limit) * 1)
-      .skip((Number(page) - 1) * Number(limit));
+      .sort({ createdAt: -1 });
 
+    if (paginate) {
+      userQuery = userQuery.skip(skip).limit(limit);
+    }
+
+    const users = await userQuery;
     const total = await User.countDocuments(query);
 
     res.json({
       users,
-      totalPages: Math.ceil(total / Number(limit)),
-      currentPage: Number(page),
+      totalPages: paginate ? Math.ceil(total / limit) : 1,
+      currentPage: paginate ? page : 1,
       total
     });
   } catch (error: any) {

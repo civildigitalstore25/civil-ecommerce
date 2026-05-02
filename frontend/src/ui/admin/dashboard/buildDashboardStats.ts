@@ -13,7 +13,14 @@ export type DashboardStats = {
 };
 
 type ProductsPayload = { products?: ProductLike[] } | undefined;
-type OrdersPayload = { data?: { orders?: OrderLike[] } } | undefined;
+type OrdersPayload =
+  | {
+      data?: {
+        orders?: OrderLike[];
+        pagination?: { totalOrders?: number };
+      };
+    }
+  | undefined;
 type UsersPayload = { users?: unknown[]; total?: number } | undefined;
 
 export function buildDashboardStats(
@@ -23,6 +30,7 @@ export function buildDashboardStats(
 ): DashboardStats {
   const products = productsData?.products || [];
   const orders = ordersData?.data?.orders || [];
+  const totalOrdersFromPagination = ordersData?.data?.pagination?.totalOrders;
   const users = usersData?.users || [];
   const totalUsers =
     typeof usersData?.total === "number" ? usersData.total : users.length;
@@ -58,7 +66,10 @@ export function buildDashboardStats(
     totalProducts: products.length,
     totalCategories: categories.length,
     totalUsers,
-    totalOrders: orders.length,
+    totalOrders:
+      typeof totalOrdersFromPagination === "number"
+        ? totalOrdersFromPagination
+        : orders.length,
     todayOrders,
     topCompanies: Object.entries(companyCounts)
       .sort(([, a], [, b]) => b - a)

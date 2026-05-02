@@ -5,6 +5,7 @@ import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 import { getDownloadEligibility } from '../utils/downloadEligibility';
 import { postPaymentOrderStatusForOrderItems } from '../utils/orderEbookStatus';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 /**
  * Generate short, human-readable order ID.
@@ -1031,7 +1032,8 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
  */
 export const getAllOrders = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { page = 1, limit = 10, status, paymentStatus } = req.query;
+    const { status, paymentStatus } = req.query;
+    const { paginate, page: pageNum, limit: query_limit, skip } = resolveOptionalPagination(req.query);
     const dateRangeType = readQueryString(req.query.dateRangeType);
     const fromDate = readQueryString(req.query.fromDate);
     const toDate = readQueryString(req.query.toDate);
@@ -1062,27 +1064,22 @@ export const getAllOrders = async (req: Request, res: Response): Promise<void> =
       };
     }
 
-    const query_limit = limit ? Number(limit) : null;
     let ordersQuery = Order.find(query)
       .populate('userId', 'fullName email phoneNumber')
       .sort({ createdAt: -1 });
-    
-    if (query_limit) {
-      ordersQuery = ordersQuery.limit(query_limit).skip((Number(page) - 1) * query_limit);
+
+    if (paginate) {
+      ordersQuery = ordersQuery.limit(query_limit).skip(skip);
     }
-    
+
     const orders = await ordersQuery;
 
     const total = await Order.countDocuments(query);
 
-    const pagination = query_limit ? {
-      currentPage: Number(page),
-      totalPages: Math.ceil(total / query_limit),
-      totalOrders: total
-    } : {
-      currentPage: 1,
-      totalPages: 1,
-      totalOrders: total
+    const pagination = {
+      currentPage: paginate ? pageNum : 1,
+      totalPages: paginate ? Math.ceil(total / query_limit) : 1,
+      totalOrders: total,
     };
 
     res.status(200).json({

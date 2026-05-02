@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import Blog, { IBlog } from '../models/Blog';
 import { IUser } from '../models/User';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 // Helper function to generate slug from title
 const generateSlug = (title: string): string => {
@@ -75,8 +76,6 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
 export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   try {
     const {
-      page = 1,
-      limit = 10,
       status,
       category,
       tag,
@@ -87,9 +86,10 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
 
     const filter: any = {};
     const user = (req as any).user as IUser;
+    const isAdmin = Boolean(user && (user.role === 'admin' || user.role === 'superadmin'));
 
     // Only show published blogs to non-admin users
-    if (!user || (user.role !== 'admin' && user.role !== 'superadmin')) {
+    if (!isAdmin) {
       filter.status = 'published';
     } else if (status) {
       filter.status = status;
@@ -112,20 +112,41 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
       ];
     }
 
-    const pageNum = parseInt(page as string, 10);
-    const limitNum = parseInt(limit as string, 10);
-    const skip = (pageNum - 1) * limitNum;
-
     const sortOrder = order === 'asc' ? 1 : -1;
     const sortOptions: any = {};
     sortOptions[sortBy as string] = sortOrder;
+
+    if (isAdmin) {
+      const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
+      let blogQuery = Blog.find(filter).sort(sortOptions).select('-content');
+      if (paginate) {
+        blogQuery = blogQuery.skip(skip).limit(limit);
+      }
+      const [blogs, total] = await Promise.all([blogQuery, Blog.countDocuments(filter)]);
+
+      res.status(200).json({
+        success: true,
+        blogs,
+        pagination: {
+          currentPage: paginate ? page : 1,
+          totalPages: paginate ? Math.ceil(total / limit) : 1,
+          totalBlogs: total,
+          blogsPerPage: paginate ? limit : total,
+        },
+      });
+      return;
+    }
+
+    const pageNum = Math.max(parseInt(String(req.query.page), 10) || 1, 1);
+    const limitNum = Math.max(parseInt(String(req.query.limit), 10) || 10, 1);
+    const skip = (pageNum - 1) * limitNum;
 
     const [blogs, total] = await Promise.all([
       Blog.find(filter)
         .sort(sortOptions)
         .skip(skip)
         .limit(limitNum)
-        .select('-content'), // Exclude full content in list view
+        .select('-content'),
       Blog.countDocuments(filter),
     ]);
 

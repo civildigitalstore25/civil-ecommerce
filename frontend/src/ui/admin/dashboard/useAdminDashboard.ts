@@ -22,7 +22,7 @@ export function useAdminDashboard() {
   const { data: productsData } = useProducts({ limit: 1000 });
 
   const { data: ordersData } = useQuery({
-    queryKey: ["adminOrders"],
+    queryKey: ["adminOrders", "dashboard"],
     queryFn: () => getAllOrders({}),
     refetchInterval: 30000,
   });

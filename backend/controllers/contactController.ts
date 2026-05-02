@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import Contact, { IContact } from '../models/Contact';
+import Contact from '../models/Contact';
 import emailService from '../services/emailService';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 export const submitContactForm = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -65,8 +66,9 @@ export const getContactSubmissions = async (req: Request, res: Response): Promis
       return;
     }
 
-    const { page = 1, limit = 10, search } = req.query;
-    
+    const { search } = req.query;
+    const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
+
     const query: any = {};
     if (search) {
       query.$or = [
@@ -76,17 +78,18 @@ export const getContactSubmissions = async (req: Request, res: Response): Promis
       ];
     }
 
-    const contacts = await Contact.find(query)
-      .sort({ createdAt: -1 })
-      .limit(Number(limit))
-      .skip((Number(page) - 1) * Number(limit));
+    let contactQuery = Contact.find(query).sort({ createdAt: -1 });
+    if (paginate) {
+      contactQuery = contactQuery.skip(skip).limit(limit);
+    }
+    const contacts = await contactQuery;
 
     const total = await Contact.countDocuments(query);
 
     res.json({
       contacts,
-      totalPages: Math.ceil(total / Number(limit)),
-      currentPage: Number(page),
+      totalPages: paginate ? Math.ceil(total / limit) : 1,
+      currentPage: paginate ? page : 1,
       total
     });
   } catch (error: any) {

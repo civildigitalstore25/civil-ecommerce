@@ -9,8 +9,6 @@ function exportFilenameBase() {
 export function useUserManagementExport(searchTerm: string, roleFilter: string) {
   const fetchAllUsers = useCallback(async () => {
     const resp = await userApi.getUsers({
-      page: 1,
-      limit: 100000,
       search: searchTerm,
       role: roleFilter,
     });

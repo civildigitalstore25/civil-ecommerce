@@ -22,10 +22,8 @@ export function useEnquiryManagement() {
   const loadEnquiries = useCallback(async () => {
     try {
       setLoading(true);
-      const params: { limit: number; status?: string } = { limit: 100 };
-      if (filterStatus !== "all") {
-        params.status = filterStatus;
-      }
+      const params =
+        filterStatus !== "all" ? { status: filterStatus } : undefined;
       const response = await getAllEnquiries(params);
       setEnquiries(response.enquiries);
       if (response.stats) {
