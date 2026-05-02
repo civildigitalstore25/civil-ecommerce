@@ -34,7 +34,6 @@ export function useAdminOrdersPage() {
     queryFn: () =>
       getAllOrders({
         status: statusFilter ? statusFilter.toLowerCase() : undefined,
-        limit: 100,
       }),
   });
 
