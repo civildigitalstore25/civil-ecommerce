@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useCartContext } from "../contexts/CartContext";
 import { CartItem, CartSummary, CartEmpty } from "../ui/Cart";
 import { useAdminTheme } from "../contexts/AdminThemeContext";

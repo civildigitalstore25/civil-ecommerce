@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getCategoryListingSEO, buildCanonicalUrl } from "../utils/seo";
 import { AllProductsBrandList } from "./allProducts/AllProductsBrandList";

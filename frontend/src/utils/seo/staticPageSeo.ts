@@ -52,14 +52,3 @@ export function getAboutSEO(): SEOMetadata {
       "about us, software reseller, authorized dealer, autodesk reseller, microsoft partner",
   };
 }
-
-export function getDefaultSEO(): SEOMetadata {
-  return {
-    title:
-      "Softzcart - Buy Genuine Software Online | AutoCAD, Microsoft, Adobe",
-    description:
-      "Shop genuine AutoCAD, Autodesk, Microsoft Office, Adobe and professional software at best prices. Authorized reseller with instant delivery.",
-    keywords:
-      "software store, buy software online, autocad, microsoft office, adobe, genuine licenses",
-  };
-}

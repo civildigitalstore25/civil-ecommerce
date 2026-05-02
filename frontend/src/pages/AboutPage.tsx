@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getAboutSEO, buildCanonicalUrl } from "../utils/seo";
 
