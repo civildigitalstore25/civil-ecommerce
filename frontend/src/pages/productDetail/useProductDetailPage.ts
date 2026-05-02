@@ -161,8 +161,13 @@ export function useProductDetailPage() {
         name: product.name,
         category: product.category,
         company: product.company,
-        shortDescription:
-          product.shortDescription || product.description?.substring(0, 155),
+        brand: product.brand,
+        shortDescription: product.shortDescription,
+        description: product.description,
+        detailsDescription: product.detailsDescription,
+        overallFeatures: product.overallFeatures,
+        requirements: product.requirements,
+        tags: product.tags,
         price: selectedOption?.priceINR || product.price1INR || product.price1 || 0,
       })
     : null;

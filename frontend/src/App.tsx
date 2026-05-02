@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, useLocation } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CartProvider } from "./contexts/CartContext";
 import { AdminThemeProvider } from "./contexts/AdminThemeContext";
@@ -49,17 +50,19 @@ function AppLayout() {
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AdminThemeProvider>
-        <CurrencyProvider>
-          <CartProvider>
-            <Router>
-              <AppLayout />
-            </Router>
-          </CartProvider>
-        </CurrencyProvider>
-      </AdminThemeProvider>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <AdminThemeProvider>
+          <CurrencyProvider>
+            <CartProvider>
+              <Router>
+                <AppLayout />
+              </Router>
+            </CartProvider>
+          </CurrencyProvider>
+        </AdminThemeProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

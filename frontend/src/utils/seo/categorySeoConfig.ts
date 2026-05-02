@@ -161,4 +161,21 @@ export const CATEGORY_SEO_CONFIG: Record<
     keywords: "coreldraw, vector graphics, graphic design software",
     description: "CorelDRAW graphics suite for vector illustration and design",
   },
+  "civil-engineering": {
+    name: "Civil Engineering Books",
+    keywords:
+      "civil engineering books, geotechnical engineering, structural engineering textbooks, PE exam, surveying",
+    description:
+      "Civil engineering textbooks and professional references for students and practicing engineers",
+  },
+  books: {
+    name: "Books",
+    keywords: "engineering books, technical books, professional references, textbooks, softzcart",
+    description: "Technical and engineering books with reliable fulfillment and customer support",
+  },
+  "engineering-books": {
+    name: "Engineering Books",
+    keywords: "engineering textbooks, technical manuals, professional engineering references",
+    description: "Engineering and technical books for students and professionals",
+  },
 };

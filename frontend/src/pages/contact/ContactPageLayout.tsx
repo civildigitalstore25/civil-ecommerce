@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import { buildCanonicalUrl } from "../../utils/seo";

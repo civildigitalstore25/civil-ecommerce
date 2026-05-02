@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useAdminThemeStyles } from "../hooks/useAdminThemeStyles";
 import { HOW_TO_PURCHASE } from "../constants/siteContent";
-import { Helmet } from "react-helmet";
+import { Helmet } from "react-helmet-async";
 
 const cardVariants = {
     hidden: { opacity: 0, y: 40 },

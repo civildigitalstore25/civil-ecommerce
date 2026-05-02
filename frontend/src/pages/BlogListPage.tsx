@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useBlogs, useDeleteBlog } from "../api/blogApi";
 import { useUser } from "../api/userQueries";
@@ -9,10 +10,13 @@ import {
   BlogCard,
   BlogButton,
 } from "../components/blog";
+import { getBlogListSEO, buildCanonicalUrl } from "../utils/seo";
 
 const BlogListPage: React.FC = () => {
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const listSeo = getBlogListSEO();
 
   const { data: user } = useUser();
   const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
@@ -58,7 +62,20 @@ const BlogListPage: React.FC = () => {
   };
 
   return (
-    <BlogPageLayout maxWidth="7xl">
+    <>
+      <Helmet>
+        <title>{listSeo.title}</title>
+        <meta name="description" content={listSeo.description} />
+        <meta name="keywords" content={listSeo.keywords} />
+        <meta property="og:title" content={listSeo.ogTitle ?? listSeo.title} />
+        <meta property="og:description" content={listSeo.ogDescription ?? listSeo.description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={buildCanonicalUrl(pathname)} />
+        <meta name="twitter:title" content={listSeo.ogTitle ?? listSeo.title} />
+        <meta name="twitter:description" content={listSeo.ogDescription ?? listSeo.description} />
+        <link rel="canonical" href={buildCanonicalUrl(pathname)} />
+      </Helmet>
+      <BlogPageLayout maxWidth="7xl">
       {/* Header */}
       <div className="mb-6 md:mb-8 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[#1e293b]">
@@ -195,6 +212,7 @@ const BlogListPage: React.FC = () => {
         </>
       )}
     </BlogPageLayout>
+    </>
   );
 };
 

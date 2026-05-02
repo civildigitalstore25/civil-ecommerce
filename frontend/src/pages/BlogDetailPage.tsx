@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams, Link } from "react-router-dom";
 import { useBlogBySlug, useRelatedBlogs } from "../api/blogApi";
 import {
@@ -10,11 +11,13 @@ import {
   BlogCard,
   getYouTubeVideoId,
 } from "../components/blog";
+import { getBlogDetailSEO, buildCanonicalUrl } from "../utils/seo";
 
 const BlogDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data, isLoading, error } = useBlogBySlug(slug || "");
   const { data: relatedBlogsData } = useRelatedBlogs(slug || "", 4);
+  const slugPath = slug ? `/blog/${slug}` : "/blog";
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -22,54 +25,92 @@ const BlogDetailPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <BlogPageLayout maxWidth="5xl">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center">
-            <div
-              className="inline-block w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"
-              aria-hidden
-            />
-            <p className="mt-4 text-sm font-medium text-gray-500">Loading article...</p>
+      <>
+        <Helmet>
+          <title>Blog | Softzcart</title>
+          <meta name="description" content="Loading article on Softzcart." />
+          <meta name="keywords" content="softzcart, blog" />
+          <meta property="og:type" content="website" />
+          <link rel="canonical" href={buildCanonicalUrl(slugPath)} />
+        </Helmet>
+        <BlogPageLayout maxWidth="5xl">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center">
+              <div
+                className="inline-block w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"
+                aria-hidden
+              />
+              <p className="mt-4 text-sm font-medium text-gray-500">Loading article...</p>
+            </div>
           </div>
-        </div>
-      </BlogPageLayout>
+        </BlogPageLayout>
+      </>
     );
   }
 
   if (error || !data?.blog) {
     return (
-      <BlogPageLayout maxWidth="5xl">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-center p-8 max-w-md">
-            <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
-              <svg
-                className="w-8 h-8 text-red-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+      <>
+        <Helmet>
+          <title>Article not found | Softzcart</title>
+          <meta
+            name="description"
+            content="This blog post could not be found. Browse our blog for software guides and news."
+          />
+          <meta name="keywords" content="softzcart, blog" />
+          <meta property="og:type" content="website" />
+          <link rel="canonical" href={buildCanonicalUrl("/blog")} />
+        </Helmet>
+        <BlogPageLayout maxWidth="5xl">
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="text-center p-8 max-w-md">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-red-50 flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <h1 className="text-xl font-semibold text-gray-900 mb-2">Article not found</h1>
+              <p className="text-gray-500 text-sm mb-6">
+                This post may have been removed or the link is incorrect.
+              </p>
+              <BlogButton variant="primary" to="/blog" className="px-5 py-2.5 text-sm">
+                Back to Blog
+              </BlogButton>
             </div>
-            <h1 className="text-xl font-semibold text-gray-900 mb-2">Article not found</h1>
-            <p className="text-gray-500 text-sm mb-6">
-              This post may have been removed or the link is incorrect.
-            </p>
-            <BlogButton variant="primary" to="/blog" className="px-5 py-2.5 text-sm">
-              Back to Blog
-            </BlogButton>
           </div>
-        </div>
-      </BlogPageLayout>
+        </BlogPageLayout>
+      </>
     );
   }
 
   const blog = data.blog;
+  const detailSeo = getBlogDetailSEO(blog);
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
   return (
-    <BlogPageLayout maxWidth="5xl">
+    <>
+      <Helmet>
+        <title>{detailSeo.title}</title>
+        <meta name="description" content={detailSeo.description} />
+        <meta name="keywords" content={detailSeo.keywords} />
+        <meta property="og:title" content={detailSeo.ogTitle ?? detailSeo.title} />
+        <meta property="og:description" content={detailSeo.ogDescription ?? detailSeo.description} />
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={detailSeo.canonicalUrl} />
+        {detailSeo.ogImage ? <meta property="og:image" content={detailSeo.ogImage} /> : null}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={detailSeo.ogTitle ?? detailSeo.title} />
+        <meta name="twitter:description" content={detailSeo.ogDescription ?? detailSeo.description} />
+        {detailSeo.ogImage ? <meta name="twitter:image" content={detailSeo.ogImage} /> : null}
+        <link rel="canonical" href={detailSeo.canonicalUrl} />
+      </Helmet>
+      <BlogPageLayout maxWidth="5xl">
       {/* Back link */}
       <nav className="mb-6 md:mb-8" aria-label="Breadcrumb">
         <Link
@@ -194,6 +235,7 @@ const BlogDetailPage: React.FC = () => {
         </section>
       )}
     </BlogPageLayout>
+    </>
   );
 };
 
