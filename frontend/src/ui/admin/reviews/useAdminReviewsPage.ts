@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import {
   getAllReviews,
   deleteReview,
@@ -20,14 +20,12 @@ type UserLike = {
 } | null;
 
 export function useAdminReviewsPage(user: UserLike | undefined) {
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [allReviews, setAllReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingReview, setEditingReview] = useState<Review | null>(null);
   const [editForm, setEditForm] = useState({ rating: 5, comment: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalReviews, setTotalReviews] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
   const [ratingFilter, setRatingFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("all");
@@ -37,26 +35,29 @@ export function useAdminReviewsPage(user: UserLike | undefined) {
     setCurrentPage(1);
   }, [pageSize, searchTerm, ratingFilter, dateFilter]);
 
+  const totalReviews = allReviews.length;
+  const totalPages = Math.max(1, Math.ceil(totalReviews / pageSize) || 1);
+  const reviews = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return allReviews.slice(start, start + pageSize);
+  }, [allReviews, currentPage, pageSize]);
+
   const loadReviews = useCallback(async () => {
     try {
       setLoading(true);
       const response = await getAllReviews({
-        page: currentPage,
-        limit: pageSize,
         search: searchTerm || undefined,
         rating: ratingFilter || undefined,
         dateFilter: dateFilter !== "all" ? dateFilter : undefined,
       });
-      setReviews(response.reviews);
-      setTotalPages(response.pagination?.pages || 1);
-      setTotalReviews(response.pagination?.total || response.reviews.length);
+      setAllReviews(response.reviews);
     } catch (error) {
       console.error("Error loading reviews:", error);
       await swalError("Failed to load reviews", "Error");
     } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize, searchTerm, ratingFilter, dateFilter]);
+  }, [searchTerm, ratingFilter, dateFilter]);
 
   useEffect(() => {
     void loadReviews();

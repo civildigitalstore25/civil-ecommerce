@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Enquiry from "../models/Enquiry";
 import Product from "../models/Product";
 import User from "../models/User";
+import { resolveOptionalPagination } from "../utils/listPagination";
 
 // Create a new enquiry
 export const createEnquiry = async (req: Request, res: Response) => {
@@ -58,23 +59,25 @@ export const createEnquiry = async (req: Request, res: Response) => {
 // Get all enquiries (Admin only)
 export const getAllEnquiries = async (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
     const status = req.query.status as string;
-    const skip = (page - 1) * limit;
 
     const query: any = {};
     if (status) {
       query.status = status;
     }
 
-    const enquiries = await Enquiry.find(query)
+    let enquiryQuery = Enquiry.find(query)
       .populate("user", "fullName email")
       .populate("product", "name image")
       .populate("repliedBy", "fullName")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort({ createdAt: -1 });
+
+    if (paginate) {
+      enquiryQuery = enquiryQuery.skip(skip).limit(limit);
+    }
+
+    const enquiries = await enquiryQuery;
 
     const total = await Enquiry.countDocuments(query);
 
@@ -103,10 +106,10 @@ export const getAllEnquiries = async (req: Request, res: Response) => {
       data: {
         enquiries,
         pagination: {
-          page,
-          limit,
+          page: paginate ? page : 1,
+          limit: paginate ? limit : total,
           total,
-          pages: Math.ceil(total / limit),
+          pages: paginate ? Math.ceil(total / limit) : 1,
         },
         stats,
       },

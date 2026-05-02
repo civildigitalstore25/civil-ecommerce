@@ -50,18 +50,20 @@ export const contactApiFunctions = {
     return response.data;
   },
 
-  getContactSubmissions: async (
-    page: number = 1,
-    limit: number = 10,
-    search: string = "",
-  ): Promise<ContactSubmissionsResponse> => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-      ...(search && { search }),
-    });
-
-    const response = await contactApi.get(`/submissions?${params}`);
+  getContactSubmissions: async (options?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }): Promise<ContactSubmissionsResponse> => {
+    const params = new URLSearchParams();
+    const search = options?.search ?? "";
+    if (search) params.set("search", search);
+    if (options?.page !== undefined && options?.limit !== undefined) {
+      params.set("page", String(options.page));
+      params.set("limit", String(options.limit));
+    }
+    const qs = params.toString();
+    const response = await contactApi.get(`/submissions${qs ? `?${qs}` : ""}`);
     return response.data;
   },
 };
@@ -93,15 +95,14 @@ export const useSubmitContactForm = () => {
   });
 };
 
-export const useContactSubmissions = (
-  page: number = 1,
-  limit: number = 10,
-  search: string = "",
-) => {
+export const useContactSubmissions = (options?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+}) => {
   return useQuery({
-    queryKey: ["contactSubmissions", page, limit, search],
-    queryFn: () =>
-      contactApiFunctions.getContactSubmissions(page, limit, search),
+    queryKey: ["contactSubmissions", options],
+    queryFn: () => contactApiFunctions.getContactSubmissions(options),
     enabled: !!localStorage.getItem("token"), // Only fetch if user is authenticated
     retry: (failureCount, error: any) => {
       // Don't retry if it's an authentication error (401) or forbidden (403)

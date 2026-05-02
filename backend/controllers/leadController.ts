@@ -3,6 +3,7 @@ import Lead from '../models/Lead';
 import Coupon from '../models/Coupon';
 import User from '../models/User';
 import emailService from '../services/emailService';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 // Generate random coupon code
 const generateCouponCode = (): string => {
@@ -167,14 +168,13 @@ export const getLeadByEmail = async (req: Request, res: Response) => {
 // Get all leads (admin only)
 export const getAllLeads = async (req: Request, res: Response) => {
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 50;
-        const skip = (page - 1) * limit;
+        const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
 
-        const leads = await Lead.find()
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+        let leadQuery = Lead.find().sort({ createdAt: -1 });
+        if (paginate) {
+            leadQuery = leadQuery.skip(skip).limit(limit);
+        }
+        const leads = await leadQuery;
 
         const total = await Lead.countDocuments();
 
@@ -182,10 +182,10 @@ export const getAllLeads = async (req: Request, res: Response) => {
             success: true,
             data: leads,
             pagination: {
-                page,
-                limit,
+                page: paginate ? page : 1,
+                limit: paginate ? limit : total,
                 total,
-                pages: Math.ceil(total / limit)
+                pages: paginate ? Math.ceil(total / limit) : 1
             }
         });
 

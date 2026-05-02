@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useUsers, useUpdateUser, useDeleteUser } from "../../../api/userApi";
 import type { User } from "../../../api/types/userTypes";
 import UserFilters from "./UserFilter";
@@ -35,8 +35,6 @@ const UserManagement: React.FC = () => {
     isLoading,
     error,
   } = useUsers({
-    page: currentPage,
-    limit: pageSize,
     search: searchTerm,
     role: roleFilter,
   });
@@ -48,15 +46,23 @@ const UserManagement: React.FC = () => {
   const updateUserMutation = useUpdateUser();
   const deleteUserMutation = useDeleteUser();
 
-  const users = usersData?.users || [];
-  const totalPages = usersData?.totalPages || 1;
-
-  const filteredUsers = filterByRegistrationDate(
-    users,
-    dateFilter,
-    customStartDate,
-    customEndDate,
+  const allUsers = usersData?.users || [];
+  const filteredUsers = useMemo(
+    () =>
+      filterByRegistrationDate(
+        allUsers,
+        dateFilter,
+        customStartDate,
+        customEndDate,
+      ),
+    [allUsers, dateFilter, customStartDate, customEndDate],
   );
+
+  const totalPages = Math.max(1, Math.ceil(filteredUsers.length / pageSize));
+  const pagedUsers = useMemo(() => {
+    const start = (currentPage - 1) * pageSize;
+    return filteredUsers.slice(start, start + pageSize);
+  }, [filteredUsers, currentPage, pageSize]);
 
   const handleRoleChange = async (
     userId: string,
@@ -85,10 +91,12 @@ const UserManagement: React.FC = () => {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === filteredUsers.length) {
-      setSelectedUsers([]);
+    const visibleIds = pagedUsers.map((u: User) => u._id);
+    const allVisibleSelected = visibleIds.every((id) => selectedUsers.includes(id));
+    if (allVisibleSelected) {
+      setSelectedUsers((prev) => prev.filter((id) => !visibleIds.includes(id)));
     } else {
-      setSelectedUsers(filteredUsers.map((u: User) => u._id));
+      setSelectedUsers((prev) => [...new Set([...prev, ...visibleIds])]);
     }
   };
 
@@ -151,7 +159,7 @@ const UserManagement: React.FC = () => {
         roleFilter={roleFilter}
         setRoleFilter={setRoleFilter}
         clearFilters={clearFilters}
-        totalUsers={usersData?.total || 0}
+        totalUsers={filteredUsers.length}
       />
 
       <UserRegistrationDateFilter
@@ -168,7 +176,7 @@ const UserManagement: React.FC = () => {
         colors={colors}
         isLoading={isLoading}
         error={error}
-        filteredUsers={filteredUsers as User[]}
+        filteredUsers={pagedUsers as User[]}
         selectedUsers={selectedUsers}
         handleRoleChange={handleRoleChange}
         handleDeleteUser={handleDeleteUser}

@@ -7,17 +7,14 @@ const CartManagement: React.FC = () => {
   const { colors } = useAdminTheme();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "has-items" | "abandoned">("all");
-  const [page, setPage] = useState(1);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const queryParams = useMemo(
     () => ({
       search: search.trim() || undefined,
       status,
-      page,
-      limit: 10,
     }),
-    [search, status, page],
+    [search, status],
   );
 
   const { data, isLoading, error } = useAdminCarts(queryParams);
@@ -41,7 +38,6 @@ const CartManagement: React.FC = () => {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            setPage(1);
           }}
           placeholder="Search by user, email, phone, product..."
           className="border rounded-lg px-3 py-2"
@@ -55,7 +51,6 @@ const CartManagement: React.FC = () => {
           value={status}
           onChange={(e) => {
             setStatus(e.target.value as "all" | "has-items" | "abandoned");
-            setPage(1);
           }}
           className="border rounded-lg px-3 py-2"
           style={{
@@ -178,31 +173,6 @@ const CartManagement: React.FC = () => {
         </div>
       )}
 
-      {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="px-3 py-1 rounded border disabled:opacity-50"
-            style={{ borderColor: colors.border.primary, color: colors.text.primary }}
-          >
-            Prev
-          </button>
-          <span style={{ color: colors.text.secondary }}>
-            Page {page} of {pagination.totalPages}
-          </span>
-          <button
-            type="button"
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            disabled={page >= pagination.totalPages}
-            className="px-3 py-1 rounded border disabled:opacity-50"
-            style={{ borderColor: colors.border.primary, color: colors.text.primary }}
-          >
-            Next
-          </button>
-        </div>
-      )}
     </div>
   );
 };

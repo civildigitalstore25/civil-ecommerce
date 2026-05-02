@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Cart from '../models/Cart';
 import Product from '../models/Product';
 import { Types } from 'mongoose';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 // Helper function to calculate item total price
 const calculateItemTotal = (price: number, quantity: number): number => {
@@ -322,8 +323,6 @@ export const getAdminCarts = async (req: Request, res: Response): Promise<void> 
     const {
       search = '',
       status = 'all',
-      page = 1,
-      limit = 20,
       abandonedHours = 24,
     } = req.query as {
       search?: string;
@@ -333,9 +332,7 @@ export const getAdminCarts = async (req: Request, res: Response): Promise<void> 
       abandonedHours?: string;
     };
 
-    const pageNumber = Math.max(Number(page) || 1, 1);
-    const pageSize = Math.min(Math.max(Number(limit) || 20, 1), 100);
-    const skip = (pageNumber - 1) * pageSize;
+    const { paginate, page: pageNumber, limit: pageSize, skip } = resolveOptionalPagination(req.query);
     const abandonedThreshold = new Date(
       Date.now() - Math.max(Number(abandonedHours) || 24, 1) * 60 * 60 * 1000,
     );
@@ -352,11 +349,17 @@ export const getAdminCarts = async (req: Request, res: Response): Promise<void> 
       .populate('items.product', 'name image company brand category version price1 price1INR')
       .sort({ updatedAt: -1 });
 
-    const carts = search.trim()
-      ? await baseQuery.lean()
-      : await baseQuery.skip(skip).limit(pageSize).lean();
+    const searchTerm = String(search).trim().toLowerCase();
 
-    const searchTerm = search.trim().toLowerCase();
+    let carts: any[];
+    if (searchTerm) {
+      carts = await baseQuery.lean();
+    } else if (paginate) {
+      carts = await baseQuery.skip(skip).limit(pageSize).lean();
+    } else {
+      carts = await baseQuery.lean();
+    }
+
     const filteredCarts = searchTerm
       ? carts.filter((cart: any) => {
           const user = cart.user || {};
@@ -385,17 +388,20 @@ export const getAdminCarts = async (req: Request, res: Response): Promise<void> 
       : carts;
 
     const total = searchTerm ? filteredCarts.length : await Cart.countDocuments(filter);
-    const paginated = searchTerm ? filteredCarts.slice(skip, skip + pageSize) : filteredCarts;
+    const paginated =
+      searchTerm && paginate
+        ? filteredCarts.slice(skip, skip + pageSize)
+        : filteredCarts;
 
     res.status(200).json({
       success: true,
       data: {
         carts: paginated,
         pagination: {
-          currentPage: pageNumber,
-          totalPages: Math.ceil(total / pageSize),
+          currentPage: paginate ? pageNumber : 1,
+          totalPages: paginate ? Math.ceil(total / pageSize) : 1,
           totalCarts: total,
-          pageSize,
+          pageSize: paginate ? pageSize : total,
         },
       },
     });

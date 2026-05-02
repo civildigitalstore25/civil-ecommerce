@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useBlogs, useDeleteBlog } from "../api/blogApi";
 import { useUser } from "../api/userQueries";
@@ -9,16 +9,28 @@ const AdminBlogList: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<string>("");
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  
-  const limit = 10;
-  
+  const pageSize = 10;
+
   const { data, isLoading, error } = useBlogs({
-    page,
-    limit,
     status: statusFilter || undefined,
     category: categoryFilter || undefined,
     search: searchTerm || undefined,
   });
+
+  const blogs = data?.blogs ?? [];
+  const totalPages = Math.max(1, Math.ceil(blogs.length / pageSize));
+  const pagedBlogs = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return blogs.slice(start, start + pageSize);
+  }, [blogs, page]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, categoryFilter, searchTerm]);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
 
   const deleteBlogMutation = useDeleteBlog();
 
@@ -128,7 +140,7 @@ const AdminBlogList: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {data.blogs.map((blog) => (
+                {pagedBlogs.map((blog) => (
                   <tr key={blog._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -185,7 +197,7 @@ const AdminBlogList: React.FC = () => {
           </div>
 
           {/* Pagination */}
-          {data.pagination.totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="mt-6 flex justify-center items-center gap-2">
               <button
                 onClick={() => setPage(page - 1)}
@@ -195,11 +207,11 @@ const AdminBlogList: React.FC = () => {
                 Previous
               </button>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Page {data.pagination.currentPage} of {data.pagination.totalPages}
+                Page {page} of {totalPages}
               </span>
               <button
                 onClick={() => setPage(page + 1)}
-                disabled={page === data.pagination.totalPages}
+                disabled={page === totalPages}
                 className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-300 dark:hover:bg-gray-600"
               >
                 Next

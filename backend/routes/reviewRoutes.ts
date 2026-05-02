@@ -11,7 +11,7 @@ import {
   deleteReply,
   getRecentReviews,
 } from '../controllers/reviewController';
-import { authenticate } from '../middlewares/auth';
+import { authenticate, requireAdmin } from '../middlewares/auth';
 
 const router = express.Router();
 
@@ -31,6 +31,6 @@ router.put('/:reviewId/reply/:replyId', authenticate, updateReply);
 router.delete('/:reviewId/reply/:replyId', authenticate, deleteReply);
 
 // Admin routes
-router.get('/admin/all', authenticate, getAllReviews);
+router.get('/admin/all', authenticate, requireAdmin, getAllReviews);
 
 export default router;

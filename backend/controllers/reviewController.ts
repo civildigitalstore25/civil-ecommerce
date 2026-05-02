@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Review from '../models/Review';
 import Product from '../models/Product';
 import mongoose from 'mongoose';
+import { resolveOptionalPagination } from '../utils/listPagination';
 
 // Get all reviews for a product
 export const getProductReviews = async (req: Request, res: Response) => {
@@ -277,12 +278,10 @@ export const deleteReview = async (req: Request, res: Response) => {
 // Get all reviews for admin (with pagination, search, and filters)
 export const getAllReviews = async (req: Request, res: Response) => {
     try {
-        const page = parseInt(req.query.page as string) || 1;
-        const limit = parseInt(req.query.limit as string) || 20;
+        const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
         const search = (req.query.search as string) || '';
         const rating = req.query.rating as string;
         const dateFilter = (req.query.dateFilter as string) || 'all';
-        const skip = (page - 1) * limit;
 
         const filter: any = {};
 
@@ -317,13 +316,16 @@ export const getAllReviews = async (req: Request, res: Response) => {
             ];
         }
 
-        const reviews = await Review.find(filter)
+        let reviewQuery = Review.find(filter)
             .populate('user', 'fullName email')
             .populate('product', 'name')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit)
-            .lean();
+            .sort({ createdAt: -1 });
+
+        if (paginate) {
+            reviewQuery = reviewQuery.skip(skip).limit(limit);
+        }
+
+        const reviews = await reviewQuery.lean();
 
         const total = await Review.countDocuments(filter);
 
@@ -341,10 +343,10 @@ export const getAllReviews = async (req: Request, res: Response) => {
         res.json({
             reviews: formattedReviews,
             pagination: {
-                page,
-                limit,
+                page: paginate ? page : 1,
+                limit: paginate ? limit : total,
                 total,
-                pages: Math.ceil(total / limit),
+                pages: paginate ? Math.ceil(total / limit) : 1,
             },
         });
     } catch (error) {

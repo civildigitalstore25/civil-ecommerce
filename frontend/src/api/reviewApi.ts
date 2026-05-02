@@ -142,16 +142,18 @@ export const getAllReviews = async (
     dateFilter?: string;
   },
 ): Promise<ReviewsResponse> => {
-  const { page = 1, limit = 20, search = "", rating = "", dateFilter = "all" } = params || {};
-  const queryParams: Record<string, string> = {
-    page: String(page),
-    limit: String(limit),
-  };
+  const { page, limit, search = "", rating = "", dateFilter = "all" } = params || {};
+  const queryParams: Record<string, string> = {};
+  if (page !== undefined && limit !== undefined) {
+    queryParams.page = String(page);
+    queryParams.limit = String(limit);
+  }
   if (search?.trim()) queryParams.search = search.trim();
   if (rating) queryParams.rating = rating;
   if (dateFilter && dateFilter !== "all") queryParams.dateFilter = dateFilter;
   const searchParams = new URLSearchParams(queryParams);
-  const response = await api.get(`/admin/all?${searchParams}`);
+  const qs = searchParams.toString();
+  const response = await api.get(`/admin/all${qs ? `?${qs}` : ""}`);
   return response.data;
 };
 
