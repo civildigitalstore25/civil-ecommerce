@@ -5,6 +5,7 @@ import { BRANDS, BRAND_CATEGORIES } from "../../../../constants/productFormConst
 import { AddProductModalAdminSubscriptionsSection } from "./AddProductModalAdminSubscriptionsSection";
 import { AddProductModalAutoSaveRow } from "./AddProductModalAutoSaveRow";
 import { AddProductModalBasicSection } from "./AddProductModalBasicSection";
+import { AddProductModalSeoSection } from "./AddProductModalSeoSection";
 import { AddProductModalBrandCategorySection } from "./AddProductModalBrandCategorySection";
 import { AddProductModalDealSection } from "./AddProductModalDealSection";
 import { AddProductModalFaqSection } from "./AddProductModalFaqSection";
@@ -54,6 +55,14 @@ export function AddProductModalFormSections({
 }: AddProductModalFormSectionsProps) {
   return (
     <div className="space-y-8">
+      <AddProductModalSeoSection
+        colors={colors}
+        seoTitle={newProduct.seoTitle}
+        seoDescription={newProduct.seoDescription}
+        seoKeywords={newProduct.seoKeywords}
+        onInputChange={handleInputChange}
+      />
+
       <AddProductModalBasicSection
         colors={colors}
         name={newProduct.name}

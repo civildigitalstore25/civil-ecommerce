@@ -169,6 +169,9 @@ export function useProductDetailPage() {
         requirements: product.requirements,
         tags: product.tags,
         price: selectedOption?.priceINR || product.price1INR || product.price1 || 0,
+        seoTitle: product.seoTitle,
+        seoDescription: product.seoDescription,
+        seoKeywords: product.seoKeywords,
       })
     : null;
 

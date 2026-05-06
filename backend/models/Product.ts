@@ -67,6 +67,10 @@ export interface IProduct extends Document {
   videoUrl?: string;
   activationVideoUrl?: string;
   driveLink?: string; // Google Drive link for downloadable product
+  /** Optional SEO overrides (product detail meta tags) */
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
   status?: 'active' | 'inactive' | 'draft';
   isBestSeller?: boolean;
   isOutOfStock?: boolean;
@@ -181,6 +185,9 @@ const productSchema: Schema = new Schema(
     videoUrl: { type: String },
     activationVideoUrl: { type: String },
     driveLink: { type: String }, // Google Drive link for downloadable product
+    seoTitle: { type: String },
+    seoDescription: { type: String },
+    seoKeywords: { type: String },
     status: {
       type: String,
       enum: ['active', 'inactive', 'draft'],

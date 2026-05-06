@@ -77,6 +77,10 @@ export interface Product {
   videoUrl?: string;
   activationVideoUrl?: string;
   driveLink?: string; // Google Drive download link
+  /** Optional SEO overrides for product detail meta tags */
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
   status?: "active" | "inactive" | "draft";
   isBestSeller?: boolean;
   isOutOfStock?: boolean;

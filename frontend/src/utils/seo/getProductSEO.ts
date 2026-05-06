@@ -8,6 +8,7 @@ import {
 import { buildProductKeywords } from "./productKeywordBuilder";
 
 const TITLE_MAX_LEN = 70;
+const KEYWORDS_MAX_LEN = 500;
 
 function buildProductTitle(name: string): string {
   const n = name.trim().replace(/\s+/g, " ");
@@ -70,6 +71,9 @@ export function getProductSEO(product: {
   requirements?: string;
   tags?: string[];
   price?: number;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }): SEOMetadata {
   const shortPlain = product.shortDescription?.trim() || "";
   const descriptionPlain = [
@@ -82,26 +86,36 @@ export function getProductSEO(product: {
     .join(" ")
     .trim();
 
-  const title = buildProductTitle(product.name);
-  const description = buildProductMetaDescription({
-    name: product.name,
-    shortDescription: product.shortDescription,
-    descriptionHtml: product.description,
-    detailsDescriptionHtml: product.detailsDescription,
-    overallFeaturesHtml: product.overallFeatures,
-    requirementsHtml: product.requirements,
-    price: product.price,
-  });
+  const seoTitleTrim = product.seoTitle?.trim() || "";
+  const title = seoTitleTrim
+    ? trimTitleForMeta(seoTitleTrim, TITLE_MAX_LEN)
+    : buildProductTitle(product.name);
 
-  const keywords = buildProductKeywords({
-    name: product.name,
-    category: product.category,
-    company: product.company,
-    brand: product.brand,
-    shortPlain,
-    descriptionPlain,
-    tags: product.tags,
-  });
+  const seoDescTrim = product.seoDescription?.trim() || "";
+  const description = seoDescTrim
+    ? clampMetaDescription(seoDescTrim, PRODUCT_META_DESCRIPTION_MAX)
+    : buildProductMetaDescription({
+        name: product.name,
+        shortDescription: product.shortDescription,
+        descriptionHtml: product.description,
+        detailsDescriptionHtml: product.detailsDescription,
+        overallFeaturesHtml: product.overallFeatures,
+        requirementsHtml: product.requirements,
+        price: product.price,
+      });
+
+  const seoKwTrim = product.seoKeywords?.trim() || "";
+  const keywords = seoKwTrim
+    ? seoKwTrim.slice(0, KEYWORDS_MAX_LEN)
+    : buildProductKeywords({
+        name: product.name,
+        category: product.category,
+        company: product.company,
+        brand: product.brand,
+        shortPlain,
+        descriptionPlain,
+        tags: product.tags,
+      });
 
   return {
     title,

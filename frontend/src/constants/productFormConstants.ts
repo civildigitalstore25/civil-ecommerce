@@ -113,6 +113,9 @@ export const DEFAULT_PRODUCT_FORM = {
     version: "",
     longDescription: "",
     detailsDescription: "",
+    seoTitle: "",
+    seoDescription: "",
+    seoKeywords: "",
     category: "",
     brand: BRANDS[0].value,
     subscriptionDurations: [
@@ -204,6 +207,9 @@ export interface ProductForm {
     version: string;
     longDescription: string;
     detailsDescription: string;
+    seoTitle: string;
+    seoDescription: string;
+    seoKeywords: string;
     category: string;
     brand: string;
     subscriptionDurations: SubscriptionDuration[];

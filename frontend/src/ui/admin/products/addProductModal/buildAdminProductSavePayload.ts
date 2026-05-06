@@ -184,6 +184,15 @@ export function buildAdminProductSavePayload(
     videoUrl: newProduct.videoUrl,
     activationVideoUrl: newProduct.activationVideoUrl,
     driveLink: newProduct.driveLink,
+    ...(newProduct.seoTitle?.trim()
+      ? { seoTitle: newProduct.seoTitle.trim() }
+      : {}),
+    ...(newProduct.seoDescription?.trim()
+      ? { seoDescription: newProduct.seoDescription.trim() }
+      : {}),
+    ...(newProduct.seoKeywords?.trim()
+      ? { seoKeywords: newProduct.seoKeywords.trim() }
+      : {}),
     status,
     isBestSeller: newProduct.isBestSeller,
     isOutOfStock: newProduct.isOutOfStock,

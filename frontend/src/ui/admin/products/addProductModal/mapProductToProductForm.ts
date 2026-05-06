@@ -43,6 +43,9 @@ export function mapProductToProductForm(product: Product): ProductForm {
     version: product.version || "",
     longDescription: product.description || product.shortDescription || "",
     detailsDescription: product.detailsDescription || "",
+    seoTitle: product.seoTitle || "",
+    seoDescription: product.seoDescription || "",
+    seoKeywords: product.seoKeywords || "",
     category:
       product.category ||
       (availableCategories.length > 0 ? availableCategories[0].value : ""),
