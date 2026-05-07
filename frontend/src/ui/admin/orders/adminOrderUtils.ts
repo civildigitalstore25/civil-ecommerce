@@ -46,6 +46,69 @@ export function displayOrderCustomerPhone(order: AdminOrderLike): string {
   return order.shippingAddress?.phoneNumber || order.userId?.phoneNumber || "";
 }
 
+export function normalizeWhatsAppPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.length === 10) return `91${digits}`;
+  if (digits.length === 11 && digits.startsWith("0")) return `91${digits.slice(1)}`;
+  return digits;
+}
+
+function formatWhatsAppMoney(value: number | undefined): string {
+  return `₹${Number(value ?? 0).toLocaleString("en-IN")}`;
+}
+
+function formatWhatsAppItemLine(
+  item: NonNullable<AdminOrderLike["items"]>[number],
+  index: number,
+): string {
+  const itemName = item.name?.trim() || `Item ${index + 1}`;
+  const quantity = Number(item.quantity ?? 0) || 1;
+  const version = item.version?.trim();
+  const price = formatWhatsAppMoney(item.price);
+  return `${index + 1}. ${itemName}${version ? ` (${version})` : ""} x${quantity} - ${price}`;
+}
+
+export function buildOrderWhatsAppMessage(order: AdminOrderLike): string {
+  const customerName =
+    order.shippingAddress?.fullName?.trim() || order.userId?.fullName?.trim() || "Customer";
+  const orderLabel = order.orderNumber ? `#${order.orderNumber}` : getOrderId(order) || "your order";
+  const items = order.items || [];
+  const lines = [
+    `Hi ${customerName},`,
+    "",
+    "Thank you for your purchase from Softzcart.",
+    `Here are your order details for ${orderLabel}:`,
+    `• Order total: ${formatWhatsAppMoney(order.totalAmount)}`,
+  ];
+
+  if (order.orderStatus) {
+    lines.push(`• Order status: ${getStatusLabel(order.orderStatus)}`);
+  }
+
+  if (items.length > 0) {
+    lines.push("", "Items:");
+    items.forEach((item, index) => {
+      lines.push(formatWhatsAppItemLine(item, index));
+    });
+  }
+
+  lines.push(
+    "",
+    "If you have any questions, just reply here and we will help you right away.",
+    "Thank you for shopping with us.",
+  );
+
+  return lines.join("\n");
+}
+
+export function buildOrderWhatsAppUrl(order: AdminOrderLike): string {
+  const phone = normalizeWhatsAppPhone(displayOrderCustomerPhone(order));
+  if (!phone) return "";
+  const message = buildOrderWhatsAppMessage(order);
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
 export function displayOrderCustomerEmail(order: AdminOrderLike): string {
   const direct = order.customerEmail?.trim();
   if (direct) return direct;
