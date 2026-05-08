@@ -1,3 +1,5 @@
+import { normalizeDuplicateIndiaCountryInPhone } from "../../../utils/normalizePhoneNumber";
+
 /** Checkout contact email is stored in notes as `Email: ...` when it differs from account email. */
 export function emailFromOrderNotes(notes: string | undefined | null): string {
   if (!notes || typeof notes !== "string") return "";
@@ -47,7 +49,11 @@ export function displayOrderCustomerPhone(order: AdminOrderLike): string {
 }
 
 export function normalizeWhatsAppPhone(phone: string): string {
-  const digits = phone.replace(/\D/g, "");
+  const normalizedPhone = normalizeDuplicateIndiaCountryInPhone(phone);
+  let digits = normalizedPhone.replace(/\D/g, "");
+  if (digits.startsWith("9191") && digits.length > 12) {
+    digits = `91${digits.slice(4)}`;
+  }
   if (!digits) return "";
   if (digits.length === 10) return `91${digits}`;
   if (digits.length === 11 && digits.startsWith("0")) return `91${digits.slice(1)}`;
@@ -65,8 +71,10 @@ function formatWhatsAppItemLine(
   const itemName = item.name?.trim() || `Item ${index + 1}`;
   const quantity = Number(item.quantity ?? 0) || 1;
   const version = item.version?.trim();
-  const price = formatWhatsAppMoney(item.price);
-  return `${index + 1}. ${itemName}${version ? ` (${version})` : ""} x${quantity} - ${price}`;
+  const unitPrice = Number(item.price ?? 0);
+  const formattedUnitPrice = formatWhatsAppMoney(unitPrice);
+  const lineTotal = formatWhatsAppMoney(quantity * unitPrice);
+  return `${index + 1}. ${itemName}${version ? ` (${version})` : ""} x${quantity} @ ${formattedUnitPrice}${quantity > 1 ? ` = ${lineTotal}` : ""}`;
 }
 
 export function buildOrderWhatsAppMessage(order: AdminOrderLike): string {

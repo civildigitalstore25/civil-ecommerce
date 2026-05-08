@@ -9,6 +9,7 @@ import {
   displayOrderCustomerPhone,
   getOrderId,
   getStatusLabel,
+  normalizeWhatsAppPhone,
   normOrderStatus,
 } from "./adminOrderUtils";
 
@@ -31,9 +32,10 @@ const OrderTableRow: React.FC<Props> = ({
   onDeleteOrder,
   deletePending,
 }) => {
-  const whatsappUrl = buildOrderWhatsAppUrl(order);
+  const hasWhatsappPhone = Boolean(normalizeWhatsAppPhone(displayOrderCustomerPhone(order)));
 
   const handleWhatsAppClick = () => {
+    const whatsappUrl = buildOrderWhatsAppUrl(order);
     if (!whatsappUrl) return;
     window.open(whatsappUrl, "_blank", "noopener,noreferrer");
   };
@@ -118,14 +120,14 @@ const OrderTableRow: React.FC<Props> = ({
           <button
             type="button"
             onClick={handleWhatsAppClick}
-            disabled={!whatsappUrl}
+            disabled={!hasWhatsappPhone}
             className="p-2 rounded-lg transition-all duration-200 hover:shadow-md disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               backgroundColor: colors.background.accent,
               color: "#25D366",
             }}
             onMouseEnter={(e) => {
-              if (whatsappUrl) {
+              if (hasWhatsappPhone) {
                 e.currentTarget.style.backgroundColor = "#25D366";
                 e.currentTarget.style.color = "#ffffff";
               }
@@ -134,8 +136,10 @@ const OrderTableRow: React.FC<Props> = ({
               e.currentTarget.style.backgroundColor = colors.background.accent;
               e.currentTarget.style.color = "#25D366";
             }}
-            title={whatsappUrl ? "Send WhatsApp message" : "Customer phone number unavailable"}
-            aria-label={whatsappUrl ? "Send WhatsApp message" : "Customer phone number unavailable"}
+            title={hasWhatsappPhone ? "Send WhatsApp message" : "Customer phone number unavailable"}
+            aria-label={
+              hasWhatsappPhone ? "Send WhatsApp message" : "Customer phone number unavailable"
+            }
           >
             <FaWhatsapp className="w-5 h-5" />
           </button>
@@ -156,6 +160,7 @@ const OrderTableRow: React.FC<Props> = ({
               e.currentTarget.style.color = colors.interactive.primary;
             }}
             title="View order details"
+            aria-label="View order details"
           >
             <Eye className="w-5 h-5" />
           </button>
@@ -179,6 +184,7 @@ const OrderTableRow: React.FC<Props> = ({
               e.currentTarget.style.color = colors.status.error;
             }}
             title="Delete order"
+            aria-label="Delete order"
           >
             <Trash2 className="w-5 h-5" />
           </button>
