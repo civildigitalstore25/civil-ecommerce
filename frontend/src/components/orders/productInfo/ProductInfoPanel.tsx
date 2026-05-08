@@ -24,8 +24,9 @@ interface ProductInfoPanelProps {
   colors: ThemeColors;
   theme: ThemeMode;
   formatPriceWithSymbol: (price: number) => string;
-  download: DownloadSlice;
+  download?: DownloadSlice;
 }
+
 
 export function ProductInfoPanel({
   order,
@@ -36,16 +37,16 @@ export function ProductInfoPanel({
   download,
 }: ProductInfoPanelProps) {
   const {
-    isDownloading,
-    fileSizeBytes,
-    downloadedBytes,
-    totalBytes,
-    downloadProgress,
-    canDownload,
-    downloadBlockedReason,
-    isFreeOfferEnded,
-    handleDownload,
-  } = download;
+    isDownloading = false,
+    fileSizeBytes = null,
+    downloadedBytes = 0,
+    totalBytes = null,
+    downloadProgress = null,
+    canDownload = false,
+    downloadBlockedReason = '',
+    isFreeOfferEnded = false,
+    handleDownload = () => {},
+  } = download || {};
 
   return (
     <div className="flex flex-col sm:flex-row items-start gap-4">

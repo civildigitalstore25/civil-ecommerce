@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "react-hot-toast";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { getUserOrders } from "../api/orderApi";
 import type { IOrder } from "../api/types/orderTypes";
@@ -52,15 +51,6 @@ const MyOrdersPage: React.FC = () => {
     });
   }, [data?.data, sortBy]);
 
-  // Event handlers
-  const handleToggleExpansion = useCallback(() => {
-    // Toggle expansion functionality can be implemented here if needed
-  }, []);
-
-  const handleBuyAgain = useCallback((order: IOrder) => {
-    // TODO: Implement buy again functionality
-    toast.success(`Adding ${order.items[0]?.name || "product"} to cart...`);
-  }, []);
 
   const handleSortChange = useCallback((value: string) => {
     setSortBy(value);
@@ -135,15 +125,11 @@ const MyOrdersPage: React.FC = () => {
                 borderColor: colors.border.primary,
               }}
             >
-              <OrderCard
-                order={order}
-                onToggleExpansion={handleToggleExpansion}
-                onBuyAgain={() => handleBuyAgain(order)}
-              />
+              <OrderCard order={order} />
             </div>
           ))}
         </div>
-      </div>
+      </div>a
     </div>
   );
 };

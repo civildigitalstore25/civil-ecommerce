@@ -1,18 +1,18 @@
 import React from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import type { IOrder } from "../../api/types/orderTypes";
-import ProductInfo from "./ProductInfo";
+import { ProductInfoPanel } from "./productInfo/ProductInfoPanel";
 import OrderSummary from "./OrderSummary";
 
 interface OrderCardProps {
   order: IOrder;
-  onToggleExpansion: () => void;
-  onBuyAgain: () => void;
 }
 
 const OrderCard: React.FC<OrderCardProps> = React.memo(
-  ({ order, onToggleExpansion, onBuyAgain }) => {
+  ({ order }) => {
     const { colors } = useAdminTheme();
+    // @ts-ignore: If theme is not present, fallback to 'light'
+    const theme = (colors as any).theme || 'light';
 
     const effectiveOrderStatus =
       order.orderStatus?.toLowerCase() === "shipped"
@@ -93,12 +93,21 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
 
           {/* Product and Summary Row */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Product Card */}
-            <ProductInfo
-              order={order}
-              onBuyAgain={onBuyAgain}
-              onViewDetails={onToggleExpansion}
-            />
+
+            {/* Product Cards: Show all items in the order */}
+            <div className="space-y-4">
+              {order.items.map((item, idx) => (
+                <ProductInfoPanel
+                  key={item.productId || idx}
+                  order={order}
+                  product={item}
+                  colors={colors}
+                  theme={theme}
+                  formatPriceWithSymbol={(price) => price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
+                  download={undefined}
+                />
+              ))}
+            </div>
 
             {/* Order Summary Card */}
             <OrderSummary order={order} />
