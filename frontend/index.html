@@ -1,95 +1,121 @@
 <!doctype html>
 <html lang="en">
-
-<head>
-
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" href="/logo.png" />
-  <link rel="apple-touch-icon" href="/logo.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Minimal shell: per-route title/description/OG are set via react-helmet-async (avoids duplicate meta tags). -->
-  <title>Softzcart</title>
-  <meta name="author" content="Softzcart" />
-  <meta property="og:site_name" content="Softzcart" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="robots" content="index, follow" />
-  <meta name="language" content="English" />
-  <!-- Structured data in HTML helps crawlers before JS runs (SPA). -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "Organization",
-          "@id": "https://softzcart.com/#organization",
-          "name": "Softzcart",
-          "url": "https://softzcart.com/",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://softzcart.com/logo.png"
-          },
-          "description": "Authorized software reseller for AutoCAD, Autodesk, Microsoft, Adobe, and professional software—with instant delivery.",
-          "sameAs": [
-            "https://www.facebook.com/SoftzCart/",
-            "https://www.instagram.com/softzcart/",
-            "https://www.linkedin.com/in/softzcart/",
-            "https://www.youtube.com/@SoftZcart",
-            "https://x.com/SoftZcart"
-          ]
-        },
-        {
-          "@type": "WebSite",
-          "@id": "https://softzcart.com/#website",
-          "url": "https://softzcart.com/",
-          "name": "Softzcart",
-          "publisher": { "@id": "https://softzcart.com/#organization" },
-          "inLanguage": "en",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": {
-              "@type": "EntryPoint",
-              "urlTemplate": "https://softzcart.com/category?search={search_term_string}"
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Minimal shell: per-route title/description/OG are set via react-helmet-async (avoids duplicate meta tags). -->
+    <title>Softzcart</title>
+    <meta name="author" content="Softzcart" />
+    <meta property="og:site_name" content="Softzcart" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <!-- Structured data in HTML helps crawlers before JS runs (SPA). -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "Organization",
+            "@id": "https://softzcart.com/#organization",
+            "name": "Softzcart",
+            "url": "https://softzcart.com/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://softzcart.com/logo.png"
             },
-            "query-input": "required name=search_term_string"
+            "description": "Authorized software reseller for AutoCAD, Autodesk, Microsoft, Adobe, and professional software—with instant delivery.",
+            "sameAs": [
+              "https://www.facebook.com/SoftzCart/",
+              "https://www.instagram.com/softzcart/",
+              "https://www.linkedin.com/in/softzcart/",
+              "https://www.youtube.com/@SoftZcart",
+              "https://x.com/SoftZcart"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://softzcart.com/#website",
+            "url": "https://softzcart.com/",
+            "name": "Softzcart",
+            "publisher": { "@id": "https://softzcart.com/#organization" },
+            "inLanguage": "en",
+            "potentialAction": {
+              "@type": "SearchAction",
+              "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "https://softzcart.com/category?search={search_term_string}"
+              },
+              "query-input": "required name=search_term_string"
+            }
           }
-        }
-      ]
-    }
-  </script>
-  <!-- Trustpilot domain verification (remove after verification succeeds). -->
-  <meta name="trustpilot-one-time-domain-verification-id" content="407c0e54-e2f8-4d45-9266-e38b9a0980ce" />
+        ]
+      }
+    </script>
+    <!-- Trustpilot domain verification (remove after verification succeeds). -->
+    <meta
+      name="trustpilot-one-time-domain-verification-id"
+      content="407c0e54-e2f8-4d45-9266-e38b9a0980ce"
+    />
 
-  <!-- Ahrefs Web Analytics -->
-  <script src="https://analytics.ahrefs.com/analytics.js" data-key="uiVspaw/jCxlTAVYNSvuPA" async></script>
-</head>
+    <!-- Ahrefs Web Analytics -->
+    <script
+      src="https://analytics.ahrefs.com/analytics.js"
+      data-key="uiVspaw/jCxlTAVYNSvuPA"
+      async
+    ></script>
+  </head>
 
-<body>
-  <div id="root"></div>
-  <noscript><img height="1" width="1" style="display:none"
-      src="https://www.facebook.com/tr?id=2385555308549003&ev=PageView&noscript=1" /></noscript>
-  <script type="module" src="/src/main.tsx"></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QHQ8BL97DV"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-QHQ8BL97DV');
-  </script>
-  <script>
-    !function (f, b, e, v, n, t, s) {
-      if (f.fbq) return; n = f.fbq = function () {
-        n.callMethod ?
-          n.callMethod.apply(n, arguments) : n.queue.push(arguments)
-      };
-      if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
-      n.queue = []; t = b.createElement(e); t.async = !0;
-      t.src = v; s = b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t, s)
-    }(window, document, 'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '2385555308549003');
-    fbq('track', 'PageView');
-  </script>
-</body>
-
+  <body>
+    <div id="root"></div>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=2385555308549003&ev=PageView&noscript=1"
+    /></noscript>
+    <script type="module" src="/src/main.tsx"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-QHQ8BL97DV"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-QHQ8BL97DV");
+    </script>
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js",
+      );
+      fbq("init", "2385555308549003");
+      fbq("track", "PageView");
+    </script>
+  </body>
 </html>
