@@ -58,7 +58,7 @@ export const authApi = {
 
   getCurrentUser: async (): Promise<User> => {
     try {
-      const response = await api.get("/me");
+      const response = await api.get("/current-user");
       return response.data;
     } catch (error) {
       localStorage.removeItem("token");

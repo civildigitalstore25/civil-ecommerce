@@ -26,7 +26,7 @@ router.get('/validate-reset-token/:token', validateResetToken);
 router.post('/reset-password/:token', resetPassword);
 
 // Protected routes
-router.get('/me', authenticate, getCurrentUser);
+router.get('/current-user', authenticate, getCurrentUser);
 router.put('/profile', authenticate, updateProfile);
 
 // Google OAuth routes
