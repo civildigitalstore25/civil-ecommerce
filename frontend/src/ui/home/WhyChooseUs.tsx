@@ -53,7 +53,8 @@ const WhyChooseUs: React.FC = () => {
           className="mt-1 sm:mt-3 text-xs sm:text-lg font-lato transition-colors duration-200"
           style={{ color: colors.text.secondary }}
         >
-          Trusted by engineers worldwide for authentic software solutions
+          Engineers worldwide trust <strong style={{ color: colors.text.primary }}>Softzcart</strong>{" "}
+          as a software reseller—secure checkout, trusted vendors, and dependable support
         </p>
       </div>
 

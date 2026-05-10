@@ -10,8 +10,9 @@ import LatestBlogsCarousel from "../ui/home/LatestBlogsCarousel";
 import BestSellingCarousel from "../ui/home/BestSellingCarousel";
 import LatestArrivalsCarousel from "../ui/home/LatestArrivalsCarousel";
 import FreeProductsSection from "../ui/home/FreeProductsSection";
+import HomeBrandIntro from "../ui/home/HomeBrandIntro";
 import { useAdminTheme } from "../contexts/AdminThemeContext";
-import { getHomeSEO, buildCanonicalUrl } from "../utils/seo";
+import { getHomeSEO, buildCanonicalUrl, getPublicSiteOrigin } from "../utils/seo";
 import DealsPage from "./Deals";
 import { useActiveDeals } from "../api/dealsApi";
 
@@ -21,6 +22,7 @@ const HomePage: React.FC = () => {
   const seoData = getHomeSEO();
   const { data: dealsData } = useActiveDeals();
   const hasDeals = (dealsData?.deals || []).length > 0;
+  const ogImage = `${getPublicSiteOrigin()}/logo.png`;
 
   return (
     <>
@@ -32,6 +34,11 @@ const HomePage: React.FC = () => {
         <meta property="og:description" content={seoData.ogDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={buildCanonicalUrl(pathname)} />
+        <meta property="og:image" content={ogImage} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={seoData.ogTitle} />
+        <meta name="twitter:description" content={seoData.ogDescription} />
+        <meta name="twitter:image" content={ogImage} />
         <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
 
@@ -96,6 +103,10 @@ const HomePage: React.FC = () => {
             </section>
           )}
 
+
+          <section className="px-4 sm:px-6 lg:px-8">
+            <HomeBrandIntro />
+          </section>
 
           <section className="px-4 sm:px-6 lg:px-8">
             <Reviews />

@@ -11,8 +11,10 @@ import {
   BlogButton,
 } from "../components/blog";
 import { getBlogListSEO, buildCanonicalUrl } from "../utils/seo";
+import { useAdminTheme } from "../contexts/AdminThemeContext";
 
 const BlogListPage: React.FC = () => {
+  const { colors } = useAdminTheme();
   const [page, setPage] = useState(1);
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -78,10 +80,16 @@ const BlogListPage: React.FC = () => {
       <BlogPageLayout maxWidth="7xl">
       {/* Header */}
       <div className="mb-6 md:mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-[#1e293b]">
+        <h1
+          className="text-3xl md:text-4xl font-bold mb-2 transition-colors duration-200"
+          style={{ color: colors.text.primary }}
+        >
           Our Blog
         </h1>
-        <p className="text-base md:text-lg mb-4 text-[#64748b]">
+        <p
+          className="text-base md:text-lg mb-4 transition-colors duration-200"
+          style={{ color: colors.text.secondary }}
+        >
           Insights, tutorials, and news from our team
         </p>
         {isAdmin && (
@@ -102,7 +110,7 @@ const BlogListPage: React.FC = () => {
             className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent shadow-lg"
             aria-hidden
           />
-          <p className="mt-6 text-xl font-semibold text-gray-600">
+          <p className="mt-6 text-xl font-semibold" style={{ color: colors.text.secondary }}>
             Loading blogs...
           </p>
         </div>

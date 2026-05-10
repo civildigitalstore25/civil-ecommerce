@@ -3,15 +3,15 @@ import type { SEOMetadata } from "./seoTypes";
 export function getHomeSEO(): SEOMetadata {
   return {
     title:
-      "Softzcart | Buy Genuine Software Licenses Online | AutoCAD, Microsoft, Adobe",
+      "Softzcart - Software Reseller | Developer Tools & IT Solutions",
     description:
-      "Shop genuine AutoCAD, Autodesk, Microsoft Office, Adobe Creative Cloud and other professional software at best prices. Authorized reseller with instant delivery and support.",
+      "Softzcart is an authorized software reseller for AutoCAD, Autodesk, Microsoft Office, Adobe Creative Cloud, and more—plus developer tools and IT solutions with instant delivery and expert support.",
     keywords:
-      "software store, autocad price, autodesk software, microsoft office, adobe creative cloud, buy software online, genuine software licenses",
+      "softzcart, software reseller, authorized software reseller, software store, autocad price, autodesk software, microsoft office, adobe creative cloud, buy software online, developer tools",
     ogTitle:
-      "Softzcart | Buy Genuine Software Licenses Online | AutoCAD, Microsoft, Adobe",
+      "Softzcart - Software Reseller | Developer Tools & IT Solutions",
     ogDescription:
-      "Buy genuine AutoCAD, Microsoft Office, Adobe and other professional software with instant delivery and best prices.",
+      "Shop Softzcart—authorized software reseller for leading vendor software, developer tools, and IT solutions, with instant delivery and expert support.",
   };
 }
 

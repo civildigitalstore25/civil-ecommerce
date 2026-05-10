@@ -7,7 +7,7 @@ import { truncateText } from "../../components/blog/blogUtils";
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/400x300?text=No+Image";
 
 const LatestBlogsCarousel: React.FC = () => {
-  const { colors } = useAdminTheme();
+  const { colors, theme } = useAdminTheme();
 
   const { data, isLoading, error } = useBlogs({
     page: 1,
@@ -19,14 +19,13 @@ const LatestBlogsCarousel: React.FC = () => {
 
   const blogs = data?.blogs ?? [];
 
+  const sectionBg = {
+    background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+  };
+
   if (isLoading) {
     return (
-      <section
-        className="py-10 md:py-14"
-        style={{
-          background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
-        }}
-      >
+      <section className="py-10 md:py-14" style={sectionBg}>
         <div className="max-w-7xl mx-auto px-4">
           <h2
             className="text-2xl md:text-3xl font-bold mb-6 transition-colors duration-200"
@@ -50,13 +49,17 @@ const LatestBlogsCarousel: React.FC = () => {
     return null;
   }
 
+  const cardShellStyle: React.CSSProperties = {
+    background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
+    border: `1.5px solid ${colors.border.primary}`,
+    boxShadow:
+      theme === "dark"
+        ? "0 4px 24px rgba(0, 0, 0, 0.35)"
+        : "0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08)",
+  };
+
   return (
-    <section
-      className="py-10 md:py-14"
-      style={{
-        background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
-      }}
-    >
+    <section className="py-10 md:py-14" style={sectionBg}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between gap-4 mb-6">
           <h2
@@ -79,10 +82,11 @@ const LatestBlogsCarousel: React.FC = () => {
             <Link
               key={blog._id}
               to={`/blog/${blog.slug}`}
-              className="group flex flex-col h-full bg-white rounded-lg md:rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-200 border border-gray-200 hover:scale-[1.02]"
+              className="group flex flex-col h-full rounded-lg md:rounded-2xl overflow-hidden transition-all duration-200 hover:scale-[1.02] p-2 md:p-5"
+              style={cardShellStyle}
             >
               <div
-                className="rounded-t-lg md:rounded-t-2xl overflow-hidden h-32 md:h-52 flex items-center justify-center"
+                className="rounded-md md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 flex items-center justify-center"
                 style={{ backgroundColor: colors.background.secondary }}
               >
                 <img
@@ -94,7 +98,7 @@ const LatestBlogsCarousel: React.FC = () => {
                   }}
                 />
               </div>
-              <div className="p-2 md:p-4 flex flex-col flex-1 min-h-0">
+              <div className="flex flex-col flex-1 min-h-0">
                 <span
                   className="text-[10px] md:text-xs font-medium px-1.5 md:px-2 py-0.5 rounded-full w-fit"
                   style={{
@@ -104,13 +108,22 @@ const LatestBlogsCarousel: React.FC = () => {
                 >
                   {blog.category}
                 </span>
-                <h3 className="mt-1.5 md:mt-2 text-[11px] md:text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600 transition-colors leading-snug">
+                <h3
+                  className="mt-1.5 md:mt-2 text-[11px] md:text-base font-semibold line-clamp-2 transition-opacity leading-snug group-hover:opacity-90"
+                  style={{ color: colors.text.primary }}
+                >
                   {blog.title}
                 </h3>
-                <p className="mt-1 text-[10px] md:text-sm text-gray-600 line-clamp-2 leading-snug flex-1">
+                <p
+                  className="mt-1 text-[10px] md:text-sm line-clamp-2 leading-snug flex-1"
+                  style={{ color: colors.text.secondary }}
+                >
                   {truncateText(blog.excerpt, 60)}
                 </p>
-                <p className="mt-2 text-[10px] md:text-xs text-gray-500">
+                <p
+                  className="mt-2 text-[10px] md:text-xs opacity-80"
+                  style={{ color: colors.text.secondary }}
+                >
                   {new Date(blog.publishedAt || blog.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",

@@ -46,7 +46,7 @@ const Reviews: React.FC = () => {
             textShadow: `0 2px 8px ${colors.background.primary}80`,
           }}
         >
-          What Our Customers Say
+          What Our Customers Say About Softzcart
         </h2>
       </div>
 

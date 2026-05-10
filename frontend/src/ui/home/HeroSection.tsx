@@ -87,15 +87,17 @@ const HeroSection: React.FC = () => {
             className="text-2xl sm:text-5xl font-poppins mb-3 sm:mb-6 tracking-wide leading-tight sm:leading-snug text-center px-2"
             style={{ color: colors.text.primary }}
           >
-            Softzcart – Authorized Software Reseller
+            Softzcart – Software Reseller, Developer Tools & IT Solutions
           </h1>
 
           <p
             className="mb-4 sm:mb-12 text-sm sm:text-xl font-lato leading-relaxed text-center max-w-2xl px-4"
             style={{ color: colors.text.secondary }}
           >
-            Discover premium engineering software and ebooks in one place. Softzcart offers authentic software licenses and ebooks with instant
-            delivery and lifetime support for all your engineering needs.
+            Discover premium engineering software and ebooks in one place.{" "}
+            <strong style={{ color: colors.text.primary }}>Softzcart</strong> is an authorized
+            software reseller—developer tools, vendor software, and IT solutions with instant
+            delivery and support for engineers and teams.
           </p>
 
           <button

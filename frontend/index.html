@@ -4,7 +4,8 @@
 <head>
 
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/softlogo.png" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Minimal shell: per-route title/description/OG are set via react-helmet-async (avoids duplicate meta tags). -->
   <title>Softzcart</title>
@@ -13,6 +14,48 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="robots" content="index, follow" />
   <meta name="language" content="English" />
+  <!-- Structured data in HTML helps crawlers before JS runs (SPA). -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://softzcart.com/#organization",
+          "name": "Softzcart",
+          "url": "https://softzcart.com/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://softzcart.com/logo.png"
+          },
+          "description": "Authorized software reseller for AutoCAD, Autodesk, Microsoft, Adobe, and professional software—with instant delivery.",
+          "sameAs": [
+            "https://www.facebook.com/SoftzCart/",
+            "https://www.instagram.com/softzcart/",
+            "https://www.linkedin.com/in/softzcart/",
+            "https://www.youtube.com/@SoftZcart",
+            "https://x.com/SoftZcart"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://softzcart.com/#website",
+          "url": "https://softzcart.com/",
+          "name": "Softzcart",
+          "publisher": { "@id": "https://softzcart.com/#organization" },
+          "inLanguage": "en",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://softzcart.com/category?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+  </script>
   <!-- Trustpilot domain verification (remove after verification succeeds). -->
   <meta name="trustpilot-one-time-domain-verification-id" content="407c0e54-e2f8-4d45-9266-e38b9a0980ce" />
 

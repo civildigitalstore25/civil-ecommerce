@@ -116,7 +116,7 @@ const Footer = () => {
           className="font-poppins font-semibold transition-colors duration-200"
           style={{ color: FOOTER_TEXT_PRIMARY }}
         >
-          softzcart
+          Softzcart
         </span>
         . All rights reserved 2026.
       </div>
