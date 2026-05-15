@@ -7,6 +7,7 @@ import type { BlogFormData } from "../../api/types/blogTypes";
 
 const emptyForm: BlogFormData = {
   title: "",
+  slug: "",
   content: "",
   excerpt: "",
   author: "",
@@ -39,6 +40,7 @@ export function useAdminBlogForm() {
       const blog = blogData.blog;
       setFormData({
         title: blog.title || "",
+        slug: blog.slug || "",
         content: blog.content || "",
         excerpt: blog.excerpt || "",
         author: blog.author || "",

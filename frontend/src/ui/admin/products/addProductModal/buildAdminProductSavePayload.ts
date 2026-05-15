@@ -4,6 +4,8 @@ import {
   BRAND_CATEGORIES,
   type ProductForm,
 } from "../../../../constants/productFormConstants";
+import { normalizeSlug } from "../../../../utils/slug/normalizeSlug";
+import { productSlugFromNameVersion } from "../../../../utils/slug/productSlugFromNameVersion";
 import { mergeDealAndFreeProductIntoPayload } from "./adminProductSaveDealFreeSlice";
 import type { BuiltAdminProductPayload } from "./adminProductSavePayloadTypes";
 
@@ -28,7 +30,9 @@ export function buildAdminProductSavePayload(
   const defaultDescription = newProduct.longDescription || (isDraft ? "Draft description" : "");
   const defaultBrand = newProduct.brand || brands[0].value;
 
-  const slug = `${defaultName.replace(/\s+/g, "-").toLowerCase()}${newProduct.version ? `-${newProduct.version.toString().toLowerCase()}` : ""}`;
+  const slug = newProduct.slug?.trim()
+    ? normalizeSlug(newProduct.slug)
+    : productSlugFromNameVersion(defaultName, newProduct.version);
   const brandHasCategories = (brandCategories[defaultBrand] || []).length > 0;
   const categoryValue = brandHasCategories
     ? newProduct.category || brandCategories[defaultBrand]?.[0]?.value || defaultBrand

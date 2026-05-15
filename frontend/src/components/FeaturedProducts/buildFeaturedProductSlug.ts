@@ -1,11 +1,10 @@
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
+
 /** URL slug used on the storefront product page. */
 export function buildFeaturedProductSlug(product: {
+  slug?: string;
   name?: string;
   version?: string;
 }): string {
-  const versionPart = product.version?.trim()
-    ? `-${product.version.toString().trim().toLowerCase()}`
-    : "";
-  const base = product.name?.replace(/\s+/g, "-").toLowerCase() ?? "";
-  return `${base}${versionPart}`;
+  return productSlugFromProduct(product);
 }

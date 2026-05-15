@@ -3,6 +3,7 @@ import type { NavigateFunction } from "react-router-dom";
 import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
 import { getMinimumProductPrice } from "../../utils/productPricing";
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 
 interface CategoryTabsProductCardProps {
   product: Product;
@@ -24,11 +25,7 @@ export function CategoryTabsProductCard({
   onAddToCart,
 }: CategoryTabsProductCardProps) {
   const goToProduct = () => {
-    const versionPart = product.version?.trim()
-      ? `-${product.version.toString().trim().toLowerCase()}`
-      : "";
-    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-    navigate(`/product/${slug}`);
+    navigate(`/product/${productSlugFromProduct(product)}`);
   };
 
   return (

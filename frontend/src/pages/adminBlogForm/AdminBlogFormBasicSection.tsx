@@ -1,5 +1,6 @@
 import RichTextEditor from "../../components/RichTextEditor/RichTextEditor";
 import type { BlogFormData } from "../../api/types/blogTypes";
+import { normalizeSlug } from "../../utils/slug/normalizeSlug";
 
 interface Props {
   formData: BlogFormData;
@@ -22,6 +23,12 @@ export function AdminBlogFormBasicSection({
   onAddTag,
   onRemoveTag,
 }: Props) {
+  const slugPreview = formData.slug?.trim()
+    ? normalizeSlug(formData.slug)
+    : formData.title.trim()
+      ? normalizeSlug(formData.title)
+      : "your-blog-slug";
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4 text-gray-900">Basic Information</h2>
@@ -37,6 +44,24 @@ export function AdminBlogFormBasicSection({
             placeholder="Enter blog title"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
           />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            URL slug <span className="text-gray-500 font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            name="slug"
+            value={formData.slug ?? ""}
+            onChange={handleChange}
+            placeholder="e.g., new-blog"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            Leave blank to auto-generate from title. Preview:{" "}
+            <span className="font-mono">/blog/{slugPreview}</span>
+          </p>
         </div>
 
         <div>

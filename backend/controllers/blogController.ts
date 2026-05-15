@@ -2,16 +2,7 @@ import { Request, Response } from 'express';
 import Blog, { IBlog } from '../models/Blog';
 import { IUser } from '../models/User';
 import { resolveOptionalPagination } from '../utils/listPagination';
-
-// Helper function to generate slug from title
-const generateSlug = (title: string): string => {
-  return title
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/[\s_-]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
+import { normalizeSlug as generateSlug } from '../utils/slug';
 
 // Create new blog post (Admin only)
 export const createBlog = async (req: Request, res: Response): Promise<void> => {

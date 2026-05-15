@@ -111,6 +111,7 @@ export const PRODUCT_STATUS_OPTIONS = [
 export const DEFAULT_PRODUCT_FORM = {
     name: "",
     version: "",
+    slug: "",
     longDescription: "",
     detailsDescription: "",
     seoTitle: "",
@@ -205,6 +206,7 @@ export interface Requirement {
 export interface ProductForm {
     name: string;
     version: string;
+    slug: string;
     longDescription: string;
     detailsDescription: string;
     seoTitle: string;

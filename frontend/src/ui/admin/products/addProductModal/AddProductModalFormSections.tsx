@@ -67,6 +67,7 @@ export function AddProductModalFormSections({
         colors={colors}
         name={newProduct.name}
         version={newProduct.version}
+        slug={newProduct.slug}
         longDescription={newProduct.longDescription}
         detailsDescription={newProduct.detailsDescription}
         onInputChange={handleInputChange}

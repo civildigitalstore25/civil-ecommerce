@@ -6,6 +6,7 @@ import axios from "axios";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { headerConfig } from "./HeaderConfig";
 import { trackSearch } from "../../utils/analytics";
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
@@ -83,9 +84,7 @@ const ProductSearchBar: React.FC<ProductSearchBarProps> = ({
   };
 
   const handleResultClick = (product: any) => {
-    const versionPart = product.version?.trim() ? `-${product.version.toString().trim().toLowerCase()}` : "";
-    const slug = `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-    navigate(`/product/${slug}`);
+    navigate(`/product/${productSlugFromProduct(product)}`);
     setIsDropdownOpen(false);
     setQuery("");
     onSearch?.();

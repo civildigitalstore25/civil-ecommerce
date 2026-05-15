@@ -7,6 +7,7 @@ import { useAdminTheme } from "../contexts/AdminThemeContext";
 import { useCurrency } from "../contexts/CurrencyContext";
 import { CountdownTimer } from "../components/CountdownTimer/CountdownTimer";
 import { useAdminThemeStyles } from "../hooks/useAdminThemeStyles";
+import { productSlugFromProduct } from "../utils/productSlugFromProduct";
 
 const DealsPage: React.FC = () => {
   const navigate = useNavigate();
@@ -76,8 +77,7 @@ const DealsPage: React.FC = () => {
               const dealPrice = product.dealPrice1INR || originalPrice;
               const discount = originalPrice > 0 ? Math.round(((originalPrice - dealPrice) / originalPrice) * 100) : 0;
 
-              // Generate slug
-              const slug = `${product.name.replace(/\s+/g, "-").toLowerCase()}${product.version ? `-${product.version.toString().toLowerCase()}` : ""}`;
+              const slug = productSlugFromProduct(product);
 
               return (
                 <div

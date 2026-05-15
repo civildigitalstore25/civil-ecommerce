@@ -75,17 +75,17 @@ async function fetchProductsPage(
   apiBase: string,
   page: number,
   limit: number,
-): Promise<{ products: { name: string; version?: string | null; status?: string }[] }> {
+): Promise<{ products: { slug?: string; name: string; version?: string | null; status?: string }[] }> {
   const base = apiBase.replace(/\/+$/, "");
   const res = await fetch(`${base}/api/products?page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error(`GET /api/products failed: ${res.status}`);
   return res.json() as Promise<{
-    products: { name: string; version?: string | null; status?: string }[];
+    products: { slug?: string; name: string; version?: string | null; status?: string }[];
   }>;
 }
 
 async function fetchAllProducts(apiBase: string) {
-  const out: { name: string; version?: string | null; status?: string }[] = [];
+  const out: { slug?: string; name: string; version?: string | null; status?: string }[] = [];
   let page = 1;
   const limit = 200;
   for (;;) {

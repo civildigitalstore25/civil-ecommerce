@@ -1,12 +1,19 @@
 import { Request, Response } from 'express';
 import Product, { IProduct } from '../models/Product';
 import viewerTracker from '../services/viewerTracker';
+import { normalizeSlug } from '../utils/slug';
 
 const escapeRegex = (value: string): string =>
   value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const buildExactCaseInsensitiveRegex = (value: string): RegExp =>
   new RegExp(`^${escapeRegex(value.trim())}$`, 'i');
+
+const applyProductSlugNormalization = (productData: Record<string, unknown>): void => {
+  if (typeof productData.slug === 'string' && productData.slug.trim()) {
+    productData.slug = normalizeSlug(productData.slug);
+  }
+};
 
 // Create new product
 export const createProduct = async (req: Request, res: Response): Promise<void> => {
@@ -35,6 +42,8 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
     if (productData.hasLifetime && productData.lifetimePrice) {
       productData.priceLifetime = Number(productData.lifetimePrice);
     }
+
+    applyProductSlugNormalization(productData);
 
     const product = new Product(productData);
     const savedProduct = await product.save();
@@ -411,6 +420,8 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
     if (productData.hasLifetime && productData.lifetimePrice) {
       productData.priceLifetime = Number(productData.lifetimePrice);
     }
+
+    applyProductSlugNormalization(productData);
 
     // Explicitly ensure driveLink is included
     if (productData.driveLink !== undefined) {

@@ -22,6 +22,7 @@ export interface Blog {
 
 export interface BlogFormData {
   title: string;
+  slug?: string;
   content: string;
   excerpt: string;
   author?: string;

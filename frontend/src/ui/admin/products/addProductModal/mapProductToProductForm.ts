@@ -41,6 +41,7 @@ export function mapProductToProductForm(product: Product): ProductForm {
   return {
     name: product.name || "",
     version: product.version || "",
+    slug: product.slug || "",
     longDescription: product.description || product.shortDescription || "",
     detailsDescription: product.detailsDescription || "",
     seoTitle: product.seoTitle || "",

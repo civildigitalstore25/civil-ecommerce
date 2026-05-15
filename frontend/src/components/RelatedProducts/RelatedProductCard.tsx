@@ -2,6 +2,7 @@ import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
 import type { NavigateFunction } from "react-router-dom";
 import { getMinimumProductPrice } from "../../utils/productPricing";
+import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
 
 interface RelatedProductCardProps {
   product: Product;
@@ -12,13 +13,6 @@ interface RelatedProductCardProps {
   onAddToCart: (product: Product) => void;
 }
 
-function productSlug(product: Product): string {
-  const versionPart = product.version?.trim()
-    ? `-${product.version.toString().trim().toLowerCase()}`
-    : "";
-  return `${product.name?.replace(/\s+/g, "-").toLowerCase()}${versionPart}`;
-}
-
 export function RelatedProductCard({
   product,
   colors,
@@ -27,7 +21,7 @@ export function RelatedProductCard({
   navigate,
   onAddToCart,
 }: RelatedProductCardProps) {
-  const slug = productSlug(product);
+  const slug = productSlugFromProduct(product);
 
   return (
     <div
