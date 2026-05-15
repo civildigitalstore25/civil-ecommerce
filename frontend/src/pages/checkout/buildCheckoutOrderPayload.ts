@@ -20,6 +20,13 @@ export function buildCheckoutOrderPayload(
       null;
     const licenseType = item.licenseType;
     const pricingPlan = item.pricingPlan;
+    const subscriptionPlan = item.subscriptionPlan as
+      | { planLabel?: unknown }
+      | undefined;
+    const subscriptionPlanLabel =
+      typeof subscriptionPlan?.planLabel === "string"
+        ? subscriptionPlan.planLabel
+        : null;
     return {
       productId: String(item._id ?? item.id ?? product._id ?? ""),
       name: (typeof product.name === "string" && product.name) || "Unknown Product",
@@ -27,9 +34,11 @@ export function buildCheckoutOrderPayload(
       price: Number(item.price ?? product.price ?? item.totalPrice) || 0,
       image: (typeof product.image === "string" && product.image) || null,
       version: versionFromCart,
+      licenseType: (typeof licenseType === "string" && licenseType) || "1year",
       pricingPlan:
-        (typeof licenseType === "string" && licenseType) ||
+        subscriptionPlanLabel ||
         (typeof pricingPlan === "string" && pricingPlan) ||
+        (typeof licenseType === "string" && licenseType) ||
         null,
       driveLink: (typeof product.driveLink === "string" && product.driveLink) || null,
     };

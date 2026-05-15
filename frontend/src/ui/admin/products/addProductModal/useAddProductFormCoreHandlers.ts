@@ -51,7 +51,7 @@ export function useAddProductFormCoreHandlers(
       ...prev,
       subscriptionDurations: [
         ...prev.subscriptionDurations,
-        { duration: "", price: "", priceINR: "", priceUSD: "", trialDays: "" },
+        { duration: "1 Year", price: "", priceINR: "", priceUSD: "", trialDays: "" },
       ],
     }));
   };

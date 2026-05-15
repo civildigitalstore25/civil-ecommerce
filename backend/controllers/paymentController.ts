@@ -6,6 +6,11 @@ import mongoose from 'mongoose';
 import { getDownloadEligibility } from '../utils/downloadEligibility';
 import { postPaymentOrderStatusForOrderItems } from '../utils/orderEbookStatus';
 import { resolveOptionalPagination } from '../utils/listPagination';
+import {
+  calculateExpiryDate,
+  inferLicenseType,
+  type LicenseType,
+} from '../utils/licenseExpiryUtils';
 
 /**
  * Generate short, human-readable order ID.
@@ -40,6 +45,40 @@ function computeAdminOrderMoney(
   const totalAmount = Math.max(0, subtotal - disc);
   return { gross, lineDiscountSum, subtotal, totalAmount };
 }
+
+const resolveOrderItemLicenseType = (item: any): LicenseType => {
+  // First, check if licenseType is explicitly provided
+  const rawLicenseType =
+    typeof item?.licenseType === 'string' ? item.licenseType.toLowerCase().trim() : '';
+  if (
+    rawLicenseType === '1year' ||
+    rawLicenseType === '3year' ||
+    rawLicenseType === '5minute' ||
+    rawLicenseType === 'lifetime'
+  ) {
+    return rawLicenseType as LicenseType;
+  }
+
+  // If not, try to infer from pricingPlan
+  const planText = typeof item?.pricingPlan === 'string' ? item.pricingPlan : undefined;
+  const inferredFromPlan = inferLicenseType(planText);
+  if (inferredFromPlan) {
+    return inferredFromPlan;
+  }
+
+  return '1year';
+};
+
+const attachLicenseExpiryToOrderItems = (items: any[], purchaseDate: Date): any[] => {
+  return items.map((item) => {
+    const licenseType = resolveOrderItemLicenseType(item);
+    return {
+      ...item,
+      licenseType,
+      licenseExpiryDate: calculateExpiryDate(purchaseDate, licenseType),
+    };
+  });
+};
 
 const generateOrderId = (productName?: string): string => {
   // Derive a 3-letter code from product name, fallback to ORD
@@ -285,6 +324,8 @@ export const adminCreateOrder = async (req: Request, res: Response): Promise<voi
     }
     // else: itemsWithDriveLink already normalized without driveLink
 
+    itemsWithDriveLink = attachLicenseExpiryToOrderItems(itemsWithDriveLink, new Date());
+
     // Generate order ID (based on first product name if available)
     const firstItemName = Array.isArray(itemsWithDriveLink) && itemsWithDriveLink.length > 0
       ? itemsWithDriveLink[0].name
@@ -443,14 +484,14 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     );
 
     // Add driveLink to each item
-    const itemsWithDriveLink = items.map((item: any) => {
+    const itemsWithDriveLink = attachLicenseExpiryToOrderItems(items.map((item: any) => {
       const driveLink = productMap.get(item.productId) || null;
       console.log(`📎 Adding driveLink to order item: ${item.name} - ${driveLink ? 'has driveLink' : 'NO driveLink'}`);
       return {
         ...item,
         driveLink
       };
-    });
+    }), new Date());
 
     // Generate order ID (based on first product name if available)
     const firstItemName = Array.isArray(itemsWithDriveLink) && itemsWithDriveLink.length > 0
@@ -690,6 +731,7 @@ export const verifyPayment = async (req: Request, res: Response): Promise<void> 
 
     order.cashfreePaymentId = cfPaymentId;
     order.paymentStatus = 'paid';
+    order.items = attachLicenseExpiryToOrderItems(order.items, new Date());
     const Product = (await import('../models/Product')).default;
     const paidItemIds = order.items.map((i) => i.productId).filter((id) => mongoose.Types.ObjectId.isValid(id));
     const paidProducts = await Product.find({ _id: { $in: paidItemIds } }).select('_id company brand').lean();
@@ -935,6 +977,48 @@ export const getOrder = async (req: Request, res: Response): Promise<void> => {
       success: false,
       message: error.message || 'Internal server error'
     });
+  }
+};
+
+/**
+ * GET /api/payments/admin/recent-license-orders
+ * Admin-only: return recent orders with license/pricing metadata for debugging
+ */
+export const getRecentLicenseOrders = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { page = 1, pageSize = 50 } = req.query;
+    const pageNum = parseInt(page as string, 10) || 1;
+    const pageSizeNum = parseInt(pageSize as string, 10) || 50;
+    const skip = (pageNum - 1) * pageSizeNum;
+
+    const orders = await Order.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(pageSizeNum)
+      .select('orderId orderNumber paymentStatus orderStatus createdAt updatedAt items')
+      .lean();
+
+    const data = orders.map((o: any) => ({
+      orderId: o.orderId,
+      orderNumber: o.orderNumber,
+      paymentStatus: o.paymentStatus,
+      orderStatus: o.orderStatus,
+      createdAt: o.createdAt,
+      updatedAt: o.updatedAt,
+      items: (o.items || []).map((it: any) => ({
+        name: it.name,
+        productId: it.productId,
+        pricingPlan: it.pricingPlan || null,
+        licenseType: it.licenseType || null,
+        licenseExpiryDate: it.licenseExpiryDate || null,
+        price: it.price || null,
+      })),
+    }));
+
+    res.status(200).json({ success: true, data });
+  } catch (error: any) {
+    console.error('❌ Get recent license orders error:', error);
+    res.status(500).json({ success: false, message: error.message || 'Internal server error' });
   }
 };
 

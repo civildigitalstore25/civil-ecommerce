@@ -45,7 +45,7 @@ export const useCart = () => {
 
   const addItem = (
     product: Product,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: "1year" | "3year" | "5minute" | "lifetime",
     quantity: number = 1,
   ) => {
     const price = getPriceByLicenseType(product, licenseType);
@@ -95,7 +95,7 @@ export const useCart = () => {
 
   const isItemInCart = (
     productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: "1year" | "3year" | "5minute" | "lifetime",
   ) => {
     return state.items.some(
       (item) =>
@@ -105,7 +105,7 @@ export const useCart = () => {
 
   const getItemQuantity = (
     productId: string,
-    licenseType: "1year" | "3year" | "lifetime",
+    licenseType: "1year" | "3year" | "5minute" | "lifetime",
   ) => {
     const item = state.items.find(
       (item) =>

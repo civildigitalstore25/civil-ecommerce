@@ -100,6 +100,17 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
         }
       }
     }
+
+    if (licenseType === '5minute') {
+      for (const sub of product.subscriptionDurations) {
+        const duration = sub.duration.toLowerCase();
+        if (duration.includes('5') && duration.includes('minute')) {
+          const price = sub.priceINR || sub.price || 0;
+          console.log(`Found 5-minute plan: ${sub.duration} = ₹${price}`);
+          return price;
+        }
+      }
+    }
   }
 
   // Check admin subscription plans for 1year mapping
@@ -127,6 +138,9 @@ const getPriceByLicenseType = (product: any, licenseType: string, subscriptionPl
       break;
     case '3year':
       price = product.price3INR || product.price3 || 0;
+      break;
+    case '5minute':
+      price = product.price1INR || product.price1 || 0;
       break;
     case 'lifetime':
       price = product.priceLifetimeINR || product.priceLifetime || 0;

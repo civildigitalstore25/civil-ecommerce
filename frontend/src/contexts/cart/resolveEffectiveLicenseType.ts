@@ -1,6 +1,6 @@
 import type { Product } from "../../types/cartTypes";
 
-export type CartLicenseType = "1year" | "3year" | "lifetime";
+export type CartLicenseType = "1year" | "3year" | "5minute" | "lifetime";
 
 function toPositiveNumber(value: unknown): number {
   const parsed = Number(value);
@@ -38,6 +38,10 @@ export function resolveEffectiveLicenseType(
   if (licenseType === "3year" && !has3YearPrice) {
     if (has1YearPrice) return "1year";
     if (hasLifetimePrice) return "lifetime";
+  }
+
+  if (licenseType === "5minute") {
+    return "5minute";
   }
 
   return licenseType;

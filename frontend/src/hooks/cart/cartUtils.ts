@@ -6,13 +6,15 @@ export function generateCartItemId(): string {
 
 export function getPriceByLicenseType(
   product: Product,
-  licenseType: "1year" | "3year" | "lifetime",
+  licenseType: "1year" | "3year" | "5minute" | "lifetime",
 ): number {
   switch (licenseType) {
     case "1year":
       return product.price1 || 0;
     case "3year":
       return product.price3 || 0;
+    case "5minute":
+      return product.price1 || 0;
     case "lifetime":
       return product.priceLifetime || 0;
     default:

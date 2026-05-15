@@ -1,7 +1,7 @@
 export interface CartItem {
   id: string;
   product: Product;
-  licenseType: "1year" | "3year" | "lifetime";
+  licenseType: "1year" | "3year" | "5minute" | "lifetime";
   quantity: number;
   price: number;
   totalPrice: number;

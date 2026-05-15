@@ -62,6 +62,8 @@ export function getLicenseLabel(
       return "1 Year License";
     case "3year":
       return "3 Year License";
+    case "5minute":
+      return "5 Minute License";
     case "lifetime":
       return "Lifetime License";
     default:

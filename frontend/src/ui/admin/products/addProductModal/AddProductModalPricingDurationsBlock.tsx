@@ -43,13 +43,14 @@ export function AddProductModalPricingDurationsBlock({
                   color: colors.text.primary,
                 }}
               >
+                <option value="5 Minute">5 Minute (Test)</option>
+                <option value="Monthly">Monthly</option>
+                <option value="6 Months">6 Months</option>
+                <option value="Trial Pack">Trial Pack</option>
                 <option value="1 Year">1 Year</option>
                 <option value="2 Year">2 Year</option>
                 <option value="3 Year">3 Year</option>
                 <option value="5 Year">5 Year</option>
-                <option value="6 Months">6 Months</option>
-                <option value="Trial Pack">Trial Pack</option>
-                <option value="Monthly">Monthly</option>
               </select>
             </div>
             <div>

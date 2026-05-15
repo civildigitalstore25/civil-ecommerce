@@ -11,6 +11,10 @@ export interface IOrderItem {
   version?: string;
   pricingPlan?: string;
   driveLink?: string; // Google Drive download link
+  /** License type (1year, 3year, 5minute, lifetime) */
+  licenseType?: '1year' | '3year' | '5minute' | 'lifetime';
+  /** License expiry date (null for lifetime licenses) */
+  licenseExpiryDate?: Date | null;
 }
 
 export interface IShippingAddress {
@@ -78,7 +82,16 @@ const OrderSchema = new Schema<IOrder>({
     image: { type: String },
     version: { type: String },
     pricingPlan: { type: String },
-    driveLink: { type: String } // Google Drive download link
+    driveLink: { type: String }, // Google Drive download link
+    licenseType: {
+      type: String,
+      enum: ['1year', '3year', '5minute', 'lifetime'],
+      required: false
+    },
+    licenseExpiryDate: {
+      type: Date,
+      required: false
+    }
   }],
   subtotal: {
     type: Number,
@@ -142,6 +155,9 @@ const OrderSchema = new Schema<IOrder>({
 }, {
   timestamps: true
 });
+
+// Index for faster queries on license expiry
+OrderSchema.index({ 'items.licenseExpiryDate': 1 });
 
 OrderSchema.set('toJSON', {
   transform(_doc, ret) {

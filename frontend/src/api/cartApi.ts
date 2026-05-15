@@ -29,7 +29,7 @@ export interface CartResponse {
 
 export interface AddToCartRequest {
   productId: string;
-  licenseType: "1year" | "3year" | "lifetime";
+  licenseType: "1year" | "3year" | "5minute" | "lifetime";
   quantity?: number;
   subscriptionPlan?: {
     planId: string;
@@ -51,7 +51,7 @@ export interface AdminCartItemProduct {
 export interface AdminCartItem {
   _id: string;
   product: AdminCartItemProduct;
-  licenseType: "1year" | "3year" | "lifetime";
+  licenseType: "1year" | "3year" | "5minute" | "lifetime";
   quantity: number;
   price: number;
   totalPrice: number;

@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Mail,
   FileText,
+  AlertCircle,
 } from "lucide-react";
 import Dashboard from "./Dashboard";
 import Products from "./products/Products";
@@ -25,6 +26,7 @@ import Coupons from "../admin/coupons/Coupons";
 import Reviews from "./Reviews";
 import EnquiryManagement from "./EnquiryManagement";
 import SuperAdminAdminManagement from "./SuperAdminAdminManagement";
+import Expiry from "./expiry/Expiry";
 import { useAuth } from "../../api/auth";
 
 type MenuType =
@@ -40,6 +42,7 @@ type MenuType =
   | "coupons"
   | "reviews"
   | "enquiries"
+  | "expiry"
   | "admin-management";
 
 
@@ -70,6 +73,7 @@ const AdminDashboardContent: React.FC = () => {
     { id: "enquiries", label: "Enquiries", icon: Mail, permission: "enquiries" },
     { id: "banner", label: "Banner", icon: Image, permission: "banners" },
     { id: "coupons", label: "Coupons", icon: TicketPercent, permission: "coupons" },
+    { id: "expiry", label: "Expiry", icon: AlertCircle, permission: "expiry" },
   ];
 
   // Filter menu items based on permissions
@@ -124,6 +128,8 @@ const AdminDashboardContent: React.FC = () => {
         return <Banner />;
       case "coupons":
         return <Coupons />;
+      case "expiry":
+        return <Expiry />;
       case "admin-management":
         return user?.role === "superadmin" ? <SuperAdminAdminManagement /> : null;
       default:

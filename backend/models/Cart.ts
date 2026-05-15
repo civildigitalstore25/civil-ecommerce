@@ -2,7 +2,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface ICartItem {
   product: Types.ObjectId;
-  licenseType: '1year' | '3year' | 'lifetime';
+  licenseType: '1year' | '3year' | '5minute' | 'lifetime';
   quantity: number;
   price: number;
   totalPrice: number;
@@ -34,7 +34,7 @@ const cartItemSchema = new Schema({
   },
   licenseType: {
     type: String,
-    enum: ['1year', '3year', 'lifetime'],
+    enum: ['1year', '3year', '5minute', 'lifetime'],
     required: true
   },
   quantity: {
