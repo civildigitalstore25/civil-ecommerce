@@ -17,6 +17,9 @@ export interface IOrderItem {
   discount?: number;
   image?: string;
   driveLink?: string; // Google Drive download link
+  planDurationLabel?: string;
+  planDurationMinutes?: number;
+  planType?: string;
   canDownload?: boolean;
   downloadBlockedReason?: string | null;
   isFreeProduct?: boolean;

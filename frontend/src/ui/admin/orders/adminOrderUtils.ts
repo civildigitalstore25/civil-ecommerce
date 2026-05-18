@@ -1,4 +1,5 @@
 import { normalizeDuplicateIndiaCountryInPhone } from "../../../utils/normalizePhoneNumber";
+import { parsePlanDurationMinutes } from "../../../utils/planDuration";
 
 /** Checkout contact email is stored in notes as `Email: ...` when it differs from account email. */
 export function emailFromOrderNotes(notes: string | undefined | null): string {
@@ -41,7 +42,20 @@ export type AdminOrderLike = {
     version?: string;
     pricingPlan?: string;
     licenseType?: string;
+    planDurationLabel?: string;
+    planDurationMinutes?: number;
+    planType?: string;
   }>;
+};
+
+export type AdminOrderItemLike = NonNullable<AdminOrderLike["items"]>[number];
+
+export type ExpiryOrderItem = {
+  order: AdminOrderLike;
+  item: AdminOrderItemLike;
+  durationMinutes: number;
+  expiresAt: Date;
+  planLabel: string;
 };
 
 export function displayOrderCustomerPhone(order: AdminOrderLike): string {
@@ -114,6 +128,133 @@ export function buildOrderWhatsAppUrl(order: AdminOrderLike): string {
   const phone = normalizeWhatsAppPhone(displayOrderCustomerPhone(order));
   if (!phone) return "";
   const message = buildOrderWhatsAppMessage(order);
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+}
+
+export function resolveOrderItemDurationMinutes(item: AdminOrderItemLike): number | null {
+  if (typeof item.planDurationMinutes === "number" && item.planDurationMinutes > 0) {
+    return item.planDurationMinutes;
+  }
+  return (
+    parsePlanDurationMinutes(item.planDurationLabel) ||
+    parsePlanDurationMinutes(item.pricingPlan) ||
+    null
+  );
+}
+
+function resolveOrderItemPlanLabel(item: AdminOrderItemLike): string {
+  return item.planDurationLabel || item.pricingPlan || item.licenseType || "";
+}
+
+export function deriveExpiredOrderItems(
+  orders: AdminOrderLike[],
+  now: Date = new Date(),
+): ExpiryOrderItem[] {
+  const nowTime = now.getTime();
+  const expired: ExpiryOrderItem[] = [];
+
+  orders.forEach((order) => {
+    if (!order.createdAt || !order.items || order.items.length === 0) return;
+    const createdAt = new Date(order.createdAt);
+    if (Number.isNaN(createdAt.getTime())) return;
+
+    order.items.forEach((item) => {
+      const durationMinutes = resolveOrderItemDurationMinutes(item);
+      if (!durationMinutes || durationMinutes <= 0) return;
+      const expiresAt = new Date(createdAt.getTime() + durationMinutes * 60 * 1000);
+      if (expiresAt.getTime() <= nowTime) {
+        const planLabel = resolveOrderItemPlanLabel(item);
+        expired.push({ order, item, durationMinutes, expiresAt, planLabel });
+      }
+    });
+  });
+
+  return expired;
+}
+
+export function filterExpiryItemsBySearch(
+  items: ExpiryOrderItem[],
+  searchTerm: string,
+): ExpiryOrderItem[] {
+  const search = searchTerm.trim().toLowerCase();
+  if (!search) return items;
+
+  return items.filter(({ order, item, planLabel }) => {
+    const orderNumber = String(order.orderNumber ?? "");
+    const customerName =
+      order.userId?.fullName || order.shippingAddress?.fullName || "";
+    const customerEmail = displayOrderCustomerEmail(order);
+    const customerPhone = displayOrderCustomerPhone(order);
+    const productName = item.name || "";
+
+    return [
+      orderNumber,
+      order.orderId || order._id || "",
+      customerName,
+      customerEmail,
+      customerPhone,
+      productName,
+      planLabel,
+    ]
+      .join(" ")
+      .toLowerCase()
+      .includes(search);
+  });
+}
+
+function formatExpiryDateLabel(date: Date): string {
+  return date.toLocaleString("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export function buildExpiryWhatsAppMessage(
+  order: AdminOrderLike,
+  item: AdminOrderItemLike,
+  expiresAt: Date,
+): string {
+  const customerName =
+    order.shippingAddress?.fullName?.trim() || order.userId?.fullName?.trim() || "Customer";
+  const orderLabel = order.orderNumber ? `#${order.orderNumber}` : getOrderId(order) || "your order";
+  const planLabel = resolveOrderItemPlanLabel(item) || "plan";
+  const orderDate = order.createdAt
+    ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    : "";
+
+  const lines = [
+    `Hi ${customerName},`,
+    "",
+    `This is a reminder about your Softzcart order ${orderLabel}.`,
+    `Product: ${item.name || ""}`,
+    `Plan: ${planLabel}`,
+  ];
+
+  if (orderDate) {
+    lines.push(`Order date: ${orderDate}`);
+  }
+
+  lines.push(`Expiry date: ${formatExpiryDateLabel(expiresAt)}`);
+  lines.push("", "If you need assistance with renewal, just reply here.");
+
+  return lines.join("\n");
+}
+
+export function buildExpiryWhatsAppUrl(
+  order: AdminOrderLike,
+  item: AdminOrderItemLike,
+  expiresAt: Date,
+): string {
+  const phone = normalizeWhatsAppPhone(displayOrderCustomerPhone(order));
+  if (!phone) return "";
+  const message = buildExpiryWhatsAppMessage(order, item, expiresAt);
   return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 }
 

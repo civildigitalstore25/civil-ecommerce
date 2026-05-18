@@ -10,6 +10,8 @@ import {
   getOrderId,
   getStatusLabel,
   normOrderStatus,
+  deriveExpiredOrderItems,
+  filterExpiryItemsBySearch,
   type AdminOrderLike,
 } from "./adminOrderUtils";
 import { useAdminOrdersExport } from "./useAdminOrdersExport";
@@ -74,6 +76,8 @@ export function useAdminOrdersPage() {
 
   const orders = (data?.data?.orders || []) as AdminOrderLike[];
   const filteredOrders = filterOrdersBySearch(orders, searchTerm);
+  const expiredItems = deriveExpiredOrderItems(orders);
+  const filteredExpiredItems = filterExpiryItemsBySearch(expiredItems, searchTerm);
   const totalPages = Math.ceil(filteredOrders.length / pageSize) || 1;
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedOrders = filteredOrders.slice(startIndex, startIndex + pageSize);
@@ -178,6 +182,8 @@ export function useAdminOrdersPage() {
     processingOrders,
     completedOrders,
     cancelledOrders,
+    expiredItems,
+    filteredExpiredItems,
     handleSelectAll,
     handleSelectOrder,
     handleBulkStatusUpdate,

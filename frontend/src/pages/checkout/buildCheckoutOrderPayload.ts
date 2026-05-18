@@ -1,4 +1,5 @@
 import type { CheckoutFormData } from "./checkoutTypes";
+import { parsePlanDurationMinutes } from "../../utils/planDuration";
 
 /** Builds POST body for `/api/payments/create-order` from checkout cart state. */
 export function buildCheckoutOrderPayload(
@@ -20,6 +21,15 @@ export function buildCheckoutOrderPayload(
       null;
     const licenseType = item.licenseType;
     const pricingPlan = item.pricingPlan;
+    const subscriptionPlan = (item.subscriptionPlan || item.subscriptionPlanDetails) as
+      | { planId?: string; planLabel?: string; planType?: string }
+      | undefined;
+    const planLabel =
+      (typeof subscriptionPlan?.planLabel === "string" && subscriptionPlan.planLabel) ||
+      (typeof pricingPlan === "string" && pricingPlan) ||
+      (typeof licenseType === "string" && licenseType) ||
+      null;
+    const planDurationMinutes = parsePlanDurationMinutes(planLabel);
     return {
       productId: String(item._id ?? item.id ?? product._id ?? ""),
       name: (typeof product.name === "string" && product.name) || "Unknown Product",
@@ -27,10 +37,12 @@ export function buildCheckoutOrderPayload(
       price: Number(item.price ?? product.price ?? item.totalPrice) || 0,
       image: (typeof product.image === "string" && product.image) || null,
       version: versionFromCart,
-      pricingPlan:
-        (typeof licenseType === "string" && licenseType) ||
-        (typeof pricingPlan === "string" && pricingPlan) ||
-        null,
+      pricingPlan: planLabel,
+      planDurationLabel: planLabel || undefined,
+      planDurationMinutes: planDurationMinutes ?? undefined,
+      planType:
+        (typeof subscriptionPlan?.planType === "string" && subscriptionPlan.planType) ||
+        undefined,
       driveLink: (typeof product.driveLink === "string" && product.driveLink) || null,
     };
   });

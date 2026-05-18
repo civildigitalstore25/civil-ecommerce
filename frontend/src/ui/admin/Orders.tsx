@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import AdminPagination from "./components/AdminPagination";
 import { useAdminOrdersPage } from "./orders/useAdminOrdersPage";
@@ -11,11 +11,20 @@ import AdminCreateOrderModal from "./orders/AdminCreateOrderModal";
 import OrdersStatsGrid from "./orders/OrdersStatsGrid";
 import OrdersDataTable from "./orders/OrdersDataTable";
 import OrderDetailsModal from "./orders/OrderDetailsModal";
+import OrdersExpiryTable from "./orders/OrdersExpiryTable";
 
 const Orders: React.FC = () => {
   const { colors, theme } = useAdminTheme();
   const createForm = useAdminOrderCreateForm();
   const page = useAdminOrdersPage();
+  const [activeTab, setActiveTab] = useState<"orders" | "expiry">("orders");
+
+  const expiryTotalPages = Math.ceil(page.filteredExpiredItems.length / page.pageSize) || 1;
+  const expiryStartIndex = (page.currentPage - 1) * page.pageSize;
+  const paginatedExpiredItems = page.filteredExpiredItems.slice(
+    expiryStartIndex,
+    expiryStartIndex + page.pageSize,
+  );
 
   if (page.isLoading) {
     return <OrdersLoading colors={colors} />;
@@ -23,84 +32,137 @@ const Orders: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <OrdersPageToolbar
-        colors={colors}
-        showCreateForm={createForm.showCreateForm}
-        onToggleCreate={() => createForm.setShowCreateForm((v) => !v)}
-        statusFilter={page.statusFilter}
-        onStatusFilterChange={page.setStatusFilter}
-        exportOpen={page.exportOpen}
-        setExportOpen={page.setExportOpen}
-        exportRangeType={page.exportRangeType}
-        setExportRangeType={page.setExportRangeType}
-        exportDate={page.exportDate}
-        setExportDate={page.setExportDate}
-        exportWeek={page.exportWeek}
-        setExportWeek={page.setExportWeek}
-        exportMonth={page.exportMonth}
-        setExportMonth={page.setExportMonth}
-        exportYear={page.exportYear}
-        setExportYear={page.setExportYear}
-        exportCustomFromDate={page.exportCustomFromDate}
-        setExportCustomFromDate={page.setExportCustomFromDate}
-        exportCustomToDate={page.exportCustomToDate}
-        setExportCustomToDate={page.setExportCustomToDate}
-        onExportExcel={page.handleExportExcel}
-        onExportJSON={page.handleExportJSON}
-      />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("orders");
+            page.setCurrentPage(1);
+          }}
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+          style={{
+            backgroundColor:
+              activeTab === "orders" ? colors.interactive.primary : colors.background.accent,
+            color: activeTab === "orders" ? "#ffffff" : colors.text.primary,
+          }}
+        >
+          Orders
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("expiry");
+            page.setCurrentPage(1);
+          }}
+          className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+          style={{
+            backgroundColor:
+              activeTab === "expiry" ? colors.interactive.primary : colors.background.accent,
+            color: activeTab === "expiry" ? "#ffffff" : colors.text.primary,
+          }}
+        >
+          Expiry
+        </button>
+      </div>
 
+      {activeTab === "orders" && (
+        <OrdersPageToolbar
+          colors={colors}
+          showCreateForm={createForm.showCreateForm}
+          onToggleCreate={() => createForm.setShowCreateForm((v) => !v)}
+          statusFilter={page.statusFilter}
+          onStatusFilterChange={page.setStatusFilter}
+          exportOpen={page.exportOpen}
+          setExportOpen={page.setExportOpen}
+          exportRangeType={page.exportRangeType}
+          setExportRangeType={page.setExportRangeType}
+          exportDate={page.exportDate}
+          setExportDate={page.setExportDate}
+          exportWeek={page.exportWeek}
+          setExportWeek={page.setExportWeek}
+          exportMonth={page.exportMonth}
+          setExportMonth={page.setExportMonth}
+          exportYear={page.exportYear}
+          setExportYear={page.setExportYear}
+          exportCustomFromDate={page.exportCustomFromDate}
+          setExportCustomFromDate={page.setExportCustomFromDate}
+          exportCustomToDate={page.exportCustomToDate}
+          setExportCustomToDate={page.setExportCustomToDate}
+          onExportExcel={page.handleExportExcel}
+          onExportJSON={page.handleExportJSON}
+        />
+      )}
       <OrdersSearchPanel
         colors={colors}
         searchTerm={page.searchTerm}
         onSearchChange={page.setSearchTerm}
       />
 
-      <OrdersBulkStickyBar
-        colors={colors}
-        selectedCount={page.selectedOrders.length}
-        bulkStatusDropdown={page.bulkStatusDropdown}
-        onBulkStatusChange={page.setBulkStatusDropdown}
-        onApplyBulk={() => page.handleBulkStatusUpdate(page.bulkStatusDropdown)}
-        onClear={() => {
-          page.setSelectedOrders([]);
-          page.setBulkStatusDropdown("");
-        }}
-        bulkPending={page.bulkUpdateMutation.isPending}
-      />
-
+      {activeTab === "orders" && (
+        <OrdersBulkStickyBar
+          colors={colors}
+          selectedCount={page.selectedOrders.length}
+          bulkStatusDropdown={page.bulkStatusDropdown}
+          onBulkStatusChange={page.setBulkStatusDropdown}
+          onApplyBulk={() => page.handleBulkStatusUpdate(page.bulkStatusDropdown)}
+          onClear={() => {
+            page.setSelectedOrders([]);
+            page.setBulkStatusDropdown("");
+          }}
+          bulkPending={page.bulkUpdateMutation.isPending}
+        />
+      )}
       {createForm.showCreateForm && (
         <AdminCreateOrderModal colors={colors} theme={theme} form={createForm} />
       )}
 
-      <OrdersStatsGrid
-        colors={colors}
-        totalOrdersCount={page.totalOrdersCount}
-        pendingCount={page.pendingOrders.length}
-        processingCount={page.processingOrders.length}
-        completedCount={page.completedOrders.length}
-        cancelledCount={page.cancelledOrders.length}
-      />
+      {activeTab === "orders" ? (
+        <>
+          <OrdersStatsGrid
+            colors={colors}
+            totalOrdersCount={page.totalOrdersCount}
+            pendingCount={page.pendingOrders.length}
+            processingCount={page.processingOrders.length}
+            completedCount={page.completedOrders.length}
+            cancelledCount={page.cancelledOrders.length}
+          />
 
-      <OrdersDataTable
-        colors={colors}
-        filteredOrders={page.filteredOrders}
-        paginatedOrders={page.paginatedOrders}
-        selectedOrders={page.selectedOrders}
-        onSelectAll={page.handleSelectAll}
-        onSelectOrder={page.handleSelectOrder}
-        onViewDetails={page.handleViewDetails}
-        onDeleteOrder={page.handleDeleteOrder}
-        deletePending={page.deleteOrderMutation.isPending}
-      />
+          <OrdersDataTable
+            colors={colors}
+            filteredOrders={page.filteredOrders}
+            paginatedOrders={page.paginatedOrders}
+            selectedOrders={page.selectedOrders}
+            onSelectAll={page.handleSelectAll}
+            onSelectOrder={page.handleSelectOrder}
+            onViewDetails={page.handleViewDetails}
+            onDeleteOrder={page.handleDeleteOrder}
+            deletePending={page.deleteOrderMutation.isPending}
+          />
 
-      {!page.isLoading && page.filteredOrders.length > 0 && (
-        <AdminPagination
-          currentPage={page.currentPage}
-          totalPages={page.totalPages}
-          onPageChange={page.setCurrentPage}
-          pageSize={page.pageSize}
-          onPageSizeChange={page.setPageSize}
-        />
+          {!page.isLoading && page.filteredOrders.length > 0 && (
+            <AdminPagination
+              currentPage={page.currentPage}
+              totalPages={page.totalPages}
+              onPageChange={page.setCurrentPage}
+              pageSize={page.pageSize}
+              onPageSizeChange={page.setPageSize}
+            />
+          )}
+        </>
+      ) : (
+        <>
+          <OrdersExpiryTable colors={colors} items={paginatedExpiredItems} />
+
+          {!page.isLoading && page.filteredExpiredItems.length > 0 && (
+            <AdminPagination
+              currentPage={page.currentPage}
+              totalPages={expiryTotalPages}
+              onPageChange={page.setCurrentPage}
+              pageSize={page.pageSize}
+              onPageSizeChange={page.setPageSize}
+            />
+          )}
+        </>
       )}
 
       {page.showDetailsModal && page.selectedOrder && (

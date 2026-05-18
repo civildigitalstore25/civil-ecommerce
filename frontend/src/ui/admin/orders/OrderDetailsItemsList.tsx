@@ -11,6 +11,7 @@ export type DetailLineItem = {
   image?: string;
   version?: string;
   pricingPlan?: string;
+  planDurationLabel?: string;
   /** Some payloads store the license key here instead of `pricingPlan`. */
   licenseType?: string;
 };
@@ -22,9 +23,17 @@ function pickVersionText(item: DetailLineItem & Record<string, unknown>): string
 }
 
 function pickPlanKey(item: DetailLineItem & Record<string, unknown>): string {
-  const p = item.pricingPlan ?? item.licenseType;
+  const p = item.planDurationLabel ?? item.pricingPlan ?? item.licenseType;
   if (typeof p === "string" && p.trim()) return p.trim();
   return "";
+}
+
+function resolvePlanLabel(planKey: string): string {
+  if (!planKey) return "";
+  if (["1year", "3year", "lifetime"].includes(planKey)) {
+    return getLicenseLabel(planKey);
+  }
+  return planKey;
 }
 
 type Props = {
@@ -43,7 +52,7 @@ const OrderDetailsItemsList: React.FC<Props> = ({ colors, items }) => (
         const row = item as DetailLineItem & Record<string, unknown>;
         const versionText = pickVersionText(row);
         const planKey = pickPlanKey(row);
-        const planLabel = planKey ? getLicenseLabel(planKey) : "";
+        const planLabel = resolvePlanLabel(planKey);
 
         return (
           <div

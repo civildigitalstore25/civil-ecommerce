@@ -173,7 +173,7 @@ export function useProductDetailCart({
       price: selectedOption.priceINR,
       priceUSD: selectedOption.priceUSD,
       totalPrice: selectedOption.priceINR,
-      subscriptionPlanDetails: {
+      subscriptionPlan: {
         planId: selectedOption.id,
         planLabel: selectedOption.label,
         planType: selectedOption.type,

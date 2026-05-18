@@ -50,6 +50,7 @@ export function AddProductModalPricingDurationsBlock({
                 <option value="6 Months">6 Months</option>
                 <option value="Trial Pack">Trial Pack</option>
                 <option value="Monthly">Monthly</option>
+                <option value="5 Minutes">5 Minutes</option>
               </select>
             </div>
             <div>

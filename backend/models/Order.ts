@@ -10,6 +10,9 @@ export interface IOrderItem {
   image?: string;
   version?: string;
   pricingPlan?: string;
+  planDurationLabel?: string;
+  planDurationMinutes?: number;
+  planType?: string;
   driveLink?: string; // Google Drive download link
 }
 
@@ -78,6 +81,9 @@ const OrderSchema = new Schema<IOrder>({
     image: { type: String },
     version: { type: String },
     pricingPlan: { type: String },
+    planDurationLabel: { type: String },
+    planDurationMinutes: { type: Number },
+    planType: { type: String },
     driveLink: { type: String } // Google Drive download link
   }],
   subtotal: {

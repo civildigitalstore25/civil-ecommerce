@@ -64,6 +64,7 @@ export function AddProductModalAdminSubscriptionsSection({
                     <option value="Semi-Annual">Semi-Annual</option>
                     <option value="Annual">Annual</option>
                     <option value="Weekly">Weekly</option>
+                    <option value="5 Minutes">5 Minutes</option>
                   </select>
                 </div>
                 <div>
