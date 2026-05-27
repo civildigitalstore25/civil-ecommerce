@@ -1,5 +1,4 @@
 import { useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useProducts } from "../../api/productApi";
 import type { Product } from "../../api/types/productTypes";
 import { useCartContext } from "../../contexts/CartContext";
@@ -17,7 +16,6 @@ export function useRelatedProducts(
   limitProp?: number,
 ) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate();
   const { addItem } = useCartContext();
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
@@ -61,7 +59,6 @@ export function useRelatedProducts(
 
   return {
     scrollRef,
-    navigate,
     addItem,
     colors,
     formatPriceWithSymbol,
