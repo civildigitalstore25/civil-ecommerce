@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import tailwindcss from '@tailwindcss/vite'
+import { renderCrawlNavHtml } from './src/utils/seo/renderCrawlNavHtml'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -10,10 +11,11 @@ export default defineConfig({
     {
       name: 'html-transform',
       transformIndexHtml(html) {
-        return html.replace(
+        const withGa = html.replace(
           /%VITE_GA_MEASUREMENT_ID%/g,
           process.env.VITE_GA_MEASUREMENT_ID || ''
         )
+        return withGa.replace('<!--CRAWL_NAV-->', renderCrawlNavHtml())
       },
     },
   ],

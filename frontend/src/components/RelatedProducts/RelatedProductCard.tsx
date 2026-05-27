@@ -1,15 +1,14 @@
 import type { Product } from "../../api/types/productTypes";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
-import type { NavigateFunction } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { getMinimumProductPrice } from "../../utils/productPricing";
-import { productSlugFromProduct } from "../../utils/productSlugFromProduct";
+import { productPathFromProduct } from "../../utils/sitemap/productSlugPath";
 
 interface RelatedProductCardProps {
   product: Product;
   colors: ThemeColors;
   interactiveTint: string;
   formatPriceWithSymbol: (inr: number, usd?: number) => string;
-  navigate: NavigateFunction;
   onAddToCart: (product: Product) => void;
 }
 
@@ -18,10 +17,9 @@ export function RelatedProductCard({
   colors,
   interactiveTint,
   formatPriceWithSymbol,
-  navigate,
   onAddToCart,
 }: RelatedProductCardProps) {
-  const slug = productSlugFromProduct(product);
+  const productPath = productPathFromProduct(product);
 
   return (
     <div
@@ -31,10 +29,10 @@ export function RelatedProductCard({
         borderColor: colors.border.primary,
       }}
     >
-      <div
-        className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
+      <Link
+        to={productPath}
+        className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 block transition-colors duration-200 relative"
         style={{ backgroundColor: colors.background.secondary }}
-        onClick={() => navigate(`/product/${slug}`)}
       >
         <img
           src={product.imageUrl || product.image}
@@ -77,7 +75,7 @@ export function RelatedProductCard({
             </div>
           </div>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-wrap gap-1 md:gap-2 mb-1 md:mb-2">
         <span
@@ -113,27 +111,29 @@ export function RelatedProductCard({
         </span>
       </div>
 
-      <h2
-        className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2"
-        style={{ color: colors.text.primary }}
-      >
-        {product.name}
-        {product.version && (
-          <span
-            className="font-normal transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            {" "}
-            ({product.version})
-          </span>
-        )}
+      <h2 className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 line-clamp-2">
+        <Link
+          to={productPath}
+          className="transition-colors duration-200 hover:underline"
+          style={{ color: colors.text.primary }}
+        >
+          {product.name}
+          {product.version && (
+            <span
+              className="font-normal transition-colors duration-200"
+              style={{ color: colors.text.secondary }}
+            >
+              {" "}
+              ({product.version})
+            </span>
+          )}
+        </Link>
       </h2>
 
       <div className="flex flex-col gap-1 md:gap-2 mt-auto">
-        <button
-          type="button"
-          onClick={() => navigate(`/product/${slug}`)}
-          className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+        <Link
+          to={productPath}
+          className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02] text-center"
           style={{
             borderColor: colors.border.primary,
             color: colors.text.primary,
@@ -147,7 +147,7 @@ export function RelatedProductCard({
           }}
         >
           View Details
-        </button>
+        </Link>
         <button
           type="button"
           onClick={(e) => {

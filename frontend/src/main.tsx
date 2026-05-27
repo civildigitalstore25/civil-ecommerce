@@ -4,6 +4,8 @@ import "./index.css";
 import App from "./App.tsx";
 import { initClarity } from "./utils/clarity.ts";
 
+document.documentElement.classList.add("js");
+
 // Import fonts
 import '@fontsource/poppins/300.css';
 import '@fontsource/poppins/400.css';

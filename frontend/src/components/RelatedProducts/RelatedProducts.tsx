@@ -13,7 +13,6 @@ const SCROLL_STEP = 304;
 const RelatedProducts = ({ currentProduct, limit: limitProp }: RelatedProductsProps) => {
   const {
     scrollRef,
-    navigate,
     addItem,
     colors,
     formatPriceWithSymbol,
@@ -68,7 +67,6 @@ const RelatedProducts = ({ currentProduct, limit: limitProp }: RelatedProductsPr
             colors={colors}
             interactiveTint={interactiveTint}
             formatPriceWithSymbol={formatPriceWithSymbol}
-            navigate={navigate}
             onAddToCart={(p) => addItem(p, "1year", 1)}
           />
         ))}
