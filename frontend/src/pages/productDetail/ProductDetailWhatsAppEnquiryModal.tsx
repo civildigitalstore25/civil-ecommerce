@@ -163,7 +163,7 @@ export const ProductDetailWhatsAppEnquiryModal: React.FC<Props> = ({
             className="text-xs mt-2"
             style={{ color: colors.text.secondary }}
           >
-            This message will be sent to our WhatsApp: +91 8807423228
+            This message will be sent to our WhatsApp: +91 9042993986
           </p>
         </div>
 

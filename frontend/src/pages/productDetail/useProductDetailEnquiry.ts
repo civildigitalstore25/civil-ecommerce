@@ -61,7 +61,7 @@ export function useProductDetailEnquiry({
     const productName = product?.name || "this product";
     const productLink = window.location.href;
     const message = `Hi, I'm interested in ${productName}.\n\nMy Enquiry:\n${enquiryMessage}\n\nProduct Link: ${productLink}`;
-    const whatsappNumber = "918807423228";
+    const whatsappNumber = "9190429 93986";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     window.open(whatsappUrl, "_blank");
