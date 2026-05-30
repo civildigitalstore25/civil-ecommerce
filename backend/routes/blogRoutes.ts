@@ -29,8 +29,8 @@ router.get(['/blog/slug/:slug/related', '/blogs/slug/:slug/related'], getRelated
 
 // Admin routes (Protected)
 router.post(['/blog', '/blogs', '/blog/create', '/blogs/create'], authenticate, requireAdmin, createBlog); // Create new blog
-router.get(['/blog/:id', '/blogs/:id'], authenticate, requireAdmin, getBlogById); // Get blog by ID for editing
 router.get(['/blog/drafts', '/blogs/drafts'], authenticate, requireAdmin, getDraftBlogs); // Get draft blogs
+router.get(['/blog/:id', '/blogs/:id'], authenticate, requireAdmin, getBlogById); // Get blog by ID for editing
 router.put(['/blog/:id', '/blogs/:id'], authenticate, requireAdmin, updateBlog); // Update blog
 router.put(['/blog/:id/publish', '/blogs/:id/publish'], authenticate, requireAdmin, publishBlog); // Publish draft blog
 router.delete(['/blog/:id', '/blogs/:id'], authenticate, requireAdmin, deleteBlog); // Delete blog
