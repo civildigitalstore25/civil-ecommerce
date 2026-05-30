@@ -114,7 +114,10 @@ export const brandCategories: Record<
   },
   "video-bundle": {
     label: "Video Bundle",
-    categories: [{ value: "reels", label: "Reels" }],
+    categories: [
+      { value: "reels", label: "Reels" },
+      { value: "tutorials", label: "Tutorials" },
+    ],
   },
   "recovery-softwares": {
     label: "Recovery Softwares",

@@ -67,6 +67,7 @@ export const categoryLabels: Record<string, string> = {
   "civil-engineering": "Civil Engineering",
   "ai-prompts": "AI Prompts",
   reels: "Reels",
+  tutorials: "Tutorials",
 };
 
 export type SortOption = "newest" | "modified" | "oldest" | "name-asc" | "name-desc";
