@@ -15,9 +15,11 @@ interface BlogCardProps {
   showActions?: boolean;
   onEdit?: (id: string, e: React.MouseEvent) => void;
   onDelete?: (id: string, title: string, e: React.MouseEvent) => void;
+  onPublish?: (id: string, e: React.MouseEvent) => void;
   isDeleting?: boolean;
   excerptLength?: number;
   variant?: "default" | "compact";
+  showStatusBadge?: boolean;
 }
 
 export function BlogCard({
@@ -25,9 +27,11 @@ export function BlogCard({
   showActions = true,
   onEdit,
   onDelete,
+  onPublish,
   isDeleting = false,
   excerptLength = 80,
   variant = "default",
+  showStatusBadge = false,
 }: BlogCardProps): React.ReactElement {
   const { colors, theme } = useAdminTheme();
   const isCompact = variant === "compact";
@@ -93,6 +97,26 @@ export function BlogCard({
 
   const bodyBlock = (
     <div className={isCompact ? "px-1" : "flex flex-col flex-1 min-h-0"}>
+      {showStatusBadge && (
+        <div className="flex justify-end mb-1">
+          <span
+            className="text-[10px] md:text-xs px-2 py-1 rounded-full font-semibold uppercase tracking-wide"
+            style={{
+              backgroundColor:
+                blog.status === "published"
+                  ? `${colors.status.success}20`
+                  : `${colors.status.warning}20`,
+              color:
+                blog.status === "published"
+                  ? colors.status.success
+                  : colors.status.warning,
+            }}
+          >
+            {blog.status}
+          </span>
+        </div>
+      )}
+
       <div className={`flex flex-wrap gap-1.5 mb-1 ${isCompact ? "mb-2" : ""}`}>
         <BlogCategoryTag category={blog.category} />
       </div>
@@ -167,6 +191,17 @@ export function BlogCard({
               >
                 <Trash2 className="w-4 h-4" />
               </button>
+              {blog.status === "draft" && onPublish && (
+                <button
+                  type="button"
+                  onClick={(e) => onPublish(blog._id, e)}
+                  title="Publish"
+                  className="flex items-center justify-center px-3 h-9 rounded-lg border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-500 hover:text-white transition-colors shrink-0 font-semibold text-sm"
+                  aria-label="Publish blog"
+                >
+                  Publish
+                </button>
+              )}
             </>
           )}
         </div>

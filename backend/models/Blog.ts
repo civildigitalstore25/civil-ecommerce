@@ -1,15 +1,15 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IBlog extends Document {
-  title: string;
-  slug: string;
-  content: string;
-  excerpt: string;
-  author: string;
+  title?: string;
+  slug?: string;
+  content?: string;
+  excerpt?: string;
+  author?: string;
   authorId?: mongoose.Types.ObjectId;
-  category: string;
+  category?: string;
   tags: string[];
-  featuredImage: string;
+  featuredImage?: string;
   youtubeVideoUrl?: string;
   status: 'draft' | 'published';
   metaTitle?: string;
@@ -26,18 +26,19 @@ const BlogSchema = new Schema<IBlog>(
     title: {
       type: String,
       trim: true,
-      required: [true, 'Title is required'],
+      required: false,
     },
     slug: {
       type: String,
       unique: true,
+      sparse: true,
       lowercase: true,
       trim: true,
-      required: true,
+      required: false,
     },
     content: {
       type: String,
-      required: [true, 'Content is required'],
+      required: false,
     },
     excerpt: {
       type: String,
@@ -111,7 +112,7 @@ const BlogSchema = new Schema<IBlog>(
 );
 
 // Index for better query performance
-BlogSchema.index({ slug: 1 });
+BlogSchema.index({ slug: 1 }, { sparse: true });
 BlogSchema.index({ category: 1 });
 BlogSchema.index({ status: 1 });
 BlogSchema.index({ publishedAt: -1 });

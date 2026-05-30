@@ -15,7 +15,7 @@ const emptyForm: BlogFormData = {
   tags: [],
   featuredImage: "",
   youtubeVideoUrl: "",
-  status: "published",
+  status: "draft",
   metaTitle: "",
   metaDescription: "",
   metaKeywords: [],
@@ -105,23 +105,25 @@ export function useAdminBlogForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title?.trim()) {
+    const isPublished = formData.status === "published";
+
+    if (isPublished && !formData.title?.trim()) {
       Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog title" });
       return;
     }
-    if (!formData.content?.trim()) {
+    if (isPublished && !formData.content?.trim()) {
       Swal.fire({ icon: "warning", title: "Validation", text: "Please enter blog content" });
       return;
     }
-    if (!formData.excerpt?.trim()) {
+    if (isPublished && !formData.excerpt?.trim()) {
       Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog excerpt" });
       return;
     }
-    if (!formData.category?.trim()) {
+    if (isPublished && !formData.category?.trim()) {
       Swal.fire({ icon: "warning", title: "Validation", text: "Please enter a blog category" });
       return;
     }
-    if (!formData.featuredImage?.trim()) {
+    if (isPublished && !formData.featuredImage?.trim()) {
       Swal.fire({
         icon: "warning",
         title: "Validation",
@@ -134,10 +136,18 @@ export function useAdminBlogForm() {
     try {
       if (isEditMode && id) {
         await updateBlogMutation.mutateAsync({ id, data: formData });
-        await Swal.fire({ icon: "success", title: "Success!", text: "Blog updated successfully!" });
+        await Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: formData.status === "published" ? "Blog updated and published successfully!" : "Draft saved successfully!",
+        });
       } else {
         await createBlogMutation.mutateAsync(formData);
-        await Swal.fire({ icon: "success", title: "Success!", text: "Blog created successfully!" });
+        await Swal.fire({
+          icon: "success",
+          title: "Success!",
+          text: formData.status === "published" ? "Blog published successfully!" : "Draft saved successfully!",
+        });
       }
       navigate("/blog");
     } catch (error: any) {

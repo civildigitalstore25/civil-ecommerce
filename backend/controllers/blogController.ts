@@ -4,46 +4,94 @@ import { IUser } from '../models/User';
 import { resolveOptionalPagination } from '../utils/listPagination';
 import { normalizeSlug as generateSlug } from '../utils/slug';
 
+const isAdminUser = (user?: IUser | null): boolean =>
+  Boolean(user && (user.role === 'admin' || user.role === 'superadmin'));
+
+const normalizeOptionalString = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed : undefined;
+};
+
+const normalizeBlogPayload = (blogData: Record<string, unknown>): Record<string, unknown> => {
+  const normalized = { ...blogData };
+
+  if (typeof normalized.status !== 'string') {
+    normalized.status = 'draft';
+  }
+
+  const slug = normalizeOptionalString(normalized.slug);
+  if (slug) {
+    normalized.slug = generateSlug(slug);
+  } else {
+    delete normalized.slug;
+  }
+
+  return normalized;
+};
+
+const requirePublishedFields = (blogData: Record<string, unknown>): string | null => {
+  const title = normalizeOptionalString(blogData.title);
+  if (!title) return 'Title is required';
+
+  const content = normalizeOptionalString(blogData.content);
+  if (!content) return 'Content is required';
+
+  const excerpt = normalizeOptionalString(blogData.excerpt);
+  if (!excerpt) return 'Excerpt is required';
+
+  const category = normalizeOptionalString(blogData.category);
+  if (!category) return 'Category is required';
+
+  const featuredImage = normalizeOptionalString(blogData.featuredImage);
+  if (!featuredImage) return 'Featured image is required';
+
+  return null;
+};
+
+const resolveStatus = (value: unknown): 'draft' | 'published' =>
+  value === 'published' ? 'published' : 'draft';
+
 // Create new blog post (Admin only)
 export const createBlog = async (req: Request, res: Response): Promise<void> => {
   try {
     const user = (req as any).user as IUser;
-    const blogData = { ...req.body };
+    const blogData = normalizeBlogPayload({ ...req.body });
+    const status = resolveStatus(blogData.status);
 
-    // Validate required fields
-    if (!blogData.title || !blogData.title.trim()) {
-      res.status(400).json({
-        success: false,
-        message: 'Title is required',
-      });
-      return;
+    if (status === 'published') {
+      const validationError = requirePublishedFields(blogData);
+      if (validationError) {
+        res.status(400).json({
+          success: false,
+          message: validationError,
+        });
+        return;
+      }
     }
 
-    if (!blogData.content || !blogData.content.trim()) {
-      res.status(400).json({
-        success: false,
-        message: 'Content is required',
-      });
-      return;
+    if (status === 'published' && !blogData.slug) {
+      blogData.slug = generateSlug(String(blogData.title));
     }
 
-    // Generate slug from title if not provided
-    if (!blogData.slug || !blogData.slug.trim()) {
-      blogData.slug = generateSlug(blogData.title);
-    } else {
-      blogData.slug = generateSlug(blogData.slug);
-    }
+    blogData.status = status;
 
     // Check if slug already exists
-    const existingBlog = await Blog.findOne({ slug: blogData.slug });
-    if (existingBlog) {
-      blogData.slug = `${blogData.slug}-${Date.now()}`;
+    if (blogData.slug) {
+      const existingBlog = await Blog.findOne({ slug: blogData.slug });
+      if (existingBlog) {
+        blogData.slug = `${blogData.slug}-${Date.now()}`;
+      }
     }
 
     // Set author information
     if (!blogData.author && user) {
       blogData.author = user.fullName || user.email;
       blogData.authorId = user._id;
+    }
+
+    if (status === 'published' && !blogData.publishedAt) {
+      blogData.publishedAt = new Date();
     }
 
     const blog = new Blog(blogData);
@@ -77,7 +125,7 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
 
     const filter: any = {};
     const user = (req as any).user as IUser;
-    const isAdmin = Boolean(user && (user.role === 'admin' || user.role === 'superadmin'));
+    const isAdmin = isAdminUser(user);
 
     // Only show published blogs to non-admin users
     if (!isAdmin) {
@@ -160,6 +208,105 @@ export const getBlogs = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+// Get published blogs only (Public)
+export const getPublishedBlogs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { category, tag, search, sortBy = 'publishedAt', order = 'desc' } = req.query;
+
+    const filter: any = { status: 'published' };
+
+    if (category) {
+      filter.category = category;
+    }
+
+    if (tag) {
+      filter.tags = tag;
+    }
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { content: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+        { tags: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const sortOrder = order === 'asc' ? 1 : -1;
+    const sortOptions: any = {};
+    sortOptions[sortBy as string] = sortOrder;
+
+    const pageNum = Math.max(parseInt(String(req.query.page), 10) || 1, 1);
+    const limitNum = Math.max(parseInt(String(req.query.limit), 10) || 10, 1);
+    const skip = (pageNum - 1) * limitNum;
+
+    const [blogs, total] = await Promise.all([
+      Blog.find(filter)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limitNum)
+        .select('-content'),
+      Blog.countDocuments(filter),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      blogs,
+      pagination: {
+        currentPage: pageNum,
+        totalPages: Math.ceil(total / limitNum),
+        totalBlogs: total,
+        blogsPerPage: limitNum,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching published blogs:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch published blogs',
+    });
+  }
+};
+
+// Get draft blogs (Admin only)
+export const getDraftBlogs = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const user = (req as any).user as IUser;
+
+    if (!isAdminUser(user)) {
+      res.status(403).json({
+        success: false,
+        message: 'Admin access required',
+      });
+      return;
+    }
+
+    const { paginate, page, limit, skip } = resolveOptionalPagination(req.query);
+    let blogQuery = Blog.find({ status: 'draft' }).sort({ updatedAt: -1 }).select('-content');
+    if (paginate) {
+      blogQuery = blogQuery.skip(skip).limit(limit);
+    }
+    const [blogs, total] = await Promise.all([blogQuery, Blog.countDocuments({ status: 'draft' })]);
+
+    res.status(200).json({
+      success: true,
+      blogs,
+      pagination: {
+        currentPage: paginate ? page : 1,
+        totalPages: paginate ? Math.ceil(total / limit) : 1,
+        totalBlogs: total,
+        blogsPerPage: paginate ? limit : total,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching draft blogs:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Failed to fetch draft blogs',
+    });
+  }
+};
+
 // Get single blog by slug (Public & Admin)
 export const getBlogBySlug = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -232,36 +379,56 @@ export const getBlogById = async (req: Request, res: Response): Promise<void> =>
 export const updateBlog = async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
+    const updateData = normalizeBlogPayload({ ...req.body });
 
-    // Validate required fields
-    if (updateData.title !== undefined && (!updateData.title || !updateData.title.trim())) {
-      res.status(400).json({
+    const existingBlog = await Blog.findById(id);
+    if (!existingBlog) {
+      res.status(404).json({
         success: false,
-        message: 'Title cannot be empty',
+        message: 'Blog not found',
       });
       return;
     }
 
-    if (updateData.content !== undefined && (!updateData.content || !updateData.content.trim())) {
-      res.status(400).json({
-        success: false,
-        message: 'Content cannot be empty',
-      });
-      return;
-    }
+    const nextStatus =
+      typeof updateData.status === 'string'
+        ? resolveStatus(updateData.status)
+        : existingBlog.status === 'published'
+          ? 'published'
+          : 'draft';
 
-    // If title is updated, regenerate slug
-    if (updateData.title && !updateData.slug) {
-      const newSlug = generateSlug(updateData.title);
-      const existingBlog = await Blog.findOne({ slug: newSlug, _id: { $ne: id } });
-      if (existingBlog) {
-        updateData.slug = `${newSlug}-${Date.now()}`;
-      } else {
-        updateData.slug = newSlug;
+    if (nextStatus === 'published') {
+      const mergedData = {
+        ...existingBlog.toObject(),
+        ...updateData,
+        status: nextStatus,
+      } as Record<string, unknown>;
+      const validationError = requirePublishedFields(mergedData);
+      if (validationError) {
+        res.status(400).json({
+          success: false,
+          message: validationError,
+        });
+        return;
       }
-    } else if (updateData.slug) {
-      updateData.slug = generateSlug(updateData.slug);
+    }
+
+    if (updateData.title && !updateData.slug) {
+      const newSlug = generateSlug(String(updateData.title));
+      const slugConflict = await Blog.findOne({ slug: newSlug, _id: { $ne: id } });
+      updateData.slug = slugConflict ? `${newSlug}-${Date.now()}` : newSlug;
+    }
+
+    if (updateData.slug) {
+      const slugConflict = await Blog.findOne({ slug: updateData.slug, _id: { $ne: id } });
+      if (slugConflict) {
+        updateData.slug = `${String(updateData.slug)}-${Date.now()}`;
+      }
+    }
+
+    updateData.status = nextStatus;
+    if (nextStatus === 'published' && !existingBlog.publishedAt) {
+      updateData.publishedAt = new Date();
     }
 
     const blog = await Blog.findByIdAndUpdate(id, updateData, {
@@ -287,6 +454,64 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
     res.status(400).json({
       success: false,
       message: error.message || 'Failed to update blog',
+    });
+  }
+};
+
+// Publish draft blog (Admin only)
+export const publishBlog = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+      res.status(404).json({
+        success: false,
+        message: 'Blog not found',
+      });
+      return;
+    }
+
+    const publishData = {
+      status: 'published' as const,
+      publishedAt: blog.publishedAt || new Date(),
+    };
+
+    if (!normalizeOptionalString(blog.title) || !normalizeOptionalString(blog.content) || !normalizeOptionalString(blog.excerpt) || !normalizeOptionalString(blog.category) || !normalizeOptionalString(blog.featuredImage)) {
+      res.status(400).json({
+        success: false,
+        message: 'Draft must have title, content, excerpt, category, and featured image before publishing',
+      });
+      return;
+    }
+
+    if (!normalizeOptionalString(blog.slug) && normalizeOptionalString(blog.title)) {
+      blog.slug = generateSlug(String(blog.title));
+    }
+
+    const slugConflict = blog.slug
+      ? await Blog.findOne({ slug: blog.slug, _id: { $ne: id } })
+      : null;
+    if (slugConflict && blog.slug) {
+      blog.slug = `${blog.slug}-${Date.now()}`;
+    }
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      id,
+      { ...publishData, slug: blog.slug },
+      { new: true, runValidators: true },
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Blog published successfully',
+      blog: updatedBlog,
+    });
+  } catch (error: any) {
+    console.error('Error publishing blog:', error);
+    res.status(400).json({
+      success: false,
+      message: error.message || 'Failed to publish blog',
     });
   }
 };

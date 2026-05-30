@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useBlogs, useDeleteBlog } from "../api/blogApi";
+import { usePublishedBlogs, useDraftBlogs, useDeleteBlog, usePublishBlog } from "../api/blogApi";
 import { useUser } from "../api/userQueries";
 import { Plus } from "lucide-react";
 import {
@@ -16,6 +16,7 @@ import { useAdminTheme } from "../contexts/AdminThemeContext";
 const BlogListPage: React.FC = () => {
   const { colors } = useAdminTheme();
   const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<"published" | "draft">("published");
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const listSeo = getBlogListSEO();
@@ -24,13 +25,29 @@ const BlogListPage: React.FC = () => {
   const isAdmin = user && (user.role === "admin" || user.role === "superadmin");
   const limit = 12;
 
-  const { data, isLoading, error } = useBlogs({
+  const publishedQuery = usePublishedBlogs({
     page,
     limit,
-    status: "published",
   });
+  const draftQuery = useDraftBlogs(
+    {
+      page,
+      limit,
+    },
+    { enabled: Boolean(isAdmin && activeTab === "draft") },
+  );
+
+  const data = activeTab === "draft" ? draftQuery.data : publishedQuery.data;
+  const isLoading = activeTab === "draft" ? draftQuery.isLoading : publishedQuery.isLoading;
+  const error = activeTab === "draft" ? draftQuery.error : publishedQuery.error;
 
   const deleteBlogMutation = useDeleteBlog();
+  const publishBlogMutation = usePublishBlog();
+
+  const handleTabChange = (tab: "published" | "draft") => {
+    setActiveTab(tab);
+    setPage(1);
+  };
 
   const handleDelete = async (id: string, title: string, e: React.MouseEvent) => {
     e.preventDefault();
@@ -61,6 +78,39 @@ const BlogListPage: React.FC = () => {
     e.preventDefault();
     e.stopPropagation();
     navigate(`/admin/blogs/edit/${id}`);
+  };
+
+  const handlePublish = async (id: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const result = await Swal.fire({
+      icon: "question",
+      title: "Publish draft?",
+      text: "This will make the blog visible to all users.",
+      showCancelButton: true,
+      confirmButtonText: "Publish",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      await publishBlogMutation.mutateAsync(id);
+      setActiveTab("published");
+      setPage(1);
+      await Swal.fire({
+        icon: "success",
+        title: "Published",
+        text: "Blog published successfully.",
+      });
+    } catch (error: any) {
+      await Swal.fire({
+        icon: "error",
+        title: "Publish Failed",
+        text: error?.response?.data?.message || "Failed to publish blog.",
+      });
+    }
   };
 
   return (
@@ -103,6 +153,41 @@ const BlogListPage: React.FC = () => {
           </BlogButton>
         )}
       </div>
+
+      {isAdmin && (
+        <div className="flex justify-center mb-6 md:mb-8">
+          <div
+            className="inline-flex rounded-full p-1 border shadow-sm"
+            style={{
+              backgroundColor: colors.background.secondary,
+              borderColor: colors.border.primary,
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => handleTabChange("published")}
+              className="px-5 py-2 rounded-full text-sm md:text-base font-semibold transition-all"
+              style={{
+                backgroundColor: activeTab === "published" ? colors.interactive.primary : "transparent",
+                color: activeTab === "published" ? "#fff" : colors.text.primary,
+              }}
+            >
+              Published Blogs
+            </button>
+            <button
+              type="button"
+              onClick={() => handleTabChange("draft")}
+              className="px-5 py-2 rounded-full text-sm md:text-base font-semibold transition-all"
+              style={{
+                backgroundColor: activeTab === "draft" ? colors.interactive.primary : "transparent",
+                color: activeTab === "draft" ? "#fff" : colors.text.primary,
+              }}
+            >
+              Draft Blogs
+            </button>
+          </div>
+        </div>
+      )}
 
       {isLoading && (
         <div className="text-center py-20">
@@ -170,7 +255,9 @@ const BlogListPage: React.FC = () => {
                 showActions
                 onEdit={isAdmin ? handleEdit : undefined}
                 onDelete={isAdmin ? handleDelete : undefined}
+                onPublish={isAdmin ? handlePublish : undefined}
                 isDeleting={deleteBlogMutation.isPending}
+                showStatusBadge={Boolean(isAdmin)}
               />
             ))}
           </div>

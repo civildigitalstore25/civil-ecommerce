@@ -49,9 +49,49 @@ export const useBlogs = (params?: {
   return useQuery<BlogsResponse>({
     queryKey: ["blogs", params],
     queryFn: async () => {
-      const { data } = await apiClient.get("/blogs", { params });
+      const { data } = await apiClient.get("/blog", { params });
       return data;
     },
+  });
+};
+
+// Get published blogs
+export const usePublishedBlogs = (params?: {
+  page?: number;
+  limit?: number;
+  category?: string;
+  tag?: string;
+  search?: string;
+  sortBy?: string;
+  order?: string;
+}) => {
+  return useQuery<BlogsResponse>({
+    queryKey: ["publishedBlogs", params],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/blog/published", { params });
+      return data;
+    },
+  });
+};
+
+// Get draft blogs (admin only)
+export const useDraftBlogs = (
+  params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    sortBy?: string;
+    order?: string;
+  },
+  options?: { enabled?: boolean },
+) => {
+  return useQuery<BlogsResponse>({
+    queryKey: ["draftBlogs", params],
+    queryFn: async () => {
+      const { data } = await apiClient.get("/blog/drafts", { params });
+      return data;
+    },
+    enabled: options?.enabled ?? true,
   });
 };
 
@@ -60,7 +100,7 @@ export const useBlogBySlug = (slug: string) => {
   return useQuery<BlogResponse>({
     queryKey: ["blog", slug],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/blogs/slug/${slug}`);
+      const { data } = await apiClient.get(`/blog/slug/${slug}`);
       return data;
     },
     enabled: !!slug,
@@ -72,7 +112,7 @@ export const useFeaturedBlogs = (limit: number = 5) => {
   return useQuery<BlogsResponse>({
     queryKey: ["featuredBlogs", limit],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/blogs/featured?limit=${limit}`);
+      const { data } = await apiClient.get(`/blog/featured?limit=${limit}`);
       return data;
     },
   });
@@ -83,7 +123,7 @@ export const useRelatedBlogs = (slug: string, limit: number = 4) => {
   return useQuery<BlogsResponse>({
     queryKey: ["relatedBlogs", slug, limit],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/blogs/slug/${slug}/related?limit=${limit}`);
+      const { data } = await apiClient.get(`/blog/slug/${slug}/related?limit=${limit}`);
       return data;
     },
     enabled: !!slug,
@@ -95,7 +135,7 @@ export const useBlogCategories = () => {
   return useQuery<BlogCategoriesResponse>({
     queryKey: ["blogCategories"],
     queryFn: async () => {
-      const { data } = await apiClient.get("/blogs/categories");
+      const { data } = await apiClient.get("/blog/categories");
       return data;
     },
   });
@@ -106,7 +146,7 @@ export const usePopularTags = () => {
   return useQuery<BlogTagsResponse>({
     queryKey: ["blogTags"],
     queryFn: async () => {
-      const { data } = await apiClient.get("/blogs/tags");
+      const { data } = await apiClient.get("/blog/tags");
       return data;
     },
   });
@@ -119,7 +159,7 @@ export const useBlogById = (id: string) => {
   return useQuery<BlogResponse>({
     queryKey: ["blogById", id],
     queryFn: async () => {
-      const { data } = await apiClient.get(`/blogs/${id}`);
+      const { data } = await apiClient.get(`/blog/${id}`);
       return data;
     },
     enabled: !!id,
@@ -132,11 +172,12 @@ export const useCreateBlog = () => {
 
   return useMutation<BlogResponse, Error, BlogFormData>({
     mutationFn: async (blogData: BlogFormData) => {
-      const { data } = await apiClient.post("/blogs", blogData);
+      const { data } = await apiClient.post("/blog/create", blogData);
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
     },
   });
 };
@@ -147,12 +188,30 @@ export const useUpdateBlog = () => {
 
   return useMutation<BlogResponse, Error, { id: string; data: Partial<BlogFormData> }>({
     mutationFn: async ({ id, data: blogData }) => {
-      const { data } = await apiClient.put(`/blogs/${id}`, blogData);
+      const { data } = await apiClient.put(`/blog/${id}`, blogData);
       return data;
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
       queryClient.invalidateQueries({ queryKey: ["blogById", variables.id] });
+    },
+  });
+};
+
+// Publish blog
+export const usePublishBlog = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<BlogResponse, Error, string>({
+    mutationFn: async (id: string) => {
+      const { data } = await apiClient.put(`/blog/${id}/publish`);
+      return data;
+    },
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
+      queryClient.invalidateQueries({ queryKey: ["blogById", id] });
     },
   });
 };
@@ -163,10 +222,11 @@ export const useDeleteBlog = () => {
 
   return useMutation<void, Error, string>({
     mutationFn: async (id: string) => {
-      await apiClient.delete(`/blogs/${id}`);
+      await apiClient.delete(`/blog/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
+      queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
     },
   });
 };

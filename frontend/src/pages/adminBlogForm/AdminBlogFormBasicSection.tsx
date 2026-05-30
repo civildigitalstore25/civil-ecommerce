@@ -40,7 +40,7 @@ export function AdminBlogFormBasicSection({
             name="title"
             value={formData.title}
             onChange={handleChange}
-            required
+            required={formData.status === "published"}
             placeholder="Enter blog title"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -72,7 +72,7 @@ export function AdminBlogFormBasicSection({
             onChange={handleChange}
             rows={3}
             maxLength={300}
-            required
+            required={formData.status === "published"}
             placeholder="Brief summary (max 300 characters)"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -98,7 +98,7 @@ export function AdminBlogFormBasicSection({
             name="category"
             value={formData.category}
             onChange={handleChange}
-            required
+            required={formData.status === "published"}
             placeholder="e.g., Technology, Software, Tips"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -111,7 +111,7 @@ export function AdminBlogFormBasicSection({
             name="featuredImage"
             value={formData.featuredImage}
             onChange={handleChange}
-            required
+            required={formData.status === "published"}
             placeholder="https://example.com/image.jpg"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white"
           />
@@ -193,6 +193,9 @@ export function AdminBlogFormBasicSection({
             <option value="draft">Draft</option>
             <option value="published">Published</option>
           </select>
+          <p className="text-sm text-gray-500 mt-1">
+            Drafts can be saved with incomplete fields. Published posts require all main fields.
+          </p>
         </div>
       </div>
     </div>
