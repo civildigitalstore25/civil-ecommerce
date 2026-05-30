@@ -28,7 +28,7 @@ export function AllProductsCategoriesDisplay({
           Select a brand to see products
         </p>
         <p className="text-sm" style={{ color: colors.text.secondary }}>
-          Choose from 10 professional software brands
+          Choose from 11 professional software brands
         </p>
       </div>
     );

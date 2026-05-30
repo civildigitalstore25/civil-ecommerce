@@ -112,6 +112,10 @@ export const brandCategories: Record<
       { value: "ai-prompts", label: "AI Prompts" },
     ],
   },
+  "video-bundle": {
+    label: "Video Bundle",
+    categories: [{ value: "reels", label: "Reels" }],
+  },
   "recovery-softwares": {
     label: "Recovery Softwares",
     categories: [],

@@ -12,6 +12,7 @@ export const brandLabels: Record<string, string> = {
   "billing-software": "Billing Software",
   "accounting-billing": "Billing and Accounting",
   ebook: "Ebook",
+  "video-bundle": "Video Bundle",
   "recovery-softwares": "Recovery Softwares",
   "3d-rendering-software": "3D Rendering Software",
 };
@@ -65,6 +66,7 @@ export const categoryLabels: Record<string, string> = {
   vyapar: "Vyapar",
   "civil-engineering": "Civil Engineering",
   "ai-prompts": "AI Prompts",
+  reels: "Reels",
 };
 
 export type SortOption = "newest" | "modified" | "oldest" | "name-asc" | "name-desc";

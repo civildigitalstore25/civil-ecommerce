@@ -27,4 +27,9 @@ export const BRAND_SEO_CONFIG = {
       "project files, autocad files, revit files, excel sheets, coreldraw files, sketchup files, vray files",
     description: "ready-to-use project files for architecture, media, and office work",
   },
+  "video-bundle": {
+    brandName: "Video Bundle",
+    keywords: "video bundle, reels, video editing, short video content",
+    description: "video bundle and reel-based content",
+  },
 } as const;
