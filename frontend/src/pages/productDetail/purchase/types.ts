@@ -62,12 +62,18 @@ export type ProductDetailPurchaseDealTimersProps = {
   colors: ThemeColors;
 };
 
+export type ProductDetailOutOfStockRef = {
+  productId: string;
+  productName: string;
+};
+
 export type ProductDetailPurchaseActionsBlockProps = {
   actionRef: RefObject<HTMLDivElement | null>;
   colors: ThemeColors;
   user: { role?: string } | null | undefined;
   onEditClick: () => void;
   isOutOfStock: boolean;
+  outOfStockProduct?: ProductDetailOutOfStockRef;
   isActiveFreeProduct: boolean;
   onAddToCart: () => void;
   onBuyNow: () => void;

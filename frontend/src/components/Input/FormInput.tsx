@@ -2,7 +2,8 @@ import React from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  label: string;
+  /** Omit for compact placeholder-only fields (use aria-label on the input). */
+  label?: string;
   required?: boolean;
   /** Inside the input row only, vertically centered (e.g. leading icon). */
   startAdornment?: React.ReactNode;
@@ -48,13 +49,15 @@ const FormInput: React.FC<FormInputProps> = ({
 
   return (
     <div>
-      <label
-        className="block font-medium mb-1 transition-colors duration-200"
-        style={{ color: colors.text.primary }}
-      >
-        {label}
-        {required && <span style={{ color: colors.status.error }}>*</span>}
-      </label>
+      {label ? (
+        <label
+          className="block font-medium mb-1 transition-colors duration-200"
+          style={{ color: colors.text.primary }}
+        >
+          {label}
+          {required && <span style={{ color: colors.status.error }}>*</span>}
+        </label>
+      ) : null}
       {hasAdornmentRow ? (
         <div className="relative">
           {startAdornment ? (

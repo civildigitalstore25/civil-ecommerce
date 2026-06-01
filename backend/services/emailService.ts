@@ -557,10 +557,10 @@ class EmailService {
 
     // Format items list for customer
     const itemsList = items.map((item: any) => {
-      const downloadLink = item.driveLink ? 
-        `<br><a href="${item.driveLink}" style="color: #10b981; text-decoration: none; font-weight: bold;">📥 Download Now</a>` : 
+      const downloadLink = item.driveLink ?
+        `<br><a href="${item.driveLink}" style="color: #10b981; text-decoration: none; font-weight: bold;">📥 Download Now</a>` :
         '';
-      
+
       return `
         <tr style="border-bottom: 1px solid #e5e7eb;">
           <td style="padding: 15px; text-align: left;">
@@ -645,13 +645,13 @@ class EmailService {
                   </div>
                   <div class="info-item">
                     <strong>Purchase Date:</strong>
-                    <span>${new Date(purchaseDate).toLocaleDateString('en-IN', { 
-                      day: 'numeric', 
-                      month: 'long', 
-                      year: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}</span>
+                    <span>${new Date(purchaseDate).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}</span>
                   </div>
                   <div class="info-item">
                     <strong>Customer Name:</strong>
@@ -728,6 +728,112 @@ class EmailService {
       console.error('❌ Failed to send purchase confirmation email:', error);
       throw new Error('Failed to send purchase confirmation email');
     }
+  }
+
+  async sendBackInStockAdminNotification(details: {
+    name: string;
+    email: string;
+    productName: string;
+    productUrl: string;
+  }): Promise<void> {
+    const { name, email, productName, productUrl } = details;
+    const mailOptions = {
+      from: {
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail,
+      },
+      to: process.env.CONTACT_EMAIL || 'softzcart@gmail.com',
+      subject: `Back in stock alert: ${productName}`,
+      replyTo: email,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <h2>New back-in-stock subscription</h2>
+          <p><strong>Product:</strong> ${productName}</p>
+          <p><strong>Customer:</strong> ${name} (${email})</p>
+          <p><strong>Product page:</strong> <a href="${productUrl}">${productUrl}</a></p>
+          <p><strong>Submitted:</strong> ${new Date().toLocaleString()}</p>
+          ${buildCommonEmailFooter()}
+        </body>
+        </html>
+      `,
+    };
+
+    const info = await this.transporter.sendMail(mailOptions);
+    console.log('✅ Back-in-stock admin email sent:', info.messageId);
+  }
+
+  async sendBackInStockConfirmation(details: {
+    to: string;
+    name: string;
+    productName: string;
+    productUrl: string;
+  }): Promise<void> {
+    const { to, name, productName, productUrl } = details;
+    const mailOptions = {
+      from: {
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail,
+      },
+      to,
+      subject: `We'll notify you when ${productName} is back in stock`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <p>Hi ${name},</p>
+          <p>Thanks for your interest in <strong>${productName}</strong> on ${EMAIL_BRAND.brandName}.</p>
+          <p>We have received your request and will email you as soon as this product is available again.</p>
+          <p><a href="${productUrl}" style="color: ${EMAIL_BRAND.accentColor};">View product page</a></p>
+          <p>If you did not make this request, you can ignore this email.</p>
+          ${buildCommonEmailFooter({
+        topNoteHtml: `Questions? Contact us at <a href="mailto:${EMAIL_BRAND.supportEmail}">${EMAIL_BRAND.supportEmail}</a>.`,
+      })}
+        </body>
+        </html>
+      `,
+    };
+
+    const info = await this.transporter.sendMail(mailOptions);
+    console.log('✅ Back-in-stock confirmation sent to customer:', info.messageId);
+  }
+
+  async sendBackInStockAvailableEmail(details: {
+    to: string;
+    name: string;
+    productName: string;
+    productUrl: string;
+  }): Promise<void> {
+    const { to, name, productName, productUrl } = details;
+    const mailOptions = {
+      from: {
+        name: EMAIL_BRAND.brandName,
+        address: EMAIL_BRAND.fromEmail,
+      },
+      to,
+      subject: `${productName} is back in stock — Softzcart`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+          <p>Hi ${name},</p>
+          <p>Good news! <strong>${productName}</strong> is back in stock on ${EMAIL_BRAND.brandName}.</p>
+          <p style="text-align: center; margin: 24px 0;">
+            <a href="${productUrl}" style="display: inline-block; padding: 12px 28px; background: ${EMAIL_BRAND.accentColor}; color: #fff; text-decoration: none; border-radius: 6px; font-weight: bold;">Shop now</a>
+          </p>
+          <p style="word-break: break-all;"><a href="${productUrl}">${productUrl}</a></p>
+          ${buildCommonEmailFooter()}
+        </body>
+        </html>
+      `,
+    };
+
+    const info = await this.transporter.sendMail(mailOptions);
+    console.log('✅ Back-in-stock availability email sent:', info.messageId);
   }
 }
 

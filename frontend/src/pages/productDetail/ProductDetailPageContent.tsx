@@ -141,6 +141,10 @@ export function ProductDetailPageContent({ page }: ProductDetailPageContentProps
               user,
               onEditClick: () => setShowEditModal(true),
               isOutOfStock: !!product.isOutOfStock,
+              outOfStockProduct:
+                product.isOutOfStock && product._id
+                  ? { productId: product._id, productName: product.name }
+                  : undefined,
               isActiveFreeProduct,
               onAddToCart: cartHook.handleAddToCart,
               onBuyNow: cartHook.handleBuyNow,

@@ -47,9 +47,9 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 
     const product = new Product(productData);
     const savedProduct = await product.save();
-    
+
     console.log('✅ Product saved with driveLink:', savedProduct.driveLink || 'NONE');
-    
+
     res.status(201).json(savedProduct);
   } catch (error: any) {
     res.status(400).json({ message: error.message });
@@ -229,15 +229,15 @@ export const getProductsByCompany = async (req: Request, res: Response): Promise
 // Get products with multiple filters (advanced filter)
 export const getProductsWithFilters = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { 
-      name, 
-      category, 
-      company, 
-      minPrice, 
-      maxPrice, 
+    const {
+      name,
+      category,
+      company,
+      minPrice,
+      maxPrice,
       isBestSeller,
       status,
-      page = 1, 
+      page = 1,
       limit = 10,
       sort = 'createdAt',
       order = 'desc'
@@ -385,7 +385,7 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
   console.log('Request body keys:', Object.keys(req.body));
   console.log('Has driveLink in body:', 'driveLink' in req.body);
   console.log('DriveLink value:', req.body.driveLink);
-  
+
   try {
     const productData: any = { ...req.body };
 
@@ -423,6 +423,10 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
 
     applyProductSlugNormalization(productData);
 
+    const previousProduct = await Product.findById(req.params.id).select(
+      "isOutOfStock name slug",
+    );
+
     // Explicitly ensure driveLink is included
     if (productData.driveLink !== undefined) {
       console.log('✅ driveLink is present in productData:', productData.driveLink);
@@ -439,15 +443,27 @@ export const updateProduct = async (req: Request, res: Response): Promise<void> 
         strict: false, // Allow fields not in schema (e.g. slug) until schema catches up
       }
     );
-    
+
     if (!updatedProduct) {
       res.status(404).json({ message: 'Product not found' });
       return;
     }
-    
+
     console.log('✅ Product updated with driveLink:', updatedProduct.driveLink || 'NONE');
     console.log('📦 Full updated product:', JSON.stringify(updatedProduct.toObject(), null, 2));
-    
+
+    if (
+      previousProduct?.isOutOfStock &&
+      !updatedProduct.isOutOfStock
+    ) {
+      const { notifyBackInStockSubscribers } = await import(
+        "../services/backInStockNotifyService"
+      );
+      void notifyBackInStockSubscribers(updatedProduct).catch((err) =>
+        console.error("Back-in-stock subscriber notify failed:", err),
+      );
+    }
+
     res.json(updatedProduct);
   } catch (error: any) {
     console.error('❌ Update product error:', error);
@@ -486,8 +502,8 @@ export const trackProductViewer = async (req: Request, res: Response): Promise<v
     // Get updated count
     const count = viewerTracker.getViewerCount(productId);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       viewerCount: count,
       message: 'Viewer tracked successfully'
     });
@@ -505,8 +521,8 @@ export const getProductViewerCount = async (req: Request, res: Response): Promis
     // Get current viewer count
     const count = viewerTracker.getViewerCount(productId);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       viewerCount: count,
       productId
     });
@@ -533,8 +549,8 @@ export const removeProductViewer = async (req: Request, res: Response): Promise<
     // Get updated count
     const count = viewerTracker.getViewerCount(productId);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       viewerCount: count,
       message: 'Viewer removed successfully'
     });
@@ -561,8 +577,8 @@ export const incrementProductViewCount = async (req: Request, res: Response): Pr
       return;
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       viewCount: product.viewCount || 1,
       message: 'View count incremented successfully'
     });
@@ -585,8 +601,8 @@ export const getProductViewCount = async (req: Request, res: Response): Promise<
       return;
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       viewCount: product.viewCount || 0,
       message: 'View count retrieved successfully'
     });
@@ -639,8 +655,8 @@ export const getProductSoldQuantity = async (req: Request, res: Response): Promi
 
     const soldQuantity = result.length > 0 ? result[0].totalQuantity : 0;
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       soldQuantity,
       productId,
       message: 'Sold quantity retrieved successfully'

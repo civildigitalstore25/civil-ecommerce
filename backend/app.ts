@@ -23,6 +23,7 @@ import leadRoutes from './routes/leadRoutes';
 import dealsRoutes from './routes/dealsRoutes';
 import freeProductsRoutes from './routes/freeProductsRoutes';
 import blogRoutes from './routes/blogRoutes';
+import backInStockRoutes from './routes/backInStockRoutes';
 
 const app = express();
 
@@ -99,6 +100,7 @@ app.use('/api/leads', leadRoutes);
 app.use('/api/deals', dealsRoutes);
 app.use('/api/free-products', freeProductsRoutes);
 app.use('/api', blogRoutes);
+app.use('/api/back-in-stock', backInStockRoutes);
 
 app.get('/', (_req, res) => res.json({ message: 'Server is running!' }));
 
