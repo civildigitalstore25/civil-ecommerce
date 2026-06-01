@@ -1,26 +1,30 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/logo.png" />
-    <link rel="apple-touch-icon" href="/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Minimal shell: per-route title/description/OG are set via react-helmet-async (avoids duplicate meta tags). -->
-    <title>Softzcart</title>
-    <meta name="author" content="Softzcart" />
-    <meta property="og:site_name" content="Softzcart" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="robots" content="index, follow" />
-    <meta name="language" content="English" />
-    <!-- Structured data in HTML helps crawlers before JS runs (SPA). -->
-     <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-KRJS88WT');</script>
-<!-- End Google Tag Manager -->
-    <script type="application/ld+json">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Minimal shell: per-route title/description/OG are set via react-helmet-async (avoids duplicate meta tags). -->
+  <title>Softzcart</title>
+  <meta name="author" content="Softzcart" />
+  <meta property="og:site_name" content="Softzcart" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="robots" content="index, follow" />
+  <meta name="language" content="English" />
+  <!-- Structured data in HTML helps crawlers before JS runs (SPA). -->
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-KRJS88WT');</script>
+  <!-- End Google Tag Manager -->
+  <script type="application/ld+json">
       {
         "@context": "https://schema.org",
         "@graph": [
@@ -61,126 +65,124 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         ]
       }
     </script>
-    <!-- Trustpilot domain verification (remove after verification succeeds). -->
-    <meta
-      name="trustpilot-one-time-domain-verification-id"
-      content="407c0e54-e2f8-4d45-9266-e38b9a0980ce"
-    />
+  <!-- Trustpilot domain verification (remove after verification succeeds). -->
+  <meta name="trustpilot-one-time-domain-verification-id" content="407c0e54-e2f8-4d45-9266-e38b9a0980ce" />
 
-    <!-- Ahrefs Web Analytics -->
-    <script
-      src="https://analytics.ahrefs.com/analytics.js"
-      data-key="uiVspaw/jCxlTAVYNSvuPA"
-      async
-    ></script>
-    <style>
-      /* Visible without JS; hidden once the React app mounts (html.js). */
-      #crawl-nav {
-        max-width: 72rem;
-        margin: 0 auto;
-        padding: 1rem 1.25rem 1.5rem;
-        font-family: system-ui, sans-serif;
-        font-size: 0.875rem;
-        line-height: 1.5;
-        color: #0a2a6b;
-        background: #f5f7fa;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      #crawl-nav h1 {
-        font-size: 1.125rem;
-        font-weight: 700;
-        margin: 0 0 0.25rem;
-      }
-      #crawl-nav h2 {
-        font-size: 0.8125rem;
-        font-weight: 600;
-        margin: 0 0 0.35rem;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-      #crawl-nav p {
-        margin: 0 0 0.75rem;
-        color: #334155;
-      }
-      #crawl-nav a {
-        color: #0a2a6b;
-        text-decoration: underline;
-      }
-      #crawl-nav a:hover {
-        color: #00c8ff;
-      }
-      .crawl-nav-sections {
-        display: grid;
-        gap: 0.75rem 1.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-      }
-      #crawl-nav ul {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-      #crawl-nav li + li {
-        margin-top: 0.2rem;
-      }
-      html.js #crawl-nav {
-        display: none;
-      }
-    </style>
-  </head>
+  <!-- Pinterest domain verification -->
+  <meta name="p:domain_verify" content="cb3892beef194785ea9735357b80721b" />
 
-  <body>
-    <!--CRAWL_NAV-->
-    <div id="root"></div>
-    <noscript
-      ><img
-        height="1"
-        width="1"
-        style="display: none"
-        src="https://www.facebook.com/tr?id=2385555308549003&ev=PageView&noscript=1"
-    /></noscript>
-    <script type="module" src="/src/main.tsx"></script>
-    <script
-      async
-      src="https://www.googletagmanager.com/gtag/js?id=G-QHQ8BL97DV"
-    ></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-QHQ8BL97DV");
-    </script>
-    <script>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod
-            ? n.callMethod.apply(n, arguments)
-            : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = "2.0";
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(
-        window,
-        document,
-        "script",
-        "https://connect.facebook.net/en_US/fbevents.js",
-      );
-      fbq("init", "2385555308549003");
-      fbq("track", "PageView");
-    </script>
-    <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRJS88WT"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
-  </body>
+  <!-- Ahrefs Web Analytics -->
+  <script src="https://analytics.ahrefs.com/analytics.js" data-key="uiVspaw/jCxlTAVYNSvuPA" async></script>
+  <style>
+    /* Visible without JS; hidden once the React app mounts (html.js). */
+    #crawl-nav {
+      max-width: 72rem;
+      margin: 0 auto;
+      padding: 1rem 1.25rem 1.5rem;
+      font-family: system-ui, sans-serif;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #0a2a6b;
+      background: #f5f7fa;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    #crawl-nav h1 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem;
+    }
+
+    #crawl-nav h2 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      margin: 0 0 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    #crawl-nav p {
+      margin: 0 0 0.75rem;
+      color: #334155;
+    }
+
+    #crawl-nav a {
+      color: #0a2a6b;
+      text-decoration: underline;
+    }
+
+    #crawl-nav a:hover {
+      color: #00c8ff;
+    }
+
+    .crawl-nav-sections {
+      display: grid;
+      gap: 0.75rem 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    }
+
+    #crawl-nav ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    #crawl-nav li+li {
+      margin-top: 0.2rem;
+    }
+
+    html.js #crawl-nav {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!--CRAWL_NAV-->
+  <div id="root"></div>
+  <noscript><img height="1" width="1" style="display: none"
+      src="https://www.facebook.com/tr?id=2385555308549003&ev=PageView&noscript=1" /></noscript>
+  <script type="module" src="/src/main.tsx"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QHQ8BL97DV"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "G-QHQ8BL97DV");
+  </script>
+  <script>
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod
+          ? n.callMethod.apply(n, arguments)
+          : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(
+      window,
+      document,
+      "script",
+      "https://connect.facebook.net/en_US/fbevents.js",
+    );
+    fbq("init", "2385555308549003");
+    fbq("track", "PageView");
+  </script>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRJS88WT" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+</body>
+
 </html>
