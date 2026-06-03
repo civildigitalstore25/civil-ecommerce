@@ -19,6 +19,13 @@ export function truncateText(text: string, maxLength: number): string {
   return text.substring(0, maxLength) + "...";
 }
 
+/** Rough reading time from HTML content (~200 words/min). */
+export function estimateReadingTimeMinutes(html: string): number {
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  const words = text ? text.split(" ").length : 0;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
 export function getYouTubeVideoId(url: string): string | null {
   if (!url) return null;
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;

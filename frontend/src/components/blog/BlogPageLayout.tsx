@@ -16,7 +16,7 @@ export function BlogPageLayout({
 
   return (
     <div
-      className="min-h-screen transition-colors duration-200 pt-24 pb-12 px-2 md:px-4"
+      className="min-h-screen transition-colors duration-200 pt-24 pb-16 px-3 sm:px-5 md:px-6"
       style={{
         background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
       }}
