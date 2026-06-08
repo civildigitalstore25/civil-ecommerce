@@ -5,6 +5,7 @@ export interface IUser extends Document {
   password?: string;
   fullName: string;
   phoneNumber?: string;
+  avatarUrl?: string;
   role: 'superadmin' | 'admin' | 'user';
   permissions?: string[]; // For admins: dashboard, users, products, categories, companies, orders, reviews, banners, coupons, carts
   googleId?: string;
@@ -32,6 +33,10 @@ const UserSchema = new Schema<IUser>({
     trim: true,
   },
   phoneNumber: {
+    type: String,
+    trim: true,
+  },
+  avatarUrl: {
     type: String,
     trim: true,
   },

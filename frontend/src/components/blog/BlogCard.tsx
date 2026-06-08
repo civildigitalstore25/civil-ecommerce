@@ -132,6 +132,7 @@ export function BlogCard({
 
       <BlogMeta
         author={blog.author}
+        authorAvatarUrl={blog.authorAvatarUrl}
         date={blog.publishedAt || blog.createdAt}
         size="sm"
         className={isCompact ? "mb-3" : "mb-3 text-xs"}

@@ -6,6 +6,7 @@ export interface Blog {
   excerpt: string;
   author: string;
   authorId?: string;
+  authorAvatarUrl?: string;
   category: string;
   tags: string[];
   featuredImage: string;

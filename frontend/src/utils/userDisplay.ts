@@ -1,3 +1,4 @@
+/** Shared initials helper for profile and blog author display. */
 export function getProfileInitials(name?: string): string {
   if (!name) return "";
   return name

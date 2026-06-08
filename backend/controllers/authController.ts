@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import User, { IUser } from '../models/User';
+import Blog from '../models/Blog';
 import emailService from '../services/emailService';
 import mongoose from 'mongoose';
 
@@ -154,17 +155,18 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
   try {
     const user = (req as any).user as IUser;
     const userId = user._id;
-    const { fullName, phoneNumber } = req.body;
+    const { fullName, phoneNumber, avatarUrl } = req.body;
 
     // Input validation
-    if (!fullName && !phoneNumber) {
+    if (fullName === undefined && phoneNumber === undefined && avatarUrl === undefined) {
       res.status(400).json({ message: 'No fields to update' });
       return;
     }
 
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
     if (fullName !== undefined) updateData.fullName = fullName;
     if (phoneNumber !== undefined) updateData.phoneNumber = phoneNumber;
+    if (avatarUrl !== undefined) updateData.avatarUrl = avatarUrl;
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
@@ -177,6 +179,13 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       return;
     }
 
+    if (fullName !== undefined) {
+      await Blog.updateMany(
+        { authorId: userId },
+        { $set: { author: updatedUser.fullName } },
+      );
+    }
+
     const updatedUserId = (updatedUser._id as mongoose.Types.ObjectId).toString();
 
     res.json({
@@ -184,6 +193,7 @@ export const updateProfile = async (req: Request, res: Response): Promise<void> 
       email: updatedUser.email,
       fullName: updatedUser.fullName,
       phoneNumber: updatedUser.phoneNumber,
+      avatarUrl: updatedUser.avatarUrl,
       role: updatedUser.role,
       permissions: updatedUser.permissions || []
     });

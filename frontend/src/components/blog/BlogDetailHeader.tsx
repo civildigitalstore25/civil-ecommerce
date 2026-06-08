@@ -21,7 +21,12 @@ export function BlogDetailHeader({ blog }: Props) {
         {blog.title}
       </h1>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pb-5 border-b border-slate-200/90">
-        <BlogMeta author={blog.author} date={published} className="text-slate-600" />
+        <BlogMeta
+          author={blog.author}
+          authorAvatarUrl={blog.authorAvatarUrl}
+          date={published}
+          className="text-slate-600"
+        />
         <span className="hidden sm:inline text-slate-300" aria-hidden>
           |
         </span>

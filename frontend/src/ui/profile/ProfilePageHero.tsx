@@ -1,7 +1,7 @@
 import type { ChangeEvent } from "react";
 import FormButton from "../../components/Button/FormButton";
 import type { User } from "../../api/auth";
-import { getProfileInitials } from "./profilePageUtils";
+import { getProfileInitials } from "../../utils/userDisplay";
 
 type Props = {
   user: User | undefined;

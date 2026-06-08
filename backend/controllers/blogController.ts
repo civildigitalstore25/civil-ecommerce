@@ -3,6 +3,11 @@ import Blog, { IBlog } from '../models/Blog';
 import { IUser } from '../models/User';
 import { resolveOptionalPagination } from '../utils/listPagination';
 import { normalizeSlug as generateSlug } from '../utils/slug';
+import {
+  enrichBlogWithAuthorProfile,
+  enrichBlogsWithAuthorProfiles,
+  stampBlogAuthorFromUser,
+} from '../utils/enrichBlogAuthor';
 
 const isAdminUser = (user?: IUser | null): boolean =>
   Boolean(user && (user.role === 'admin' || user.role === 'superadmin'));
@@ -84,10 +89,9 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
       }
     }
 
-    // Set author information
-    if (!blogData.author && user) {
-      blogData.author = user.fullName || user.email;
-      blogData.authorId = user._id;
+    // Always link author to the authenticated editor (ignore stale client author text)
+    if (user) {
+      await stampBlogAuthorFromUser(blogData, user);
     }
 
     if (status === 'published' && !blogData.publishedAt) {
@@ -96,11 +100,12 @@ export const createBlog = async (req: Request, res: Response): Promise<void> => 
 
     const blog = new Blog(blogData);
     const savedBlog = await blog.save();
+    const enrichedBlog = await enrichBlogWithAuthorProfile(savedBlog);
 
     res.status(201).json({
       success: true,
       message: 'Blog created successfully',
-      blog: savedBlog,
+      blog: enrichedBlog,
     });
   } catch (error: any) {
     console.error('Error creating blog:', error);
@@ -249,9 +254,11 @@ export const getPublishedBlogs = async (req: Request, res: Response): Promise<vo
       Blog.countDocuments(filter),
     ]);
 
+    const enrichedBlogs = await enrichBlogsWithAuthorProfiles(blogs);
+
     res.status(200).json({
       success: true,
-      blogs,
+      blogs: enrichedBlogs,
       pagination: {
         currentPage: pageNum,
         totalPages: Math.ceil(total / limitNum),
@@ -334,9 +341,11 @@ export const getBlogBySlug = async (req: Request, res: Response): Promise<void> 
     blog.viewCount += 1;
     await blog.save();
 
+    const enrichedBlog = await enrichBlogWithAuthorProfile(blog);
+
     res.status(200).json({
       success: true,
-      blog,
+      blog: enrichedBlog,
     });
   } catch (error: any) {
     console.error('Error fetching blog:', error);
@@ -431,6 +440,11 @@ export const updateBlog = async (req: Request, res: Response): Promise<void> => 
       updateData.publishedAt = new Date();
     }
 
+    const editor = (req as any).user as IUser | undefined;
+    if (editor && isAdminUser(editor)) {
+      await stampBlogAuthorFromUser(updateData, editor);
+    }
+
     const blog = await Blog.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
@@ -496,9 +510,15 @@ export const publishBlog = async (req: Request, res: Response): Promise<void> =>
       blog.slug = `${blog.slug}-${Date.now()}`;
     }
 
+    const editor = (req as any).user as IUser;
+    const authorPatch: Record<string, unknown> = {};
+    if (editor && isAdminUser(editor)) {
+      await stampBlogAuthorFromUser(authorPatch, editor);
+    }
+
     const updatedBlog = await Blog.findByIdAndUpdate(
       id,
-      { ...publishData, slug: blog.slug },
+      { ...publishData, slug: blog.slug, ...authorPatch },
       { new: true, runValidators: true },
     );
 
@@ -660,9 +680,11 @@ export const getRelatedBlogs = async (req: Request, res: Response): Promise<void
       .limit(limitNum)
       .select('-content'); // Exclude full content for performance
 
+    const enrichedBlogs = await enrichBlogsWithAuthorProfiles(relatedBlogs);
+
     res.status(200).json({
       success: true,
-      blogs: relatedBlogs,
+      blogs: enrichedBlogs,
       category: currentBlog.category,
     });
   } catch (error: any) {

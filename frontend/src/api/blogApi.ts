@@ -178,6 +178,9 @@ export const useCreateBlog = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
+      queryClient.invalidateQueries({ queryKey: ["relatedBlogs"] });
+      queryClient.invalidateQueries({ queryKey: ["publishedBlogs"] });
     },
   });
 };
@@ -195,6 +198,9 @@ export const useUpdateBlog = () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       queryClient.invalidateQueries({ queryKey: ["draftBlogs"] });
       queryClient.invalidateQueries({ queryKey: ["blogById", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
+      queryClient.invalidateQueries({ queryKey: ["relatedBlogs"] });
+      queryClient.invalidateQueries({ queryKey: ["publishedBlogs"] });
     },
   });
 };

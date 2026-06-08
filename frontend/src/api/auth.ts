@@ -23,6 +23,7 @@ export interface User {
   email: string;
   fullName?: string;
   phoneNumber?: string;
+  avatarUrl?: string;
   role: "user" | "admin" | "superadmin";
   permissions?: string[];
   createdAt?: Date;
@@ -76,6 +77,7 @@ export const authApi = {
   updateProfile: async (data: {
     fullName?: string;
     phoneNumber?: string;
+    avatarUrl?: string;
   }): Promise<User> => {
     const response = await api.put("/profile", data);
     return response.data;
@@ -174,10 +176,13 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: { fullName?: string; phoneNumber?: string }) =>
+    mutationFn: (data: { fullName?: string; phoneNumber?: string; avatarUrl?: string }) =>
       authApi.updateProfile(data),
     onSuccess: (data) => {
       queryClient.setQueryData(["currentUser"], data);
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
+      queryClient.invalidateQueries({ queryKey: ["relatedBlogs"] });
+      queryClient.invalidateQueries({ queryKey: ["publishedBlogs"] });
 
       // Show success message
       Swal.fire({

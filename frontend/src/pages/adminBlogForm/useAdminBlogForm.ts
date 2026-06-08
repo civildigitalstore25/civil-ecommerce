@@ -134,15 +134,18 @@ export function useAdminBlogForm() {
 
     setIsSubmitting(true);
     try {
+      const payload = { ...formData };
+      delete (payload as { author?: string }).author;
+
       if (isEditMode && id) {
-        await updateBlogMutation.mutateAsync({ id, data: formData });
+        await updateBlogMutation.mutateAsync({ id, data: payload });
         await Swal.fire({
           icon: "success",
           title: "Success!",
           text: formData.status === "published" ? "Blog updated and published successfully!" : "Draft saved successfully!",
         });
       } else {
-        await createBlogMutation.mutateAsync(formData);
+        await createBlogMutation.mutateAsync(payload);
         await Swal.fire({
           icon: "success",
           title: "Success!",

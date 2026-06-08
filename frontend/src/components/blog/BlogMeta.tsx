@@ -1,10 +1,11 @@
-import React from "react";
-import { User as UserIcon, Calendar } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { formatBlogDate, formatBlogDateShort } from "./blogUtils";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { BlogAuthorAvatar } from "./BlogAuthorAvatar";
 
 interface BlogMetaProps {
   author: string;
+  authorAvatarUrl?: string;
   date: string;
   size?: "sm" | "md";
   className?: string;
@@ -12,10 +13,11 @@ interface BlogMetaProps {
 
 export function BlogMeta({
   author,
+  authorAvatarUrl,
   date,
   size = "md",
   className = "",
-}: BlogMetaProps): React.ReactElement {
+}: BlogMetaProps) {
   const { colors } = useAdminTheme();
   const isSm = size === "sm";
   const iconClass = isSm ? "w-3 h-3" : "w-4 h-4";
@@ -26,16 +28,24 @@ export function BlogMeta({
       className={`flex flex-wrap items-center gap-2 ${textClass} ${className}`}
       style={{ color: colors.text.secondary }}
     >
-      <div className="flex items-center gap-1.5">
-        <UserIcon className={iconClass} aria-hidden style={{ color: colors.text.secondary }} />
-        <span className="font-medium">{author}</span>
+      <div className="flex items-center gap-2">
+        <BlogAuthorAvatar
+          name={author}
+          avatarUrl={authorAvatarUrl}
+          size={isSm ? "sm" : "md"}
+        />
+        <span className="font-medium" style={{ color: colors.text.primary }}>
+          {author}
+        </span>
       </div>
       <span style={{ color: colors.text.secondary, opacity: 0.65 }} aria-hidden>
         •
       </span>
       <div className="flex items-center gap-1.5">
         <Calendar className={iconClass} aria-hidden style={{ color: colors.text.secondary }} />
-        <span>{isSm ? formatBlogDateShort(date) : formatBlogDate(date)}</span>
+        <time dateTime={date}>
+          {isSm ? formatBlogDateShort(date) : formatBlogDate(date)}
+        </time>
       </div>
     </div>
   );
