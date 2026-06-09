@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useUser } from "../../api/userQueries";
 import { useAppForm } from "../../hooks/useAppForm";
@@ -12,6 +12,7 @@ import {
   type BillingAddress,
 } from "../../api/billingAddressApi";
 import { getCheckoutSEO } from "../../utils/seo";
+import { trackBeginCheckout } from "../../utils/analytics";
 import { useCheckoutPayment } from "./useCheckoutPayment";
 import { useCheckoutCoupon } from "./useCheckoutCoupon";
 import type { CheckoutFormData } from "./checkoutTypes";
@@ -71,6 +72,23 @@ export function useCheckoutPage() {
     rawCartItems,
     normalizeCheckoutPrice,
   );
+
+  const hasTrackedCheckout = useRef(false);
+
+  useEffect(() => {
+    if (hasTrackedCheckout.current || cartItems.length === 0) return;
+
+    hasTrackedCheckout.current = true;
+    trackBeginCheckout({
+      items: cartItems.map((item) => ({
+        id: String(item.id),
+        name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+      })),
+      total: summary.total || summary.subtotal,
+    });
+  }, [cartItems, summary.subtotal, summary.total]);
 
   useEffect(() => {
     const loadSavedAddresses = async () => {

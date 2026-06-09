@@ -136,6 +136,18 @@ export const trackBeginCheckout = (cart: {
             quantity: item.quantity,
         })),
     });
+
+    trackGoogleAdsBeginCheckout(cart.total);
+};
+
+/** Google Ads conversion: BEGIN_CHECKOUT (fires on checkout page load). */
+export const trackGoogleAdsBeginCheckout = (value?: number) => {
+    if (!isGALoaded()) return;
+
+    window.gtag!('event', 'conversion_event_begin_checkout', {
+        currency: 'INR',
+        ...(value != null && value > 0 ? { value } : {}),
+    });
 };
 
 // Track when user completes purchase
