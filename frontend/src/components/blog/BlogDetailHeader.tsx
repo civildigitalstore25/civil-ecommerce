@@ -20,7 +20,7 @@ export function BlogDetailHeader({ blog }: Props) {
         <BlogCategoryTag category={blog.category} />
       </div>
       <h1
-        className="font-poppins text-[1.45rem] sm:text-3xl md:text-4xl lg:text-[2.625rem] font-bold tracking-tight leading-[1.18] sm:leading-[1.15] mb-4 sm:mb-5"
+        className="font-poppins text-[1.25rem] sm:text-3xl md:text-4xl lg:text-[2.625rem] font-bold tracking-tight leading-[1.22] sm:leading-[1.15] mb-4 sm:mb-5"
         style={{ color: colors.text.primary }}
       >
         {blog.title}
