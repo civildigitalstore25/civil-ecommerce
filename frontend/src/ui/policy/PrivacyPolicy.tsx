@@ -1,146 +1,191 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useAdminThemeStyles } from "../../hooks/useAdminThemeStyles";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { User, Database, Share2, Clock, CreditCard, ShieldCheck } from "lucide-react";
 
 const cardVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
 };
 
 const PrivacyPolicy: React.FC = () => {
-    const { colors } = useAdminThemeStyles();
+  const { colors } = useAdminThemeStyles();
+  const { theme } = useAdminTheme();
+  const isLight = theme === "light";
 
-    return (
-        <div
-            className="min-h-screen py-12 px-4 pt-20 transition-colors duration-200"
-            style={{ backgroundColor: colors.background.secondary }}
-        >
-            <div
-                className="py-14 px-4 sm:py-20 sm:px-6"
-                style={{
-                    background: `linear-gradient(135deg, ${colors.background.primary} 0%, ${colors.background.secondary} 50%, ${colors.background.tertiary} 100%)`,
-                }}
-            >
-                {/* Header */}
-                <div className="max-w-5xl mx-auto text-center mb-14">
-                    <h1
-                        className="text-5xl font-serif font-bold"
-                        style={{ color: colors.text.primary }}
-                    >
-                        Privacy Policy
-                    </h1>
-                    <p
-                        className="mt-4 text-lg max-w-3xl mx-auto leading-relaxed"
-                        style={{ color: colors.text.secondary }}
-                    >
-                        Please read this page carefully to understand how we collect, use, and protect your personal information at <strong>Softzcart</strong>.
-                    </p>
-                </div>
+  const muted = { color: isLight ? "#475569" : colors.text.secondary };
+  const titleColor = { color: isLight ? "#0A2A6B" : colors.text.primary };
+  const subHeadColor = { color: isLight ? "#1E293B" : colors.text.primary };
+  const brandColor = "#0A2A6B";
 
-                {/* Single Card */}
-                <div className="max-w-5xl mx-auto">
-                    <motion.div
-                        className="rounded-2xl shadow-md p-6 sm:p-8 border"
-                        style={{
-                            backgroundColor: colors.background.primary,
-                            borderColor: colors.border.primary,
-                            color: colors.text.primary,
-                        }}
-                        variants={cardVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        transition={{ duration: 0.6, delay: 0.1 }}
-                        viewport={{ once: true }}
-                    >
-                        <div className="space-y-6">
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    1. Who we are
-                                </h3>
-                                <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
-                                    Our website address is: <a href="https://softzcart.com" className="underline font-semibold" style={{ color: colors.interactive.primary }}>https://softzcart.com</a>.
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    2. What personal data we collect and why we collect it
-                                </h3>
-
-                                <h4 className="font-semibold mt-3" style={{ color: colors.text.primary }}>Comments</h4>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor's IP address and browser user agent string to help spam detection.
-                                </p>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service to see if you are using it. The Gravatar service privacy policy is available here: <a href="https://automattic.com/privacy/" target="_blank" rel="noopener noreferrer" className="underline" style={{ color: colors.interactive.primary }}>https://automattic.com/privacy/</a>. After approval of your comment, your profile picture is visible to the public in the context of your comment.
-                                </p>
-
-                                <h4 className="font-semibold mt-3" style={{ color: colors.text.primary }}>Media</h4>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.
-                                </p>
-
-                                <h4 className="font-semibold mt-3" style={{ color: colors.text.primary }}>Cookies</h4>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies will last for one year.
-                                </p>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.
-                                </p>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select "Remember Me", your login will persist for two weeks. If you log out of your account, the login cookies will be removed.
-                                </p>
-
-                                <h4 className="font-semibold mt-3" style={{ color: colors.text.primary }}>Embedded content from other websites</h4>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website. These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content.
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    3. Who we share your data with
-                                </h3>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    If you request a password reset, your IP address will be included in the reset email.
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    4. How long we retain your data
-                                </h3>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.
-                                </p>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    For users that register on our website (if any), we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time (except they cannot change their username). Website administrators can also see and edit that information.
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    5. Payment Information Collection
-                                </h3>
-                                <p className="leading-relaxed mb-3" style={{ color: colors.text.secondary }}>
-                                    When you make a purchase on our website, your payment is processed by <strong style={{ color: colors.interactive.primary }}>Razorpay</strong>, our trusted third-party payment processor. We do NOT store your complete credit/debit card numbers, CVV, or banking credentials on our servers. All sensitive payment information is securely handled by Razorpay's PCI-DSS Level 1 compliant infrastructure.
-                                </p>
-                            </div>
-
-                            <div>
-                                <h3 className="text-lg sm:text-xl font-semibold mb-3" style={{ color: colors.text.primary }}>
-                                    6. Data Security & Compliance
-                                </h3>
-                                <p className="leading-relaxed" style={{ color: colors.text.secondary }}>
-                                    We implement industry-standard security measures to protect your personal and payment information. All data transmitted between your browser and our servers is encrypted using SSL/TLS protocols. In the event of a data breach affecting your payment information, we will notify you promptly in accordance with applicable data protection laws.
-                                </p>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            </div>
+  const sections = [
+    {
+      icon: <User size={14} strokeWidth={2.25} />,
+      title: "1. Who We Are",
+      body: (
+        <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+          Our website address is:{" "}
+          <a
+            href="https://softzcart.com"
+            className="underline font-medium"
+            style={{ color: brandColor }}
+          >
+            https://softzcart.com
+          </a>
+          .
+        </p>
+      ),
+    },
+    {
+      icon: <Database size={14} strokeWidth={2.25} />,
+      title: "2. What Personal Data We Collect & Why",
+      body: (
+        <div className="space-y-3">
+          <div>
+            <h4 className="text-sm sm:text-base font-semibold mb-1" style={subHeadColor}>Comments</h4>
+            <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+              When visitors leave comments on the site we collect the data shown in the comments form, and also the visitor's IP address and browser user agent string to help spam detection.
+            </p>
+            <p className="text-sm sm:text-base leading-relaxed mt-2" style={muted}>
+              An anonymized string created from your email address (also called a hash) may be provided to the Gravatar service. After approval of your comment, your profile picture is visible to the public in the context of your comment.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm sm:text-base font-semibold mb-1" style={subHeadColor}>Media</h4>
+            <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+              If you upload images to the website, you should avoid uploading images with embedded location data (EXIF GPS) included. Visitors to the website can download and extract any location data from images on the website.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm sm:text-base font-semibold mb-1" style={subHeadColor}>Cookies</h4>
+            <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+              If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so you do not have to fill in your details again when you leave another comment. These cookies will last for one year.
+            </p>
+            <p className="text-sm sm:text-base leading-relaxed mt-2" style={muted}>
+              If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. When you log in, we will also set up several cookies to save your login information. Login cookies last for two days; screen options cookies last for a year.
+            </p>
+          </div>
+          <div>
+            <h4 className="text-sm sm:text-base font-semibold mb-1" style={subHeadColor}>Embedded Content from Other Websites</h4>
+            <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+              Articles on this site may include embedded content (e.g. videos, images, articles). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website. These websites may collect data about you, use cookies, and embed additional third-party tracking.
+            </p>
+          </div>
         </div>
-    );
+      ),
+    },
+    {
+      icon: <Share2 size={14} strokeWidth={2.25} />,
+      title: "3. Who We Share Your Data With",
+      body: (
+        <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+          If you request a password reset, your IP address will be included in the reset email.
+        </p>
+      ),
+    },
+    {
+      icon: <Clock size={14} strokeWidth={2.25} />,
+      title: "4. How Long We Retain Your Data",
+      body: (
+        <div className="space-y-2">
+          <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+            If you leave a comment, the comment and its metadata are retained indefinitely. This is so we can recognize and approve any follow-up comments automatically instead of holding them in a moderation queue.
+          </p>
+          <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+            For users that register on our website, we also store the personal information they provide in their user profile. All users can see, edit, or delete their personal information at any time. Website administrators can also see and edit that information.
+          </p>
+        </div>
+      ),
+    },
+    {
+      icon: <CreditCard size={14} strokeWidth={2.25} />,
+      title: "5. Payment Information Collection",
+      body: (
+        <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+          When you make a purchase on our website, your payment is processed by <strong>Razorpay</strong>, our trusted third-party payment processor. We do <strong>NOT</strong> store your complete credit/debit card numbers, CVV, or banking credentials on our servers. All sensitive payment information is securely handled by Razorpay's PCI-DSS Level 1 compliant infrastructure.
+        </p>
+      ),
+    },
+    {
+      icon: <ShieldCheck size={14} strokeWidth={2.25} />,
+      title: "6. Data Security & Compliance",
+      body: (
+        <p className="text-sm sm:text-base leading-relaxed" style={muted}>
+          We implement industry-standard security measures to protect your personal and payment information. All data transmitted between your browser and our servers is encrypted using SSL/TLS protocols. In the event of a data breach affecting your payment information, we will notify you promptly in accordance with applicable data protection laws.
+        </p>
+      ),
+    },
+  ];
+
+  return (
+    <div
+      className="min-h-screen px-3 py-4 sm:p-6 md:p-10 pt-16 sm:pt-20 relative mt-16 sm:mt-20 transition-colors duration-200"
+      style={{ backgroundColor: isLight ? "#F5F7FA" : colors.background.primary }}
+    >
+      <div
+        className="mx-auto max-w-5xl rounded-xl shadow-xl overflow-hidden"
+        style={{
+          backgroundColor: isLight ? "#fff" : colors.background.secondary,
+          border: `1px solid ${isLight ? "#E2E8F0" : colors.border.primary}`,
+        }}
+      >
+        {/* Header */}
+        <div
+          className="px-4 py-7 sm:p-10 text-center"
+          style={{
+            backgroundColor: isLight ? "#F8FAFC" : colors.background.secondary,
+            borderBottom: `1px solid ${isLight ? "#E2E8F0" : colors.border.primary}`,
+          }}
+        >
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-bold"
+            style={titleColor}
+          >
+            Privacy Policy
+          </h1>
+          <p
+            className="mt-2 sm:mt-4 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
+            style={muted}
+          >
+            Please read this page carefully to understand how we collect, use, and protect your personal information at <strong>Softzcart</strong>.
+          </p>
+        </div>
+
+        {/* Sections */}
+        <div className="px-4 py-5 sm:p-8 lg:p-10 space-y-4 sm:space-y-5">
+          {sections.map(({ icon, title, body }, i) => (
+            <motion.div
+              key={title}
+              className="rounded-lg border p-4 sm:p-5"
+              style={{
+                backgroundColor: isLight ? "#F8FAFC" : colors.background.primary,
+                borderColor: isLight ? "#E2E8F0" : colors.border.primary,
+              }}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-2 sm:gap-3 mb-3">
+                <div
+                  className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full text-white"
+                  style={{ backgroundColor: brandColor }}
+                >
+                  {icon}
+                </div>
+                <h3 className="text-sm sm:text-base font-semibold" style={titleColor}>
+                  {title}
+                </h3>
+              </div>
+              <div>{body}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default PrivacyPolicy;
