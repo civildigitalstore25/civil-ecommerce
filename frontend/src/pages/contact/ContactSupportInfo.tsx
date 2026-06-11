@@ -7,17 +7,17 @@ type Props = {
 
 export const ContactSupportInfo: React.FC<Props> = ({ theme, colors }) => {
   return (
-    <div className="lg:col-span-2 p-10">
+    <div className="lg:col-span-2 px-4 py-5 sm:p-8 lg:p-10">
       {/* Support Availability */}
       <div
-        className="rounded-lg p-5 w-full"
+        className="rounded-lg p-4 sm:p-5 w-full"
         style={{
           backgroundColor: theme === "light" ? "#F0F9FF" : colors.background.secondary,
           border: `2px solid ${theme === "light" ? "#0EA5E9" : colors.border.primary}`,
         }}
       >
         <h3
-          className="text-lg font-bold mb-3"
+          className="text-base sm:text-lg font-bold mb-2 sm:mb-3"
           style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
         >
           Support Availability
@@ -43,7 +43,7 @@ export const ContactSupportInfo: React.FC<Props> = ({ theme, colors }) => {
         }}
       >
         <h3
-          className="text-lg font-bold mb-3"
+          className="text-base sm:text-lg font-bold mb-2 sm:mb-3"
           style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
         >
           Common Support Topics
@@ -67,7 +67,7 @@ export const ContactSupportInfo: React.FC<Props> = ({ theme, colors }) => {
         }}
       >
         <h3
-          className="text-lg font-bold mb-3"
+          className="text-base sm:text-lg font-bold mb-2 sm:mb-3"
           style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
         >
           Stay Connected

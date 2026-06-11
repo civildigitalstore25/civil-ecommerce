@@ -8,20 +8,20 @@ type Props = {
 
 export const ContactInfoCards: React.FC<Props> = ({ theme, colors }) => {
   return (
-    <div className="space-y-8 flex flex-col h-full">
+    <div className="space-y-5 sm:space-y-8 flex flex-col h-full">
       <div>
         <h2
-          className="text-2xl font-bold mb-4"
+          className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
           style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
         >
           How to Reach Us
         </h2>
       </div>
 
-      <div className="space-y-6 flex-1">
+      <div className="space-y-4 sm:space-y-6 flex-1">
         {/* Phone & WhatsApp */}
         <div
-          className="flex gap-4 rounded-lg border-l-4 p-5 overflow-hidden"
+          className="flex gap-3 sm:gap-4 rounded-lg border-l-4 p-4 sm:p-5 overflow-hidden"
           style={{
             backgroundColor: theme === "light" ? "#fff" : colors.background.secondary,
             border: theme === "light" ? `1px solid #384354` : `2px solid #384354`,
@@ -39,7 +39,7 @@ export const ContactInfoCards: React.FC<Props> = ({ theme, colors }) => {
           </div>
           <div className="min-w-0">
             <h3
-              className="text-lg font-semibold mb-2"
+              className="text-base sm:text-lg font-semibold mb-1 sm:mb-2"
               style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
             >
               Phone & WhatsApp Support
@@ -78,7 +78,7 @@ export const ContactInfoCards: React.FC<Props> = ({ theme, colors }) => {
           </div>
           <div className="min-w-0">
             <h3
-              className="text-lg font-semibold mb-2"
+              className="text-base sm:text-lg font-semibold mb-1 sm:mb-2"
               style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
             >
               Email Support
@@ -121,7 +121,7 @@ export const ContactInfoCards: React.FC<Props> = ({ theme, colors }) => {
           </div>
           <div className="min-w-0">
             <h3
-              className="text-lg font-semibold mb-2"
+              className="text-base sm:text-lg font-semibold mb-1 sm:mb-2"
               style={{ color: theme === "light" ? "#0A2A6B" : "#fff" }}
             >
               Headquarters Address

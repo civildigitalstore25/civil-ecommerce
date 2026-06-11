@@ -18,7 +18,7 @@ const ContactPage = () => {
       <ContactPageHeader />
       <ContactPageIntro theme={page.theme} colors={page.colors} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 p-12 pt-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-14 px-4 py-5 sm:p-8 sm:pt-6 lg:p-12 lg:pt-8">
         <ContactInfoCards theme={page.theme} colors={page.colors} />
         <ContactFormFields
           control={page.control}

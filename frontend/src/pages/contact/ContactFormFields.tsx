@@ -27,12 +27,12 @@ export const ContactFormFields: React.FC<Props> = ({
   return (
     <form onSubmit={onSubmit} className="space-y-8 flex flex-col h-full">
       <h2
-        className="text-2xl font-bold mb-6"
+        className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6"
         style={{ color: contactFormSectionTitleColor(theme) }}
       >
         Connect
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         <ContactFormTextFieldRow
           name="name"
           control={control}

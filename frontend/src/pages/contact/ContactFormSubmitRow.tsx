@@ -7,7 +7,7 @@ export function ContactFormSubmitRow({ isPending }: ContactFormSubmitRowProps) {
     <button
       type="submit"
       disabled={isPending}
-      className="flex items-center justify-center gap-2 rounded-lg px-8 py-4 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 text-base"
+      className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-lg px-6 sm:px-8 py-3 sm:py-4 font-semibold transition hover:shadow-lg hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 text-sm sm:text-base"
       style={{
         background: "linear-gradient(90deg, #0A2A6B 0%, #00C8FF 100%)",
         color: "#fff",

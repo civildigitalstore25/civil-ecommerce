@@ -36,7 +36,7 @@ export function ContactPageLayout({
         <link rel="canonical" href={buildCanonicalUrl(pathname)} />
       </Helmet>
       <div
-        className="min-h-[calc(100vh-120px)] p-6 md:p-10 pt-20 relative mt-20"
+        className="min-h-[calc(100vh-120px)] px-3 py-4 sm:p-6 md:p-10 pt-16 sm:pt-20 relative mt-16 sm:mt-20"
         style={{
           backgroundColor:
             theme === "light" ? "#F5F7FA" : colors.background.primary,

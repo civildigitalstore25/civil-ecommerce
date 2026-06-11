@@ -53,7 +53,7 @@ export function ContactFormTextFieldRow({
             onChange={field.onChange}
             disabled={isPending}
             placeholder={placeholder}
-            className={`rounded-lg border-2 px-5 py-3 focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${hasError ? "border-red-500" : ""}`}
+            className={`w-full rounded-lg border-2 px-3 sm:px-5 py-2.5 sm:py-3 text-sm sm:text-base focus:ring disabled:cursor-not-allowed disabled:opacity-70 ${hasError ? "border-red-500" : ""}`}
             style={{
               backgroundColor: colors.background.primary,
               borderColor: hasError ? "#ef4444" : colors.border.primary,

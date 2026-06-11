@@ -85,13 +85,7 @@ export const BrandCategoryListingToolbar: React.FC<Props> = ({
         >
           {displayTitle}
         </h1>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <p
-            className="text-lg transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
-          >
-            {productsLength} product{productsLength !== 1 && "s"} found
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
           {productsLength > 0 && (
             <div className="relative">
               <button
