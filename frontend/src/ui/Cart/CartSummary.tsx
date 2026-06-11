@@ -52,22 +52,22 @@ const CartSummary: React.FC<CartSummaryProps> = ({
 
   return (
     <div
-      className="rounded-xl border p-6 sticky top-6 transition-colors duration-200"
+      className="sticky top-6 rounded-xl border p-4 transition-colors duration-200 sm:p-6"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
       }}
     >
       <h2
-        className="text-xl font-bold mb-6"
+        className="mb-4 text-lg font-bold sm:mb-6 sm:text-xl"
         style={{ color: colors.text.primary }}
       >
         Order Summary
       </h2>
 
       {/* Summary Details */}
-      <div className="space-y-3 mb-6">
-        <div className="flex justify-between text-sm">
+      <div className="mb-5 space-y-3 sm:mb-6">
+        <div className="flex justify-between text-xs sm:text-sm">
           <span style={{ color: colors.text.secondary }}>
             Subtotal (<span ref={itemCountRef}>{summary.itemCount}</span> items)
           </span>
@@ -82,7 +82,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
 
         <div
           ref={discountRef}
-          className="flex justify-between text-sm"
+          className="flex justify-between text-xs sm:text-sm"
           style={{ display: summary.discount > 0 ? "flex" : "none" }}
         >
           <span style={{ color: colors.status.success }}>Discount</span>
@@ -100,14 +100,14 @@ const CartSummary: React.FC<CartSummaryProps> = ({
         >
           <div className="flex justify-between">
             <span
-              className="text-lg font-semibold"
+              className="text-base font-semibold sm:text-lg"
               style={{ color: colors.text.primary }}
             >
               Total
             </span>
             <span
               ref={totalRef}
-              className="text-lg font-bold"
+              className="text-base font-bold sm:text-lg"
               style={{ color: colors.text.primary }}
             >
               {formatPriceWithSymbol(summary.total)}
@@ -120,7 +120,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
       <div className="space-y-3">
         <FormButton
           variant="primary"
-          className="w-full py-3 text-lg"
+          className="w-full py-2.5 text-sm sm:py-3 sm:text-lg"
           onClick={onCheckout}
           disabled={isLoading || summary.itemCount === 0}
         >
@@ -129,7 +129,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({
 
         <button
           onClick={onContinueShopping}
-          className="w-full py-3 border rounded-lg font-medium transition-colors duration-200"
+          className="w-full rounded-lg border py-2.5 text-sm font-medium transition-colors duration-200 sm:py-3 sm:text-base"
           style={{
             color: colors.text.primary,
             borderColor: colors.border.primary,
@@ -149,16 +149,16 @@ const CartSummary: React.FC<CartSummaryProps> = ({
 
       {/* Trust Indicators */}
       <div
-        className="mt-6 pt-6 border-t"
+        className="mt-5 border-t pt-5 sm:mt-6 sm:pt-6"
         style={{ borderColor: colors.border.primary }}
       >
         <div
-          className="flex items-center justify-center space-x-6 text-xs"
+          className="grid grid-cols-3 gap-2 text-center text-[10px] sm:flex sm:items-center sm:justify-center sm:space-x-6 sm:text-xs"
           style={{ color: colors.text.secondary }}
         >
-          <div className="flex items-center">
+          <div className="flex flex-col items-center gap-1 sm:flex-row">
             <svg
-              className="w-4 h-4 mr-1"
+              className="h-3.5 w-3.5 sm:mr-1 sm:h-4 sm:w-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -172,9 +172,9 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             </svg>
             Secure Checkout
           </div>
-          <div className="flex items-center">
+          <div className="flex flex-col items-center gap-1 sm:flex-row">
             <svg
-              className="w-4 h-4 mr-1"
+              className="h-3.5 w-3.5 sm:mr-1 sm:h-4 sm:w-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -188,9 +188,9 @@ const CartSummary: React.FC<CartSummaryProps> = ({
             </svg>
             Instant Download
           </div>
-          <div className="flex items-center">
+          <div className="flex flex-col items-center gap-1 sm:flex-row">
             <svg
-              className="w-4 h-4 mr-1"
+              className="h-3.5 w-3.5 sm:mr-1 sm:h-4 sm:w-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

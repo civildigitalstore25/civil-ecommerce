@@ -16,6 +16,7 @@ export interface IOrderItem {
   price: number;
   discount?: number;
   image?: string;
+  imageUrl?: string;
   driveLink?: string; // Google Drive download link
   planDurationLabel?: string;
   planDurationMinutes?: number;

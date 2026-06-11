@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
 import type { Blog } from "../../api/types/blogTypes";
 import { blogTheme } from "./blogTheme";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 type BlogCategorySidebarProps = {
   category: string;
@@ -15,28 +16,32 @@ export function BlogCategorySidebar({
   blogs,
   className = "",
 }: BlogCategorySidebarProps): ReactElement | null {
+  const { colors } = useAdminTheme();
   if (!blogs.length) return null;
 
   return (
     <aside
-      className={`rounded-2xl border bg-white shadow-sm p-5 md:p-6 ${className}`.trim()}
-      style={{ borderColor: blogTheme.border }}
+      className={`rounded-2xl border shadow-sm p-5 md:p-6 ${className}`.trim()}
+      style={{
+        backgroundColor: colors.background.primary,
+        borderColor: colors.border.primary,
+      }}
       aria-labelledby="blog-category-sidebar-title"
     >
       <p
         className="text-[0.6875rem] font-bold uppercase tracking-[0.14em] mb-2"
-        style={{ color: blogTheme.textMuted }}
+        style={{ color: colors.text.secondary }}
       >
         Keep reading
       </p>
       <h2
         id="blog-category-sidebar-title"
         className="text-base font-bold leading-snug mb-3"
-        style={{ color: blogTheme.text }}
+        style={{ color: colors.text.primary }}
       >
         More in this category
       </h2>
-      <p className="text-xs mb-5" style={{ color: blogTheme.textMuted }}>
+      <p className="text-xs mb-5" style={{ color: colors.text.secondary }}>
         <span
           className="inline-block px-2.5 py-1 rounded-md font-semibold"
           style={{ backgroundColor: blogTheme.tagBg, color: blogTheme.tagText }}
@@ -61,12 +66,12 @@ export function BlogCategorySidebar({
               <Link
                 to={`/blog/${item.slug}`}
                 className="text-sm leading-snug font-medium transition-colors hover:underline pt-0.5"
-                style={{ color: blogTheme.text }}
+                style={{ color: colors.text.primary }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = blogTheme.primary;
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = blogTheme.text;
+                  e.currentTarget.style.color = colors.text.primary;
                 }}
               >
                 {item.title}
@@ -78,12 +83,12 @@ export function BlogCategorySidebar({
       <Link
         to="/blog"
         className="mt-4 inline-block text-xs font-semibold transition-colors hover:underline"
-        style={{ color: blogTheme.textMuted }}
+        style={{ color: colors.text.secondary }}
         onMouseEnter={(e) => {
           e.currentTarget.style.color = blogTheme.primary;
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.color = blogTheme.textMuted;
+          e.currentTarget.style.color = colors.text.secondary;
         }}
       >
         View all articles →

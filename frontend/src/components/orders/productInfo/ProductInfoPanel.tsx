@@ -6,6 +6,14 @@ import {
   formatProductInfoOrderDate,
 } from "./productInfoFormat";
 
+function getOrderItemImage(product: IOrderItem): string {
+  return (
+    [product.image, product.imageUrl]
+      .find((value) => typeof value === "string" && value.trim() && value !== "null")
+      ?.trim() || ""
+  );
+}
+
 interface DownloadSlice {
   isDownloading: boolean;
   fileSizeBytes: number | null;
@@ -47,6 +55,7 @@ export function ProductInfoPanel({
     isFreeOfferEnded = false,
     handleDownload = () => {},
   } = download || {};
+  const productImage = getOrderItemImage(product);
 
   return (
     <div className="flex flex-col sm:flex-row items-start gap-4">
@@ -59,11 +68,9 @@ export function ProductInfoPanel({
             border: `1.5px solid ${colors.border.primary}`,
           }}
         >
-          {product?.image &&
-          product.image !== "null" &&
-          product.image.trim() !== "" ? (
+          {productImage ? (
             <img
-              src={product.image}
+              src={productImage}
               alt={product.name}
               className="w-full h-full object-cover"
             />

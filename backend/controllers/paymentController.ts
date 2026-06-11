@@ -429,7 +429,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     const Product = (await import('../models/Product')).default;
     const productIds = items.map((item: any) => item.productId);
     console.log('🔍 Creating order - Fetching products for IDs:', productIds);
-    const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name company brand').lean();
+    const products = await Product.find({ _id: { $in: productIds } }).select('_id driveLink name company brand image imageUrl').lean();
     console.log('📦 Products found with driveLinks:', products.map(p => ({
       id: p._id,
       name: (p as any).name,
@@ -437,17 +437,21 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
     })));
 
     // Create a map for quick lookup
-    const productMap = new Map(products.map(p => [p._id.toString(), p.driveLink]));
+    const productMap = new Map(products.map(p => [p._id.toString(), p]));
     const productBrandMap = new Map(
       products.map((p) => [p._id.toString(), { company: (p as any).company, brand: (p as any).brand }]),
     );
 
     // Add driveLink to each item
     const itemsWithDriveLink = items.map((item: any) => {
-      const driveLink = productMap.get(item.productId) || null;
+      const product = productMap.get(item.productId) as any;
+      const driveLink = product?.driveLink || null;
+      const image = item.image || item.imageUrl || product?.image || product?.imageUrl || null;
       console.log(`📎 Adding driveLink to order item: ${item.name} - ${driveLink ? 'has driveLink' : 'NO driveLink'}`);
       return {
         ...item,
+        image,
+        imageUrl: image,
         driveLink
       };
     });
@@ -972,7 +976,7 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
             // Fetch latest product state for drive-link and free-offer checks
             const product = await Product.findById(item.productId)
-              .select('driveLink isFreeProduct freeProductStartDate freeProductEndDate')
+              .select('driveLink image imageUrl isFreeProduct freeProductStartDate freeProductEndDate')
               .lean();
             console.log(`📦 Fetched product: ${product?._id}, driveLink: ${product?.driveLink || 'NONE'}`);
 
@@ -986,6 +990,8 @@ export const getUserOrders = async (req: Request, res: Response): Promise<void> 
 
             return {
               ...item,
+              image: item.image || item.imageUrl || (product as any)?.image || (product as any)?.imageUrl || null,
+              imageUrl: item.imageUrl || item.image || (product as any)?.imageUrl || (product as any)?.image || null,
               driveLink: item.driveLink || product?.driveLink || null,
               canDownload: eligibility.canDownload,
               downloadBlockedReason: eligibility.reason || null,

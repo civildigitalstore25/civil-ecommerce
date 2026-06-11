@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -26,6 +27,10 @@ const hideHeaderRoutes = [
 function AppLayout() {
   const location = useLocation();
   usePageTracking();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [location.pathname, location.search]);
 
   const shouldHideHeader = hideHeaderRoutes.some(
     (route) =>

@@ -2,6 +2,7 @@ import React from 'react';
 import { useAdmins, useDeleteAdmin } from '../../api/superadminApi';
 import EditPermissionsModal from './EditPermissionsModal';
 import { swalConfirm, swalSuccess, swalError } from '../../utils/swal';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 interface Admin {
     _id: string;
@@ -14,18 +15,19 @@ const AdminList: React.FC = () => {
     const { data: admins, status, error } = useAdmins();
     const deleteAdmin = useDeleteAdmin();
     const [editing, setEditing] = React.useState<Admin | null>(null);
+    const { colors } = useAdminTheme();
 
     const loading = status === 'pending' || (status as any) === 'loading';
 
     return (
         <div >
             <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Admin List</h2>
-                <div className="text-sm text-gray-500">{Array.isArray(admins) ? `${admins.length} admins` : ''}</div>
+                <h2 className="text-xl font-semibold" style={{ color: colors.text.primary }}>Admin List</h2>
+                <div className="text-sm" style={{ color: colors.text.secondary }}>{Array.isArray(admins) ? `${admins.length} admins` : ''}</div>
             </div>
 
             {loading && (
-                <div className="py-8 text-center text-gray-500">Loading admins...</div>
+                <div className="py-8 text-center" style={{ color: colors.text.secondary }}>Loading admins...</div>
             )}
 
             {!loading && error && (
@@ -33,15 +35,22 @@ const AdminList: React.FC = () => {
             )}
 
             {!loading && Array.isArray(admins) && admins.length === 0 && (
-                <div className="py-8 text-center text-gray-500">No admins found.</div>
+                <div className="py-8 text-center" style={{ color: colors.text.secondary }}>No admins found.</div>
             )}
 
             <div className="space-y-4">
                 {Array.isArray(admins) && admins.map((admin: Admin) => (
-                    <div key={admin._id} className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div
+                        key={admin._id}
+                        className="flex flex-col rounded-lg border p-4 transition hover:shadow-sm md:flex-row md:items-center md:justify-between"
+                        style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                        }}
+                    >
                         <div className="flex-1">
-                            <div className="font-semibold text-gray-800">{admin.fullName || admin.email}</div>
-                            <div className="text-sm text-gray-600 mb-2">{admin.email}</div>
+                            <div className="font-semibold" style={{ color: colors.text.primary }}>{admin.fullName || admin.email}</div>
+                            <div className="text-sm mb-2" style={{ color: colors.text.secondary }}>{admin.email}</div>
 
                             <div className="flex flex-wrap gap-2">
                                 {admin.permissions && admin.permissions.length > 0 ? (

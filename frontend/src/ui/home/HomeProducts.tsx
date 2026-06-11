@@ -7,6 +7,7 @@ const HomeProducts: React.FC = () => {
 
   return (
     <section
+      className="py-6 md:py-0"
       // className="w-full py-6 md:py-14 transition-colors duration-200"
       style={{
         background: `linear-gradient(120deg, ${colors.background.primary} 60%, ${colors.background.secondary} 100%)`,
@@ -21,14 +22,14 @@ const HomeProducts: React.FC = () => {
       >
         {/* Section Heading */}
         <div
-          className="text-center px-4 pb-6 md:pb-12 transition-colors duration-200"
+          className="text-center px-4 pb-4 md:pb-12 transition-colors duration-200"
           style={{
             background: "none",
             // Remove border and white bg
           }}
         >
           <h2
-            className="text-2xl md:text-4xl font-bold transition-colors duration-200"
+            className="text-lg sm:text-2xl md:text-4xl font-bold transition-colors duration-200"
             style={{
               color: colors.text.primary,
               textShadow: `0 2px 8px ${colors.background.primary}80`,
@@ -39,7 +40,7 @@ const HomeProducts: React.FC = () => {
         </div>
 
         {/* Category Tabs with Products */}
-        <div className="px-3 md:px-8 pb-3 md:pb-4">
+        <div className="px-4 sm:px-6 md:px-8 pb-4 md:pb-4">
           <CategoryTabs />
         </div>
       </div>

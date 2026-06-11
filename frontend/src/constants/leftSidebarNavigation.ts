@@ -149,7 +149,7 @@ export const leftSidebarNavigationCategories: LeftSidebarCategory[] = [
   {
     id: "about",
     name: "About Us",
-    href: "/about",
+    href: "/about-us",
   },
   {
     id: "contact",

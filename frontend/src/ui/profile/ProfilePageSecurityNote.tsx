@@ -4,7 +4,7 @@ type Props = { colors: any };
 
 export const ProfilePageSecurityNote: React.FC<Props> = ({ colors }) => (
   <div
-    className="mt-6 p-4 rounded-lg border transition-colors duration-200"
+    className="mt-4 rounded-lg border p-4 transition-colors duration-200 sm:mt-6"
     style={{
       backgroundColor: colors.background.secondary,
       borderColor: colors.border.primary,
@@ -25,13 +25,13 @@ export const ProfilePageSecurityNote: React.FC<Props> = ({ colors }) => (
       </svg>
       <div>
         <h3
-          className="font-medium transition-colors duration-200"
+          className="text-sm font-medium transition-colors duration-200 sm:text-base"
           style={{ color: colors.text.primary }}
         >
           Security Note
         </h3>
         <p
-          className="text-sm mt-1 transition-colors duration-200"
+          className="mt-1 text-xs leading-relaxed transition-colors duration-200 sm:text-sm"
           style={{ color: colors.text.secondary }}
         >
           Your personal information is secure and will not be shared with third parties.

@@ -8,6 +8,7 @@ export interface IOrderItem {
   /** Per-line discount in INR (subtracted before order-level discount). */
   discount?: number;
   image?: string;
+  imageUrl?: string;
   version?: string;
   pricingPlan?: string;
   planDurationLabel?: string;
@@ -79,6 +80,7 @@ const OrderSchema = new Schema<IOrder>({
     price: { type: Number, required: true, min: 0 },
     discount: { type: Number, default: 0, min: 0 },
     image: { type: String },
+    imageUrl: { type: String },
     version: { type: String },
     pricingPlan: { type: String },
     planDurationLabel: { type: String },

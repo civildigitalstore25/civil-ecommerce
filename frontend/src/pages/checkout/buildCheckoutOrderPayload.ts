@@ -30,12 +30,19 @@ export function buildCheckoutOrderPayload(
       (typeof licenseType === "string" && licenseType) ||
       null;
     const planDurationMinutes = parsePlanDurationMinutes(planLabel);
+    const productImage =
+      (typeof product.image === "string" && product.image) ||
+      (typeof product.imageUrl === "string" && product.imageUrl) ||
+      (typeof item.image === "string" && item.image) ||
+      (typeof item.imageUrl === "string" && item.imageUrl) ||
+      null;
     return {
       productId: String(item._id ?? item.id ?? product._id ?? ""),
       name: (typeof product.name === "string" && product.name) || "Unknown Product",
       quantity: Number(item.quantity) || 1,
       price: Number(item.price ?? product.price ?? item.totalPrice) || 0,
-      image: (typeof product.image === "string" && product.image) || null,
+      image: productImage,
+      imageUrl: productImage,
       version: versionFromCart,
       pricingPlan: planLabel,
       planDurationLabel: planLabel || undefined,

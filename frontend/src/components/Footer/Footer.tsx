@@ -1,4 +1,5 @@
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
+import { useLocation } from "react-router-dom";
 import { FooterContactBar } from "./FooterContactBar";
 import {
   darkLogo,
@@ -17,11 +18,15 @@ import {
 
 const Footer = () => {
   const { theme } = useAdminTheme();
+  const location = useLocation();
   const logoSrc = theme === "light" ? lightLogo : darkLogo;
+  const hasProductMobileActions = location.pathname.startsWith("/product/");
 
   return (
     <footer
-      className="font-light transition-colors duration-200 relative"
+      className={`font-light transition-colors duration-200 relative ${
+        hasProductMobileActions ? "pb-36 lg:pb-0" : ""
+      }`}
       style={{
         backgroundColor: FOOTER_BG,
         color: FOOTER_TEXT_PRIMARY,

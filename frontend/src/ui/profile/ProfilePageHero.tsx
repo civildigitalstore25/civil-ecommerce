@@ -1,5 +1,4 @@
 import type { ChangeEvent } from "react";
-import FormButton from "../../components/Button/FormButton";
 import type { User } from "../../api/auth";
 import { getProfileInitials } from "../../utils/userDisplay";
 
@@ -22,23 +21,23 @@ export function ProfilePageHero({
 }: Props) {
   return (
   <div
-    className="p-6 transition-colors duration-200 flex flex-col sm:flex-row items-center sm:items-center sm:justify-between gap-4"
+    className="flex flex-col gap-4 p-4 transition-colors duration-200 sm:flex-row sm:items-center sm:justify-between sm:p-6"
     style={{
-      backgroundColor: colors.interactive.primary,
+      background: `linear-gradient(135deg, ${colors.interactive.primary} 0%, ${colors.interactive.primaryHover || colors.interactive.primary} 100%)`,
     }}
   >
-    <div className="flex items-center gap-4 w-full sm:w-auto">
+    <div className="flex w-full items-center gap-3 sm:w-auto sm:gap-5">
       <div className="relative flex-shrink-0">
         {avatarPreview ? (
           <img
             src={avatarPreview}
             alt="avatar"
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover shadow-md border-4"
+            className="h-16 w-16 rounded-full border-4 object-cover shadow-md sm:h-28 sm:w-28"
             style={{ borderColor: colors.background.primary }}
           />
         ) : (
           <div
-            className="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center text-2xl font-bold shadow-md"
+            className="flex h-16 w-16 items-center justify-center rounded-full text-xl font-bold shadow-md sm:h-28 sm:w-28 sm:text-2xl"
             style={{
               backgroundColor: colors.background.primary,
               color: colors.text.primary,
@@ -59,20 +58,20 @@ export function ProfilePageHero({
       </div>
       <div className="flex-1 min-w-0">
         <h1
-          className="text-2xl font-bold transition-colors duration-200 truncate"
-          style={{ color: colors.text.primary }}
+          className="truncate text-lg font-bold transition-colors duration-200 sm:text-2xl"
+          style={{ color: "#FFFFFF" }}
         >
           {user?.fullName || "User"}
         </h1>
         <p
-          className="text-sm mt-1 transition-colors duration-200 whitespace-normal break-words"
-          style={{ color: colors.text.secondary }}
+          className="mt-0.5 text-xs leading-snug transition-colors duration-200 sm:mt-1 sm:text-sm"
+          style={{ color: "rgba(255, 255, 255, 0.88)" }}
         >
           Manage your personal information
         </p>
-        <div className="mt-3">
+        <div className="mt-2 sm:mt-3">
           <span
-            className="px-3 py-1 text-sm rounded-full font-semibold inline-block"
+            className="inline-block rounded-full px-2.5 py-1 text-xs font-semibold sm:px-3 sm:text-sm"
             style={{
               backgroundColor: colors.background.primary,
               color: colors.text.primary,
@@ -85,16 +84,20 @@ export function ProfilePageHero({
         </div>
       </div>
     </div>
-    <div className="w-full sm:w-auto flex justify-end sm:justify-end mt-2 sm:mt-0">
+    <div className="flex w-full justify-end sm:w-auto">
       {!isEditing ? (
-        <FormButton
+        <button
+          type="button"
           onClick={onStartEdit}
-          variant="secondary"
-          className="ml-2"
-          style={{ borderRadius: 8 }}
+          className="w-full rounded-lg border px-4 py-2 text-sm font-semibold shadow-sm transition-all duration-200 hover:scale-[1.02] sm:w-auto sm:text-base"
+          style={{
+            backgroundColor: "#FFFFFF",
+            borderColor: "rgba(255, 255, 255, 0.85)",
+            color: colors.interactive.primary,
+          }}
         >
           Edit Profile
-        </FormButton>
+        </button>
       ) : null}
     </div>
   </div>

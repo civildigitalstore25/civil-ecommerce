@@ -34,14 +34,19 @@ export default function ProfilePage() {
     return <ProfilePageErrorState colors={colors} />;
   }
 
+  const pageBackground =
+    typeof colors.interactive.primary === "string"
+      ? `linear-gradient(180deg, ${colors.interactive.primary}10 0%, ${colors.background.secondary} 34%, ${colors.background.primary} 100%)`
+      : colors.background.secondary;
+
   return (
     <div
-      className="min-h-screen py-8 px-4 pt-20 transition-colors duration-200 mt-10"
-      style={{ backgroundColor: colors.background.secondary }}
+      className="min-h-screen px-3 pb-8 pt-28 transition-colors duration-200 sm:px-4 sm:pb-10 sm:pt-36"
+      style={{ background: pageBackground }}
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <div
-          className="rounded-xl shadow-md overflow-hidden transition-colors duration-200"
+          className="overflow-hidden rounded-xl shadow-md transition-colors duration-200"
           style={{ backgroundColor: colors.background.primary }}
         >
           <ProfilePageHero
@@ -53,7 +58,7 @@ export default function ProfilePage() {
             onAvatarChange={handleAvatarChange}
           />
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <ProfilePersonalInformationCard
                 colors={colors}

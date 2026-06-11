@@ -39,6 +39,15 @@
     background: rgba(0, 0, 0, 0.3);
     background-clip: padding-box;
   }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
   
   /* Line clamp utilities for text truncation */
   .line-clamp-3 {

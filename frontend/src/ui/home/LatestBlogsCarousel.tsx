@@ -26,7 +26,7 @@ const LatestBlogsCarousel: React.FC = () => {
   if (isLoading) {
     return (
       <section className="py-10 md:py-14" style={sectionBg}>
-        <div className="max-w-7xl mx-auto px-4">
+        <div className="max-w-8xl mx-auto px-4">
           <h2
             className="text-2xl md:text-3xl font-bold mb-6 transition-colors duration-200"
             style={{ color: colors.text.primary }}
@@ -60,7 +60,7 @@ const LatestBlogsCarousel: React.FC = () => {
 
   return (
     <section className="py-10 md:py-14" style={sectionBg}>
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-9xl mx-auto lg:px-15 sm:px-6 px-4">
         <div className="flex items-center justify-between gap-4 mb-6">
           <h2
             className="text-2xl md:text-3xl font-bold transition-colors duration-200"

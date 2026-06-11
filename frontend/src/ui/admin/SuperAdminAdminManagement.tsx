@@ -1,38 +1,54 @@
 import React, { useState } from "react";
 import SuperAdminAdminsPage from "../../pages/SuperAdminAdminsPage";
 import SuperAdminCreateAdminPage from "../../pages/SuperAdminCreateAdminPage";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 const SuperAdminAdminManagement: React.FC = () => {
   const [tab, setTab] = useState<"list" | "create">("list");
+  const { colors } = useAdminTheme();
   
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-4xl">
       <div className="flex justify-center mb-8">
-        <div className="inline-flex bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+        <div
+          className="inline-flex overflow-hidden rounded-lg border shadow"
+          style={{
+            backgroundColor: colors.background.primary,
+            borderColor: colors.border.primary,
+          }}
+        >
           <button
-            className={`px-8 py-2 font-semibold focus:outline-none transition-colors duration-200 text-base ${
-              tab === "list"
-                ? "bg-blue-600 text-white shadow"
-                : "bg-white text-gray-700 hover:bg-blue-50"
-            }`}
-            style={{ borderRight: '1px solid #e5e7eb' }}
+            className="px-8 py-2 text-base font-semibold transition-colors duration-200 focus:outline-none"
+            style={{
+              backgroundColor:
+                tab === "list" ? colors.interactive.primary : colors.background.primary,
+              color: tab === "list" ? colors.text.inverse : colors.text.primary,
+              borderRight: `1px solid ${colors.border.primary}`,
+            }}
             onClick={() => setTab("list")}
           >
             Admin List
           </button>
           <button
-            className={`px-8 py-2 font-semibold focus:outline-none transition-colors duration-200 text-base ${
-              tab === "create"
-                ? "bg-blue-600 text-white shadow"
-                : "bg-white text-gray-700 hover:bg-blue-50"
-            }`}
+            className="px-8 py-2 text-base font-semibold transition-colors duration-200 focus:outline-none"
+            style={{
+              backgroundColor:
+                tab === "create" ? colors.interactive.primary : colors.background.primary,
+              color: tab === "create" ? colors.text.inverse : colors.text.primary,
+            }}
             onClick={() => setTab("create")}
           >
             Create Admin
           </button>
         </div>
       </div>
-      <div className="bg-white rounded-lg shadow p-6">
+      <div
+        className="rounded-lg border p-6 shadow"
+        style={{
+          backgroundColor: colors.background.primary,
+          borderColor: colors.border.primary,
+        }}
+      >
         {tab === "list" ? <SuperAdminAdminsPage /> : <SuperAdminCreateAdminPage />}
       </div>
     </div>

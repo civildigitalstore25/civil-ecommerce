@@ -32,11 +32,14 @@ export function ProfilePersonalInformationCard({
 }: Props) {
   return (
   <div
-    className="p-5 rounded-lg transition-colors duration-200"
-    style={{ backgroundColor: colors.background.secondary }}
+    className="rounded-lg border p-4 transition-colors duration-200 sm:p-5"
+    style={{
+      backgroundColor: colors.background.secondary,
+      borderColor: colors.border.primary,
+    }}
   >
     <h2
-      className="text-lg font-semibold mb-4 flex items-center transition-colors duration-200"
+      className="mb-4 flex items-center text-base font-semibold transition-colors duration-200 sm:text-lg"
       style={{ color: colors.text.primary }}
     >
       <svg
@@ -79,13 +82,13 @@ export function ProfilePersonalInformationCard({
       <div className="space-y-3">
         <div>
           <label
-            className="text-sm font-medium transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
+            className="text-xs font-medium transition-colors duration-200 sm:text-sm"
+            style={{ color: colors.text.primary }}
           >
             Full Name
           </label>
           <p
-            className="transition-colors duration-200"
+            className="break-words text-sm transition-colors duration-200 sm:text-base"
             style={{ color: colors.text.primary }}
           >
             {user?.fullName || "Not provided"}
@@ -93,13 +96,13 @@ export function ProfilePersonalInformationCard({
         </div>
         <div>
           <label
-            className="text-sm font-medium transition-colors duration-200"
-            style={{ color: colors.text.secondary }}
+            className="text-xs font-medium transition-colors duration-200 sm:text-sm"
+            style={{ color: colors.text.primary }}
           >
             Phone Number
           </label>
           <p
-            className="transition-colors duration-200"
+            className="break-words text-sm transition-colors duration-200 sm:text-base"
             style={{ color: colors.text.primary }}
           >
             {normalizeDuplicateIndiaCountryInPhone(user?.phoneNumber || "") ||

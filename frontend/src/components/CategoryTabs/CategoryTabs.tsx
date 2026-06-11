@@ -36,7 +36,7 @@ const CategoryTabs = () => {
             <p className="text-lg">No products available in this category</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-2 md:gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-6">
             {displayedProducts.map((product, index) => (
               <CategoryTabsProductCard
                 key={product._id ?? `product-${index}`}

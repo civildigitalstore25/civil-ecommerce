@@ -1,6 +1,7 @@
 import React from 'react';
 import { useUpdateAdminPermissions } from '../../api/superadminApi';
 import { swalSuccess, swalError } from '../../utils/swal';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 const AVAILABLE_PERMISSIONS = [
     { value: 'dashboard', label: 'Dashboard' },
@@ -23,6 +24,7 @@ interface Props {
 const EditPermissionsModal: React.FC<Props> = ({ admin, onClose }) => {
     const [selected, setSelected] = React.useState<string[]>(admin.permissions || []);
     const update = useUpdateAdminPermissions();
+    const { colors } = useAdminTheme();
 
     const toggle = (p: string) => {
         setSelected(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
@@ -40,18 +42,35 @@ const EditPermissionsModal: React.FC<Props> = ({ admin, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.7)' }} onClick={onClose}>
-            <div className="bg-white rounded-lg p-6 w-full max-w-2xl" onClick={e => e.stopPropagation()}>
-                <h3 className="text-lg font-semibold mb-4">Edit Permissions - {admin.email}</h3>
+            <div
+                className="w-full max-w-2xl rounded-lg border p-6"
+                style={{
+                    backgroundColor: colors.background.primary,
+                    borderColor: colors.border.primary,
+                }}
+                onClick={e => e.stopPropagation()}
+            >
+                <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Edit Permissions - {admin.email}</h3>
                 <div className="grid grid-cols-2 gap-2 mb-4">
                     {AVAILABLE_PERMISSIONS.map(p => (
                         <label key={p.value} className="inline-flex items-center space-x-2">
                             <input type="checkbox" checked={selected.includes(p.value)} onChange={() => toggle(p.value)} />
-                            <span>{p.label}</span>
+                            <span style={{ color: colors.text.primary }}>{p.label}</span>
                         </label>
                     ))}
                 </div>
                 <div className="flex justify-end gap-2">
-                    <button onClick={onClose} className="px-4 py-2 border rounded">Cancel</button>
+                    <button
+                        onClick={onClose}
+                        className="px-4 py-2 border rounded"
+                        style={{
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                            backgroundColor: colors.background.secondary,
+                        }}
+                    >
+                        Cancel
+                    </button>
                     {(() => {
                         const saving = (update as any).isLoading ?? update.status === 'pending';
                         return (

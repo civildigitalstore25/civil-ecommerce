@@ -66,7 +66,7 @@ const LatestArrivalsCarousel: React.FC = () => {
 
       <div className="text-center mb-8 md:mb-12 px-4">
         <h2
-          className="text-2xl md:text-4xl font-poppins font-bold transition-colors duration-200 mb-2"
+          className="text-xl md:text-4xl font-poppins font-bold transition-colors duration-200 mb-2"
           style={{
             color: colors.text.primary,
             textShadow: `0 2px 8px ${colors.background.primary}80`,
@@ -74,7 +74,7 @@ const LatestArrivalsCarousel: React.FC = () => {
         >
           New Arrivals
         </h2>
-        <p className="text-sm md:text-base font-lato" style={{ color: colors.text.secondary }}>
+        <p className="text-xs md:text-base font-lato" style={{ color: colors.text.secondary }}>
           Discover the newest additions to our catalog
         </p>
       </div>
@@ -111,7 +111,7 @@ const LatestArrivalsCarousel: React.FC = () => {
               </div>
               <div className="p-4 flex flex-col flex-1">
                 <h3
-                  className="font-semibold text-sm line-clamp-2 mb-1"
+                  className="font-semibold text-xs line-clamp-2 mb-1"
                   style={{ color: colors.text.primary }}
                 >
                   {product.name}
@@ -122,7 +122,7 @@ const LatestArrivalsCarousel: React.FC = () => {
                   )}
                 </h3>
                 <div
-                  className="flex items-center gap-1.5 mt-2 text-xs"
+                  className="flex items-center gap-1.5 mt-2 text-[11px]"
                   style={{ color: colors.text.secondary }}
                 >
                   <Sparkles className="w-3.5 h-3.5" />

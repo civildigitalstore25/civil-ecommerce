@@ -40,8 +40,8 @@ export const ProductDetailPurchaseOverview: React.FC<ProductDetailPurchaseOvervi
         </span>
       </div>
 
-      <div className="flex items-center justify-between gap-4 flex-wrap">
-        <h1 className="text-2xl lg:text-4xl font-bold flex-1" style={{ color: colors.text.primary }}>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:flex-wrap">
+        <h1 className="text-lg sm:text-2xl lg:text-4xl font-bold sm:flex-1" style={{ color: colors.text.primary }}>
           {product.name}
         </h1>
         <div className="flex items-center gap-2">

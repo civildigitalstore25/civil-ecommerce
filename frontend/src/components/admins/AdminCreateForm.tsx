@@ -2,6 +2,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useCreateAdmin } from '../../api/superadminApi';
 import { swalSuccess, swalError } from '../../utils/swal';
+import { useAdminTheme } from '../../contexts/AdminThemeContext';
 
 const AVAILABLE_PERMISSIONS = [
     { value: 'dashboard', label: 'Dashboard' },
@@ -27,6 +28,7 @@ type FormValues = {
 const AdminCreateForm: React.FC = () => {
     const { handleSubmit, reset, register, formState: { errors } } = useForm<FormValues>();
     const createAdmin = useCreateAdmin();
+    const { colors } = useAdminTheme();
 
     const onSubmit = async (data: FormValues) => {
         const payload = {
@@ -48,8 +50,14 @@ const AdminCreateForm: React.FC = () => {
     const creating = (createAdmin as any).isLoading ?? createAdmin.status === 'pending';
 
     return (
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-lg font-semibold mb-4">Create Admin</h2>
+        <div
+            className="rounded-xl border p-6 shadow-lg"
+            style={{
+                backgroundColor: colors.background.primary,
+                borderColor: colors.border.primary,
+            }}
+        >
+            <h2 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>Create Admin</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                 <div>
                     <input
@@ -58,7 +66,12 @@ const AdminCreateForm: React.FC = () => {
                             pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email' }
                         })}
                         placeholder="Email"
-                        className="w-full p-3 border rounded"
+                            className="w-full rounded border p-3 outline-none transition-colors"
+                            style={{
+                                backgroundColor: colors.background.secondary,
+                                borderColor: colors.border.primary,
+                                color: colors.text.primary,
+                            }}
                     />
                     {errors.email && <p className="text-red-600 text-sm">{errors.email.message}</p>}
                 </div>
@@ -71,7 +84,12 @@ const AdminCreateForm: React.FC = () => {
                         })}
                         type="password"
                         placeholder="Password"
-                        className="w-full p-3 border rounded"
+                        className="w-full rounded border p-3 outline-none transition-colors"
+                        style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                        }}
                     />
                     {errors.password && <p className="text-red-600 text-sm">{errors.password.message}</p>}
                 </div>
@@ -80,7 +98,12 @@ const AdminCreateForm: React.FC = () => {
                     <input
                         {...register('fullName')}
                         placeholder="Full name"
-                        className="w-full p-3 border rounded"
+                        className="w-full rounded border p-3 outline-none transition-colors"
+                        style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                        }}
                     />
                 </div>
 
@@ -88,17 +111,28 @@ const AdminCreateForm: React.FC = () => {
                     <input
                         {...register('phoneNumber')}
                         placeholder="Phone number"
-                        className="w-full p-3 border rounded"
+                        className="w-full rounded border p-3 outline-none transition-colors"
+                        style={{
+                            backgroundColor: colors.background.secondary,
+                            borderColor: colors.border.primary,
+                            color: colors.text.primary,
+                        }}
                     />
                 </div>
 
-                <div className="border p-3 rounded bg-gray-50">
-                    <p className="text-sm font-medium mb-2">Permissions</p>
+                <div
+                    className="rounded border p-3"
+                    style={{
+                        backgroundColor: colors.background.secondary,
+                        borderColor: colors.border.primary,
+                    }}
+                >
+                    <p className="text-sm font-medium mb-2" style={{ color: colors.text.primary }}>Permissions</p>
                     <div className="grid grid-cols-2 gap-2">
                         {AVAILABLE_PERMISSIONS.map(p => (
                             <label key={p.value} className="inline-flex items-center space-x-2">
                                 <input type="checkbox" {...register('permissions')} value={p.value} />
-                                <span className="text-sm">{p.label}</span>
+                                <span className="text-sm" style={{ color: colors.text.primary }}>{p.label}</span>
                             </label>
                         ))}
                     </div>

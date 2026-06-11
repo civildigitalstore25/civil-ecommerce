@@ -117,14 +117,14 @@ const CartPage: React.FC = () => {
               >
                 Shopping Cart
               </h1>
-              <p
-                className="mt-1 text-sm sm:text-base transition-colors duration-200"
-                style={{ color: colors.text.secondary }}
-              >
-                {items.length > 0
-                  ? `${summary.itemCount} item${summary.itemCount !== 1 ? "s" : ""} in your cart`
-                  : "Your cart is empty"}
-              </p>
+              {items.length > 0 && (
+                <p
+                  className="mt-1 text-sm sm:text-base transition-colors duration-200"
+                  style={{ color: colors.text.secondary }}
+                >
+                  {`${summary.itemCount} item${summary.itemCount !== 1 ? "s" : ""} in your cart`}
+                </p>
+              )}
             </div>
 
             {items.length > 0 && (

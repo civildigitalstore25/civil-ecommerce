@@ -93,7 +93,7 @@ const HomePage: React.FC = () => {
 
 
 
-          <section className="px-4 sm:px-6 lg:px-8">
+          <section>
             <LatestBlogsCarousel />
           </section>
 

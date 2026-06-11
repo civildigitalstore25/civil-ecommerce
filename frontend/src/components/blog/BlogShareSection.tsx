@@ -1,4 +1,5 @@
 import React from "react";
+import { useAdminTheme } from "../../contexts/AdminThemeContext";
 
 interface BlogShareSectionProps {
   title: string;
@@ -39,9 +40,14 @@ const SHARE_LINKS = [
 ];
 
 export function BlogShareSection({ title, url }: BlogShareSectionProps): React.ReactElement {
+  const { colors, theme } = useAdminTheme();
+  const isDark = theme === "dark";
+
   return (
     <div className="flex flex-wrap items-center gap-4">
-      <span className="text-sm font-semibold text-gray-700">Share</span>
+      <span className="text-sm font-semibold" style={{ color: colors.text.secondary }}>
+        Share
+      </span>
       <div className="flex items-center gap-2">
         {SHARE_LINKS.map(({ label, href, icon }) => (
           <a
@@ -49,7 +55,11 @@ export function BlogShareSection({ title, url }: BlogShareSectionProps): React.R
             href={href(title, url)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center w-10 h-10 rounded-lg bg-gray-100 text-gray-600 hover:bg-blue-600 hover:text-white transition-colors"
+            className="flex items-center justify-center w-10 h-10 rounded-lg transition-colors hover:bg-blue-600 hover:text-white"
+            style={{
+              backgroundColor: isDark ? "#1e293b" : "#f3f4f6",
+              color: isDark ? "#cbd5e1" : "#4b5563",
+            }}
             aria-label={`Share on ${label}`}
           >
             {icon}
