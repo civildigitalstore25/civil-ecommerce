@@ -1,78 +1,273 @@
-// ...existing code...
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  BadgeCheck,
+  BriefcaseBusiness,
+  CheckCircle,
+  ClipboardCheck,
+  Gift,
+  Handshake,
+  HelpCircle,
+  Mail,
+  Phone,
+  Rocket,
+  Send,
+  Users,
+} from "lucide-react";
+import { useAdminThemeStyles } from "../hooks/useAdminThemeStyles";
+import { useAdminTheme } from "../contexts/AdminThemeContext";
 
-const PartnerProgram = () => (
-  <div className="max-w-3xl mx-auto px-4 py-10 text-base text-gray-800 mt-15">
-    <h1 className="text-2xl md:text-3xl font-bold mb-4 text-blue-900">Unlock Exclusive Benefits with Our Softzcart Partner Program</h1>
-    <p className="mb-6">Join Softzcart.com Partner Program</p>
-    <p className="mb-4">Welcome to the Softzcart Partner Program — a trusted opportunity for software resellers, IT professionals, and business partners across India.<br />
-    At Softzcart.com, we help you grow your income through genuine digital licenses for Windows, MS Office, and Antivirus software.<br />
-    Our goal is to promote safe, verified, genuine software usage for every business and individual.</p>
-    <p className="mb-4">Are you seeking a long-term collaboration that ensures mutual growth and success? Our Partner Program is specifically designed for businesses, resellers, and affiliates who want to expand their revenue while providing customers with genuine and trusted antivirus solutions. By joining our program, you gain access to an array of exclusive benefits, including competitive discount coupons, lucrative cashback vouchers, and commission-based incentives that reward your efforts every month.</p>
-    <p className="mb-4">With our Partner Program, you not only enhance your profitability but also build credibility by offering top-quality antivirus software to your customers. Our seamless onboarding process, dedicated support, and marketing resources empower you to maximize your earnings effortlessly. Whether you're a reseller looking to boost sales or an affiliate seeking a reliable income stream, our program provides the perfect opportunity for sustained success. Don’t miss out—partner with us today and start unlocking exclusive rewards!</p>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Why Join Our Partner Program?</h2>
-    <p className="mb-2">Trusted by customers across India, Digi Tek Solutions specializes in licensed Windows, MS Office, and Antivirus software keys.</p>
-    <ul className="list-disc pl-6 mb-4">
-      <li>Exclusive Partner Discounts – Get special coupon codes for discounts on every order.</li>
-      <li>Earn Monthly Cashback – Receive a percentage of your sales as a voucher.</li>
-      <li>Priority Support – Get dedicated assistance within 24 hours.</li>
-      <li>Flexible & Easy Process – Minimal documentation required.</li>
-      <li>Boost Your Business Growth – Partner with a trusted antivirus key provider.</li>
-    </ul>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">How Does It Work?</h2>
-    <ol className="list-decimal pl-6 mb-4">
-      <li>Submit Your Details<br />
-        To become our partner, submit the following documents:
-        <ul className="list-disc pl-6">
-          <li>Company Name & Address</li>
-          <li>GST Number (Optional)</li>
-          <li>Contact Number & Email ID</li>
-          <li>Aadhaar & PAN Card</li>
-          <li>Visiting Card or GST Certificate (Optional)</li>
-          <li>Any Other Address Proof</li>
-        </ul>
-      </li>
-      <li>Approval & Onboarding (Within 24 Hours)<br />
-        Our team will verify your details and contact you within 24 hours. Once approved, you will receive a unique partner coupon code.
-      </li>
-      <li>Start Earning<br />
-        <ul className="list-disc pl-6">
-          <li>Use your coupon code to get discounts on every order.</li>
-          <li>Earn a certain percentage of total sales (Calculated Every Month) as a cashback voucher.</li>
-          <li>Use your voucher to purchase products from our website.</li>
-        </ul>
-      </li>
-    </ol>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Who Can Join?</h2>
-    <ul className="list-disc pl-6 mb-4">
-      <li>Windows, MS Office, Adobe, Autocad Resellers & Distributors</li>
-      <li>IT Professionals & Security Consultants</li>
-      <li>E-commerce & Website Developers</li>
-      <li>Corporate & Bulk Buyers</li>
-      <li>Freelancers & Influencers</li>
-      <li>If you have a network that purchases software keys, this is the perfect opportunity for you.</li>
-    </ul>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Key Benefits for Our Partners</h2>
-    <ul className="list-disc pl-6 mb-4">
-      <li>Earn more with every sale through additional cashback vouchers.</li>
-      <li>Build a long-term partnership with a trusted brand.</li>
-      <li>High-demand products include Windows, MS Office, and Antivirus software keys.</li>
-      <li>Instant activation and secure transactions ensure customer satisfaction.</li>
-    </ul>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">How to Apply:</h2>
-    <p className="mb-4">To join, simply fill out our Partner Program Application Form. <a href="https://docs.google.com/forms/d/e/1FAIpQLSdzCiJIUqdamM2KWNWbrhVmS5WIFikPH00P3h0cHno-5ZGZpQ/viewform" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">click to Apply Now</a></p>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Frequently Asked Questions (FAQs)</h2>
-    <p className="mb-2"><strong>Q1: How long does it take to approve my partner application?</strong><br />
-    ----&gt; We will review and approve your application within 24 hours of submission.</p>
-    <p className="mb-2"><strong>Q2: Is there any fee to join the Partner Program?</strong><br />
-    ----&gt;No, joining our Partner Program is entirely free.</p>
-    <p className="mb-2"><strong>Q3: Can I refer other partners?</strong><br />
-    ----&gt;Yes, you can refer others and expand our network while earning additional incentives.</p>
-    <h2 className="text-xl font-semibold mt-8 mb-2 text-blue-800">Join Our Partner Program Today</h2>
-    <p className="mb-2">Do not miss out on this opportunity to grow your business with us. Apply now and start earning rewards.</p>
-    <p className="mb-2">Contact Us: <a href="tel:+919042993986" className="text-blue-600 underline">+91-90429 93986</a></p>
-    <p className="mb-2">Email Us: <a href="mailto:softzcart@gmail.com" className="text-blue-600 underline">softzcart@gmail.com</a></p>
-    <p className="mb-2">Website: <a href="https://www.softzcart.com" className="text-blue-600 underline" target="_blank" rel="noopener noreferrer">www.softzcart.com</a></p>
-  </div>
+const applicationFormUrl =
+  "https://docs.google.com/forms/d/e/1FAIpQLSdzCiJIUqdamM2KWNWbrhVmS5WIFikPH00P3h0cHno-5ZGZpQ/viewform";
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const checklistItemClass = "flex items-start gap-2 text-sm sm:text-base";
+
+const CheckItem = ({ children }: { children: React.ReactNode }) => (
+  <li className={checklistItemClass}>
+    <CheckCircle size={14} className="mt-0.5 shrink-0" style={{ color: "#0A2A6B" }} />
+    <span>{children}</span>
+  </li>
 );
+
+const sections = [
+  {
+    num: "1",
+    icon: <Handshake size={14} strokeWidth={2.25} />,
+    title: "Program Overview",
+    content: (
+      <div className="space-y-3 text-sm sm:text-base leading-relaxed">
+        <p>
+          The Softzcart Partner Program is built for software resellers, IT professionals, affiliates, and business partners across India who want to grow with genuine digital licenses.
+        </p>
+        <p>
+          We help partners offer trusted Windows, MS Office, Adobe, AutoCAD, and Antivirus software keys while earning discounts, cashback vouchers, and monthly incentives.
+        </p>
+      </div>
+    ),
+  },
+  {
+    num: "2",
+    icon: <Gift size={14} strokeWidth={2.25} />,
+    title: "Why Join",
+    content: (
+      <ul className="space-y-1.5">
+        <CheckItem>Exclusive partner discount coupons on every order.</CheckItem>
+        <CheckItem>Monthly cashback vouchers based on eligible sales.</CheckItem>
+        <CheckItem>Priority partner support within 24 hours.</CheckItem>
+        <CheckItem>Simple onboarding with minimal documentation.</CheckItem>
+        <CheckItem>High-demand genuine software products for your customer base.</CheckItem>
+      </ul>
+    ),
+  },
+  {
+    num: "3",
+    icon: <ClipboardCheck size={14} strokeWidth={2.25} />,
+    title: "How It Works",
+    content: (
+      <div className="space-y-4 text-sm sm:text-base leading-relaxed">
+        <div>
+          <p className="font-semibold">Submit your details</p>
+          <ul className="mt-2 space-y-1.5">
+            <CheckItem>Company name and address</CheckItem>
+            <CheckItem>GST number, if available</CheckItem>
+            <CheckItem>Contact number and email ID</CheckItem>
+            <CheckItem>Aadhaar and PAN card</CheckItem>
+            <CheckItem>Visiting card, GST certificate, or other address proof</CheckItem>
+          </ul>
+        </div>
+        <p>
+          Our team reviews your application and contacts you within 24 hours. Once approved, you receive a unique partner coupon code.
+        </p>
+        <p>
+          Use your coupon code for discounts, earn cashback vouchers from monthly sales, and redeem those vouchers on Softzcart purchases.
+        </p>
+      </div>
+    ),
+  },
+  {
+    num: "4",
+    icon: <Users size={14} strokeWidth={2.25} />,
+    title: "Who Can Join",
+    content: (
+      <ul className="space-y-1.5">
+        <CheckItem>Windows, MS Office, Adobe, and AutoCAD resellers or distributors.</CheckItem>
+        <CheckItem>IT professionals and security consultants.</CheckItem>
+        <CheckItem>E-commerce owners and website developers.</CheckItem>
+        <CheckItem>Corporate buyers and bulk purchase teams.</CheckItem>
+        <CheckItem>Freelancers, influencers, and affiliates with a software buyer network.</CheckItem>
+      </ul>
+    ),
+  },
+  {
+    num: "5",
+    icon: <Rocket size={14} strokeWidth={2.25} />,
+    title: "Partner Benefits",
+    content: (
+      <ul className="space-y-1.5">
+        <CheckItem>Earn more with every sale through additional cashback vouchers.</CheckItem>
+        <CheckItem>Build a long-term partnership with a trusted software brand.</CheckItem>
+        <CheckItem>Offer fast-moving products like Windows, MS Office, Adobe, AutoCAD, and Antivirus keys.</CheckItem>
+        <CheckItem>Give customers instant activation and secure transactions.</CheckItem>
+      </ul>
+    ),
+  },
+  {
+    num: "6",
+    icon: <Send size={14} strokeWidth={2.25} />,
+    title: "How to Apply",
+    content: (
+      <p className="text-sm sm:text-base leading-relaxed">
+        Fill out the Partner Program application form and our team will review your details.{" "}
+        <a
+          href={applicationFormUrl}
+          className="font-semibold underline underline-offset-4"
+          style={{ color: "#0A2A6B" }}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Apply now
+        </a>
+      </p>
+    ),
+  },
+  {
+    num: "7",
+    icon: <HelpCircle size={14} strokeWidth={2.25} />,
+    title: "Frequently Asked Questions",
+    content: (
+      <div className="space-y-3 text-sm sm:text-base leading-relaxed">
+        <p>
+          <strong>How long does approval take?</strong>
+          <br />
+          We usually review and approve partner applications within 24 hours of submission.
+        </p>
+        <p>
+          <strong>Is there any fee to join?</strong>
+          <br />
+          No, joining the Softzcart Partner Program is free.
+        </p>
+        <p>
+          <strong>Can I refer other partners?</strong>
+          <br />
+          Yes, you can refer others and expand the network while earning additional incentives.
+        </p>
+      </div>
+    ),
+  },
+  {
+    num: "8",
+    icon: <BadgeCheck size={14} strokeWidth={2.25} />,
+    title: "Contact Details",
+    content: (
+      <div className="space-y-2 text-sm sm:text-base leading-relaxed">
+        <p className="flex items-center gap-2">
+          <Phone size={15} className="shrink-0" style={{ color: "#0A2A6B" }} />
+          <a href="tel:+919042993986" className="underline underline-offset-4">
+            +91-90429 93986
+          </a>
+        </p>
+        <p className="flex items-center gap-2">
+          <Mail size={15} className="shrink-0" style={{ color: "#0A2A6B" }} />
+          <a href="mailto:softzcart@gmail.com" className="underline underline-offset-4">
+            softzcart@gmail.com
+          </a>
+        </p>
+        <p className="flex items-center gap-2">
+          <BriefcaseBusiness size={15} className="shrink-0" style={{ color: "#0A2A6B" }} />
+          <a
+            href="https://www.softzcart.com"
+            className="underline underline-offset-4"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.softzcart.com
+          </a>
+        </p>
+      </div>
+    ),
+  },
+];
+
+const PartnerProgram: React.FC = () => {
+  const { colors } = useAdminThemeStyles();
+  const { theme } = useAdminTheme();
+  const isLight = theme === "light";
+
+  return (
+    <div
+      className="min-h-screen px-3 py-4 sm:p-6 md:p-10 pt-16 sm:pt-20 relative mt-16 sm:mt-20 transition-colors duration-200"
+      style={{ backgroundColor: isLight ? "#F5F7FA" : colors.background.primary }}
+    >
+      <div
+        className="mx-auto max-w-5xl rounded-xl shadow-xl overflow-hidden"
+        style={{
+          backgroundColor: isLight ? "#fff" : colors.background.secondary,
+          border: `1px solid ${isLight ? "#E2E8F0" : colors.border.primary}`,
+        }}
+      >
+        <div
+          className="px-4 py-7 sm:p-10 text-center"
+          style={{
+            backgroundColor: isLight ? "#F8FAFC" : colors.background.secondary,
+            borderBottom: `1px solid ${isLight ? "#E2E8F0" : colors.border.primary}`,
+          }}
+        >
+          <h1
+            className="text-2xl sm:text-3xl md:text-4xl font-bold"
+            style={{ color: isLight ? "#0A2A6B" : colors.text.primary }}
+          >
+            Partner Program
+          </h1>
+          <p
+            className="mt-2 sm:mt-4 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
+            style={{ color: isLight ? "#475569" : colors.text.secondary }}
+          >
+            Unlock exclusive benefits with Softzcart through genuine software licenses, partner discounts, cashback vouchers, and priority support.
+          </p>
+        </div>
+
+        <div className="px-4 py-5 sm:p-8 lg:p-10 space-y-4 sm:space-y-5">
+          {sections.map(({ num, icon, title, content }, i) => (
+            <motion.div
+              key={num}
+              className="rounded-lg border p-4 sm:p-5"
+              style={{
+                backgroundColor: isLight ? "#F8FAFC" : colors.background.primary,
+                borderColor: isLight ? "#E2E8F0" : colors.border.primary,
+              }}
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              viewport={{ once: true }}
+            >
+              <div className="flex items-center gap-2 sm:gap-3 mb-3">
+                <div
+                  className="flex h-6 w-6 sm:h-7 sm:w-7 shrink-0 items-center justify-center rounded-full text-white"
+                  style={{ backgroundColor: "#0A2A6B" }}
+                >
+                  {icon}
+                </div>
+                <h3
+                  className="text-sm sm:text-base font-semibold"
+                  style={{ color: isLight ? "#0A2A6B" : colors.text.primary }}
+                >
+                  {num}. {title}
+                </h3>
+              </div>
+
+              <div style={{ color: isLight ? "#475569" : colors.text.secondary }}>{content}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default PartnerProgram;

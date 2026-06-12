@@ -106,14 +106,7 @@ const HeroSection: React.FC = () => {
               className={`flex flex-col justify-center transform transition-all duration-1000 ${isVisible ? "translate-x-0 opacity-100" : "-translate-x-10 opacity-0"
                 }`}
             >
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 w-fit mb-6 px-4 py-2 rounded-full"
-                style={{ background: `${colors.interactive.primary}15`, border: `1px solid ${colors.interactive.primary}40` }}>
-                <SparklesIcon className="h-4 w-4" style={{ color: colors.interactive.primary }} />
-                <span className="text-sm font-semibold" style={{ color: colors.interactive.primary }}>
-                  Trusted by Engineers Worldwide
-                </span>
-              </div>
+             
 
               {/* Main Heading */}
               <h1
