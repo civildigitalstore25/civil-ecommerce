@@ -80,7 +80,7 @@ export const BrandCategoryListingToolbar: React.FC<Props> = ({
 
       <div className="mb-6">
         <h1
-          className="text-4xl font-bold mb-2 transition-colors duration-200"
+          className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 leading-tight transition-colors duration-200"
           style={{ color: colors.text.primary }}
         >
           {displayTitle}
