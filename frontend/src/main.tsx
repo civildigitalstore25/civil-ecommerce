@@ -3,6 +3,13 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { initClarity } from "./utils/clarity.ts";
+import posthog from "posthog-js";
+
+posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  capture_pageview: false,
+  capture_pageleave: true,
+});
 
 document.documentElement.classList.add("js");
 
