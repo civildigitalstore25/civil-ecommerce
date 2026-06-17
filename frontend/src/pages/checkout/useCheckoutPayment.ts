@@ -44,7 +44,7 @@ export const useCheckoutPayment = (
       if (!token) {
         toast.error("Please login to continue");
         setIsProcessing(false);
-        navigate("/login");
+        navigate("/signin", { state: { returnTo: "/checkout" } });
         return;
       }
 

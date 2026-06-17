@@ -4,6 +4,7 @@ import { useSignIn, useUserInvalidate } from "../../../api/userQueries";
 import { saveAuth } from "../../../utils/auth";
 import { useAdminTheme } from "../../../contexts/AdminThemeContext";
 import { useAppForm } from "../../../hooks/useAppForm";
+import { clearAuthRedirect, resolveAuthRedirect } from "../../../utils/authRedirect";
 import type { SigninFormData } from "./signinTypes";
 
 export function useSigninPage() {
@@ -47,9 +48,25 @@ export function useSigninPage() {
             timerProgressBar: true,
           });
 
-          // Redirect to the original page or home if not available
-          const from = (location.state as any)?.from?.pathname || "/";
-          navigate(from);
+          const redirectState = location.state as
+            | {
+                returnTo?: string;
+                from?: {
+                  pathname?: string;
+                  search?: string;
+                  hash?: string;
+                  state?: unknown;
+                };
+              }
+            | undefined;
+          const redirectTo = resolveAuthRedirect(
+            redirectState,
+            "/",
+            location.search,
+          );
+          clearAuthRedirect();
+
+          navigate(redirectTo, { replace: true, state: redirectState?.from?.state });
         },
         onError: (err: unknown) => {
           const message =

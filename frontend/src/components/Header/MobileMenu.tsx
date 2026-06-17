@@ -83,7 +83,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
             ) : (
               <>
                 <button
-                  onClick={() => onNavigate("/login")}
+                  onClick={() => onNavigate("/signin")}
                   className="flex items-center space-x-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:opacity-80"
                   style={{ color: colors.text.secondary }}
                 >

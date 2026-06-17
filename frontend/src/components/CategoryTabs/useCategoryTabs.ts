@@ -44,7 +44,7 @@ export function useCategoryTabs() {
     licenseType: "1year" = "1year",
   ) => {
     if (!user) {
-      navigate("/login");
+      navigate("/signin", { state: { returnTo: window.location.pathname + window.location.search } });
       return;
     }
 
