@@ -51,7 +51,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
       <div className="flex justify-between items-center px-4 py-2 bg-gray-50 border-t border-gray-200 text-sm text-gray-500 flex-shrink-0">
         <div>
-          Supports <strong>bold</strong>, <em>italic</em>, <u>underline</u> •
+          Supports <strong>headings</strong>, <strong>bold</strong>, <em>italic</em>, <u>underline</u> •
           bullets, 1. numbers, [links](url), ![images](url)
         </div>
         <div>{characterCount} characters</div>
