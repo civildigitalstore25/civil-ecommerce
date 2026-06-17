@@ -86,7 +86,7 @@ export const ProductDetailTopBar: React.FC<Props> = ({
           <button
             type="button"
             onClick={onBack}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105"
+            className="hidden md:flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 hover:scale-105"
             style={{
               color: colors.text.secondary,
               backgroundColor: colors.background.secondary,
