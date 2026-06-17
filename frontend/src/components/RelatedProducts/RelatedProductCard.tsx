@@ -23,7 +23,7 @@ export function RelatedProductCard({
 
   return (
     <div
-      className="group flex-shrink-0 w-[260px] md:w-[280px] snap-start rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] border"
+      className="group flex-shrink-0 w-[148px] min-[380px]:w-[158px] sm:w-[190px] md:w-[280px] snap-start rounded-lg md:rounded-2xl shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] border"
       style={{
         backgroundColor: colors.background.primary,
         borderColor: colors.border.primary,
@@ -31,7 +31,7 @@ export function RelatedProductCard({
     >
       <Link
         to={productPath}
-        className="rounded-lg md:rounded-xl overflow-hidden h-32 md:h-52 mb-2 md:mb-3 block transition-colors duration-200 relative"
+        className="rounded-lg md:rounded-xl overflow-hidden h-28 sm:h-36 md:h-48 mb-1.5 md:mb-3 block transition-colors duration-200 relative"
         style={{ backgroundColor: colors.background.secondary }}
       >
         <img
@@ -111,7 +111,7 @@ export function RelatedProductCard({
         </span>
       </div>
 
-      <h2 className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 line-clamp-2">
+      <h2 className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 line-clamp-2 min-h-[1.9rem] md:min-h-[2.75rem]">
         <Link
           to={productPath}
           className="transition-colors duration-200 hover:underline"
@@ -131,9 +131,29 @@ export function RelatedProductCard({
       </h2>
 
       <div className="flex flex-col gap-1 md:gap-2 mt-auto">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart(product);
+          }}
+          className="w-full font-bold rounded-md md:rounded-lg py-1.5 md:py-2.5 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+          style={{
+            backgroundColor: colors.interactive.primary,
+            color: colors.text.inverse,
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.opacity = "0.9";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.opacity = "1";
+          }}
+        >
+          Add to Cart
+        </button>
         <Link
           to={productPath}
-          className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02] text-center"
+          className="w-full border font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-sm transition-all duration-200 hover:scale-[1.02] text-center"
           style={{
             borderColor: colors.border.primary,
             color: colors.text.primary,
@@ -148,26 +168,6 @@ export function RelatedProductCard({
         >
           View Details
         </Link>
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToCart(product);
-          }}
-          className="w-full font-medium rounded-md md:rounded-lg py-1 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
-          style={{
-            backgroundColor: colors.interactive.primary,
-            color: colors.text.inverse,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.opacity = "0.9";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.opacity = "1";
-          }}
-        >
-          Add to Cart
-        </button>
       </div>
     </div>
   );

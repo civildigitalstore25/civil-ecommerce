@@ -121,7 +121,7 @@ export const ProductDetailFloatingActions: React.FC<Props> = ({
           <button
             type="button"
             onClick={onWhatsAppEnquiry}
-            className="flex items-center rounded-full shadow-2xl px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 bg-[#25D366] hover:bg-[#20BA5A] transition-all duration-300 gap-2 md:gap-3"
+            className="hidden md:flex items-center rounded-full shadow-2xl px-3 py-2 md:px-4 md:py-2 lg:px-6 lg:py-3 bg-[#25D366] hover:bg-[#20BA5A] transition-all duration-300 gap-2 md:gap-3"
             style={{ boxShadow: "0 4px 20px rgba(37, 211, 102, 0.4)" }}
             title="WhatsApp Enquiry"
             aria-label="Contact us on WhatsApp"

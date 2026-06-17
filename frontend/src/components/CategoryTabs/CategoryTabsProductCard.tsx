@@ -30,7 +30,7 @@ export function CategoryTabsProductCard({
 
   return (
     <div
-      className={`group rounded-xl md:rounded-2xl shadow-sm md:shadow-md hover:shadow-xl transition-all duration-200 p-2.5 md:p-5 flex flex-col hover:scale-[1.02] ${
+      className={`group rounded-xl md:rounded-2xl shadow-sm md:shadow-md hover:shadow-xl transition-all duration-200 p-2 md:p-5 flex flex-col hover:scale-[1.02] ${
         index >= 5 ? "lg:hidden" : ""
       }`}
       style={{
@@ -39,7 +39,7 @@ export function CategoryTabsProductCard({
       }}
     >
       <div
-        className="rounded-lg md:rounded-xl overflow-hidden h-36 md:h-52 mb-2 md:mb-3 cursor-pointer transition-colors duration-200 relative"
+        className="rounded-lg md:rounded-xl overflow-hidden h-28 md:h-48 mb-1.5 md:mb-3 cursor-pointer transition-colors duration-200 relative"
         style={{ backgroundColor: colors.background.secondary }}
         onClick={goToProduct}
       >
@@ -87,7 +87,7 @@ export function CategoryTabsProductCard({
         )}
       </div>
 
-      <div className="flex flex-wrap gap-1 md:gap-2 mb-1.5 md:mb-2">
+      <div className="flex flex-wrap gap-1 md:gap-2 mb-1 md:mb-2">
         <span
           className="text-[9px] md:text-xs px-1.5 md:px-2 py-0.5 md:py-1 rounded-full transition-colors duration-200 font-medium max-w-full truncate"
           style={{
@@ -119,7 +119,7 @@ export function CategoryTabsProductCard({
       </div>
 
       <h2
-        className="text-xs md:text-lg font-semibold mb-1 md:mb-1 transition-colors duration-200 line-clamp-2 min-h-[2.5rem] md:min-h-[3rem]"
+        className="text-xs md:text-lg font-semibold mb-0.5 md:mb-1 transition-colors duration-200 line-clamp-2 min-h-[2rem] md:min-h-[2.75rem]"
         style={{ color: colors.text.primary }}
       >
         {product.name}
@@ -133,10 +133,10 @@ export function CategoryTabsProductCard({
         )}
       </h2>
 
-      <div className="flex flex-col gap-1.5 md:gap-2 mt-auto">
+      <div className="flex flex-col gap-1 md:gap-2 mt-auto">
         <button
           type="button"
-          className="w-full font-bold rounded-md md:rounded-lg py-2 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
+          className="w-full font-bold rounded-md md:rounded-lg py-1.5 md:py-2 text-[10px] md:text-base transition-all duration-200 hover:scale-[1.02]"
           style={{
             ...(product.isOutOfStock
               ? {

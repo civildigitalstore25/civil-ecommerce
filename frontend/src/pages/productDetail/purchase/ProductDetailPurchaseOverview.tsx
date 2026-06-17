@@ -44,7 +44,7 @@ export const ProductDetailPurchaseOverview: React.FC<ProductDetailPurchaseOvervi
         <h1 className="text-lg sm:text-2xl lg:text-4xl font-bold sm:flex-1" style={{ color: colors.text.primary }}>
           {product.name}
         </h1>
-        <div className="flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-2">
           <div className="flex text-yellow-400">
             {Array.from({ length: 5 }, (_, i) => (
               <LucideIcons.Star
@@ -83,7 +83,7 @@ export const ProductDetailPurchaseOverview: React.FC<ProductDetailPurchaseOvervi
         ))}
       </div>
 
-      {(totalViews > 0 || soldQuantity > 0) && (
+      {(totalViews > 0 || soldQuantity > 0 || reviewStats) && (
         <div className="flex items-center gap-2 mt-3 flex-nowrap overflow-x-auto">
           {totalViews > 0 && (
             <div
@@ -105,9 +105,26 @@ export const ProductDetailPurchaseOverview: React.FC<ProductDetailPurchaseOvervi
               </span>
             </div>
           )}
+          {reviewStats && (
+            <div className="flex md:hidden ml-auto items-center gap-2 shrink-0">
+              <div className="flex text-yellow-400">
+                {Array.from({ length: 5 }, (_, i) => (
+                  <LucideIcons.Star
+                    key={i}
+                    size={16}
+                    fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
+                  />
+                ))}
+              </div>
+              <span style={{ color: colors.text.primary }}>
+                {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"} (
+                {reviewStats?.totalReviews || 0})
+              </span>
+            </div>
+          )}
           {soldQuantity > 0 && (
             <div
-              className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap shrink-0"
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap"
               style={{
                 backgroundColor: colors.background.secondary,
                 borderColor: colors.interactive.secondary + "40",

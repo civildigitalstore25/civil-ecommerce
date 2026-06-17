@@ -1,5 +1,6 @@
 import React from "react";
 import * as LucideIcons from "lucide-react";
+import type { NavigateFunction } from "react-router-dom";
 import type { ThemeColors } from "../../contexts/AdminThemeContext";
 
 type Props = {
@@ -9,6 +10,7 @@ type Props = {
   showEditButton: boolean;
   onEditClick: () => void;
   onBack: () => void;
+  navigate: NavigateFunction;
 };
 
 export const ProductDetailTopBar: React.FC<Props> = ({
@@ -18,7 +20,11 @@ export const ProductDetailTopBar: React.FC<Props> = ({
   showEditButton,
   onEditClick,
   onBack,
+  navigate,
 }) => {
+  const categorySlug = categoryTitle.toLowerCase().trim().replace(/[\s_]+/g, "-");
+  const categoryPath = `/category/${encodeURIComponent(categorySlug)}`;
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
       <div className="flex items-start justify-between gap-4 mb-3">
@@ -26,9 +32,23 @@ export const ProductDetailTopBar: React.FC<Props> = ({
           className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-x-auto"
           style={{ color: colors.text.secondary }}
         >
-          <span>Home</span>
-          <span>{">"}</span>
-          <span>{categoryTitle}</span>
+          <button
+            type="button"
+            onClick={() => navigate("/")}
+            className="hover:underline transition-colors"
+            style={{ color: colors.text.secondary }}
+          >
+            Home
+          </button>
+          <span>{">"}  </span>
+          <button
+            type="button"
+            onClick={() => navigate(categoryPath)}
+            className="hover:underline transition-colors"
+            style={{ color: colors.text.secondary }}
+          >
+            {categoryTitle}
+          </button>
           <span>{">"}</span>
           <span style={{ color: colors.interactive.primary }}>
             <span className="hidden md:inline">{breadcrumbProductName}</span>

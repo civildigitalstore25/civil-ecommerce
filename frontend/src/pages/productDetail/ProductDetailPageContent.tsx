@@ -83,6 +83,7 @@ export function ProductDetailPageContent({ page }: ProductDetailPageContentProps
         showEditButton={user?.role === "admin" || user?.role === "superadmin"}
         onEditClick={() => setShowEditModal(true)}
         onBack={() => navigate(-1)}
+        navigate={navigate}
       />
       <BannerCarousel page="product" />
 

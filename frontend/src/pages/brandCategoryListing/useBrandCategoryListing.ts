@@ -1,5 +1,5 @@
 import { useState, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import type { Product } from "../../api/types/productTypes";
 import { useProducts } from "../../api/productApi";
@@ -15,9 +15,10 @@ import {
 
 export function useBrandCategoryListing() {
   const { search } = useLocation();
+  const { category: categoryParam } = useParams<{ category?: string }>();
   const params = new URLSearchParams(search);
   const brand = params.get("brand") || "";
-  const category = params.get("category") || "";
+  const category = params.get("category") || categoryParam || "";
   const searchTerm = params.get("search") || "";
 
   const seoData = getCategoryListingSEO({ brand, category });

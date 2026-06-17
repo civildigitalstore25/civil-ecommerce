@@ -1,5 +1,5 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { isAuthenticated } from "../../utils/auth";
 
 interface AuthGuardProps {
@@ -8,10 +8,11 @@ interface AuthGuardProps {
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children }) => {
   const authenticated = isAuthenticated();
+  const location = useLocation();
 
   if (!authenticated) {
-    // Redirect to signin page if not authenticated
-    return <Navigate to="/signin" replace />;
+    // Redirect to signin page with the current location as the redirect destination
+    return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;

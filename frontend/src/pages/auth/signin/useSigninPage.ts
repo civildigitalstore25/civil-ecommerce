@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useSignIn, useUserInvalidate } from "../../../api/userQueries";
 import { saveAuth } from "../../../utils/auth";
@@ -8,6 +8,7 @@ import type { SigninFormData } from "./signinTypes";
 
 export function useSigninPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const invalidateUser = useUserInvalidate();
   const signInMutation = useSignIn();
   const { colors } = useAdminTheme();
@@ -46,7 +47,9 @@ export function useSigninPage() {
             timerProgressBar: true,
           });
 
-          navigate("/");
+          // Redirect to the original page or home if not available
+          const from = (location.state as any)?.from?.pathname || "/";
+          navigate(from);
         },
         onError: (err: unknown) => {
           const message =

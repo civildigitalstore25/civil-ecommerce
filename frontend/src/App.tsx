@@ -8,11 +8,9 @@ import { AdminThemeProvider } from "./contexts/AdminThemeContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
 import Header from "./components/Header/Header";
 import MainLayout from "./components/layout/MainLayout";
-import WelcomePopup from "./components/WelcomePopup/WelcomePopup";
 import Footer from "./components/Footer/Footer";
 import { usePageTracking } from "./hooks/usePageTracking";
 import { AppRoutes } from "./app/AppRoutes";
-import { useAppWelcomePopup } from "./app/useAppWelcomePopup";
 
 const queryClient = new QueryClient();
 
@@ -38,14 +36,9 @@ function AppLayout() {
       location.pathname === route || location.pathname.startsWith("/reset-password/"),
   );
 
-  const { showWelcomePopup, handleCloseWelcomePopup } = useAppWelcomePopup(
-    location.pathname,
-  );
-
   return (
     <>
       {!shouldHideHeader && <Header />}
-      {showWelcomePopup && <WelcomePopup onClose={handleCloseWelcomePopup} />}
       <MainLayout>
         <AppRoutes />
         {!shouldHideHeader && <Footer />}

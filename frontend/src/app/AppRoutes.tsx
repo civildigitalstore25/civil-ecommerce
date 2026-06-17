@@ -164,6 +164,7 @@ export function AppRoutes() {
       />
       <Route path="/products" element={<AllProductsPage />} />
       <Route path="/category" element={<BrandCategoryListing />} />
+      <Route path="/category/:category" element={<BrandCategoryListing />} />
       <Route path="/product/:slug" element={<ProductDetail />} />
       <Route
         path="/cart"
