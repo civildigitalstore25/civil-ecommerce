@@ -84,14 +84,14 @@ export function RelatedProductCard({
             backgroundColor: interactiveTint,
             color:
               typeof colors.interactive.primary === "string" &&
-              colors.interactive.primary.startsWith("linear-gradient")
+                colors.interactive.primary.startsWith("linear-gradient")
                 ? colors.interactive.secondary
                 : colors.interactive.primary,
           }}
         >
           {product.category
             ? product.category.charAt(0).toUpperCase() +
-              product.category.slice(1)
+            product.category.slice(1)
             : ""}
         </span>
         <span
@@ -105,7 +105,7 @@ export function RelatedProductCard({
             const brandOrCompany = product.company || product.brand || "";
             return brandOrCompany
               ? brandOrCompany.charAt(0).toUpperCase() +
-                  brandOrCompany.slice(1)
+              brandOrCompany.slice(1)
               : "";
           })()}
         </span>

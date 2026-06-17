@@ -100,8 +100,8 @@ export function useBrandCategoryListing() {
 
   const interactiveTint =
     colors.interactive.primary &&
-    typeof colors.interactive.primary === "string" &&
-    colors.interactive.primary.startsWith("linear-gradient")
+      typeof colors.interactive.primary === "string" &&
+      colors.interactive.primary.startsWith("linear-gradient")
       ? `${colors.interactive.secondary}20`
       : `${colors.interactive.primary}20`;
 
