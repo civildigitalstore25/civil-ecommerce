@@ -29,7 +29,7 @@ export const ProductDetailTopBar: React.FC<Props> = ({
     <div className="max-w-7xl mx-auto px-4 py-2 lg:py-4">
       <div className="flex items-start justify-between gap-4 mb-3">
         <div
-          className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-hidden min-w-0"
+          className="flex items-center gap-1 lg:gap-2 text-xs lg:text-sm overflow-hidden min-w-0 mt-3 ml-2"
           style={{ color: colors.text.secondary }}
         >
           <button
