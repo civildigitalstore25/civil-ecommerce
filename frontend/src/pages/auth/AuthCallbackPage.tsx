@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { saveAuth } from "../../utils/auth";
 import { useCurrentUser } from "../../api/auth"; // Use the new hook
 import { useUserInvalidate } from "../../api/userQueries";
+import { resolveAuthRedirect, clearAuthRedirect } from "../../utils/authRedirect";
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
@@ -32,7 +33,9 @@ export default function AuthCallbackPage() {
               fullName: userData.fullName,
             });
             invalidateUser();
-            navigate("/");
+            const redirectTo = resolveAuthRedirect(null, "/");
+            clearAuthRedirect();
+            navigate(redirectTo);
           } else {
             throw new Error("Failed to fetch user data");
           }
