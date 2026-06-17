@@ -52,6 +52,9 @@ export function AddProductModalFormSections({
   updateSubscription,
   addSubscription,
   removeSubscription,
+  updateInstagramReel,
+  addInstagramReel,
+  removeInstagramReel,
 }: AddProductModalFormSectionsProps) {
   return (
     <div className="space-y-8">
@@ -192,6 +195,10 @@ export function AddProductModalFormSections({
           handleInputChange("activationVideoUrl", v)
         }
         onDriveLinkChange={(v) => handleInputChange("driveLink", v)}
+        instagramReels={newProduct.instagramReels}
+        onInstagramReelChange={updateInstagramReel}
+        onAddInstagramReel={addInstagramReel}
+        onRemoveInstagramReel={removeInstagramReel}
       />
 
       <AddProductModalFaqSection

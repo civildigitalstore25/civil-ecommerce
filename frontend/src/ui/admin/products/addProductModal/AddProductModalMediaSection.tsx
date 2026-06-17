@@ -1,5 +1,6 @@
 import { Plus, X } from "lucide-react";
 import type { ThemeColors } from "../../../../contexts/AdminThemeContext";
+import { AddProductModalInstagramReelsSection } from "./AddProductModalInstagramReelsSection";
 
 type Props = {
   colors: ThemeColors;
@@ -8,6 +9,7 @@ type Props = {
   videoUrl: string;
   activationVideoUrl: string;
   driveLink: string;
+  instagramReels: string[];
   onImageUrlChange: (value: string) => void;
   onAdditionalImageChange: (index: number, value: string) => void;
   onRemoveAdditionalImage: (index: number) => void;
@@ -15,6 +17,9 @@ type Props = {
   onVideoUrlChange: (value: string) => void;
   onActivationVideoUrlChange: (value: string) => void;
   onDriveLinkChange: (value: string) => void;
+  onInstagramReelChange: (index: number, value: string) => void;
+  onAddInstagramReel: () => void;
+  onRemoveInstagramReel: (index: number) => void;
 };
 
 export function AddProductModalMediaSection({
@@ -24,6 +29,7 @@ export function AddProductModalMediaSection({
   videoUrl,
   activationVideoUrl,
   driveLink,
+  instagramReels,
   onImageUrlChange,
   onAdditionalImageChange,
   onRemoveAdditionalImage,
@@ -31,6 +37,9 @@ export function AddProductModalMediaSection({
   onVideoUrlChange,
   onActivationVideoUrlChange,
   onDriveLinkChange,
+  onInstagramReelChange,
+  onAddInstagramReel,
+  onRemoveInstagramReel,
 }: Props) {
   return (
     <div className="space-y-6">
@@ -197,6 +206,17 @@ export function AddProductModalMediaSection({
             Google Drive shareable link for the downloadable product file. Users will see a download button after
             purchase.
           </p>
+        </div>
+
+        {/* Instagram Reels */}
+        <div className="border-t pt-4" style={{ borderColor: colors.border.primary }}>
+          <AddProductModalInstagramReelsSection
+            colors={colors}
+            instagramReels={instagramReels}
+            onReelChange={onInstagramReelChange}
+            onAddReel={onAddInstagramReel}
+            onRemoveReel={onRemoveInstagramReel}
+          />
         </div>
       </div>
     </div>

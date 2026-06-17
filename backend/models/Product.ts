@@ -66,6 +66,7 @@ export interface IProduct extends Document {
   additionalImages?: string[];
   videoUrl?: string;
   activationVideoUrl?: string;
+  instagramReels?: string[]; // Up to 4 Instagram Reel URLs
   driveLink?: string; // Google Drive link for downloadable product
   /** Optional SEO overrides (product detail meta tags) */
   seoTitle?: string;
@@ -184,6 +185,7 @@ const productSchema: Schema = new Schema(
     additionalImages: [{ type: String }],
     videoUrl: { type: String },
     activationVideoUrl: { type: String },
+    instagramReels: [{ type: String }], // Up to 4 Instagram Reel URLs
     driveLink: { type: String }, // Google Drive link for downloadable product
     seoTitle: { type: String },
     seoDescription: { type: String },

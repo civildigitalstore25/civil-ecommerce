@@ -2,6 +2,7 @@ import RelatedProducts from "../../components/RelatedProducts";
 import BannerCarousel from "../../ui/admin/banner/BannerCarousel";
 import { shareProductDetail } from "./shareProductDetail";
 import { ProductDetailActivationVideoSection } from "./ProductDetailActivationVideoSection";
+import { ProductDetailInstagramReelsSection } from "./ProductDetailInstagramReelsSection";
 import { ProductDetailMediaGallery } from "./ProductDetailMediaGallery";
 import { ProductDetailSeoHelmet } from "./ProductDetailSeoHelmet";
 import { ProductDetailTopBar } from "./ProductDetailTopBar";
@@ -166,6 +167,8 @@ export function ProductDetailPageContent({ page }: ProductDetailPageContentProps
         </div>
 
         <ProductDetailActivationVideoSection product={product} colors={colors} />
+
+        <ProductDetailInstagramReelsSection product={product} colors={colors} />
 
         <ProductDetailTabs
           colors={colors}

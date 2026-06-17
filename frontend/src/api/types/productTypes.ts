@@ -76,6 +76,7 @@ export interface Product {
   additionalImages?: string[];
   videoUrl?: string;
   activationVideoUrl?: string;
+  instagramReels?: string[]; // Up to 4 Instagram Reel URLs
   driveLink?: string; // Google Drive download link
   /** Optional SEO overrides for product detail meta tags */
   seoTitle?: string;

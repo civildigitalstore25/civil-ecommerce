@@ -146,6 +146,7 @@ export const DEFAULT_PRODUCT_FORM = {
     additionalImages: [""],
     videoUrl: "",
     activationVideoUrl: "",
+    instagramReels: [""],
     driveLink: "",
     status: "active",
     isBestSeller: false,
@@ -237,6 +238,7 @@ export interface ProductForm {
     additionalImages: string[];
     videoUrl: string;
     activationVideoUrl: string;
+    instagramReels: string[];
     driveLink: string;
     status: string;
     isBestSeller: boolean;

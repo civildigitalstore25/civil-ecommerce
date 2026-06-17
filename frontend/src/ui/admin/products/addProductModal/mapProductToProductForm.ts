@@ -131,6 +131,10 @@ export function mapProductToProductForm(product: Product): ProductForm {
         : [""],
     videoUrl: product.videoUrl || "",
     activationVideoUrl: product.activationVideoUrl || "",
+    instagramReels:
+      product.instagramReels && product.instagramReels.length > 0
+        ? product.instagramReels
+        : [""],
     driveLink: product.driveLink || "",
     status: product.status || "active",
     isBestSeller: product.isBestSeller || false,
