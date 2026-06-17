@@ -17,7 +17,7 @@ export function saveAuthRedirect(returnTo: string) {
   if (!isSafeRedirectPath(returnTo)) return;
 
   try {
-    sessionStorage.setItem(AUTH_REDIRECT_KEY, returnTo);
+    localStorage.setItem(AUTH_REDIRECT_KEY, returnTo);
   } catch {
     // Ignore storage failures; router state is still passed as the primary path.
   }
@@ -39,7 +39,7 @@ export function resolveAuthRedirect(
   if (isSafeRedirectPath(fromPath)) return fromPath;
 
   try {
-    const storedPath = sessionStorage.getItem(AUTH_REDIRECT_KEY) || undefined;
+    const storedPath = localStorage.getItem(AUTH_REDIRECT_KEY) || undefined;
     if (isSafeRedirectPath(storedPath)) return storedPath;
   } catch {
     // Ignore storage failures and use the fallback.
@@ -50,7 +50,7 @@ export function resolveAuthRedirect(
 
 export function clearAuthRedirect() {
   try {
-    sessionStorage.removeItem(AUTH_REDIRECT_KEY);
+    localStorage.removeItem(AUTH_REDIRECT_KEY);
   } catch {
     // Ignore storage failures.
   }

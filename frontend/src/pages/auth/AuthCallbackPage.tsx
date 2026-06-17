@@ -1,14 +1,43 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { saveAuth } from "../../utils/auth";
-import { useCurrentUser } from "../../api/auth"; // Use the new hook
+import { useCurrentUser } from "../../api/auth";
 import { useUserInvalidate } from "../../api/userQueries";
-import { resolveAuthRedirect, clearAuthRedirect } from "../../utils/authRedirect";
+
+
+// ─── Module-level singleton ───────────────────────────────────────────────────
+// Google OAuth causes a full page reload before landing on /auth/callback, so
+// this variable is always fresh when this module first loads.
+// We capture the redirect path ONCE from localStorage here (at module evaluation
+// time, before React even mounts the component) so that React StrictMode's
+// double-invoke of useEffect always sees the same value – even after the first
+// effect run has already cleared the localStorage key.
+// ─────────────────────────────────────────────────────────────────────────────
+const AUTH_REDIRECT_KEY = "softzcart_auth_redirect";
+
+function readAndClearRedirect(): string {
+  try {
+    const path = localStorage.getItem(AUTH_REDIRECT_KEY);
+    if (path && path.startsWith("/") && path !== "/signin" && path !== "/signup") {
+      localStorage.removeItem(AUTH_REDIRECT_KEY);
+      return path;
+    }
+  } catch {
+    // ignore storage errors
+  }
+  return "/";
+}
+
+// Captured once when this JS module is first evaluated (i.e. on page load).
+// All subsequent calls from StrictMode re-renders reuse this cached value.
+const GOOGLE_POST_AUTH_REDIRECT = readAndClearRedirect();
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function AuthCallbackPage() {
   const navigate = useNavigate();
   const invalidateUser = useUserInvalidate();
-  const { refetch } = useCurrentUser(); // Use the hook to get user data
+  const { refetch } = useCurrentUser();
 
   useEffect(() => {
     const handleGoogleAuthCallback = async () => {
@@ -17,14 +46,11 @@ export default function AuthCallbackPage() {
         const token = urlParams.get("token");
 
         if (token) {
-          // Save the token to localStorage
           localStorage.setItem("token", token);
 
-          // Use the TanStack Query hook to fetch user data
           const { data: userData } = await refetch();
 
           if (userData) {
-            // Save complete user data to localStorage
             saveAuth({
               token,
               email: userData.email,
@@ -33,9 +59,9 @@ export default function AuthCallbackPage() {
               fullName: userData.fullName,
             });
             invalidateUser();
-            const redirectTo = resolveAuthRedirect(null, "/");
-            clearAuthRedirect();
-            navigate(redirectTo);
+
+            // Both StrictMode runs navigate to the same product page ✅
+            navigate(GOOGLE_POST_AUTH_REDIRECT, { replace: true });
           } else {
             throw new Error("Failed to fetch user data");
           }

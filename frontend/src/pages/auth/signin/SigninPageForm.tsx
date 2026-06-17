@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Controller } from "react-hook-form";
 import type {
   Control,
@@ -11,6 +11,7 @@ import FormInput from "../../../components/Input/FormInput";
 import GoogleButton from "../../../components/Button/GoogleButton";
 import PasswordInput from "../../../components/Input/PasswordInput";
 import type { SigninFormData } from "./signinTypes";
+import { saveAuthRedirect } from "../../../utils/authRedirect";
 
 const googleAuthUrl = `${
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5000"
@@ -33,13 +34,24 @@ export function SigninPageForm({
   onSubmit,
   isPending,
 }: SigninPageFormProps) {
+  const location = useLocation();
+
+  const handleGoogleSignIn = () => {
+    // Save any returnTo path to localStorage before the Google OAuth full-page redirect
+    // so AuthCallbackPage can restore it after login
+    const params = new URLSearchParams(location.search);
+    const returnTo = params.get("returnTo") || (location.state as any)?.returnTo;
+    if (returnTo) {
+      saveAuthRedirect(returnTo);
+    }
+    window.location.href = googleAuthUrl;
+  };
+
   return (
     <div className="p-8">
       <GoogleButton
         text="Continue with Google"
-        onClick={() => {
-          window.location.href = googleAuthUrl;
-        }}
+        onClick={handleGoogleSignIn}
       />
 
       <div className="flex items-center my-6">
