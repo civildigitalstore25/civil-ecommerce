@@ -64,7 +64,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
     const normalizedCurrent = currentHtml === "<p></p>" ? "" : currentHtml;
     const normalizedValue = value || "";
     if (normalizedCurrent !== normalizedValue) {
-      editor.commands.setContent(normalizedValue, false);
+      editor.commands.setContent(normalizedValue, { emitUpdate: false });
     }
   }, [value, editor]);
 

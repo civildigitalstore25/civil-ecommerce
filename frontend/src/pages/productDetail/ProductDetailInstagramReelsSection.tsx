@@ -57,7 +57,7 @@ export const ProductDetailInstagramReelsSection: React.FC<Props> = ({ product, c
       >
         {/* Section header */}
         <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-6">
-          <span className="text-xl lg:text-2xl">🎬</span>
+          
           <h2
             className="text-xl lg:text-2xl font-bold"
             style={{ color: colors.text.primary }}
