@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { PostHogProvider } from "posthog-js/react";
+import { PostHogProvider } from "./components/providers/PostHogProvider";
 import { CartProvider } from "./contexts/CartContext";
 import { AdminThemeProvider } from "./contexts/AdminThemeContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
@@ -49,12 +49,9 @@ function AppLayout() {
 
 function App() {
   return (
-    <PostHogProvider
-      apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-      options={{ api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST }}
-    >
-      <HelmetProvider>
-        <QueryClientProvider client={queryClient}>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <PostHogProvider>
           <AdminThemeProvider>
             <CurrencyProvider>
               <CartProvider>
@@ -64,9 +61,9 @@ function App() {
               </CartProvider>
             </CurrencyProvider>
           </AdminThemeProvider>
-        </QueryClientProvider>
-      </HelmetProvider>
-    </PostHogProvider>
+        </PostHogProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   );
 }
 

@@ -11,7 +11,9 @@ export const usePageTracking = () => {
     useEffect(() => {
         trackPageView(location.pathname + location.search);
 
-        posthog.capture('$pageview');
+        if (posthog?.__loaded) {
+            posthog.capture('$pageview');
+        }
 
         if (isClarityLoaded()) {
             const pageId = location.pathname + location.search;
@@ -22,5 +24,5 @@ export const usePageTracking = () => {
             }
             clarityIdentify(`anon-${anonId}`, undefined, pageId || undefined);
         }
-    }, [location]);
+    }, [location, posthog]);
 };
