@@ -1,6 +1,6 @@
 import type { CheckoutFormData } from "./checkoutTypes";
+import { formatCheckoutPhoneNumber } from "../../api/guestCheckoutApi";
 import { parsePlanDurationMinutes } from "../../utils/planDuration";
-
 /** Builds POST body for `/api/payments/create-order` from checkout cart state. */
 export function buildCheckoutOrderPayload(
   rawCartItems: unknown[],
@@ -37,7 +37,7 @@ export function buildCheckoutOrderPayload(
       (typeof item.imageUrl === "string" && item.imageUrl) ||
       null;
     return {
-      productId: String(item._id ?? item.id ?? product._id ?? ""),
+      productId: String(product._id ?? item.productId ?? item._id ?? item.id ?? ""),
       name: (typeof product.name === "string" && product.name) || "Unknown Product",
       quantity: Number(item.quantity) || 1,
       price: Number(item.price ?? product.price ?? item.totalPrice) || 0,
@@ -62,7 +62,7 @@ export function buildCheckoutOrderPayload(
     totalAmount: finalTotal,
     shippingAddress: {
       fullName: data.name,
-      phoneNumber: data.whatsapp,
+      phoneNumber: formatCheckoutPhoneNumber(data.countryCode, data.whatsapp),
       addressLine1: "N/A",
       city: "N/A",
       state: "N/A",

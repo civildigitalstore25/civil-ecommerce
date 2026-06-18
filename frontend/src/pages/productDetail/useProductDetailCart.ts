@@ -2,7 +2,6 @@ import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import type { Product } from "../../api/types/productTypes";
-import { saveAuthRedirect } from "../../utils/authRedirect";
 import { getProductDetailCartLicenseType } from "./productDetailCartLicense";
 
 interface UseProductDetailCartProps {
@@ -19,11 +18,9 @@ interface UseProductDetailCartProps {
 
 export function useProductDetailCart({
   product,
-  slug,
   selectedOption,
   selectedLicense,
   userHasSelectedPlan,
-  user,
   colors,
   addItem,
   isItemInCart,
@@ -39,15 +36,6 @@ export function useProductDetailCart({
         icon: "warning",
         confirmButtonText: "OK",
         confirmButtonColor: colors.interactive.primary,
-      });
-      return;
-    }
-
-    if (!user) {
-      const returnTo = `/product/${slug}`;
-      saveAuthRedirect(returnTo);
-      navigate(`/signin?returnTo=${encodeURIComponent(returnTo)}`, {
-        state: { returnTo },
       });
       return;
     }
@@ -157,15 +145,6 @@ export function useProductDetailCart({
         });
       }, 500);
 
-      return;
-    }
-
-    if (!user) {
-      const returnTo = `/product/${slug}`;
-      saveAuthRedirect(returnTo);
-      navigate(`/signin?returnTo=${encodeURIComponent(returnTo)}`, {
-        state: { returnTo },
-      });
       return;
     }
 

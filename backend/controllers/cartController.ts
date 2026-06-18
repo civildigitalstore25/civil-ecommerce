@@ -318,6 +318,78 @@ export const clearCart = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+interface GuestCartMergeItem {
+  productId: string;
+  licenseType: string;
+  quantity?: number;
+  subscriptionPlan?: {
+    planId: string;
+    planLabel: string;
+    planType: string;
+  };
+}
+
+/** Merge guest cart items into the authenticated user's server cart. */
+export const mergeCart = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user._id;
+    const { items } = req.body as { items?: GuestCartMergeItem[] };
+
+    if (!Array.isArray(items) || items.length === 0) {
+      res.json({ message: 'Nothing to merge', itemsMerged: 0 });
+      return;
+    }
+
+    let cart = await Cart.findOne({ user: userId });
+    if (!cart) {
+      cart = new Cart({ user: userId, items: [] });
+    }
+
+    let mergedCount = 0;
+
+    for (const guestItem of items) {
+      const { productId, licenseType, quantity = 1, subscriptionPlan } = guestItem;
+      if (!productId || !licenseType) continue;
+
+      const product = await Product.findById(productId);
+      if (!product) continue;
+
+      const price = getPriceByLicenseType(product, licenseType, subscriptionPlan);
+      const isFreePlan = subscriptionPlan?.planId === 'free';
+      if (!isFreePlan && price <= 0) continue;
+
+      const existingItemIndex = cart.items.findIndex(
+        (item: any) =>
+          item.product.toString() === productId &&
+          item.licenseType === licenseType,
+      );
+
+      if (existingItemIndex >= 0) {
+        const existingItem = cart.items[existingItemIndex];
+        existingItem.quantity += quantity;
+        existingItem.totalPrice = calculateItemTotal(price, existingItem.quantity);
+      } else {
+        cart.items.push({
+          product: product._id as Types.ObjectId,
+          licenseType,
+          quantity,
+          price,
+          totalPrice: calculateItemTotal(price, quantity),
+          ...(subscriptionPlan && { subscriptionPlan }),
+        } as any);
+      }
+      mergedCount += 1;
+    }
+
+    await cart.save();
+    await cart.populate('items.product', 'name description image company category version');
+
+    res.json({ cart, itemsMerged: mergedCount });
+  } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getAdminCarts = async (req: Request, res: Response): Promise<void> => {
   try {
     const {

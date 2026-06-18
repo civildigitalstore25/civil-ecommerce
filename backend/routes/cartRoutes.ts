@@ -5,6 +5,7 @@ import {
   updateCartItem,
   removeFromCart,
   clearCart,
+  mergeCart,
   getAdminCarts,
 } from '../controllers/cartController';
 import { authenticate, requirePermission } from '../middlewares/auth';
@@ -17,6 +18,7 @@ router.use(authenticate);
 router.get('/', getCart);
 router.get('/admin/carts', requirePermission('carts'), getAdminCarts);
 router.post('/add', addToCart);
+router.post('/merge', mergeCart);
 router.put('/item/:itemId', updateCartItem);
 router.delete('/item/:itemId', removeFromCart);
 router.delete('/clear', clearCart);

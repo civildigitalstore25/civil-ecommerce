@@ -166,28 +166,14 @@ export function AppRoutes() {
       <Route path="/category" element={<BrandCategoryListing />} />
       <Route path="/category/:category" element={<BrandCategoryListing />} />
       <Route path="/product/:slug" element={<ProductDetail />} />
-      <Route
-        path="/cart"
-        element={
-          <AuthGuard>
-            <CartPage />
-          </AuthGuard>
-        }
-      />
+      <Route path="/cart" element={<CartPage />} />
       <Route path="/autodesk" element={<BrandSubcategoriesPage />} />
       <Route path="/microsoft" element={<BrandSubcategoriesPage />} />
       <Route path="/adobe" element={<BrandSubcategoriesPage />} />
       <Route path="/antivirus" element={<BrandSubcategoriesPage />} />
       <Route path="/projects" element={<BrandSubcategoriesPage />} />
       <Route path="/brand/:brand/:category" element={<BrandCategoryListing />} />
-      <Route
-        path="/checkout"
-        element={
-          <AuthGuard>
-            <CheckoutPage />
-          </AuthGuard>
-        }
-      />
+      <Route path="/checkout" element={<CheckoutPage />} />
       <Route
         path="/my-orders"
         element={

@@ -3,6 +3,7 @@ import passport from 'passport';
 import { 
   register, 
   login, 
+  guestCheckout,
   googleCallback, 
   getCurrentUser, 
   logout, 
@@ -18,6 +19,7 @@ const router = Router();
 // Basic auth routes
 router.post('/register', register);
 router.post('/login', login);
+router.post('/guest-checkout', guestCheckout);
 router.post('/logout', logout);
 
 // Password reset routes

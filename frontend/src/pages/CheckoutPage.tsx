@@ -30,7 +30,7 @@ const CheckoutPage = () => {
           onSubmit={page.handleSubmit(page.handlePlaceOrder)}
         >
           <div className="space-y-6">
-            {!page.loadingAddresses && (
+            {!page.loadingAddresses && page.showSavedAddresses && (
               <CheckoutSavedAddresses
                 savedAddresses={page.savedAddresses}
                 selectedAddressId={page.selectedAddressId}
