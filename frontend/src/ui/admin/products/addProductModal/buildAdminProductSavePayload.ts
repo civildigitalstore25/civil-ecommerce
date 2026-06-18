@@ -187,6 +187,9 @@ export function buildAdminProductSavePayload(
     additionalImages: newProduct.additionalImages.filter((img) => img.trim() !== ""),
     videoUrl: newProduct.videoUrl,
     activationVideoUrl: newProduct.activationVideoUrl,
+    instagramReels: newProduct.instagramReels
+      .filter((r) => r.trim() !== "")
+      .slice(0, 4),
     driveLink: newProduct.driveLink,
     ...(newProduct.seoTitle?.trim()
       ? { seoTitle: newProduct.seoTitle.trim() }

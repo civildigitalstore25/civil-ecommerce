@@ -192,6 +192,30 @@ export function useAddProductFormHandlers(
     }));
   };
 
+  const updateInstagramReel = (index: number, value: string) => {
+    setNewProduct((prev) => ({
+      ...prev,
+      instagramReels: prev.instagramReels.map((r, i) => (i === index ? value : r)),
+    }));
+  };
+
+  const addInstagramReel = () => {
+    setNewProduct((prev) => {
+      if (prev.instagramReels.length >= 4) return prev;
+      return { ...prev, instagramReels: [...prev.instagramReels, ""] };
+    });
+  };
+
+  const removeInstagramReel = (index: number) => {
+    setNewProduct((prev) => {
+      if (prev.instagramReels.length <= 1) return prev;
+      return {
+        ...prev,
+        instagramReels: prev.instagramReels.filter((_, i) => i !== index),
+      };
+    });
+  };
+
   return {
     handleInputChange,
     handleBrandChange,
@@ -213,6 +237,9 @@ export function useAddProductFormHandlers(
     updateSubscription,
     addSubscription,
     removeSubscription,
+    updateInstagramReel,
+    addInstagramReel,
+    removeInstagramReel,
   };
 }
 
