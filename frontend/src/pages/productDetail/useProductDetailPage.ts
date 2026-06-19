@@ -25,7 +25,7 @@ export function useProductDetailPage() {
   const { data: productList, isLoading } = useProductDetail();
   const product = findProductDetailBySlug(slug, productList);
 
-  const [selectedLicense, setSelectedLicense] = useState<string>("yearly");
+  const [selectedLicense, setSelectedLicense] = useState<string>("");
   const [userHasSelectedPlan, setUserHasSelectedPlan] = useState(false);
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [isZooming, setIsZooming] = useState(false);
@@ -110,15 +110,14 @@ export function useProductDetailPage() {
   });
 
   useEffect(() => {
-    if (allPricingOptions.length > 0 && !selectedOption) {
-      setSelectedLicense(allPricingOptions[0].id);
-      if (allPricingOptions.length === 1) {
-        setUserHasSelectedPlan(true);
+    if (allPricingOptions.length > 0) {
+      const hasValidSelection = allPricingOptions.some((opt) => opt.id === selectedLicense);
+      if (!hasValidSelection) {
+        setSelectedLicense(allPricingOptions[0].id);
       }
-    } else if (allPricingOptions.length === 1) {
       setUserHasSelectedPlan(true);
     }
-  }, [allPricingOptions, selectedOption]);
+  }, [product?._id, allPricingOptions.length, selectedLicense]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });

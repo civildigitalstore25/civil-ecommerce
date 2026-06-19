@@ -9,7 +9,7 @@ type Props = {
 
 /**
  * Resolves a YouTube URL (Shorts or regular) to a clean embed URL
- * with autoplay, muted (required for autoplay), loop, and no related videos.
+ * without autoplay, but with loop and no related videos.
  */
 function resolveYouTubeEmbedUrl(raw: string): string | null {
   const url = raw.trim();
@@ -19,20 +19,20 @@ function resolveYouTubeEmbedUrl(raw: string): string | null {
   const shortsMatch = url.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/i);
   if (shortsMatch?.[1]) {
     const id = shortsMatch[1];
-    return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&rel=0&loop=1&playlist=${id}&controls=1`;
+    return `https://www.youtube.com/embed/${id}?rel=0&loop=1&playlist=${id}&controls=1`;
   }
 
   // Regular YouTube: watch?v=ID or youtu.be/ID
   const watchMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/i);
   if (watchMatch?.[1]) {
     const id = watchMatch[1];
-    return `https://www.youtube.com/embed/${id}?autoplay=1&mute=1&rel=0&loop=1&playlist=${id}&controls=1`;
+    return `https://www.youtube.com/embed/${id}?rel=0&loop=1&playlist=${id}&controls=1`;
   }
 
-  // Already an embed URL — just append autoplay params
+  // Already an embed URL — just append rel=0 param
   if (url.includes("youtube.com/embed/")) {
     const sep = url.includes("?") ? "&" : "?";
-    return `${url}${sep}autoplay=1&mute=1&rel=0`;
+    return `${url}${sep}rel=0`;
   }
 
   return null;
@@ -98,7 +98,7 @@ export const ProductDetailInstagramReelsSection: React.FC<Props> = ({ product, c
                 }}
                 frameBorder={0}
                 allowFullScreen
-                allow="autoplay; fullscreen; picture-in-picture"
+                allow="fullscreen; picture-in-picture"
                 title={`Sample Video ${index + 1}`}
                 loading="lazy"
               />
