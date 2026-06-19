@@ -112,6 +112,19 @@ export const cartApi = {
     const response = await api.delete("/clear");
     return response.data;
   },
+
+  mergeCart: async (
+    items: Array<{
+      productId: string;
+      licenseType: string;
+      quantity?: number;
+      subscriptionPlan?: { planId: string; planLabel: string; planType: string };
+    }>,
+  ): Promise<CartResponse> => {
+    const response = await api.post("/merge", { items });
+    return response.data.cart;
+  },
+
   getAdminCarts: async (params?: {
     search?: string;
     status?: "all" | "has-items" | "abandoned";
@@ -173,6 +186,18 @@ export const useClearCart = () => {
 
   return useMutation({
     mutationFn: cartApi.clearCart,
+    onSuccess: (data) => {
+      queryClient.setQueryData(["cart"], data);
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+};
+
+export const useMergeCart = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cartApi.mergeCart,
     onSuccess: (data) => {
       queryClient.setQueryData(["cart"], data);
       queryClient.invalidateQueries({ queryKey: ["cart"] });

@@ -83,7 +83,10 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     }
 
     if (!user.password) {
-      res.status(401).json({ message: 'Please use Google login' });
+      const message = user.googleId
+        ? 'Please use Google login'
+        : 'No password set. Use Forgot password to create one.';
+      res.status(401).json({ message });
       return;
     }
 
@@ -108,6 +111,97 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       }
     });
   } catch (error: any) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const formatAuthUser = (user: IUser) => {
+  const userId = (user._id as mongoose.Types.ObjectId).toString();
+  return {
+    id: userId,
+    email: user.email,
+    fullName: user.fullName,
+    phoneNumber: user.phoneNumber,
+    role: user.role,
+    permissions: user.permissions || [],
+  };
+};
+
+/** Find or create a passwordless user for guest checkout. */
+export const guestCheckout = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, fullName, phoneNumber } = req.body;
+
+    if (!email || !fullName || !phoneNumber) {
+      res.status(400).json({ message: 'Email, full name, and phone number are required' });
+      return;
+    }
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const trimmedName = String(fullName).trim();
+    const trimmedPhone = String(phoneNumber).trim();
+
+    if (!trimmedName || trimmedName.length < 2) {
+      res.status(400).json({ message: 'Full name must be at least 2 characters' });
+      return;
+    }
+
+    const phoneRegex = /^[+\d][0-9\s\-]{6,20}$/;
+    if (!phoneRegex.test(trimmedPhone)) {
+      res.status(400).json({ message: 'Invalid phone number format' });
+      return;
+    }
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
+
+    if (existingUser?.password) {
+      res.status(409).json({
+        code: 'ACCOUNT_EXISTS',
+        message: 'An account with this email already exists. Please sign in to continue.',
+      });
+      return;
+    }
+
+    if (existingUser) {
+      existingUser.fullName = trimmedName;
+      existingUser.phoneNumber = trimmedPhone;
+      await existingUser.save();
+
+      const userId = (existingUser._id as mongoose.Types.ObjectId).toString();
+      const token = generateToken(userId);
+
+      res.json({
+        token,
+        user: formatAuthUser(existingUser),
+        isNewGuest: false,
+      });
+      return;
+    }
+
+    const user = new User({
+      email: normalizedEmail,
+      fullName: trimmedName,
+      phoneNumber: trimmedPhone,
+      role: 'user',
+    });
+
+    const savedUser = await user.save();
+    const userId = (savedUser._id as mongoose.Types.ObjectId).toString();
+    const token = generateToken(userId);
+
+    res.status(201).json({
+      token,
+      user: formatAuthUser(savedUser),
+      isNewGuest: true,
+    });
+  } catch (error: any) {
+    if (error.code === 11000) {
+      res.status(409).json({
+        code: 'ACCOUNT_EXISTS',
+        message: 'An account with this email already exists. Please sign in to continue.',
+      });
+      return;
+    }
     res.status(500).json({ message: error.message });
   }
 };

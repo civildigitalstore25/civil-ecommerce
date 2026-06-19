@@ -27,8 +27,10 @@ const PaymentStatusPage = () => {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        toast.error("Please login to continue");
-        navigate("/signin");
+        toast.error(
+          "Session expired. If payment completed, check your email or use Forgot password to sign in.",
+        );
+        navigate("/signin", { state: { returnTo: "/payment-status" } });
         return;
       }
 

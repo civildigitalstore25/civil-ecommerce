@@ -19,6 +19,7 @@ function checkoutSuccessOrderHtml(opts: {
   intro: string;
   orderId: string;
   amountPaid: number | null;
+  guestAccountNote?: string;
 }): string {
   const amountRow =
     opts.amountPaid === null
@@ -28,6 +29,13 @@ function checkoutSuccessOrderHtml(opts: {
         <strong>Amount Paid:</strong>
         <span style="color: #10b981; font-weight: bold;">₹${opts.amountPaid.toFixed(2)}</span>
       </div>`;
+
+  const guestNote = opts.guestAccountNote
+    ? `
+      <div style="background: #eff6ff; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
+        ${opts.guestAccountNote}
+      </div>`
+    : "";
 
   return `
     <div style="text-align: left; margin-top: 20px;">
@@ -42,11 +50,15 @@ function checkoutSuccessOrderHtml(opts: {
       <div style="background: #fef3c7; padding: 10px; border-radius: 6px; margin-top: 15px; font-size: 14px;">
         📧 Order confirmation has been sent to your email and WhatsApp.
       </div>
+      ${guestNote}
     </div>
   `;
 }
 
-export function showFreeOrderPlacedSwal(orderId: string) {
+const guestAccountCreatedNote =
+  "An account was created with your email. Use Forgot password on the sign-in page to set a password and access My orders anytime.";
+
+export function showFreeOrderPlacedSwal(orderId: string, isNewGuest = false) {
   return Swal.fire({
     ...successDialogBase,
     title: "Order Placed!",
@@ -55,6 +67,7 @@ export function showFreeOrderPlacedSwal(orderId: string) {
         "Thank you for your order. Your order has been placed successfully.",
       orderId,
       amountPaid: null,
+      guestAccountNote: isNewGuest ? guestAccountCreatedNote : undefined,
     }),
   });
 }
@@ -62,6 +75,7 @@ export function showFreeOrderPlacedSwal(orderId: string) {
 export function showPaidOrderSuccessSwal(
   orderId: string,
   amountPaid: number,
+  isNewGuest = false,
 ) {
   return Swal.fire({
     ...successDialogBase,
@@ -71,6 +85,7 @@ export function showPaidOrderSuccessSwal(
         "Thank you for your order. Your payment has been processed successfully.",
       orderId,
       amountPaid,
+      guestAccountNote: isNewGuest ? guestAccountCreatedNote : undefined,
     }),
   });
 }

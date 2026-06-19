@@ -4,13 +4,17 @@ import React, {
   useCallback,
   useState,
   useMemo,
+  useEffect,
+  useRef,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useCart as useCartApi,
   useAddToCart as useAddToCartApi,
   useUpdateCartItem as useUpdateCartItemApi,
   useRemoveFromCart as useRemoveFromCartApi,
   useClearCart as useClearCartApi,
+  cartApi,
 } from "../api/cartApi";
 import { useUser } from "../api/userQueries";
 import type { CartItem, CartSummary, Product } from "../types/cartTypes";
@@ -24,6 +28,15 @@ import {
   showCartErrorToast,
   showCartSuccessToast,
 } from "./cart/cartMutationToasts";
+import {
+  loadGuestCart,
+  addGuestCartItem,
+  removeGuestCartItem,
+  updateGuestCartItemQuantity,
+  clearGuestCartItems,
+  guestCartItemsForMerge,
+  clearGuestCartStorage,
+} from "./cart/guestCartStorage";
 
 interface CartContextType {
   items: CartItem[];
@@ -57,12 +70,61 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [guestCartVersion, setGuestCartVersion] = useState(0);
+  const mergedGuestCartRef = useRef(false);
+  const queryClient = useQueryClient();
   const { data: user } = useUser();
+  const isAuthenticated = !!user;
+
   const { data: cartData, isLoading, error } = useCartApi();
   const addToCartMutation = useAddToCartApi();
   const updateCartItemMutation = useUpdateCartItemApi();
   const removeFromCartMutation = useRemoveFromCartApi();
   const clearCartMutation = useClearCartApi();
+
+  const guestCart = useMemo(() => {
+    void guestCartVersion;
+    return loadGuestCart();
+  }, [guestCartVersion, isAuthenticated]);
+
+  const serverCart = useMemo(
+    () => mapCartResponseToContext(cartData),
+    [cartData],
+  );
+
+  const { items, summary } = isAuthenticated ? serverCart : guestCart;
+
+  const bumpGuestCart = () => setGuestCartVersion((v) => v + 1);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      mergedGuestCartRef.current = false;
+      return;
+    }
+
+    if (mergedGuestCartRef.current) return;
+
+    const guestItems = loadGuestCart().items;
+    if (guestItems.length === 0) {
+      mergedGuestCartRef.current = true;
+      return;
+    }
+
+    mergedGuestCartRef.current = true;
+    const mergeItems = guestCartItemsForMerge(guestItems);
+
+    cartApi
+      .mergeCart(mergeItems)
+      .then(() => {
+        clearGuestCartStorage();
+        bumpGuestCart();
+        queryClient.invalidateQueries({ queryKey: ["cart"] });
+      })
+      .catch((err) => {
+        console.error("Failed to merge guest cart:", err);
+        mergedGuestCartRef.current = false;
+      });
+  }, [isAuthenticated]);
 
   const silentUpdateQuantity = useCallback(
     debounce(async (itemId: string, quantity: number) => {
@@ -76,27 +138,35 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     [updateCartItemMutation],
   );
 
-  const { items, summary } = useMemo(
-    () => mapCartResponseToContext(cartData),
-    [cartData],
-  );
-
   const addItem = async (
     product: Product,
     licenseType: CartLicenseType,
     quantity: number = 1,
     subscriptionPlan?: { planId: string; planLabel: string; planType: string },
   ) => {
-    if (!user) {
-      showCartErrorToast("Please login to add items to cart");
-      return;
-    }
-
     const effectiveLicenseType = resolveEffectiveLicenseType(
       product,
       licenseType,
       subscriptionPlan,
     );
+
+    if (!isAuthenticated) {
+      try {
+        if (!product._id) {
+          showCartErrorToast("Invalid product");
+          return;
+        }
+        addGuestCartItem(product, effectiveLicenseType, quantity, subscriptionPlan);
+        bumpGuestCart();
+        showCartSuccessToast("Item added to cart!");
+        setIsCartOpen(true);
+      } catch (err) {
+        console.error("Failed to add item to guest cart:", err);
+        showCartErrorToast("Failed to add item to cart");
+        throw err;
+      }
+      return;
+    }
 
     try {
       await addToCartMutation.mutateAsync({
@@ -115,6 +185,13 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const removeItem = async (itemId: string) => {
+    if (!isAuthenticated) {
+      removeGuestCartItem(itemId);
+      bumpGuestCart();
+      showCartSuccessToast("Item removed from cart");
+      return;
+    }
+
     try {
       await removeFromCartMutation.mutateAsync(itemId);
       showCartSuccessToast("Item removed from cart");
@@ -127,12 +204,24 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const updateQuantity = useCallback(
     (itemId: string, quantity: number) => {
+      if (!isAuthenticated) {
+        updateGuestCartItemQuantity(itemId, quantity);
+        bumpGuestCart();
+        return;
+      }
       silentUpdateQuantity(itemId, quantity);
     },
-    [silentUpdateQuantity],
+    [isAuthenticated, silentUpdateQuantity],
   );
 
   const clearCart = async () => {
+    if (!isAuthenticated) {
+      clearGuestCartItems();
+      bumpGuestCart();
+      showCartSuccessToast("Cart cleared");
+      return;
+    }
+
     try {
       await clearCartMutation.mutateAsync();
       showCartSuccessToast("Cart cleared");
@@ -170,17 +259,19 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
   const value: CartContextType = {
     items,
     summary,
-    isLoading:
-      isLoading ||
-      addToCartMutation.isPending ||
-      removeFromCartMutation.isPending ||
-      clearCartMutation.isPending,
-    error:
-      error?.message ||
-      addToCartMutation.error?.message ||
-      removeFromCartMutation.error?.message ||
-      clearCartMutation.error?.message ||
-      null,
+    isLoading: isAuthenticated
+      ? isLoading ||
+        addToCartMutation.isPending ||
+        removeFromCartMutation.isPending ||
+        clearCartMutation.isPending
+      : false,
+    error: isAuthenticated
+      ? error?.message ||
+        addToCartMutation.error?.message ||
+        removeFromCartMutation.error?.message ||
+        clearCartMutation.error?.message ||
+        null
+      : null,
     addItem,
     removeItem,
     updateQuantity,

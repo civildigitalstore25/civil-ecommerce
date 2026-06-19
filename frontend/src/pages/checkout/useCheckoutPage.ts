@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useUser } from "../../api/userQueries";
+import { useCartContext } from "../../contexts/CartContext";
 import { useAppForm } from "../../hooks/useAppForm";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useCurrency } from "../../contexts/CurrencyContext";
@@ -26,6 +27,7 @@ export function useCheckoutPage() {
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const { data: user } = useUser();
+  const { items: contextCartItems, summary: contextSummary } = useCartContext();
 
   const seoData = getCheckoutSEO();
 
@@ -44,9 +46,20 @@ export function useCheckoutPage() {
     },
   });
 
-  const { rawCartItems, cartItems, summary } = parseCheckoutLocationState(
-    location.state,
-  );
+  const parsedState = parseCheckoutLocationState(location.state);
+  const hasLocationCart = parsedState.rawCartItems.length > 0;
+  const rawCartItems = hasLocationCart
+    ? parsedState.rawCartItems
+    : contextCartItems;
+  const cartItems = hasLocationCart ? parsedState.cartItems : contextCartItems.map((item) => ({
+    id: item.id,
+    product: {
+      name: item.product.name,
+      price: item.price,
+    },
+    quantity: item.quantity,
+  }));
+  const summary = hasLocationCart ? parsedState.summary : contextSummary;
 
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
@@ -74,6 +87,12 @@ export function useCheckoutPage() {
   );
 
   const hasTrackedCheckout = useRef(false);
+
+  useEffect(() => {
+    if (!user) return;
+    if (user.fullName) setValue("name", user.fullName);
+    if (user.email) setValue("email", user.email);
+  }, [user, setValue]);
 
   useEffect(() => {
     if (hasTrackedCheckout.current || cartItems.length === 0) return;
@@ -167,5 +186,7 @@ export function useCheckoutPage() {
     handleSelectAddress,
     handleDeleteAddress,
     normalizePrice: normalizeCheckoutPrice,
+    user,
+    showSavedAddresses: Boolean(user),
   };
 }
