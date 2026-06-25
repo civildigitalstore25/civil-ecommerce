@@ -104,7 +104,6 @@ const OrderCard: React.FC<OrderCardProps> = React.memo(
                   colors={colors}
                   theme={theme}
                   formatPriceWithSymbol={(price) => price.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}
-                  download={undefined}
                 />
               ))}
             </div>
