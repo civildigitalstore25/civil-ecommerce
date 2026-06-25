@@ -5,6 +5,7 @@ import {
   formatProductInfoFileSize,
   formatProductInfoOrderDate,
 } from "./productInfoFormat";
+import { useProductOrderDownload } from "./useProductOrderDownload";
 
 function getOrderItemImage(product: IOrderItem): string {
   return (
@@ -42,19 +43,20 @@ export function ProductInfoPanel({
   colors,
   theme,
   formatPriceWithSymbol,
-  download,
+  download: downloadOverride,
 }: ProductInfoPanelProps) {
+  const hookDownload = useProductOrderDownload(order, product);
   const {
-    isDownloading = false,
-    fileSizeBytes = null,
-    downloadedBytes = 0,
-    totalBytes = null,
-    downloadProgress = null,
-    canDownload = false,
-    downloadBlockedReason = '',
-    isFreeOfferEnded = false,
-    handleDownload = () => {},
-  } = download || {};
+    isDownloading,
+    fileSizeBytes,
+    downloadedBytes,
+    totalBytes,
+    downloadProgress,
+    canDownload,
+    downloadBlockedReason,
+    isFreeOfferEnded,
+    handleDownload,
+  } = downloadOverride ?? hookDownload;
   const productImage = getOrderItemImage(product);
 
   return (
