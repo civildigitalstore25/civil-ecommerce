@@ -20,9 +20,18 @@ export function useRelatedProducts(
   const { colors } = useAdminTheme();
   const { formatPriceWithSymbol } = useCurrency();
   const brandKey = getRelatedProductsBrandKey(currentProduct);
+  const fetchCompany =
+    brandKey ||
+    currentProduct.company?.toLowerCase() ||
+    currentProduct.brand?.toLowerCase() ||
+    undefined;
 
   const { data, isLoading } = useProducts({
-    company: brandKey ? brandKey : undefined,
+    company: fetchCompany,
+    category:
+      !brandKey && currentProduct.category
+        ? currentProduct.category
+        : undefined,
     limit: 50,
   });
 
