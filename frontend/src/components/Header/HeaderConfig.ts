@@ -14,6 +14,7 @@ export const headerConfig = {
   offers: [
     { label: "Super CRM", href: "/scrm" },
     { label: "Adobe Cloud", href: "/adobe-cloud" },
+    { label: "Vyapar", href: "/vyapar" },
   ],
   contact: {
     phone: "9042993986",
