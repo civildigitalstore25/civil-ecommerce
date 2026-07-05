@@ -8,7 +8,7 @@ interface VyaparPricingCardProps {
 export function VyaparPricingCard({ plan }: VyaparPricingCardProps) {
   return (
     <article
-      className={`relative flex flex-col rounded-2xl border p-6 ${
+      className={`relative flex flex-col rounded-2xl border p-6 w-[85%] min-w-[85%] shrink-0 snap-center md:w-auto md:min-w-0 md:shrink md:snap-align-none ${
         plan.highlighted
           ? "border-red-100 bg-gradient-to-b from-[#FFF5F0] to-white shadow-md"
           : "border-gray-100 bg-white shadow-sm"

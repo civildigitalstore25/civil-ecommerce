@@ -1,3 +1,4 @@
+import React from "react";
 import {
   vyaparDesktopPlans,
   vyaparMobilePlans,
@@ -14,7 +15,10 @@ function PlanGroup({
   return (
     <div className="mt-12">
       <h3 className="text-center text-xl font-bold text-[#1B1B2F]">{title}</h3>
-      <div className="mx-auto mt-6 grid max-w-4xl gap-6 md:grid-cols-2">
+      <div
+        className="mt-6 flex flex-row gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory [&::-webkit-scrollbar]:hidden md:mx-auto md:grid md:max-w-4xl md:grid-cols-2 md:gap-6 md:overflow-visible"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+      >
         {plans.map((plan) => (
           <VyaparPricingCard key={plan.title} plan={plan} />
         ))}

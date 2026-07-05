@@ -7,7 +7,7 @@ export function VyaparHeroSection() {
   return (
     <section className="overflow-hidden bg-[#FFFBF8] px-4 pb-8 pt-10 sm:px-6 lg:px-8 lg:pb-12 lg:pt-14">
       <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2 lg:gap-12">
-        <div className="order-2 lg:order-1">
+        <div className="order-1 lg:order-1">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#FFF3EC] px-4 py-1.5 text-xs font-medium text-gray-700">
             <TrendingUp className="h-3.5 w-3.5 text-[#ED1A3B]" />
             Trusted by 1 Crore+ Businesses
@@ -20,7 +20,7 @@ export function VyaparHeroSection() {
             </span>
           </h1>
 
-          <div className="mt-8 hidden sm:block">
+          <div className="mt-8 block">
             <VyaparCtaButton />
           </div>
 
@@ -36,7 +36,7 @@ export function VyaparHeroSection() {
           </div>
         </div>
 
-        <div className="relative order-1 mx-auto w-full max-w-md lg:order-2 lg:max-w-none">
+        <div className="relative order-2 mx-auto w-full max-w-md lg:order-2 lg:max-w-none">
           <div className="absolute inset-y-6 right-0 w-[90%] rounded-[2rem] bg-gradient-to-b from-[#F5A623] to-[#ED1A3B]" />
 
           <div className="relative h-[280px] overflow-hidden sm:h-[340px] lg:h-[400px]">
