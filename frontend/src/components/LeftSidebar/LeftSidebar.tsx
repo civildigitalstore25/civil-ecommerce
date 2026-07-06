@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { ChevronRight, ChevronDown, ChevronLeft, X } from "lucide-react";
+import { ChevronRight, ChevronDown, ChevronLeft, X, Tag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { leftSidebarNavigationCategories as navigationCategories } from "../../constants/leftSidebarNavigation";
+import { headerConfig } from "../Header/HeaderConfig";
 
 interface LeftSidebarProps {
   isOpen: boolean;
@@ -227,6 +228,114 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
                   )}
               </div>
             ))}
+
+            {/* Offers Section */}
+            <div className="mb-0">
+              <div
+                className="mx-3 my-3 border-t"
+                style={{ borderColor: colors.border.primary }}
+              />
+              <div
+                className="px-3 py-2 text-xs font-semibold uppercase tracking-wide flex items-center gap-1.5"
+                style={{ color: colors.text.secondary }}
+              >
+                <Tag className="w-3 h-3" />
+                Special Offers
+              </div>
+              {(() => {
+                const isOffersExpanded = expandedCategories.includes("offers");
+                const isOffersHovered = hoveredCategoryId === "offers";
+                const isOffersActive = isOffersExpanded || isOffersHovered;
+                return (
+                  <>
+                    <button
+                      onClick={() => toggleCategory("offers")}
+                      className="w-full px-6 py-4 text-left transition-all duration-200 flex items-center justify-between group border-l-4"
+                      style={{
+                        backgroundColor: isOffersActive
+                          ? (colors.background.accent ?? colors.background.secondary)
+                          : "transparent",
+                        borderLeftColor: isOffersActive
+                          ? colors.interactive.primary
+                          : "transparent",
+                      }}
+                      onMouseEnter={() => setHoveredCategoryId("offers")}
+                      onMouseLeave={() => setHoveredCategoryId(null)}
+                    >
+                      <div>
+                        <div
+                          className="font-semibold text-base mb-0.5 flex items-center gap-2"
+                          style={{
+                            color: isOffersActive ? colors.interactive.primary : colors.text.primary,
+                          }}
+                        >
+                          Offers
+                          <span
+                            className="text-xs px-2 py-0.5 rounded-full font-medium"
+                            style={{
+                              backgroundColor: `${colors.interactive.primary}20`,
+                              color: colors.interactive.primary,
+                            }}
+                          >
+                            {headerConfig.offers.length}
+                          </span>
+                        </div>
+                        <div className="text-xs" style={{ color: colors.text.secondary }}>
+                          {headerConfig.offers.length} exclusive deals
+                        </div>
+                      </div>
+                      <span className="transition-transform duration-200">
+                        {isOffersExpanded ? (
+                          <ChevronDown
+                            className="w-5 h-5"
+                            style={{
+                              color: isOffersActive
+                                ? colors.interactive.primary
+                                : colors.text.secondary,
+                            }}
+                          />
+                        ) : (
+                          <ChevronRight
+                            className="w-5 h-5"
+                            style={{
+                              color: isOffersActive
+                                ? colors.interactive.primary
+                                : colors.text.secondary,
+                            }}
+                          />
+                        )}
+                      </span>
+                    </button>
+
+                    {isOffersExpanded && (
+                      <div className="px-2 pb-2">
+                        {headerConfig.offers.map((offer) => (
+                          <button
+                            key={offer.href}
+                            onClick={() => handleNavigation(offer.href)}
+                            className="w-full text-left px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-between group mb-0.5"
+                            style={{ color: colors.text.secondary }}
+                            onMouseEnter={(e) => {
+                              const el = e.currentTarget as HTMLElement;
+                              el.style.backgroundColor = colors.background.accent ?? colors.background.secondary;
+                              el.style.color = colors.interactive.primary;
+                            }}
+                            onMouseLeave={(e) => {
+                              const el = e.currentTarget as HTMLElement;
+                              el.style.backgroundColor = "transparent";
+                              el.style.color = colors.text.secondary;
+                            }}
+                          >
+                            <span className="font-medium">{offer.label}</span>
+                            <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
+            </div>
           </nav>
         )}
       </aside>
