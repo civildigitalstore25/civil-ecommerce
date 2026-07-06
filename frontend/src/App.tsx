@@ -21,6 +21,7 @@ const hideHeaderRoutes = [
   "/reset-password",
   "/scrm",
   "/adobe-cloud",
+  "/vyapar",
 ];
 
 function AppLayout() {

@@ -43,6 +43,7 @@ import BlogDetailPage from "../pages/BlogDetailPage";
 import AdminBlogList from "../pages/AdminBlogList";
 import AdminBlogForm from "../pages/AdminBlogForm";
 import PartnerProgram from "../pages/PartnerProgram";
+import VyaparOfferPage from "../pages/vyapar/VyaparOfferPage";
 
 export function AppRoutes() {
   return (
@@ -95,6 +96,7 @@ export function AppRoutes() {
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
       <Route path="/scrm" element={<SCrm />} />
       <Route path="/adobe-cloud" element={<AdobeCloudPage />} />
+      <Route path="/vyapar" element={<VyaparOfferPage />} />
       <Route path="/about-us" element={<AboutPage />} />
       <Route path="/" element={<HomePage />} />
 

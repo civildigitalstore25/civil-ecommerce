@@ -21,6 +21,7 @@ export const crawlNavSections: CrawlNavSection[] = [
       { href: "/microsoft", label: "Microsoft" },
       { href: "/adobe", label: "Adobe" },
       { href: "/adobe-cloud", label: "Adobe Creative Cloud" },
+      { href: "/vyapar", label: "Vyapar Offer" },
       { href: "/antivirus", label: "Antivirus" },
       {
         href: "/category?brand=autodesk&category=autocad",
