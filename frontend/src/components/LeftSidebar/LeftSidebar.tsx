@@ -48,7 +48,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
       {/* Sidebar */}
       <aside
         className={`
-          fixed lg:sticky top-0 lg:top-20 left-0 h-full lg:h-[calc(100vh-80px)]
+          fixed lg:sticky top-[60px] lg:top-20 left-0 h-[calc(100vh-60px)] lg:h-[calc(100vh-80px)]
           transition-all duration-300 ease-in-out
           ${isOpen ? "translate-x-0 lg:w-80" : "-translate-x-full lg:translate-x-0 lg:w-0"}
           w-80
@@ -113,7 +113,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({ isOpen, onToggle }) => {
 
         {/* Categories List - Only show when sidebar is open */}
         {isOpen && (
-          <nav className="py-2">
+          <nav className="py-2 pb-24 lg:pb-2">
             {navigationCategories.map((category) => (
               <div key={category.id} className="mb-0">
                 {(() => {
