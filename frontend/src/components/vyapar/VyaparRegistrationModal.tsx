@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, CircleUserRound, X } from "lucide-react";
+import { VyaparLogo } from "./VyaparLogo";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -279,19 +280,8 @@ export function VyaparRegistrationModal({
           </button>
 
           {/* Brand */}
-          <div className="mb-3 flex items-center justify-center gap-2">
-            <span
-              className="flex h-7 w-7 items-center justify-center rounded-lg text-sm font-black text-white shadow-sm"
-              style={{
-                background:
-                  "linear-gradient(135deg, #ED1A3B 0%, #F5A623 100%)",
-              }}
-            >
-              V
-            </span>
-            <span className="text-[1.05rem] font-bold text-[#ED1A3B] tracking-tight">
-              Vyapar
-            </span>
+          <div className="mb-3 flex items-center justify-center">
+            <VyaparLogo className="h-15 w-auto mb-2" />
           </div>
 
           {/* Title */}

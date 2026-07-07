@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { VyaparLogo } from "./VyaparLogo";
 
 export function VyaparHeader() {
   const scrollTo = (id: string) => {
@@ -7,28 +8,34 @@ export function VyaparHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-red-100/60 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
-        <Link to="/vyapar" className="flex items-center gap-3">
-          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#ED1A3B] to-[#F5A623] text-xl font-black text-white shadow-sm sm:h-12 sm:w-12 sm:text-2xl">
-            V
-          </span>
-          <span className="text-2xl font-bold text-[#ED1A3B] sm:text-3xl">Vyapar</span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
+        <Link to="/vyapar" className="shrink-0">
+          <VyaparLogo className="h-8 w-auto sm:h-12" />
         </Link>
 
-        <nav className="hidden items-center gap-8 text-base font-medium text-gray-700 sm:flex">
-          <button type="button" onClick={() => scrollTo("solutions")} className="hover:text-[#ED1A3B] transition-colors">
+        <nav className="flex items-center gap-4 text-sm font-medium text-gray-700 sm:gap-8 sm:text-base">
+          <button
+            type="button"
+            onClick={() => scrollTo("solutions")}
+            className="whitespace-nowrap transition-colors hover:text-[#ED1A3B]"
+          >
             Solution
           </button>
-          <button type="button" onClick={() => scrollTo("pricing")} className="hover:text-[#ED1A3B] transition-colors">
+          <button
+            type="button"
+            onClick={() => scrollTo("pricing")}
+            className="whitespace-nowrap transition-colors hover:text-[#ED1A3B]"
+          >
             Pricing
           </button>
         </nav>
 
         <Link
           to="/"
-          className="text-sm font-medium text-gray-500 hover:text-[#ED1A3B] transition-colors sm:text-base"
+          className="shrink-0 text-xs font-medium text-gray-500 transition-colors hover:text-[#ED1A3B] sm:text-sm md:text-base"
         >
-          Back to SoftZCart
+          <span className="sm:hidden">Back</span>
+          <span className="hidden sm:inline">Back to SoftZCart</span>
         </Link>
       </div>
     </header>
