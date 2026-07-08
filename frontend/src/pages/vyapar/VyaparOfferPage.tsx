@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { ScrollToTop } from "../../components/common/ScrollToTop";
 import { VyaparHeader } from "../../components/vyapar/VyaparHeader";
 import { VyaparHeroSection } from "../../components/vyapar/VyaparHeroSection";
 import { VyaparFeaturesSection } from "../../components/vyapar/VyaparFeaturesSection";
@@ -27,7 +26,7 @@ export default function VyaparOfferPage() {
     <>
       <Helmet>
         <title>
-          Vyapar – Free GST Billing &amp; Accounting Software | SoftZCart Offer
+          Vyapar â€“ Free GST Billing &amp; Accounting Software | SoftZCart Offer
         </title>
         <meta
           name="description"
@@ -44,7 +43,6 @@ export default function VyaparOfferPage() {
         <VyaparFaqSection />
         <VyaparFooter />
         <VyaparStickyCta onOpenModal={openModal} />
-        <ScrollToTop />
       </div>
 
       <VyaparRegistrationModal isOpen={isModalOpen} onClose={closeModal} />

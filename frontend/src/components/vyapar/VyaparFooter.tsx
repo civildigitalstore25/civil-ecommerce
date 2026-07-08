@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export function VyaparFooter() {
   return (
-    <footer className="border-t border-red-50 bg-[#FFFBF8] px-4 py-10 sm:px-6 lg:px-8">
+    <footer className="hidden sm:block border-t border-red-50 bg-[#FFFBF8] px-4 py-10 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl text-center">
         <p className="text-xs text-gray-500">
           Vyapar licenses available on{" "}

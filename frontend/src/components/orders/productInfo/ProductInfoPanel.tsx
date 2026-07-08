@@ -1,4 +1,4 @@
-import { Package, Download } from "lucide-react";
+﻿import { Package, Download } from "lucide-react";
 import type { IOrder, IOrderItem } from "../../../api/types/orderTypes";
 import type { ThemeColors, ThemeMode } from "../../../contexts/AdminThemeContext";
 import {
@@ -63,7 +63,7 @@ export function ProductInfoPanel({
     <div className="flex flex-col sm:flex-row items-start gap-4">
       <div className="relative flex justify-center sm:justify-start flex-shrink-0 w-full sm:w-auto">
         <div
-          className="w-20 h-20 rounded-lg overflow-hidden flex items-center justify-center"
+          className="w-28 h-28 sm:w-20 sm:h-20 rounded-xl sm:rounded-lg overflow-hidden flex items-center justify-center"
           style={{
             backgroundColor:
               theme === "dark" ? colors.background.tertiary : "#f3f4f6",
