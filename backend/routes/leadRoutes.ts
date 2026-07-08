@@ -4,12 +4,14 @@ import {
     getLeadByEmail,
     getAllLeads
 } from '../controllers/leadController';
+import { createVyaparLead } from '../controllers/vyaparLeadController';
 import { authenticate, requireAdmin } from '../middlewares/auth';
 
 const router = express.Router();
 
 // Public route - create welcome lead
 router.post('/welcome', createWelcomeLead);
+router.post('/vyapar', createVyaparLead);
 
 // Protected routes - admin only
 router.get('/email/:email', authenticate, requireAdmin, getLeadByEmail);

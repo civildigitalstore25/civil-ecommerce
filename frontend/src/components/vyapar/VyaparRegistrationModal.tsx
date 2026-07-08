@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, CircleUserRound, X } from "lucide-react";
+import { submitVyaparLead } from "../../api/vyaparLeadApi";
+import { swalSuccessBrief } from "../../utils/swal";
 import { VyaparLogo } from "./VyaparLogo";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -165,6 +167,8 @@ export function VyaparRegistrationModal({
   const [activeDropdown, setActiveDropdown] = useState<
     keyof Step2Data | null
   >(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   // Scroll lock
   useEffect(() => {
@@ -200,6 +204,8 @@ export function VyaparRegistrationModal({
       setStep(1);
       setStep1Errors({});
       setActiveDropdown(null);
+      setSubmitError("");
+      setIsSubmitting(false);
     }
   }, [isOpen]);
 
@@ -224,10 +230,32 @@ export function VyaparRegistrationModal({
 
   // ── Step 2 submit ──────────────────────────────────────────────────────
 
-  function handleSubmit() {
-    // eslint-disable-next-line no-console
-    console.log("Vyapar Registration:", { ...step1, ...step2 });
-    onClose();
+  async function handleSubmit() {
+    try {
+      setSubmitError("");
+      setIsSubmitting(true);
+      await submitVyaparLead({
+        fullName: step1.fullName.trim(),
+        mobile: step1.mobile.trim(),
+        businessType: step2.businessType,
+        device: step2.device,
+        language: step2.language,
+        upgradeTimeline: step2.upgradeTimeline,
+      });
+      onClose();
+      void swalSuccessBrief(
+        "Request Submitted",
+        "Thanks! We will contact you soon.",
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Unable to submit right now. Please try again.";
+      setSubmitError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   // ── Dropdown toggle ─────────────────────────────────────────────────────
@@ -541,16 +569,23 @@ export function VyaparRegistrationModal({
                 <button
                   type="button"
                   onClick={handleSubmit}
+                  disabled={isSubmitting}
                   className="flex-[2] rounded-xl py-3.5 text-sm font-bold text-white transition-all duration-150 hover:brightness-105 active:scale-[0.98]"
                   style={{
                     background:
                       "linear-gradient(90deg, #ED1A3B 0%, #F07830 52%, #F5C50A 100%)",
                     boxShadow: "0 6px 22px rgba(237,26,59,0.28)",
+                    opacity: isSubmitting ? 0.7 : 1,
                   }}
                 >
-                  Get Free Demo
+                  {isSubmitting ? "Submitting..." : "Get Free Demo"}
                 </button>
               </div>
+              {submitError ? (
+                <p className="mt-2 text-center text-xs text-red-500">
+                  {submitError}
+                </p>
+              ) : null}
             </div>
           )}
         </div>
