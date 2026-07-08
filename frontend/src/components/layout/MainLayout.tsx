@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
-// import { useLocation } from "react-router-dom"; // Removed unused import
+import { useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import LeftSidebar from "../LeftSidebar";
 import MobileBottomNav from "../MobileBottomNav/MobileBottomNav";
@@ -16,7 +16,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     const savedState = localStorage.getItem('sidebarOpen');
     return savedState === 'true';
   });
-  // const location = useLocation(); // Removed unused variable
+  const location = useLocation();
+  const isVyaparPage = location.pathname.startsWith('/vyapar');
 
   // Persist sidebar state to localStorage whenever it changes
   useEffect(() => {
@@ -52,7 +53,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       />
 
       {/* Floating Toggle Button - Only visible on desktop when sidebar is closed */}
-      {!isSidebarOpen && (
+      {!isSidebarOpen && !isVyaparPage && (
         <button
           onClick={toggleSidebar}
           className="
