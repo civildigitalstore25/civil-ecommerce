@@ -331,7 +331,7 @@ export function VyaparRegistrationModal({
                 WebkitTextFillColor: "#1B1B2F",
               }}
             >
-              â€“ It's Free
+              - It's Free
             </span>
           </h2>
 
@@ -472,7 +472,7 @@ export function VyaparRegistrationModal({
                   boxShadow: "0 6px 22px rgba(237,26,59,0.32)",
                 }}
               >
-                Next â†’
+                Next
               </button>
             </div>
           ) : (
