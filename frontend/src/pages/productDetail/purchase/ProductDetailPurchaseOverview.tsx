@@ -84,61 +84,52 @@ export const ProductDetailPurchaseOverview: React.FC<ProductDetailPurchaseOvervi
       </div>
 
       {(totalViews > 0 || soldQuantity > 0 || reviewStats) && (
-        <div className="flex items-center gap-2 mt-3 flex-nowrap overflow-x-auto">
+        <div className="flex items-center gap-2 mt-3 flex-wrap">
           {totalViews > 0 && (
             <div
-              className="flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap shrink-0"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 whitespace-nowrap shrink-0"
               style={{
                 backgroundColor: colors.background.secondary,
                 borderColor: colors.interactive.primary + "40",
-                color: colors.text.primary,
               }}
             >
-              <div className="flex items-center gap-1">
-                <LucideIcons.Eye size={18} style={{ color: colors.interactive.primary }} />
-                <span className="font-semibold" style={{ color: colors.interactive.primary }}>
-                  {totalViews.toLocaleString()}
-                </span>
-              </div>
-              <span className="text-sm" style={{ color: colors.text.secondary }}>
-                {totalViews === 1 ? "Total view" : "Total views"}
-              </span>
-            </div>
-          )}
-          {reviewStats && (
-            <div className="flex md:hidden ml-auto items-center gap-2 shrink-0">
-              <div className="flex text-yellow-400">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <LucideIcons.Star
-                    key={i}
-                    size={16}
-                    fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
-                  />
-                ))}
-              </div>
-              <span style={{ color: colors.text.primary }}>
-                {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"} (
-                {reviewStats?.totalReviews || 0})
+              <LucideIcons.Eye size={15} style={{ color: colors.interactive.primary }} />
+              <span className="text-sm font-semibold" style={{ color: colors.interactive.primary }}>
+                {totalViews.toLocaleString()}
               </span>
             </div>
           )}
           {soldQuantity > 0 && (
             <div
-              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-full border-2 transition-all duration-300 whitespace-nowrap"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border transition-all duration-300 whitespace-nowrap shrink-0"
               style={{
                 backgroundColor: colors.background.secondary,
                 borderColor: colors.interactive.secondary + "40",
-                color: colors.text.primary,
               }}
             >
-              <div className="flex items-center gap-1">
-                <LucideIcons.ShoppingCart size={18} style={{ color: colors.interactive.secondary }} />
-                <span className="font-semibold" style={{ color: colors.interactive.secondary }}>
-                  {soldQuantity.toLocaleString()}
-                </span>
+              <LucideIcons.ShoppingCart size={15} style={{ color: colors.interactive.secondary }} />
+              <span className="text-sm font-semibold" style={{ color: colors.interactive.secondary }}>
+                {soldQuantity.toLocaleString()}
+              </span>
+              <span className="text-xs" style={{ color: colors.text.secondary }}>
+                sold
+              </span>
+            </div>
+          )}
+          {reviewStats && (
+            <div className="flex md:hidden items-center gap-1.5 shrink-0 ml-auto">
+              <div className="flex text-yellow-400">
+                {Array.from({ length: 5 }, (_, i) => (
+                  <LucideIcons.Star
+                    key={i}
+                    size={14}
+                    fill={i < Math.floor(reviewStats?.averageRating || 0) ? "currentColor" : "none"}
+                  />
+                ))}
               </div>
-              <span className="text-sm" style={{ color: colors.text.secondary }}>
-                {soldQuantity === 1 ? "Unit sold" : "Units sold"}
+              <span className="text-sm" style={{ color: colors.text.primary }}>
+                {reviewStats?.averageRating ? reviewStats.averageRating.toFixed(1) : "0.0"}{" "}
+                <span style={{ color: colors.text.secondary }}>({reviewStats?.totalReviews || 0})</span>
               </span>
             </div>
           )}
