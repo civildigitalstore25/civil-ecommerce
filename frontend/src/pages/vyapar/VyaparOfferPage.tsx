@@ -26,7 +26,7 @@ export default function VyaparOfferPage() {
     <>
       <Helmet>
         <title>
-          Vyapar â€“ Free GST Billing &amp; Accounting Software | SoftZCart Offer
+          Vyapar Free GST Billing &amp; Accounting Software | SoftZCart Offer
         </title>
         <meta
           name="description"
