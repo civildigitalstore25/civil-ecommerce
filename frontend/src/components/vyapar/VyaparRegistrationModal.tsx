@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { ChevronDown, CircleUserRound, X } from "lucide-react";
 import { submitVyaparLead } from "../../api/vyaparLeadApi";
 import { swalSuccessBrief } from "../../utils/swal";
 import { VyaparLogo } from "./VyaparLogo";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// â”€â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface Step1Data {
   fullName: string;
@@ -23,7 +23,7 @@ export interface VyaparRegistrationModalProps {
   onClose: () => void;
 }
 
-// ─── Dropdown Options ─────────────────────────────────────────────────────────
+// â”€â”€â”€ Dropdown Options â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const BUSINESS_TYPE_OPTIONS = [
   "Retail Shop",
@@ -55,7 +55,7 @@ const UPGRADE_TIMELINE_OPTIONS = [
   "Just Exploring",
 ];
 
-// ─── Sub-component: Custom Dropdown ──────────────────────────────────────────
+// â”€â”€â”€ Sub-component: Custom Dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 interface CustomDropdownProps {
   placeholder: string;
@@ -142,7 +142,7 @@ function CustomDropdown({
   );
 }
 
-// ─── Main Modal Component ─────────────────────────────────────────────────────
+// â”€â”€â”€ Main Modal Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export function VyaparRegistrationModal({
   isOpen,
@@ -150,7 +150,7 @@ export function VyaparRegistrationModal({
 }: VyaparRegistrationModalProps) {
   const [step, setStep] = useState<1 | 2>(1);
 
-  // Step 1 state — preserved when navigating back
+  // Step 1 state â€” preserved when navigating back
   const [step1, setStep1] = useState<Step1Data>({ fullName: "", mobile: "" });
   const [step1Errors, setStep1Errors] = useState<Partial<Step1Data>>({});
   const [nameFocused, setNameFocused] = useState(false);
@@ -211,7 +211,7 @@ export function VyaparRegistrationModal({
 
   if (!isOpen) return null;
 
-  // ── Step 1 validation ───────────────────────────────────────────────────
+  // â”€â”€ Step 1 validation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function handleNext() {
     const errors: Partial<Step1Data> = {};
@@ -228,7 +228,7 @@ export function VyaparRegistrationModal({
     }
   }
 
-  // ── Step 2 submit ──────────────────────────────────────────────────────
+  // â”€â”€ Step 2 submit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   async function handleSubmit() {
     try {
@@ -243,6 +243,8 @@ export function VyaparRegistrationModal({
         upgradeTimeline: step2.upgradeTimeline,
       });
       onClose();
+      // Redirect to WhatsApp community after successful submission
+      window.open("https://chat.whatsapp.com/GaK8ouXUxl5AhgIg23PPpO", "_blank", "noopener,noreferrer");
       void swalSuccessBrief(
         "Request Submitted",
         "Thanks! We will contact you soon.",
@@ -253,18 +255,16 @@ export function VyaparRegistrationModal({
           ? error.message
           : "Unable to submit right now. Please try again.";
       setSubmitError(message);
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
-  // ── Dropdown toggle ─────────────────────────────────────────────────────
+  // â”€â”€ Dropdown toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function toggleDropdown(key: keyof Step2Data) {
     setActiveDropdown((prev) => (prev === key ? null : key));
   }
 
-  // ── Backdrop click ──────────────────────────────────────────────────────
+  // â”€â”€ Backdrop click â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function handleBackdropClick(e: React.MouseEvent<HTMLDivElement>) {
     if (e.target === e.currentTarget) {
@@ -276,9 +276,9 @@ export function VyaparRegistrationModal({
     }
   }
 
-  // ─────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // RENDER
-  // ─────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   return (
     /* Backdrop */
@@ -295,7 +295,7 @@ export function VyaparRegistrationModal({
             "0 0 0 1.5px rgba(245,166,35,0.15), 0 28px 64px -12px rgba(0,0,0,0.38), 0 0 48px 0 rgba(237,26,59,0.07)",
         }}
       >
-        {/* ════════ Header band (cream) ════════ */}
+        {/* â•â•â•â•â•â•â•â• Header band (cream) â•â•â•â•â•â•â•â• */}
         <div className="rounded-t-2xl bg-[#FFFBF5] px-6 pb-5 pt-5">
           {/* Close */}
           <button
@@ -331,7 +331,7 @@ export function VyaparRegistrationModal({
                 WebkitTextFillColor: "#1B1B2F",
               }}
             >
-              – It's Free
+              â€“ It's Free
             </span>
           </h2>
 
@@ -353,10 +353,10 @@ export function VyaparRegistrationModal({
           </div>
         </div>
 
-        {/* ════════ Body ════════ */}
+        {/* â•â•â•â•â•â•â•â• Body â•â•â•â•â•â•â•â• */}
         <div className="px-6 pb-6 pt-5">
           {step === 1 ? (
-            /* ───── STEP 1 ───── */
+            /* â”€â”€â”€â”€â”€ STEP 1 â”€â”€â”€â”€â”€ */
             <div className="space-y-5">
               {/* Full Name */}
               <div>
@@ -472,11 +472,11 @@ export function VyaparRegistrationModal({
                   boxShadow: "0 6px 22px rgba(237,26,59,0.32)",
                 }}
               >
-                Next →
+                Next â†’
               </button>
             </div>
           ) : (
-            /* ───── STEP 2 ───── */
+            /* â”€â”€â”€â”€â”€ STEP 2 â”€â”€â”€â”€â”€ */
             <div>
               {/* Success badge + subtitle */}
               <div className="mb-5 flex flex-col items-center gap-2.5">
@@ -563,7 +563,7 @@ export function VyaparRegistrationModal({
                   }}
                   className="flex-1 rounded-xl border border-[#E8D9B0] bg-white py-3.5 text-sm font-semibold text-gray-700 transition-all duration-150 hover:border-[#F5A623] hover:text-gray-900 active:scale-[0.98]"
                 >
-                  ← Back
+                  â† Back
                 </button>
 
                 <button

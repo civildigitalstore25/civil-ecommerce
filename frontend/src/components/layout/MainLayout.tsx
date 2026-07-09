@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import { useAdminTheme } from "../../contexts/AdminThemeContext";
 import { useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
@@ -88,8 +88,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav onMenuToggle={toggleSidebar} />
+      {/* Mobile Bottom Navigation - hidden on /vyapar (sticky CTA replaces it) */}
+      {!isVyaparPage && <MobileBottomNav onMenuToggle={toggleSidebar} />}
       {/* Cart Drawer (global) */}
       <CartSidebar />
     </div>
