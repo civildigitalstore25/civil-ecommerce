@@ -63,7 +63,7 @@ export function ProductInfoPanel({
     <div className="flex flex-col sm:flex-row items-start gap-4">
       <div className="relative flex justify-center sm:justify-start flex-shrink-0 w-full sm:w-auto">
         <div
-          className="w-28 h-28 sm:w-20 sm:h-20 rounded-xl sm:rounded-lg overflow-hidden flex items-center justify-center"
+          className="w-44 h-44 sm:w-36 sm:h-36 rounded-xl sm:rounded-lg overflow-hidden flex items-center justify-center"
           style={{
             backgroundColor:
               theme === "dark" ? colors.background.tertiary : "#f3f4f6",
@@ -78,7 +78,7 @@ export function ProductInfoPanel({
             />
           ) : (
             <Package
-              className="w-8 h-8"
+              className="w-14 h-14"
               style={{
                 color:
                   theme === "dark" ? "#fff" : colors.interactive.primary,
